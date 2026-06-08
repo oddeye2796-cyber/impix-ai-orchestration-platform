@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-pixel: "Press Start 2P", cursive;
+  
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-hover: #334155;
+  --color-border: #334155;
+  --color-accent: #10b981;
+  --color-accent-hover: #059669;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-text-primary font-sans antialiased;
+  }
+}
+
+@layer components {
+  .dashboard-card {
+    @apply bg-surface border border-border rounded-xl p-4 shadow-lg;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-text-secondary hover:bg-surface-hover hover:text-text-primary;
+  }
+  
+  .sidebar-item-active {
+    @apply bg-accent/10 text-accent hover:bg-accent/20;
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #475569;
+  }
+
+  /* Markdown Styles */
+  .markdown-body {
+    @apply text-text-primary leading-relaxed;
+  }
+  .markdown-body h1 {
+    @apply text-4xl font-black mb-8 mt-12 border-b-2 border-accent pb-4 text-text-primary tracking-tight;
+  }
+  .markdown-body h2 {
+    @apply text-2xl font-bold mb-6 mt-12 border-l-4 border-accent pl-6 bg-accent/5 py-3 rounded-r-xl shadow-sm;
+  }
+  .markdown-body h3 {
+    @apply text-xl font-bold mb-4 mt-8 text-text-primary/90 flex items-center gap-2;
+  }
+  .markdown-body h3::before {
+    content: "▹";
+    @apply text-accent font-black;
+  }
+  .markdown-body h4 {
+    @apply text-lg font-bold mb-3 mt-6 text-text-primary/80 border-b border-border/50 pb-1 w-fit;
+  }
+  .markdown-body p {
+    @apply mb-6 text-text-secondary text-[15px] leading-relaxed;
+  }
+  .markdown-body ul, .markdown-body ol {
+    @apply mb-6 ml-8 list-disc space-y-3 text-[14px] text-text-secondary;
+  }
+  .markdown-body li > ul {
+    @apply mt-3 mb-0;
+  }
+  .markdown-body blockquote {
+    @apply border-l-4 border-accent pl-6 italic my-8 bg-accent/5 py-6 rounded-r-2xl text-text-primary/90 shadow-inner;
+  }
+  .markdown-body code {
+    @apply bg-surface-hover/80 px-2 py-0.5 rounded-md font-mono text-[13px] text-accent border border-border/50;
+  }
+  .markdown-body pre {
+    @apply bg-bg/80 border border-border rounded-2xl p-6 mb-8 overflow-x-auto shadow-2xl backdrop-blur-sm;
+  }
+  .markdown-body pre code {
+    @apply bg-transparent p-0 text-text-primary text-[13px] block leading-relaxed border-none;
+  }
+  .markdown-body table {
+    @apply w-full border-collapse mb-8 text-sm overflow-hidden rounded-2xl border border-border shadow-lg;
+  }
+  .markdown-body th {
+    @apply bg-surface-hover border border-border p-4 text-left font-bold text-accent uppercase tracking-wider text-[11px];
+  }
+  .markdown-body td {
+    @apply border border-border p-4 text-text-secondary leading-relaxed;
+  }
+  .markdown-body tr:nth-child(even) {
+    @apply bg-surface-hover/10;
+  }
+  .markdown-body tr:hover td {
+    @apply bg-accent/5 text-text-primary transition-colors;
+  }
+  .markdown-body hr {
+    @apply my-12 border-border/50;
+  }
+  .markdown-body a {
+    @apply text-accent hover:underline decoration-accent/30 underline-offset-4 transition-all;
+  }
+  /* TOC specific styling */
+  .markdown-body ul:first-of-type li a {
+    @apply flex items-center gap-2 py-1 px-3 rounded-lg bg-accent/5 border border-accent/10 hover:bg-accent/10 hover:border-accent/30 no-underline text-xs font-bold;
+  }
+  .markdown-body strong {
+    @apply text-accent font-bold;
+  }
+  .markdown-body em {
+    @apply text-text-primary/80;
+  }
+}
