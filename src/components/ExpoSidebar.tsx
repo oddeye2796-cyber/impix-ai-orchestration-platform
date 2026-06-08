@@ -26,7 +26,7 @@ interface ExpoSidebarProps {
   eventsTriggered: number;
   scoreHistory: ScoreEntry[];
   onEventTriggered: (eventId: string) => void;
-  onScoreUpdate: (delta: number) => void;
+  onScoreUpdate: (delta: number, label?: string, isCorrect?: boolean) => void;
   onReset: () => void;
   onNewScenario: () => void;
   onClose: () => void;

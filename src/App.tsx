@@ -1362,12 +1362,17 @@ export default function App() {
             onEventTriggered={(eventId) => {
               setExpoEventsTriggered(prev => prev + 1);
             }}
-            onScoreUpdate={(delta) => {
+            onScoreUpdate={(delta, label, isCorrect) => {
               setExpoScore(prev => prev + delta);
+              if (isCorrect === true) {
+                setExpoApprovedCount(prev => prev + 1);
+              } else if (isCorrect === false) {
+                setExpoRejectedCount(prev => prev + 1);
+              }
               setExpoScoreHistory(prev => [{
                 id: Math.random().toString(36).substr(2, 9),
-                label: '이벤트 대응 완료',
-                type: 'event',
+                label: label ?? '이벤트 대응',
+                type: isCorrect === true ? 'approved' : isCorrect === false ? 'rejected' : 'event',
                 points: delta,
                 timestamp: new Date()
               }, ...prev]);
