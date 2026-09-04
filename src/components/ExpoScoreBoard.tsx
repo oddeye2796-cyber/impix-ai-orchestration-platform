@@ -276,7 +276,7 @@ export default function ExpoScoreBoard({
                   <p className="text-[10px] text-text-secondary leading-relaxed">{insight}</p>
 
                   {/* Watermark */}
-                  <div className="text-[9px] text-text-secondary/50 font-mono">AI EXPO 2026 · IMPIX</div>
+                  <div className="text-[9px] text-text-secondary/50 font-mono">IMPIX AI ORCHESTRATION</div>
                 </div>
               </div>
 

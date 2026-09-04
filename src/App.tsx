@@ -147,6 +147,7 @@ import { t, tValue, matchesKeyword, useI18n } from './i18n';
 import LanguageSwitcher from './i18n/LanguageSwitcher';
 import AiSettingsModal from './components/AiSettingsModal';
 import ThemeSwitcher from './theme/ThemeSwitcher';
+import { useToast } from './components/Toast';
 
 // Split out of the initial download: markdown is one tab of one modal, and the
 // expo sidebar only exists in interactive booth mode.
@@ -154,6 +155,9 @@ const MarkdownView = lazy(() => import('./components/MarkdownView'));
 const ExpoSidebar = lazy(() => import('./components/ExpoSidebar'));
 import DemoModeBadge from './components/DemoModeBadge';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
+import { useTelemetry } from './hooks/useTelemetry';
+import { useLiveValue } from './hooks/useLiveValue';
+import { livingSeries } from './services/telemetry';
 import { chartPalette, useTheme } from './theme';
 
 /** Placeholder shown while a lazily loaded chunk arrives. */
@@ -168,26 +172,6 @@ function ChunkFallback() {
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-// Mock Data Generators
-const generateMockSensorData = (): SensorData[] => {
-  const data: SensorData[] = [];
-  const now = new Date();
-  for (let i = 20; i >= 0; i--) {
-    const time = new Date(now.getTime() - i * 60000);
-    data.push({
-      timestamp: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      line: t('포장1라인'),
-      equipment: t('수축포장기-01'),
-      vibration: 3.5 + Math.random() * 1.5,
-      temperature: 170 + Math.random() * 10,
-      current_amp: 12 + Math.random() * 2,
-      defect_rate: Math.random() * 5,
-      status: Math.random() > 0.9 ? 'warning' : 'normal'
-    });
-  }
-  return data;
-};
 
 const INITIAL_DECISIONS: AgentDecision[] = [
   {
@@ -543,7 +527,8 @@ export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<MenuItem>(MENU_ITEMS[0]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [sensorData, setSensorData] = useState<SensorData[]>(generateMockSensorData());
+  const plant = useTelemetry();
+  const sensorData = plant.history;
   const [decisions, setDecisions] = useState<AgentDecision[]>(INITIAL_DECISIONS);
   const [overrideLogs, setOverrideLogs] = useState<OverrideLog[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
@@ -663,27 +648,6 @@ export default function App() {
     }
     setIsRecommending(false);
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSensorData(prev => {
-        const newData = [...prev.slice(1)];
-        const lastTime = new Date();
-        newData.push({
-          timestamp: lastTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          line: t('포장1라인'),
-          equipment: t('수축포장기-01'),
-          vibration: 3.5 + Math.random() * 1.5,
-          temperature: 170 + Math.random() * 10,
-          current_amp: 12 + Math.random() * 2,
-          defect_rate: Math.random() * 5,
-          status: Math.random() > 0.95 ? 'warning' : 'normal'
-        });
-        return newData;
-      });
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -1001,7 +965,7 @@ export default function App() {
                   if (firstStepMenu) setSelectedMenu(firstStepMenu);
                   setIsTourOrchestrationOpen(false);
                 }}
-                className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-bg text-[10px] md:text-xs font-black rounded-full flex items-center gap-1.5 shadow-lg shadow-orange-500/10 border border-orange-400/30 animate-pulse transition-all active:scale-95 cursor-pointer"
+                className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-bg text-[10px] md:text-xs font-black rounded-full flex items-center gap-1.5 shadow-lg shadow-orange-500/10 border border-orange-400/30 attention-ring transition-all active:scale-95 cursor-pointer"
                 id="btn-start-expo-tour"
               >
                 <Sparkles size={11} />
@@ -1156,7 +1120,7 @@ export default function App() {
                       <Sparkles size={14} />
                     </div>
                     <div>
-                      <h3 className="text-xs font-black uppercase tracking-wider text-amber-500 font-sans">AI EXPO 2026</h3>
+                      <h3 className="text-xs font-black uppercase tracking-wider text-amber-500 font-sans">{t('체험 가이드')}</h3>
                       <p className="text-[9px] text-text-secondary font-mono">{t('SELF-GUIDED DEMO TOUR')}</p>
                     </div>
                   </div>
@@ -1239,7 +1203,7 @@ export default function App() {
                 {/* Active Step Content */}
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-black tracking-tight">
+                    <span data-testid="tour-step-badge" className="text-[10px] bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-black tracking-tight">
                       {t(currentStepData.badge)}
                     </span>
                     <span className="text-[9px] font-mono text-text-secondary">
@@ -1339,6 +1303,7 @@ export default function App() {
                       setIsTourOrchestrationOpen(false);
                     }}
                     disabled={tourStep === 0}
+                    data-testid="tour-prev"
                     className="flex-1 py-1.5 rounded-xl text-xs font-bold border border-border bg-surface hover:bg-surface-hover disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center justify-center gap-1 cursor-pointer font-sans"
                   >
                     {t('◀ 이전')}
@@ -1349,7 +1314,7 @@ export default function App() {
                       onClick={() => {
                         setIsTourOrchestrationOpen(true);
                       }}
-                      className="flex-[1.5] py-2 px-3 bg-gradient-to-r from-red-500 to-amber-500 hover:from-red-600 hover:to-amber-600 text-bg text-xs font-black rounded-xl shadow-lg shadow-red-500/10 border border-red-400/20 animate-bounce transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="flex-[1.5] py-2 px-3 bg-gradient-to-r from-red-500 to-amber-500 hover:from-red-600 hover:to-amber-600 text-bg text-xs font-black rounded-xl shadow-lg shadow-red-500/10 border border-red-400/20 attention-ring transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       {t('⚡ 라이브 토론 실행')}
                     </button>
@@ -1378,6 +1343,7 @@ export default function App() {
                         setIsTourOrchestrationOpen(false);
                       }
                     }}
+                    data-testid="tour-next"
                     className="flex-1 py-1.5 rounded-xl text-xs font-bold bg-accent hover:bg-accent-hover text-bg transition-all flex items-center justify-center gap-1 cursor-pointer"
                   >
                     {tourStep === currentSteps.length - 1 ? t('종료 [닫기]') : t('다음 ▶')}
@@ -1458,6 +1424,7 @@ function StatCard({ title, value, trend, icon, onClick }: { title: string, value
   const isPositive = trend.startsWith('+') || trend === 'Stable';
   return (
     <motion.div 
+      data-testid="kpi-card"
       whileHover={onClick ? { scale: 1.02, translateY: -2 } : {}}
       whileTap={onClick ? { scale: 0.98 } : {}}
       onClick={onClick}
@@ -1472,7 +1439,7 @@ function StatCard({ title, value, trend, icon, onClick }: { title: string, value
       <div>
         <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{title}</p>
         <div className="flex items-baseline gap-2">
-          <h4 className="text-xl font-bold">{value}</h4>
+          <h4 data-testid="kpi-value" className="text-xl font-bold">{value}</h4>
           <span className={cn(
             "text-[10px] font-bold",
             isPositive ? "text-accent" : "text-danger"
@@ -1774,11 +1741,29 @@ function RecommendationEngineView({ decisions, onApprove, onReject, onLog, onRef
   const [adjustingIdx, setAdjustingIdx] = useState<number | null>(null);
   const [adjValue, setAdjValue] = useState<string>('');
   const [adjNotes, setAdjNotes] = useState<string>('');
+  const [rejectingIdx, setRejectingIdx] = useState<number | null>(null);
+  const [rejectReason, setRejectReason] = useState<string>('');
 
   const startAdjusting = (idx: number, currentVal: string | number) => {
+    setRejectingIdx(null);
     setAdjustingIdx(idx);
     setAdjValue(currentVal.toString());
     setAdjNotes('');
+  };
+
+  // Rejecting used to go through `window.prompt`, which cannot be translated
+  // and drops an OS dialog over the demo. The reason is captured inline, the
+  // same way an adjustment is.
+  const startRejecting = (idx: number) => {
+    setAdjustingIdx(null);
+    setRejectingIdx(idx);
+    setRejectReason('');
+  };
+
+  const confirmReject = (idx: number) => {
+    onReject(idx, rejectReason.trim() || undefined);
+    setRejectingIdx(null);
+    setRejectReason('');
   };
 
   return (
@@ -1876,7 +1861,36 @@ function RecommendationEngineView({ decisions, onApprove, onReject, onLog, onRef
                 
                 {decision.status === 'pending' && (
                   <div className="flex flex-col gap-2 min-w-[200px]">
-                    {adjustingIdx === idx ? (
+                    {rejectingIdx === idx ? (
+                      <div className="space-y-3 p-3 bg-surface rounded-lg border border-danger/30">
+                        <div>
+                          <label className="text-[10px] font-bold text-text-secondary uppercase block mb-1">
+                            {t('거부 사유')}
+                          </label>
+                          <textarea
+                            autoFocus
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            className="w-full bg-bg border border-border rounded px-2 py-1 text-xs focus:border-danger outline-none h-16 resize-none"
+                            placeholder={t('이 추천을 거부하는 이유를 남겨주세요 (선택)')}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => confirmReject(idx)}
+                            className="flex-1 py-1.5 bg-danger text-white text-[10px] font-bold rounded cursor-pointer"
+                          >
+                            {t('거부 확정')}
+                          </button>
+                          <button
+                            onClick={() => setRejectingIdx(null)}
+                            className="flex-1 py-1.5 bg-surface-hover text-[10px] font-bold rounded cursor-pointer"
+                          >
+                            {t('Cancel')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : adjustingIdx === idx ? (
                       <div className="space-y-3 p-3 bg-surface rounded-lg border border-accent/30">
                         <div>
                           <label className="text-[10px] font-bold text-text-secondary uppercase block mb-1">{t('New Value')}</label>
@@ -1929,10 +1943,7 @@ function RecommendationEngineView({ decisions, onApprove, onReject, onLog, onRef
                           <Settings2 size={16} /> {t('Adjust & Approve')}
                         </button>
                         <button 
-                          onClick={() => {
-                            const reason = prompt('Reason for rejection?');
-                            if (reason !== null) onReject(idx, reason);
-                          }}
+                          onClick={() => startRejecting(idx)}
                           className="w-full py-2 bg-surface border border-border hover:bg-danger/10 hover:border-danger/30 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
                         >
                           <X size={16} /> {t('Reject')}
@@ -2027,6 +2038,7 @@ function OverrideLogView({ logs }: { logs: OverrideLog[] }) {
 }
 
 function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) {
+  const live = useLiveValue();
   const chart = chartPalette();
   const kpiData: Record<string, any> = {
     'OEE': {
@@ -2040,10 +2052,10 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
       ],
       chart: (
         <BarChart data={[
-          { name: t('가동률'), value: 92.5 },
-          { name: t('성능'), value: 94.8 },
-          { name: t('품질'), value: 98.7 },
-          { name: 'OEE', value: 84.2 },
+          { name: t('가동률'), value: live(92.5, 0) },
+          { name: t('성능'), value: live(94.8, 1) },
+          { name: t('품질'), value: live(98.7, 2) },
+          { name: 'OEE', value: live(84.2, 3) },
         ]}>
           <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
           <XAxis dataKey="name" stroke={chart.axis} fontSize={10} />
@@ -2069,11 +2081,11 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
       ],
       chart: (
         <LineChart data={[
-          { time: '09:00', rate: 1.5 },
-          { time: '10:00', rate: 1.2 },
-          { time: '11:00', rate: 1.8 },
-          { time: '12:00', rate: 1.1 },
-          { time: '13:00', rate: 1.24 },
+          { time: '09:00', rate: live(1.5, 4) },
+          { time: '10:00', rate: live(1.2, 5) },
+          { time: '11:00', rate: live(1.8, 6) },
+          { time: '12:00', rate: live(1.1, 7) },
+          { time: '13:00', rate: live(1.24, 8) },
         ]}>
           <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
           <XAxis dataKey="time" stroke={chart.axis} fontSize={10} />
@@ -2094,11 +2106,11 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
       ],
       chart: (
         <AreaChart data={[
-          { time: '08:00', usage: 80 },
-          { time: '10:00', usage: 120 },
-          { time: '12:00', usage: 145 },
-          { time: '14:00', usage: 110 },
-          { time: '16:00', usage: 95 },
+          { time: '08:00', usage: live(80, 9) },
+          { time: '10:00', usage: live(120, 10) },
+          { time: '12:00', usage: live(145, 11) },
+          { time: '14:00', usage: live(110, 12) },
+          { time: '16:00', usage: live(95, 13) },
         ]}>
           <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
           <XAxis dataKey="time" stroke={chart.axis} fontSize={10} />
@@ -2121,8 +2133,8 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
         <PieChart>
           <Pie
             data={[
-              { name: t('Active'), value: 4 },
-              { name: t('Standby'), value: 2 },
+              { name: t('Active'), value: live(4, 14) },
+              { name: t('Standby'), value: live(2, 15) },
             ]}
             cx="50%"
             cy="50%"
@@ -2226,8 +2238,16 @@ function DashboardView({
   handleApprove: (i: number) => void,
   handleReject: (i: number) => void
 }) {
+  const live = useLiveValue();
   const chart = chartPalette();
+  const plant = useTelemetry();
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
+
+  // Trend arrows compare against the start of the visible window, so they move
+  // with the data instead of being decorative constants.
+  const first = plant.history[0];
+  const delta = (now: number, then: number | undefined, digits = 1) =>
+    then === undefined ? '—' : `${now - then >= 0 ? '+' : ''}${(now - then).toFixed(digits)}`;
 
   useEffect(() => {
     // Auto check '최상단 KPI 카드 및 설비 가동 시간 차트 감상'
@@ -2246,29 +2266,29 @@ function DashboardView({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
           title={t('Overall Equipment Effectiveness')} 
-          value="84.2%" 
-          trend="+2.1%" 
+          value={`${plant.oee.toFixed(1)}%`}
+          trend={`${delta(plant.availability, first ? 96 : undefined)}%`}
           icon={<Activity className="text-accent" />} 
           onClick={() => setActiveKpi('OEE')}
         />
         <StatCard 
           title={t('Defect Rate')} 
-          value="1.24%" 
-          trend="-0.5%" 
+          value={`${plant.defectRate.toFixed(2)}%`}
+          trend={delta(plant.defectRate, first?.defect_rate, 2)}
           icon={<ShieldAlert className="text-danger" />} 
           onClick={() => setActiveKpi('Defect')}
         />
         <StatCard 
           title={t('Energy Consumption')} 
-          value="1,240 kWh" 
-          trend="-12%" 
+          value={`${plant.energyKw.toLocaleString()} kWh`}
+          trend={`${delta(plant.energyKw, 1240, 0)} kW`}
           icon={<Zap className="text-warning" />} 
           onClick={() => setActiveKpi('Energy')}
         />
         <StatCard 
           title={t('Active Agents')} 
-          value="6 / 6" 
-          trend="Stable" 
+          value={`${plant.activeAgents} / 6`}
+          trend={plant.excursion ? t('대응 중') : t('STABLE')}
           icon={<Cpu className="text-indigo-400" />} 
           onClick={() => setActiveKpi('Agents')}
         />
@@ -2345,7 +2365,7 @@ function DashboardView({
                 {isRecommending ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
               </button>
               <DemoModeBadge />
-              <span className="bg-warning/10 text-warning text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">
+              <span data-testid="pending-count" className="bg-warning/10 text-warning text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">
                 {decisions.filter(d => d.status === 'pending').length} {t('Action Required')}
               </span>
             </div>
@@ -2414,11 +2434,11 @@ function DashboardView({
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={[
-                { name: t('찢김'), value: 12 },
-                { name: t('기포'), value: 8 },
-                { name: t('변색'), value: 15 },
-                { name: t('라벨누락'), value: 5 },
-                { name: t('기타'), value: 3 },
+                { name: t('찢김'), value: live(12, 16) },
+                { name: t('기포'), value: live(8, 17) },
+                { name: t('변색'), value: live(15, 18) },
+                { name: t('라벨누락'), value: live(5, 19) },
+                { name: t('기타'), value: live(3, 20) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -3111,7 +3131,7 @@ function CoordinationVisualizer({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
           </span>
-          <span className="text-[10px] font-black uppercase tracking-wider text-accent">AI EXPO 2026 LIVE DEMO MODE</span>
+          <span className="text-[10px] font-black uppercase tracking-wider text-accent">{t('LIVE DEMO MODE')}</span>
         </div>
         
         {/* Playback Controls for Presenter */}
@@ -4849,6 +4869,7 @@ function VisionInspectionViewer() {
 }
 
 function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, isOpen: boolean, onClose: () => void }) {
+  const live = useLiveValue();
   const chart = chartPalette();
   const [subView, setSubView] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -5101,12 +5122,12 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={[
-                    { time: '00:00', cpu: 45, mem: 60 },
-                    { time: '04:00', cpu: 30, mem: 55 },
-                    { time: '08:00', cpu: 85, mem: 75 },
-                    { time: '12:00', cpu: 70, mem: 80 },
-                    { time: '16:00', cpu: 90, mem: 85 },
-                    { time: '20:00', cpu: 55, mem: 70 },
+                    { time: '00:00', cpu: live(45, 21), mem: live(60, 22) },
+                    { time: '04:00', cpu: live(30, 23), mem: live(55, 24) },
+                    { time: '08:00', cpu: live(85, 25), mem: live(75, 26) },
+                    { time: '12:00', cpu: live(70, 27), mem: live(80, 28) },
+                    { time: '16:00', cpu: live(90, 29), mem: live(85, 30) },
+                    { time: '20:00', cpu: live(55, 31), mem: live(70, 32) },
                   ]}>
                     <defs>
                       <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
@@ -5678,6 +5699,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
 }
 
 function AdvancedParametersModal({ item, isOpen, onClose }: { item: MenuItem, isOpen: boolean, onClose: () => void }) {
+  const { showToast } = useToast();
   const [params, setParams] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -6203,8 +6225,7 @@ function AdvancedParametersModal({ item, isOpen, onClose }: { item: MenuItem, is
           </button>
           <button 
             onClick={() => {
-              // Simulate saving
-              alert('Advanced parameters updated successfully.');
+              showToast(t('고급 파라미터가 저장되었습니다.'));
               onClose();
             }}
             className="flex-1 py-3 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
@@ -6860,6 +6881,7 @@ function ModuleDetailView({
   isTourMode?: boolean;
   tourScenarioIdx?: number;
 }) {
+  const live = useLiveValue();
   const chart = chartPalette();
   const [logs, setLogs] = useState<{time: string, msg: string, type: 'info' | 'warn' | 'success'}[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -6921,10 +6943,10 @@ function ModuleDetailView({
           case 26: // 온톨로지 관리
             return (
               <BarChart data={[
-                { name: t('엔티티'), value: 45 },
-                { name: t('관계'), value: 128 },
-                { name: t('속성'), value: 312 },
-                { name: t('규칙'), value: 84 },
+                { name: t('엔티티'), value: live(45, 33) },
+                { name: t('관계'), value: live(128, 34) },
+                { name: t('속성'), value: live(312, 35) },
+                { name: t('규칙'), value: live(84, 36) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -6939,10 +6961,10 @@ function ModuleDetailView({
           case 27: // 모델 레지스트리
             return (
               <BarChart data={[
-                { name: 'Anomalib', acc: 0.94, f1: 0.92 },
-                { name: 'YOLOv8', acc: 0.88, f1: 0.85 },
-                { name: 'ResNet', acc: 0.91, f1: 0.89 },
-                { name: 'ViT', acc: 0.96, f1: 0.95 },
+                { name: 'Anomalib', acc: live(0.94, 37), f1: live(0.92, 38) },
+                { name: 'YOLOv8', acc: live(0.88, 39), f1: live(0.85, 40) },
+                { name: 'ResNet', acc: live(0.91, 41), f1: live(0.89, 42) },
+                { name: 'ViT', acc: live(0.96, 43), f1: live(0.95, 44) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -6960,10 +6982,10 @@ function ModuleDetailView({
               <PieChart>
                 <Pie
                   data={[
-                    { name: t('관리자'), value: 5 },
-                    { name: t('오퍼레이터'), value: 24 },
-                    { name: t('설비엔지니어'), value: 12 },
-                    { name: t('품질관리자'), value: 8 },
+                    { name: t('관리자'), value: live(5, 45) },
+                    { name: t('오퍼레이터'), value: live(24, 46) },
+                    { name: t('설비엔지니어'), value: live(12, 47) },
+                    { name: t('품질관리자'), value: live(8, 48) },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -7004,10 +7026,10 @@ function ModuleDetailView({
           case 30: // 알림 설정
             return (
               <BarChart data={[
-                { name: t('SMS'), value: 142 },
-                { name: t('Email'), value: 856 },
-                { name: t('Push'), value: 2431 },
-                { name: t('Siren'), value: 12 },
+                { name: t('SMS'), value: live(142, 49) },
+                { name: t('Email'), value: live(856, 50) },
+                { name: t('Push'), value: live(2431, 51) },
+                { name: t('Siren'), value: live(12, 52) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7027,10 +7049,10 @@ function ModuleDetailView({
           case 21: // AI 챗봇
             return (
               <BarChart data={[
-                { type: t('데이터 조회'), count: 450 },
-                { type: t('지식 검색'), count: 320 },
-                { type: t('분석 요청'), count: 180 },
-                { type: t('기타'), count: 50 },
+                { type: t('데이터 조회'), count: live(450, 53) },
+                { type: t('지식 검색'), count: live(320, 54) },
+                { type: t('분석 요청'), count: live(180, 55) },
+                { type: t('기타'), count: live(50, 56) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="type" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7047,10 +7069,10 @@ function ModuleDetailView({
               <PieChart>
                 <Pie
                   data={[
-                    { name: t('품질'), value: 40 },
-                    { name: t('설비'), value: 30 },
-                    { name: t('에너지'), value: 20 },
-                    { name: t('안전'), value: 10 },
+                    { name: t('품질'), value: live(40, 57) },
+                    { name: t('설비'), value: live(30, 58) },
+                    { name: t('에너지'), value: live(20, 59) },
+                    { name: t('안전'), value: live(10, 60) },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -7072,11 +7094,11 @@ function ModuleDetailView({
           case 23: // Agent 실행 이력
             return (
               <BarChart layout="vertical" data={[
-                { agent: 'Quality', runs: 1240 },
-                { agent: 'PM', runs: 850 },
-                { agent: 'Line', runs: 2100 },
-                { agent: 'Energy', runs: 600 },
-                { agent: 'Safety', runs: 300 },
+                { agent: 'Quality', runs: live(1240, 61) },
+                { agent: 'PM', runs: live(850, 62) },
+                { agent: 'Line', runs: live(2100, 63) },
+                { agent: 'Energy', runs: live(600, 64) },
+                { agent: 'Safety', runs: live(300, 65) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} horizontal={false} />
                 <XAxis type="number" stroke={chart.axis} fontSize={10} />
@@ -7091,9 +7113,9 @@ function ModuleDetailView({
           case 24: // 승인 대기 큐
             return (
               <BarChart data={[
-                { status: 'Pending', count: 5 },
-                { status: 'Approved', count: 42 },
-                { status: 'Rejected', count: 3 },
+                { status: 'Pending', count: live(5, 66) },
+                { status: 'Approved', count: live(42, 67) },
+                { status: 'Rejected', count: live(3, 68) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="status" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7112,11 +7134,11 @@ function ModuleDetailView({
           case 31: // 슈퍼바이저 센터
             return (
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
-                { subject: 'Safety', A: 100, fullMark: 100 },
-                { subject: 'Quality', A: 95, fullMark: 100 },
-                { subject: 'Production', A: 85, fullMark: 100 },
-                { subject: 'Energy', A: 80, fullMark: 100 },
-                { subject: 'Cost', A: 75, fullMark: 100 },
+                { subject: 'Safety', A: live(100, 69), fullMark: 100 },
+                { subject: 'Quality', A: live(95, 70), fullMark: 100 },
+                { subject: 'Production', A: live(85, 71), fullMark: 100 },
+                { subject: 'Energy', A: live(80, 72), fullMark: 100 },
+                { subject: 'Cost', A: live(75, 73), fullMark: 100 },
               ]}>
                 <PolarGrid stroke={chart.grid} />
                 <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
@@ -7131,10 +7153,10 @@ function ModuleDetailView({
           default:
             return (
               <BarChart data={[
-                { name: t('질의 응답'), value: 450 },
-                { name: t('추천 액션'), value: 120 },
-                { name: t('자동 제어'), value: 85 },
-                { name: t('시뮬레이션'), value: 42 },
+                { name: t('질의 응답'), value: live(450, 74) },
+                { name: t('추천 액션'), value: live(120, 75) },
+                { name: t('자동 제어'), value: live(85, 76) },
+                { name: t('시뮬레이션'), value: live(42, 77) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7171,11 +7193,11 @@ function ModuleDetailView({
           case 2: // 비전검사 결과 뷰어
             return (
               <BarChart data={[
-                { name: t('Frame 1'), score: 0.12 },
-                { name: t('Frame 2'), score: 0.45 },
-                { name: t('Frame 3'), score: 0.08 },
-                { name: t('Frame 4'), score: 0.88 },
-                { name: t('Frame 5'), score: 0.15 },
+                { name: t('Frame 1'), score: live(0.12, 78) },
+                { name: t('Frame 2'), score: live(0.45, 79) },
+                { name: t('Frame 3'), score: live(0.08, 80) },
+                { name: t('Frame 4'), score: live(0.88, 81) },
+                { name: t('Frame 5'), score: live(0.15, 82) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7196,11 +7218,11 @@ function ModuleDetailView({
               <PieChart>
                 <Pie
                   data={[
-                    { name: t('찢김'), value: 35 },
-                    { name: t('기포'), value: 25 },
-                    { name: t('변색'), value: 20 },
-                    { name: t('라벨누락'), value: 15 },
-                    { name: t('기타'), value: 5 },
+                    { name: t('찢김'), value: live(35, 83) },
+                    { name: t('기포'), value: live(25, 84) },
+                    { name: t('변색'), value: live(20, 85) },
+                    { name: t('라벨누락'), value: live(15, 86) },
+                    { name: t('기타'), value: live(5, 87) },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -7229,24 +7251,24 @@ function ModuleDetailView({
                 <ZAxis type="number" range={[50, 400]} />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                 <Scatter name="Temp vs Defect" data={[
-                  { temp: 160, defect: 8.2 },
-                  { temp: 165, defect: 4.5 },
-                  { temp: 170, defect: 2.1 },
-                  { temp: 175, defect: 1.8 },
-                  { temp: 180, defect: 2.5 },
-                  { temp: 185, defect: 5.4 },
-                  { temp: 190, defect: 9.1 },
+                  { temp: live(160, 88), defect: live(8.2, 89) },
+                  { temp: live(165, 90), defect: live(4.5, 91) },
+                  { temp: live(170, 92), defect: live(2.1, 93) },
+                  { temp: live(175, 94), defect: live(1.8, 95) },
+                  { temp: live(180, 96), defect: live(2.5, 97) },
+                  { temp: live(185, 98), defect: live(5.4, 99) },
+                  { temp: live(190, 100), defect: live(9.1, 101) },
                 ]} fill="#8b5cf6" />
               </ScatterChart>
             );
           case 5: // 품질 이력 검색
             return (
               <BarChart data={[
-                { batch: 'B001', yield: 98.2 },
-                { batch: 'B002', yield: 94.5 },
-                { batch: 'B003', yield: 99.1 },
-                { batch: 'B004', yield: 88.4 },
-                { batch: 'B005', yield: 97.8 },
+                { batch: 'B001', yield: live(98.2, 102) },
+                { batch: 'B002', yield: live(94.5, 103) },
+                { batch: 'B003', yield: live(99.1, 104) },
+                { batch: 'B004', yield: live(88.4, 105) },
+                { batch: 'B005', yield: live(97.8, 106) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="batch" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7261,11 +7283,11 @@ function ModuleDetailView({
           default:
             return (
               <BarChart data={[
-                { name: t('찢김'), value: 12 },
-                { name: t('기포'), value: 8 },
-                { name: t('변색'), value: 15 },
-                { name: t('라벨누락'), value: 5 },
-                { name: t('기타'), value: 3 },
+                { name: t('찢김'), value: live(12, 107) },
+                { name: t('기포'), value: live(8, 108) },
+                { name: t('변색'), value: live(15, 109) },
+                { name: t('라벨누락'), value: live(5, 110) },
+                { name: t('기타'), value: live(3, 111) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7287,11 +7309,11 @@ function ModuleDetailView({
           case 6: // 설비 상태 종합
             return (
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
-                { subject: t('진동'), A: 120, fullMark: 150 },
-                { subject: t('온도'), A: 98, fullMark: 150 },
-                { subject: t('전류'), A: 86, fullMark: 150 },
-                { subject: t('압력'), A: 99, fullMark: 150 },
-                { subject: t('소음'), A: 85, fullMark: 150 },
+                { subject: t('진동'), A: live(120, 112), fullMark: 150 },
+                { subject: t('온도'), A: live(98, 113), fullMark: 150 },
+                { subject: t('전류'), A: live(86, 114), fullMark: 150 },
+                { subject: t('압력'), A: live(99, 115), fullMark: 150 },
+                { subject: t('소음'), A: live(85, 116), fullMark: 150 },
               ]}>
                 <PolarGrid stroke={chart.grid} />
                 <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
@@ -7320,13 +7342,13 @@ function ModuleDetailView({
           case 8: // RUL 잔여수명 예측
             return (
               <AreaChart data={[
-                { time: '0h', prob: 100 },
-                { time: '12h', prob: 98 },
-                { time: '24h', prob: 92 },
-                { time: '36h', prob: 85 },
-                { time: '48h', prob: 70 },
-                { time: '60h', prob: 45 },
-                { time: '72h', prob: 15 },
+                { time: '0h', prob: live(100, 117) },
+                { time: '12h', prob: live(98, 118) },
+                { time: '24h', prob: live(92, 119) },
+                { time: '36h', prob: live(85, 120) },
+                { time: '48h', prob: live(70, 121) },
+                { time: '60h', prob: live(45, 122) },
+                { time: '72h', prob: live(15, 123) },
               ]}>
                 <defs>
                   <linearGradient id="colorRul" x1="0" y1="0" x2="0" y2="1">
@@ -7347,10 +7369,10 @@ function ModuleDetailView({
           case 9: // 보전 작업 오더
             return (
               <BarChart data={[
-                { name: t('대기'), value: 12 },
-                { name: t('진행'), value: 8 },
-                { name: t('완료'), value: 45 },
-                { name: t('지연'), value: 3 },
+                { name: t('대기'), value: live(12, 124) },
+                { name: t('진행'), value: live(8, 125) },
+                { name: t('완료'), value: live(45, 126) },
+                { name: t('지연'), value: live(3, 127) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7369,11 +7391,11 @@ function ModuleDetailView({
           case 10: // 보전 이력 조회
             return (
               <ComposedChart data={[
-                { month: t('1월'), mtbf: 450, mttr: 2.5 },
-                { month: t('2월'), mtbf: 480, mttr: 2.1 },
-                { month: t('3월'), mtbf: 420, mttr: 3.2 },
-                { month: t('4월'), mtbf: 510, mttr: 1.8 },
-                { month: t('5월'), mtbf: 550, mttr: 1.5 },
+                { month: t('1월'), mtbf: live(450, 128), mttr: live(2.5, 129) },
+                { month: t('2월'), mtbf: live(480, 130), mttr: live(2.1, 131) },
+                { month: t('3월'), mtbf: live(420, 132), mttr: live(3.2, 133) },
+                { month: t('4월'), mtbf: live(510, 134), mttr: live(1.8, 135) },
+                { month: t('5월'), mtbf: live(550, 136), mttr: live(1.5, 137) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="month" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7426,10 +7448,10 @@ function ModuleDetailView({
           case 17: // 에너지 비용 분석
             return (
               <BarChart data={[
-                { time: '00-06', cost: 1200 },
-                { time: '06-12', cost: 3500 },
-                { time: '12-18', cost: 4200 },
-                { time: '18-24', cost: 2800 },
+                { time: '00-06', cost: live(1200, 138) },
+                { time: '06-12', cost: live(3500, 139) },
+                { time: '12-18', cost: live(4200, 140) },
+                { time: '18-24', cost: live(2800, 141) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7444,12 +7466,12 @@ function ModuleDetailView({
           case 18: // 피크 부하 관리
             return (
               <LineChart data={[
-                { time: '10:00', load: 850, limit: 1000 },
-                { time: '11:00', load: 920, limit: 1000 },
-                { time: '12:00', load: 980, limit: 1000 },
-                { time: '13:00', load: 1050, limit: 1000 },
-                { time: '14:00', load: 940, limit: 1000 },
-                { time: '15:00', load: 880, limit: 1000 },
+                { time: '10:00', load: live(850, 142), limit: live(1000, 143) },
+                { time: '11:00', load: live(920, 144), limit: live(1000, 145) },
+                { time: '12:00', load: live(980, 146), limit: live(1000, 147) },
+                { time: '13:00', load: live(1050, 148), limit: live(1000, 149) },
+                { time: '14:00', load: live(940, 150), limit: live(1000, 151) },
+                { time: '15:00', load: live(880, 152), limit: live(1000, 153) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7487,12 +7509,12 @@ function ModuleDetailView({
           case 19: // 지능형 CCTV 화재 감시
             return (
               <ComposedChart data={[
-                { time: '10:00', score: 12, threshold: 80 },
-                { time: '10:05', score: 15, threshold: 80 },
-                { time: '10:10', score: 18, threshold: 80 },
-                { time: '10:15', score: 85, threshold: 80 },
-                { time: '10:20', score: 45, threshold: 80 },
-                { time: '10:25', score: 20, threshold: 80 },
+                { time: '10:00', score: live(12, 154), threshold: live(80, 155) },
+                { time: '10:05', score: live(15, 156), threshold: live(80, 157) },
+                { time: '10:10', score: live(18, 158), threshold: live(80, 159) },
+                { time: '10:15', score: live(85, 160), threshold: live(80, 161) },
+                { time: '10:20', score: live(45, 162), threshold: live(80, 163) },
+                { time: '10:25', score: live(20, 164), threshold: live(80, 165) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7514,19 +7536,19 @@ function ModuleDetailView({
                 <ZAxis type="number" dataKey="z" range={[50, 400]} name="Risk" />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                 <Scatter name="Nearby Workers" data={[
-                  { x: 1.2, y: 0.8, z: 100 },
-                  { x: -2.5, y: 3.1, z: 20 },
-                  { x: 0.5, y: -0.4, z: 200 },
-                  { x: 4.0, y: -2.0, z: 10 },
+                  { x: live(1.2, 166), y: live(0.8, 167), z: 100 },
+                  { x: -2.5, y: live(3.1, 168), z: 20 },
+                  { x: live(0.5, 169), y: -0.4, z: 200 },
+                  { x: live(4, 170), y: -2.0, z: 10 },
                 ]} fill="#3b82f6" />
               </ScatterChart>
             );
           case 32: // 긴급 정지 및 알람 제어
             return (
               <BarChart data={[
-                { type: 'Fire', count: 1 },
-                { type: 'Collision', count: 4 },
-                { type: 'Manual', count: 2 },
+                { type: 'Fire', count: live(1, 171) },
+                { type: 'Collision', count: live(4, 172) },
+                { type: 'Manual', count: live(2, 173) },
                 { type: 'System', count: 0 },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
@@ -7544,9 +7566,9 @@ function ModuleDetailView({
               <PieChart>
                 <Pie
                   data={[
-                    { name: 'Critical', value: 2 },
-                    { name: 'Warning', value: 8 },
-                    { name: 'Info', value: 45 },
+                    { name: 'Critical', value: live(2, 174) },
+                    { name: 'Warning', value: live(8, 175) },
+                    { name: 'Info', value: live(45, 176) },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -7570,10 +7592,10 @@ function ModuleDetailView({
           case 11: // 라인별 가동 현황
             return (
               <BarChart data={[
-                { line: t('Line 1'), running: 85, idle: 10, down: 5 },
-                { line: t('Line 2'), running: 92, idle: 5, down: 3 },
-                { line: t('Line 3'), running: 78, idle: 15, down: 7 },
-                { line: t('Line 4'), running: 88, idle: 8, down: 4 },
+                { line: t('Line 1'), running: live(85, 177), idle: live(10, 178), down: live(5, 179) },
+                { line: t('Line 2'), running: live(92, 180), idle: live(5, 181), down: live(3, 182) },
+                { line: t('Line 3'), running: live(78, 183), idle: live(15, 184), down: live(7, 185) },
+                { line: t('Line 4'), running: live(88, 186), idle: live(8, 187), down: live(4, 188) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="line" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7590,9 +7612,9 @@ function ModuleDetailView({
           case 12: // OEE 대시보드
             return (
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
-                { subject: t('Availability'), A: 92, fullMark: 100 },
-                { subject: t('Performance'), A: 88, fullMark: 100 },
-                { subject: t('Quality'), A: 99, fullMark: 100 },
+                { subject: t('Availability'), A: live(92, 189), fullMark: 100 },
+                { subject: t('Performance'), A: live(88, 190), fullMark: 100 },
+                { subject: t('Quality'), A: live(99, 191), fullMark: 100 },
               ]}>
                 <PolarGrid stroke={chart.grid} />
                 <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
@@ -7607,11 +7629,11 @@ function ModuleDetailView({
           case 13: // 택트타임 분석
             return (
               <BarChart data={[
-                { process: t('공급'), time: 12, target: 10 },
-                { process: t('도금'), time: 45, target: 40 },
-                { process: t('검사'), time: 15, target: 15 },
-                { process: t('배출'), time: 8, target: 10 },
-                { process: t('적재'), time: 22, target: 20 },
+                { process: t('공급'), time: live(12, 192), target: live(10, 193) },
+                { process: t('도금'), time: live(45, 194), target: live(40, 195) },
+                { process: t('검사'), time: live(15, 196), target: live(15, 197) },
+                { process: t('배출'), time: live(8, 198), target: live(10, 199) },
+                { process: t('적재'), time: live(22, 200), target: live(20, 201) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="process" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7628,11 +7650,11 @@ function ModuleDetailView({
             return (
               <LineChart data={[
                 { step: t('Start'), val: 0 },
-                { step: t('Supply'), val: 10 },
-                { step: t('Plating'), val: 55 },
-                { step: t('Inspect'), val: 70 },
-                { step: t('Pack'), val: 92 },
-                { step: t('Finish'), val: 100 },
+                { step: t('Supply'), val: live(10, 202) },
+                { step: t('Plating'), val: live(55, 203) },
+                { step: t('Inspect'), val: live(70, 204) },
+                { step: t('Pack'), val: live(92, 205) },
+                { step: t('Finish'), val: live(100, 206) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="step" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -7646,11 +7668,11 @@ function ModuleDetailView({
           case 15: // 생산 계획 대비 실적
             return (
               <BarChart data={[
-                { day: t('Mon'), plan: 1000, actual: 950 },
-                { day: t('Tue'), plan: 1000, actual: 1020 },
-                { day: t('Wed'), plan: 1200, actual: 1180 },
-                { day: t('Thu'), plan: 1200, actual: 900 },
-                { day: t('Fri'), plan: 1000, actual: 1050 },
+                { day: t('Mon'), plan: live(1000, 207), actual: live(950, 208) },
+                { day: t('Tue'), plan: live(1000, 209), actual: live(1020, 210) },
+                { day: t('Wed'), plan: live(1200, 211), actual: live(1180, 212) },
+                { day: t('Thu'), plan: live(1200, 213), actual: live(900, 214) },
+                { day: t('Fri'), plan: live(1000, 215), actual: live(1050, 216) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="day" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />

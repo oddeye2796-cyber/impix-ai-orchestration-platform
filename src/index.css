@@ -50,6 +50,30 @@
 }
 
 @layer components {
+  /* Attention without a moving hit area: `animate-bounce` on a primary button
+     physically shifts the tap target, which is hard to hit on a touch kiosk and
+     impossible to click reliably in automation. This pulses a ring instead. */
+  .attention-ring {
+    position: relative;
+  }
+  .attention-ring::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    border: 2px solid currentColor;
+    opacity: 0;
+    pointer-events: none;
+    animation: attention-ring 1.8s ease-out infinite;
+  }
+  @keyframes attention-ring {
+    0% { opacity: 0.55; transform: scale(1); }
+    70%, 100% { opacity: 0; transform: scale(1.12); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .attention-ring::after { animation: none; }
+  }
+
   .dashboard-card {
     @apply bg-surface border border-border rounded-xl p-4 shadow-lg;
   }

@@ -212,7 +212,7 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                   className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-400 text-sm font-bold"
                 >
                   <Sparkles size={16} className="animate-pulse" />
-                  {t('AI EXPO 2026 — 박람회 체험 시뮬레이션')}
+                  {t('AI 오케스트레이션 체험 시뮬레이션')}
                 </motion.div>
 
                 {/* Title */}

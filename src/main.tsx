@@ -4,6 +4,7 @@ import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
 import {I18nProvider} from './i18n';
 import {ThemeProvider} from './theme';
+import {ToastProvider} from './components/Toast.tsx';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -11,7 +12,9 @@ createRoot(document.getElementById('root')!).render(
     <I18nProvider>
       <ThemeProvider>
         <ErrorBoundary>
-          <App />
+          <ToastProvider>
+            <App />
+          </ToastProvider>
         </ErrorBoundary>
       </ThemeProvider>
     </I18nProvider>

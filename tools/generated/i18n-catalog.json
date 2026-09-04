@@ -2016,6 +2016,13 @@
     ]
   },
   {
+    "key": "LIVE DEMO MODE",
+    "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "Live Feed",
     "lang": "en",
     "files": [
@@ -2947,6 +2954,13 @@
     ]
   },
   {
+    "key": "STABLE",
+    "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "Standard manufacturing ontology",
     "lang": "en",
     "files": [
@@ -3466,6 +3480,20 @@
     ]
   },
   {
+    "key": "거부 사유",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "거부 확정",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "검사",
     "lang": "ko",
     "files": [
@@ -3481,6 +3509,13 @@
   },
   {
     "key": "계약 전력 피크 셰이빙 연동 백업 운전으로 기온/열부하가 급증하였습니다. 29시간 이내에 보완 임계 모터 검진 및 배기 펌프 보전을 실시간 접수하는 것을 강력 권장합니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "고급 파라미터가 저장되었습니다.",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3658,6 +3693,13 @@
   },
   {
     "key": "대기 (SOC: 94%)",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대응 중",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4176,7 +4218,8 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
-      "src/services/demoResponses.ts"
+      "src/services/demoResponses.ts",
+      "src/services/telemetry.ts"
     ]
   },
   {
@@ -4629,6 +4672,13 @@
     ]
   },
   {
+    "key": "이 추천을 거부하는 이유를 남겨주세요 (선택)",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "이벤트 대응",
     "lang": "ko",
     "files": [
@@ -4967,6 +5017,13 @@
     ]
   },
   {
+    "key": "체험 가이드",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "초가속 스크래치 방어 토론",
     "lang": "ko",
     "files": [
@@ -5160,14 +5217,6 @@
     "lang": "ko",
     "files": [
       "src/App.tsx"
-    ]
-  },
-  {
-    "key": "포장1라인",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx",
-      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -7699,14 +7748,14 @@
     ]
   },
   {
-    "key": "AI EXPO 2026 — 박람회 체험 시뮬레이션",
+    "key": "AI 에이전트",
     "lang": "ko",
     "files": [
       "src/components/ExpoLanding.tsx"
     ]
   },
   {
-    "key": "AI 에이전트",
+    "key": "AI 오케스트레이션 체험 시뮬레이션",
     "lang": "ko",
     "files": [
       "src/components/ExpoLanding.tsx"
@@ -9892,6 +9941,14 @@
     "lang": "ko",
     "files": [
       "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "포장1라인",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts",
+      "src/services/telemetry.ts"
     ]
   },
   {
