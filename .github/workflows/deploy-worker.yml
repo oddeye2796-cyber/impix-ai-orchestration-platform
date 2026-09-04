@@ -1,0 +1,67 @@
+# Deploys the Gemini proxy Worker from CI, so nobody needs Node, wrangler or a
+# browser login on their own machine. Run it from the Actions tab
+# (Deploy AI proxy -> Run workflow).
+#
+# Prerequisites, both stored as repository secrets (Settings -> Secrets and
+# variables -> Actions):
+#   CLOUDFLARE_API_TOKEN  a token from the "Edit Cloudflare Workers" template
+#   GEMINI_API_KEY        from https://aistudio.google.com/apikey
+#
+# The Gemini key is pushed into the Worker as a *secret*, never as a var: vars
+# are readable in the Cloudflare dashboard, secrets are not. It never reaches
+# the browser bundle either — the frontend only ever learns the Worker URL.
+name: Deploy AI proxy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: worker-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the credentials are present
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GK: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          missing=
+          [ -n "$CF" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "$GK" ] || missing="$missing GEMINI_API_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo "Add them under Settings -> Secrets and variables -> Actions." >&2
+            exit 1
+          fi
+
+      - name: Deploy the Worker and store the key as a secret
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: workers/gemini-proxy
+          command: deploy
+          secrets: |
+            GEMINI_API_KEY
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Where to go next
+        run: |
+          echo "### Worker deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Copy the \`https://impix-gemini-proxy.<subdomain>.workers.dev\` URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "printed above into the repository **variable** \`AI_PROXY_URL\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "(Settings -> Secrets and variables -> Actions -> Variables), then" >> "$GITHUB_STEP_SUMMARY"
+          echo "re-run **Deploy and verify** so the site picks it up." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "It is a variable, not a secret: it holds no credential, and the" >> "$GITHUB_STEP_SUMMARY"
+          echo "build needs to embed it in the bundle." >> "$GITHUB_STEP_SUMMARY"

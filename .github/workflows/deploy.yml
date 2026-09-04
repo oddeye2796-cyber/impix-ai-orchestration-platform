@@ -49,11 +49,18 @@ jobs:
         run: npm run build
 
       - name: Publish to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           touch dist/.nojekyll
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          npx gh-pages -d dist --dotfiles -m "Deploy ${GITHUB_SHA::7}"
+          # gh-pages clones into its own cache directory, so it does not inherit
+          # the auth header actions/checkout sets on the working copy. Without an
+          # authenticated remote it fails with "could not read Username".
+          npx gh-pages -d dist --dotfiles \
+            -r "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            -m "Deploy ${GITHUB_SHA::7}"
 
   verify:
     needs: [deploy]
