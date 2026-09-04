@@ -41,6 +41,13 @@ check('locale applied', ['ja', 'en', 'ko'].includes(lang ?? ''), `lang=${lang}`)
 const stamp = await page.evaluate(() => document.documentElement.dataset.build ?? '(none)');
 console.log(`      build stamp: ${stamp}`);
 
+// After a deploy, confirm Pages is serving *this* commit rather than a cached
+// older one — the failure mode that looks identical to a healthy site.
+const expected = process.env.EXPECTED_BUILD;
+if (expected) {
+  check('serving the deployed commit', stamp === expected, `expected ${expected.slice(0, 7)}, got ${String(stamp).slice(0, 7)}`);
+}
+
 check('no page errors', pageErrors.length === 0, pageErrors.slice(0, 3).join(' | '));
 check('no broken assets', brokenAssets.length === 0, brokenAssets.slice(0, 3).join(' | '));
 

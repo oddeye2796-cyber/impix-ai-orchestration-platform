@@ -50,14 +50,25 @@ AI output is marked with a small **Demo** badge.
 stays on the Worker, the page ships no credential, and the visitor configures
 nothing. Free tier covers booth traffic.
 
-## Verifying the deployment
+## Deploying
 
-`.github/workflows/verify-deployment.yml` smoke-tests the live URL after every
-`gh-pages` push and once a day. It asserts the page actually renders — a Pages
-deploy can serve a stale or blank page while every asset still returns 200 — and
-reports the build stamp (`<html data-build>`) so you can confirm which commit is
-live. It runs on GitHub's runners, which can reach `*.github.io`; the agent
-sandbox that builds this app cannot.
+`.github/workflows/deploy.yml` builds on every push to `master`, publishes to
+`gh-pages`, then smoke-tests the live URL. It asserts the page actually
+*renders* — a Pages deploy can serve a stale or blank page while every asset
+still returns 200 — and compares `<html data-build>` against the deployed commit,
+which is the only way to catch Pages serving a cached older build. A daily run
+catches a site that broke without a deploy.
+
+The check runs on GitHub's runners because they can reach `*.github.io`; the
+agent sandbox that develops this app cannot (nor `pages.dev`, `vercel.app` or
+`netlify.app` — the whole public web is off its egress allowlist, so switching
+host would not help).
+
+To deploy by hand instead: `GITHUB_PAGES=true npm run build && npx gh-pages -d dist --dotfiles`.
+
+Set the repository variable `AI_PROXY_URL` (Settings → Secrets and variables →
+Actions → Variables) to route the deployed site through the Worker proxy. It
+holds no credential, so it is a variable rather than a secret.
 
 ## Run Locally
 
