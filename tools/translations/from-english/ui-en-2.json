@@ -1,0 +1,306 @@
+{
+ "Run Module": [
+  "モジュールを実行",
+  null
+ ],
+ "Run Simulation": [
+  "シミュレーションを実行",
+  null
+ ],
+ "Simulating...": [
+  "シミュレーション中…",
+  null
+ ],
+ "Executing...": [
+  "実行中…",
+  null
+ ],
+ "Management Console": [
+  "管理コンソール",
+  null
+ ],
+ "Module Configuration": [
+  "モジュール設定",
+  null
+ ],
+ "Create Work Order": [
+  "作業オーダーを作成",
+  null
+ ],
+ "Start": [
+  "開始",
+  null
+ ],
+ "Finish": [
+  "完了",
+  null
+ ],
+ "Stopped": [
+  "停止中",
+  null
+ ],
+ "Standby": [
+  "待機中",
+  null
+ ],
+ "Ready": [
+  "準備完了",
+  null
+ ],
+ "Active": [
+  "稼働中",
+  null
+ ],
+ "Online": [
+  "オンライン",
+  null
+ ],
+ "ONLINE": [
+  "オンライン",
+  null
+ ],
+ "Pending": [
+  "保留中",
+  null
+ ],
+ "Approved": [
+  "承認済み",
+  null
+ ],
+ "Rejected": [
+  "却下済み",
+  null
+ ],
+ "Manual": [
+  "手動",
+  null
+ ],
+ "NORMAL": [
+  "正常",
+  null
+ ],
+ "STABLE": [
+  "安定",
+  null
+ ],
+ "SYSTEM READY": [
+  "システム準備完了",
+  null
+ ],
+ "MONITORING ACTIVE": [
+  "監視中",
+  null
+ ],
+ "EMERGENCY ALERT": [
+  "非常警報",
+  null
+ ],
+ "LEAK WARN": [
+  "漏洩警告",
+  null
+ ],
+ "DISCHARGING": [
+  "放電中",
+  null
+ ],
+ "SPEED UP": [
+  "増速",
+  null
+ ],
+ "FAST MODE": [
+  "高速モード",
+  null
+ ],
+ "ACTIVE (EMERGENCY)": [
+  "稼働中(非常時)",
+  null
+ ],
+ "ACTIVE (PEAK)": [
+  "稼働中(ピーク)",
+  null
+ ],
+ "ACTIVE (RUSH ORDER)": [
+  "稼働中(緊急受注)",
+  null
+ ],
+ "INSPECTING...": [
+  "検査中…",
+  null
+ ],
+ "INSPECTION COMPLETE": [
+  "検査完了",
+  null
+ ],
+ "Inspect": [
+  "検査",
+  null
+ ],
+ "Inspecting": [
+  "検査中",
+  null
+ ],
+ "Availability": [
+  "時間稼働率",
+  null
+ ],
+ "Performance": [
+  "性能稼働率",
+  null
+ ],
+ "Quality": [
+  "品質",
+  null
+ ],
+ "Production": [
+  "生産",
+  null
+ ],
+ "Energy": [
+  "エネルギー",
+  null
+ ],
+ "Safety": [
+  "安全",
+  null
+ ],
+ "Cost": [
+  "コスト",
+  null
+ ],
+ "Fire": [
+  "火災",
+  null
+ ],
+ "Collision": [
+  "衝突",
+  null
+ ],
+ "Siren": [
+  "サイレン",
+  null
+ ],
+ "Supply": [
+  "供給",
+  null
+ ],
+ "Plating": [
+  "めっき",
+  null
+ ],
+ "Pack": [
+  "梱包",
+  null
+ ],
+ "Line": [
+  "ライン",
+  null
+ ],
+ "Line 1": [
+  "ライン1",
+  null
+ ],
+ "Line 2": [
+  "ライン2",
+  null
+ ],
+ "Line 3": [
+  "ライン3",
+  null
+ ],
+ "Line 4": [
+  "ライン4",
+  null
+ ],
+ "Frame 1": [
+  "フレーム1",
+  null
+ ],
+ "Frame 2": [
+  "フレーム2",
+  null
+ ],
+ "Frame 3": [
+  "フレーム3",
+  null
+ ],
+ "Frame 4": [
+  "フレーム4",
+  null
+ ],
+ "Frame 5": [
+  "フレーム5",
+  null
+ ],
+ "Mon": [
+  "月",
+  null
+ ],
+ "Tue": [
+  "火",
+  null
+ ],
+ "Wed": [
+  "水",
+  null
+ ],
+ "Thu": [
+  "木",
+  null
+ ],
+ "Fri": [
+  "金",
+  null
+ ],
+ "System Admin": [
+  "システム管理者",
+  null
+ ],
+ "Auditor": [
+  "監査担当",
+  null
+ ],
+ "System": [
+  "システム",
+  null
+ ],
+ "Full access to all system modules and configurations.": [
+  "すべてのシステムモジュールと設定へのフルアクセス。",
+  null
+ ],
+ "Standard operational access for production lines.": [
+  "生産ラインに対する標準的な運用権限。",
+  null
+ ],
+ "Read-only access to logs and system reports.": [
+  "ログとシステムレポートへの読み取り専用アクセス。",
+  null
+ ],
+ "Restricted view-only access to dashboards.": [
+  "ダッシュボードのみを閲覧できる制限付きアクセス。",
+  null
+ ],
+ "🔥 Live DEMO": [
+  "🔥 ライブデモ",
+  null
+ ],
+ "Offline": [
+  "オフライン",
+  null
+ ],
+ "Quality Lead": [
+  "品質リーダー",
+  null
+ ],
+ "Maintenance": [
+  "保全",
+  null
+ ],
+ "Viewer": [
+  "閲覧者",
+  null
+ ],
+ "Just now": [
+  "たった今",
+  null
+ ]
+}

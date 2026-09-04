@@ -1,0 +1,326 @@
+{
+ "물류": [
+  "物流",
+  "Logistics"
+ ],
+ "전력 피크 발생": [
+  "電力ピークの発生",
+  "Power peak"
+ ],
+ "현재 소비 전력 계약 한도의 95%": [
+  "現在の消費電力は契約上限の95%",
+  "Draw is at 95 % of the contract limit"
+ ],
+ "오후 2시, 전력 소비량이 계약 한도(500kW)의 95%(475kW)에 도달했습니다. 앞으로 30분 내 한도를 초과하면 전력 회사로부터 위약금이 부과됩니다. ESS(에너지 저장 시스템) 잔량은 60%입니다.": [
+  "午後2時、消費電力が契約上限(500kW)の95%(475kW)に達しました。今後30分以内に上限を超えると、電力会社から違約金が課されます。ESS(蓄電システム)の残量は60%です。",
+  "At 14:00 consumption reached 475 kW — 95 % of the 500 kW contract limit. Exceeding it in the next 30 minutes triggers a penalty from the utility. The ESS is at 60 % charge."
+ ],
+ "ESS 방전으로 즉시 전력 부하를 낮추고, 비핵심 설비(조명, 공조 일부)를 순차 감전하는 복합 대응이 생산 영향을 최소화하면서 피크를 억제하는 최적 방법입니다.": [
+  "ESSの放電で即座に電力負荷を下げ、非重要設備(照明・空調の一部)を順次絞る複合対応が、生産への影響を最小限にしながらピークを抑える最適解です。",
+  "Discharging the ESS drops load instantly, and staging cuts to non-critical loads (lighting, part of HVAC) shaves the peak with the least impact on production."
+ ],
+ "ESS 방전 개시 + 비핵심 설비 순차 감전": [
+  "ESS放電の開始 + 非重要設備の順次抑制",
+  "Start ESS discharge and stage cuts to non-critical loads"
+ ],
+ "AI가 ESS를 즉시 방전하여 전력을 공급하고, 조명·공조 등 비핵심 설비를 20% 감전한다.": [
+  "AIがESSを直ちに放電して電力を供給し、照明・空調など非重要設備を20%抑制する。",
+  "The AI discharges the ESS to supply power and trims non-critical loads such as lighting and HVAC by 20 %."
+ ],
+ "정답! AI 권장 대응입니다. 생산 영향 없이 피크를 억제하고 위약금을 방지합니다.": [
+  "正解! AI推奨の対応です。生産に影響を与えずにピークを抑え、違約金を回避します。",
+  "Correct — the AI's recommendation. It shaves the peak without touching production and avoids the penalty."
+ ],
+ "전력 소비 480kW → 450kW로 감소, 위약금 ₩3.2M 절감": [
+  "消費電力は480kW → 450kWへ低下し、違約金₩3.2Mを回避します",
+  "Draw falls from 480 kW to 450 kW, saving the ₩3.2M penalty"
+ ],
+ "생산 라인 전체 일시 정지": [
+  "生産ライン全体の一時停止",
+  "Pause every production line"
+ ],
+ "전력 한도 초과를 막기 위해 모든 생산 라인을 즉시 멈춘다.": [
+  "電力上限の超過を防ぐため、すべての生産ラインを直ちに止める。",
+  "Stop every line at once to avoid breaching the power limit."
+ ],
+ "오답: 생산 중단은 가장 극단적인 방법입니다. ESS와 비핵심 설비 감전으로 충분히 해결 가능합니다.": [
+  "不正解: 生産停止は最も極端な手段です。ESSと非重要設備の抑制で十分に対応できます。",
+  "Wrong: stopping production is the most drastic option, and the ESS plus non-critical trimming already covers it."
+ ],
+ "불필요한 생산 중단, 납기 지연 위험, 생산 손실 발생": [
+  "不要な生産停止により納期遅延のリスクと生産損失が発生します",
+  "Avoidable downtime, a late-delivery risk and lost output"
+ ],
+ "고전력 설비만 선별 정지": [
+  "高消費電力設備のみ選別停止",
+  "Stop only the biggest power consumers"
+ ],
+ "전력 소비가 가장 큰 설비 2~3개만 선별하여 정지한다.": [
+  "消費電力の大きい設備を2〜3台だけ選んで停止する。",
+  "Pick the two or three hungriest machines and stop just those."
+ ],
+ "부분 정답: 선별 정지는 좋은 방향이지만, ESS 방전을 먼저 활용하지 않아 불필요한 생산 영향이 발생합니다.": [
+  "部分正解: 選別停止は方向性としては良いものの、ESS放電を先に使わないため不要な生産影響が生じます。",
+  "Partly right: selective shutdown is the right instinct, but skipping the ESS means production takes an unnecessary hit."
+ ],
+ "피크 억제 가능하나 생산 일부 중단, ESS 활용 기회 낭비": [
+  "ピークは抑えられますが一部生産が止まり、ESSの活用機会を逃します",
+  "The peak is shaved, but some production stops and the ESS goes unused"
+ ],
+ "전력 회사에 한도 초과 사전 통보": [
+  "電力会社への上限超過の事前通知",
+  "Warn the utility that you will exceed the limit"
+ ],
+ "한도 초과가 불가피하다고 판단하고 전력 회사에 미리 연락한다.": [
+  "上限超過は避けられないと判断し、電力会社へ事前に連絡する。",
+  "Decide the overshoot is unavoidable and let the utility know in advance."
+ ],
+ "오답: ESS와 감전 조치로 한도 초과를 막을 수 있는 상황에서 위약금을 감수하는 것은 불필요합니다.": [
+  "不正解: ESSと抑制措置で上限超過を防げる状況であり、違約金を受け入れる必要はありません。",
+  "Wrong: the ESS and load trimming can keep you inside the limit, so accepting the penalty is needless."
+ ],
+ "위약금 ₩3.2M 발생, 전력 계약 조건 악화 가능성": [
+  "違約金₩3.2Mが発生し、電力契約条件が悪化する可能性があります",
+  "A ₩3.2M penalty and possibly worse contract terms next time"
+ ],
+ "ESS 방전 타이밍 결정": [
+  "ESS放電タイミングの判断",
+  "ESS discharge timing"
+ ],
+ "ESS 잔량 45% — 방전 타이밍 최적화 필요": [
+  "ESS残量45% — 放電タイミングの最適化が必要",
+  "ESS at 45 % — discharge timing needs optimizing"
+ ],
+ "오전 11시, ESS 잔량이 45%입니다. 오후 2~4시는 전력 피크 요금 시간대이며, 내일 오전 2~6시는 심야 요금(최저가)으로 충전 가능합니다. 오늘 오후 생산량은 평소의 120%가 예상됩니다.": [
+  "午前11時、ESSの残量は45%です。午後2〜4時は電力ピーク料金の時間帯で、明日の午前2〜6時は深夜料金(最安)で充電できます。本日午後の生産量は平常時の120%が見込まれます。",
+  "It is 11:00 and the ESS sits at 45 %. The peak tariff runs 14:00-16:00, and cheap overnight charging is available 02:00-06:00 tomorrow. This afternoon's output is forecast at 120 % of normal."
+ ],
+ "ESS는 피크 요금 시간대(오후 2~4시)에 방전하고, 심야 요금 시간대(새벽 2~6시)에 충전하는 것이 에너지 비용을 최소화하는 최적 전략입니다. 현재 45% 잔량은 오후 피크 시간대를 충분히 커버할 수 있습니다.": [
+  "ESSはピーク料金時間帯(午後2〜4時)に放電し、深夜料金時間帯(午前2〜6時)に充電するのがエネルギーコストを最小化する最適戦略です。現在の残量45%は午後のピーク時間帯を十分にカバーできます。",
+  "Discharging into the peak window (14:00-16:00) and charging in the cheap overnight window (02:00-06:00) minimizes energy cost. The current 45 % charge comfortably covers the afternoon peak."
+ ],
+ "오후 2시 피크 시간대에 방전, 심야에 충전": [
+  "午後2時のピーク時間帯に放電し、深夜に充電",
+  "Discharge into the 14:00 peak, recharge overnight"
+ ],
+ "AI가 피크 요금 시간대(오후 2~4시)에 방전하고, 심야 저가 시간대에 충전하는 최적 스케줄을 실행한다.": [
+  "AIがピーク料金時間帯(午後2〜4時)に放電し、深夜の低価格時間帯に充電する最適スケジュールを実行する。",
+  "The AI runs the optimal schedule: discharge through the peak tariff (14:00-16:00), recharge in the cheap overnight window."
+ ],
+ "정답! AI 권장 대응입니다. 피크-오프피크 차익을 최대화하는 최적 ESS 운영 전략입니다.": [
+  "正解! AI推奨の対応です。ピークとオフピークの価格差を最大限に活かす、最適なESS運用戦略です。",
+  "Correct — the AI's recommendation. It captures the full peak-to-off-peak spread."
+ ],
+ "에너지 비용 월 ₩8.5M 절감, 피크 요금 완전 회피": [
+  "エネルギーコストを月₩8.5M削減し、ピーク料金を完全に回避します",
+  "₩8.5M saved per month and the peak tariff avoided entirely"
+ ],
+ "지금 즉시 방전하여 현재 전력 비용 절감": [
+  "今すぐ放電して現在の電力コストを削減",
+  "Discharge right now to trim today's bill"
+ ],
+ "현재 전력 요금도 절감할 수 있으므로 지금 바로 방전을 시작한다.": [
+  "現在の電力料金も削減できるため、今すぐ放電を開始する。",
+  "It shaves the current tariff too, so start discharging immediately."
+ ],
+ "오답: 지금 방전하면 오후 피크 시간대에 ESS 잔량이 부족해져 더 비싼 요금을 내야 합니다.": [
+  "不正解: 今放電すると午後のピーク時間帯にESS残量が不足し、より高い料金を支払うことになります。",
+  "Wrong: discharging now leaves too little charge for the afternoon peak, where power costs far more."
+ ],
+ "오후 피크 시간대 ESS 부족, 추가 전력 비용 ₩2.1M 발생": [
+  "午後のピーク時間帯にESSが不足し、追加の電力コスト₩2.1Mが発生します",
+  "The ESS runs short in the afternoon peak, adding ₩2.1M in power cost"
+ ],
+ "ESS를 비상용으로 100% 보존": [
+  "ESSを非常用として100%温存",
+  "Keep the ESS fully charged for emergencies"
+ ],
+ "예상치 못한 정전에 대비해 ESS를 방전하지 않고 보존한다.": [
+  "予期せぬ停電に備え、ESSを放電せず温存する。",
+  "Hold the ESS in reserve against an unexpected outage."
+ ],
+ "오답: ESS를 비상용으로만 보존하면 에너지 비용 절감 효과를 전혀 얻지 못합니다.": [
+  "不正解: ESSを非常用としてのみ温存すると、エネルギーコスト削減の効果がまったく得られません。",
+  "Wrong: reserving the ESS purely for emergencies gives up the entire cost saving."
+ ],
+ "ESS 투자 대비 효과 없음, 에너지 비용 절감 기회 낭비": [
+  "ESS投資に見合う効果が得られず、コスト削減の機会を逃します",
+  "No return on the ESS investment and the saving opportunity is wasted"
+ ],
+ "50% 방전 후 나머지 보존": [
+  "50%放電し、残りは温存",
+  "Discharge half, keep the rest"
+ ],
+ "절반만 방전하여 비용 절감과 비상 대비를 동시에 한다.": [
+  "半分だけ放電し、コスト削減と非常時への備えを両立させる。",
+  "Discharge only half, balancing the saving against emergency reserve."
+ ],
+ "부분 정답: 절충안이지만, AI 분석 결과 오후 피크 시간대에 전량 방전해도 심야 충전으로 충분히 보충 가능합니다.": [
+  "部分正解: 折衷案ではありますが、AIの分析では午後のピーク時間帯に全量放電しても深夜充電で十分に補えます。",
+  "Partly right: a fair compromise, but the AI shows a full discharge into the afternoon peak is safely replenished overnight."
+ ],
+ "에너지 비용 일부 절감, 최적 대비 ₩4.2M 기회 손실": [
+  "一部のコストは削減できますが、最適解に比べ₩4.2Mの機会損失が生じます",
+  "Some saving, but ₩4.2M left on the table versus the optimal play"
+ ],
+ "원자재 부족": [
+  "原材料の不足",
+  "Material shortage"
+ ],
+ "포장재 재고 2시간 분량만 남음": [
+  "包装材の在庫は2時間分のみ",
+  "Only two hours of packaging stock left"
+ ],
+ "재고 관리 AI가 포장재(PE 필름) 재고가 2시간 분량(약 400개)밖에 남지 않았음을 감지했습니다. 주 공급사는 오늘 재고가 없고, 대체 공급사 A는 3시간 후 납품 가능(단가 15% 비쌈), 대체 공급사 B는 5시간 후 납품 가능(단가 동일). 현재 주문 잔량은 600개입니다.": [
+  "在庫管理AIが、包装材(PEフィルム)の在庫が2時間分(約400個)しか残っていないことを検知しました。主要サプライヤーは本日在庫なし、代替サプライヤーAは3時間後に納品可能(単価15%高)、代替サプライヤーBは5時間後に納品可能(単価同額)です。現在の受注残は600個です。",
+  "The inventory AI flags that packaging film is down to two hours of cover (about 400 units). The primary supplier is out of stock today; alternate A can deliver in three hours at a 15 % premium, alternate B in five hours at the same price. The open order is 600 units."
+ ],
+ "2시간 후 생산이 중단되면 납기를 맞출 수 없습니다. 단가 15% 비싼 대체 공급사 A에서 긴급 발주하면 1시간의 여유가 생겨 생산을 이어갈 수 있습니다. 추가 비용보다 납기 지연으로 인한 손실이 훨씬 큽니다.": [
+  "2時間後に生産が止まれば納期は守れません。単価15%高の代替サプライヤーAへ緊急発注すれば1時間の余裕が生まれ、生産を継続できます。追加コストよりも納期遅延による損失の方がはるかに大きいのです。",
+  "If production halts in two hours the deadline is gone. An urgent order with alternate A — 15 % dearer — buys an hour of slack and keeps the line running. The premium is far smaller than the cost of being late."
+ ],
+ "대체 공급사 A 긴급 발주 (3시간 후 납품)": [
+  "代替サプライヤーAへ緊急発注(3時間後納品)",
+  "Rush order with alternate A (delivery in three hours)"
+ ],
+ "AI가 대체 공급사 A에 긴급 발주하여 3시간 후 납품을 확보한다. 단가 15% 추가 비용 발생.": [
+  "AIが代替サプライヤーAへ緊急発注し、3時間後の納品を確保する。単価は15%割高となる。",
+  "The AI places an urgent order with alternate A for delivery in three hours, accepting the 15 % premium."
+ ],
+ "정답! AI 권장 대응입니다. 추가 비용이 있지만 납기를 지키는 것이 더 중요하며, 1시간 여유로 생산을 이어갈 수 있습니다.": [
+  "正解! AI推奨の対応です。追加コストは生じますが納期遵守の方が重要であり、1時間の余裕で生産を継続できます。",
+  "Correct — the AI's recommendation. The premium is worth paying to hold the deadline, and the hour of slack keeps the line running."
+ ],
+ "납기 준수, 추가 비용 ₩0.8M 발생하나 납기 지연 손실 ₩5M 방지": [
+  "納期を遵守。追加コスト₩0.8Mは発生しますが、納期遅延による₩5Mの損失を防ぎます",
+  "Deadline met: ₩0.8M extra cost avoids a ₩5M late-delivery loss"
+ ],
+ "대체 공급사 B 발주 (5시간 후, 단가 동일)": [
+  "代替サプライヤーBへ発注(5時間後・単価同額)",
+  "Order from alternate B (five hours, same price)"
+ ],
+ "비용 절감을 위해 단가가 같은 대체 공급사 B에 발주한다.": [
+  "コスト削減のため、単価が同じ代替サプライヤーBへ発注する。",
+  "Save the premium by ordering from alternate B at the same unit price."
+ ],
+ "오답: 5시간 후 납품은 생산 중단 3시간을 의미합니다. 납기를 맞출 수 없게 됩니다.": [
+  "不正解: 5時間後の納品は3時間の生産停止を意味します。納期を守れなくなります。",
+  "Wrong: a five-hour delivery means three hours of stopped production, and the deadline is missed."
+ ],
+ "생산 중단 3시간, 납기 3시간 초과, 고객 클레임 발생": [
+  "生産停止3時間、納期を3時間超過し、顧客クレームが発生します",
+  "Three hours down, three hours late, and a customer claim"
+ ],
+ "주 공급사에 긴급 재고 확보 재요청": [
+  "主要サプライヤーへ在庫確保を再依頼",
+  "Push the primary supplier again"
+ ],
+ "주 공급사에 다시 연락하여 어떻게든 재고를 확보한다.": [
+  "主要サプライヤーへ再度連絡し、何とか在庫を確保する。",
+  "Go back to the primary supplier and try to shake some stock loose."
+ ],
+ "오답: 주 공급사는 오늘 재고가 없다고 이미 확인됐습니다. 시간 낭비로 생산 중단 위험이 높아집니다.": [
+  "不正解: 主要サプライヤーは本日在庫なしとすでに確認済みです。時間を浪費し、生産停止のリスクが高まります。",
+  "Wrong: the primary supplier has already confirmed they are out today. It burns time and raises the risk of a stoppage."
+ ],
+ "재고 확보 실패, 생산 중단 2시간, 납기 지연": [
+  "在庫確保に失敗し、生産停止2時間、納期遅延となります",
+  "No stock secured, two hours down, delivery late"
+ ],
+ "현재 재고로 생산 가능한 400개만 납품 후 나머지 협의": [
+  "在庫で生産可能な400個のみ納品し、残りは協議",
+  "Ship the 400 you can make and negotiate the rest"
+ ],
+ "일단 400개를 납품하고 나머지 200개는 추후 납품을 협의한다.": [
+  "まず400個を納品し、残りの200個は後日納品を協議する。",
+  "Deliver 400 now and negotiate a later date for the remaining 200."
+ ],
+ "오답: 부분 납품은 고객 신뢰를 크게 손상시킵니다. 긴급 발주로 전량 납품이 가능한 상황입니다.": [
+  "不正解: 部分納品は顧客の信頼を大きく損ないます。緊急発注すれば全量納品が可能な状況です。",
+  "Wrong: a partial shipment badly dents trust when a rush order would have covered the full quantity."
+ ],
+ "부분 납품으로 고객 불만, 향후 수주 감소 위험": [
+  "部分納品により顧客の不満を招き、今後の受注減少リスクがあります",
+  "The partial delivery upsets the customer and threatens future orders"
+ ],
+ "속도 vs 품질 충돌": [
+  "速度と品質の衝突",
+  "Speed vs quality conflict"
+ ],
+ "생산 에이전트: 속도↑ vs 품질 에이전트: 품질↓ 경고": [
+  "生産エージェント: 増速 vs 品質エージェント: 品質低下の警告",
+  "Production Agent wants speed; Quality Agent warns of defects"
+ ],
+ "긴급 주문 처리 중 AI 에이전트 간 충돌이 발생했습니다. 생산 에이전트는 납기를 맞추기 위해 속도를 15% 올릴 것을 권장하고, 품질 에이전트는 속도 증가 시 불량률이 1.5%에서 2.8%로 오를 것이라고 경고합니다. 납기까지 2시간, 잔여 생산량 300개.": [
+  "緊急受注の処理中にAIエージェント間で意見の衝突が起きました。生産エージェントは納期のため15%の増速を推奨し、品質エージェントは増速すると不良率が1.5%から2.8%へ上がると警告しています。納期まで2時間、残り生産量は300個です。",
+  "The agents disagree mid-rush-order. The Production Agent wants 15 % more speed to hold the deadline; the Quality Agent warns that would push the defect rate from 1.5 % to 2.8 %. Two hours left, 300 units to go."
+ ],
+ "AI 슈퍼바이저 분석 결과, 속도 8% 증속 + 인라인 검사 강화 조합으로 납기도 맞추고 불량률도 1.8% 이하로 유지할 수 있습니다. 15% 증속은 불량률 급등 위험이 있고, 현재 속도 유지는 납기를 맞추지 못합니다.": [
+  "AIスーパーバイザーの分析では、8%の増速とインライン検査の強化を組み合わせれば、納期を守りつつ不良率も1.8%以下に維持できます。15%の増速は不良率急増のリスクがあり、現在速度の維持では納期に間に合いません。",
+  "The AI Supervisor's analysis: 8 % more speed combined with reinforced in-line inspection holds both the deadline and a defect rate under 1.8 %. Fifteen percent risks a defect spike; the current speed misses the deadline."
+ ],
+ "8% 증속 + 인라인 검사 강화 (AI 슈퍼바이저 권장)": [
+  "8%増速 + インライン検査の強化(AIスーパーバイザー推奨)",
+  "8 % faster with reinforced in-line inspection (AI Supervisor pick)"
+ ],
+ "AI 슈퍼바이저가 두 에이전트의 의견을 조율하여 최적 균형점(8% 증속 + 검사 강화)을 실행한다.": [
+  "AIスーパーバイザーが両エージェントの意見を調整し、最適な均衡点(8%増速+検査強化)を実行する。",
+  "The AI Supervisor arbitrates between the two agents and executes the balance point: 8 % faster with tighter inspection."
+ ],
+ "정답! AI 슈퍼바이저 권장 대응입니다. 납기와 품질을 동시에 달성하는 최적 균형점입니다.": [
+  "正解! AIスーパーバイザー推奨の対応です。納期と品質を同時に満たす最適な均衡点です。",
+  "Correct — the AI Supervisor's recommendation. It is the balance point that satisfies both deadline and quality."
+ ],
+ "납기 준수 + 불량률 1.8% 이하 유지, 고객 만족도 최고": [
+  "納期を遵守しつつ不良率1.8%以下を維持し、顧客満足度は最高水準となります",
+  "Deadline met, defect rate under 1.8 %, customer satisfaction at its best"
+ ],
+ "생산 에이전트 권장대로 15% 증속": [
+  "生産エージェントの推奨どおり15%増速",
+  "Follow the Production Agent: +15 % speed"
+ ],
+ "납기 준수를 최우선으로 하여 속도를 15% 올린다.": [
+  "納期遵守を最優先し、速度を15%上げる。",
+  "Put the deadline first and raise speed by 15 %."
+ ],
+ "오답: 15% 증속 시 불량률 2.8% 예상으로 고객 클레임 위험이 높습니다.": [
+  "不正解: 15%増速では不良率2.8%が見込まれ、顧客クレームのリスクが高くなります。",
+  "Wrong: at 15 % the defect rate is forecast at 2.8 %, which is a high risk of a customer claim."
+ ],
+ "납기 준수하나 불량률 2.8%, 고객 클레임 및 반품 위험": [
+  "納期は守れますが不良率2.8%となり、顧客クレームや返品のリスクがあります",
+  "Deadline met, but a 2.8 % defect rate risks claims and returns"
+ ],
+ "품질 에이전트 권장대로 현재 속도 유지": [
+  "品質エージェントの推奨どおり現在速度を維持",
+  "Follow the Quality Agent: hold the current speed"
+ ],
+ "품질 보호를 위해 속도를 올리지 않는다.": [
+  "品質を守るため、速度は上げない。",
+  "Protect quality and leave the speed alone."
+ ],
+ "오답: 현재 속도로는 납기를 2시간 초과합니다. 8% 증속으로도 품질을 유지할 수 있습니다.": [
+  "不正解: 現在の速度では納期を2時間超過します。8%の増速でも品質は維持できます。",
+  "Wrong: at the current speed you finish two hours late — and 8 % more still keeps quality intact."
+ ],
+ "납기 2시간 초과, VIP 고객 신뢰도 하락": [
+  "納期を2時間超過し、VIP顧客の信頼が低下します",
+  "Two hours late and VIP customer trust takes a hit"
+ ],
+ "고객사에 품질 보증 조건으로 납기 1시간 연장 협의": [
+  "品質保証を条件に納期1時間の延長を協議",
+  "Negotiate a one-hour extension with a quality guarantee"
+ ],
+ "품질을 보장하는 조건으로 납기를 1시간 연장해달라고 요청한다.": [
+  "品質を保証することを条件に、納期の1時間延長を依頼する。",
+  "Ask for one more hour in exchange for a quality guarantee."
+ ],
+ "오답: AI 분석 결과 8% 증속으로 납기와 품질을 모두 달성 가능한 상황에서 연장 요청은 불필요합니다.": [
+  "不正解: AIの分析では8%の増速で納期と品質の両立が可能であり、延長の依頼は不要です。",
+  "Wrong: the AI shows 8 % more speed meets both goals, so asking for an extension is unnecessary."
+ ],
+ "불필요한 납기 연장, 고객 신뢰도 소폭 하락": [
+  "不要な納期延長により、顧客の信頼がわずかに低下します",
+  "An extension you did not need, and a small dent in customer trust"
+ ]
+}

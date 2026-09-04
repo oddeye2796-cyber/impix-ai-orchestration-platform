@@ -9,6 +9,7 @@ import { Radio, Trophy, ChevronLeft, ChevronRight, Sparkles, X, MessageSquare } 
 import ExpoAgentDebate from './ExpoAgentDebate';
 import ExpoEventTrigger from './ExpoEventTrigger';
 import ExpoScoreBoard from './ExpoScoreBoard';
+import { t } from '../i18n';
 
 interface ScoreEntry {
   id: string;
@@ -79,14 +80,14 @@ export default function ExpoSidebar({
                   <Sparkles size={12} className="text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-xs font-black text-text-primary">박람회 체험 모드</p>
-                  <p className="text-[9px] text-text-secondary font-mono">EXPO SIMULATION</p>
+                  <p className="text-xs font-black text-text-primary">{t('박람회 체험 모드')}</p>
+                  <p className="text-[9px] text-text-secondary font-mono">{t('EXPO SIMULATION')}</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
                 className="p-1.5 rounded-lg hover:bg-surface-hover text-text-secondary hover:text-text-primary transition-colors"
-                title="체험 모드 종료"
+                title={t('체험 모드 종료')}
               >
                 <X size={14} />
               </button>
@@ -97,7 +98,7 @@ export default function ExpoSidebar({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Trophy size={14} className="text-yellow-400" />
-                  <span className="text-xs font-black">{score}점</span>
+                  <span className="text-xs font-black">{t('{score}점', { score })}</span>
                 </div>
                 <div className="flex items-center gap-3 text-[10px] text-text-secondary">
                   <span className="text-emerald-400 font-bold">✓{approvedCount}</span>
@@ -110,9 +111,9 @@ export default function ExpoSidebar({
             {/* Tabs */}
             <div className="flex border-b border-border shrink-0">
       {[
-        { id: 'events' as Tab, label: '이벤트 트리거', icon: <Radio size={12} /> },
-        { id: 'score' as Tab, label: '점수판', icon: <Trophy size={12} /> },
-        { id: 'debate' as Tab, label: 'AI 토론', icon: <MessageSquare size={12} /> },
+        { id: 'events' as Tab, label: t('이벤트 트리거'), icon: <Radio size={12} /> },
+        { id: 'score' as Tab, label: t('점수판'), icon: <Trophy size={12} /> },
+        { id: 'debate' as Tab, label: t('AI 토론'), icon: <MessageSquare size={12} /> },
       ].map(tab => (
                 <button
                   key={tab.id}
@@ -156,16 +157,16 @@ export default function ExpoSidebar({
                     <div>
                       <h3 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2 mb-1">
                         <MessageSquare size={14} className="text-purple-400" />
-                        AI 에이전트 토론
+                        {t('AI 에이전트 토론')}
                       </h3>
-                      <p className="text-[10px] text-text-secondary">6개의 AI 에이전트가 실시간으로 협의하는 과정을 관찰하세요</p>
+                      <p className="text-[10px] text-text-secondary">{t('6개의 AI 에이전트가 실시간으로 협의하는 과정을 관찰하세요')}</p>
                     </div>
                     <div className="p-4 rounded-xl bg-purple-500/5 border border-purple-500/20 space-y-3">
                       <p className="text-xs text-text-secondary leading-relaxed">
-                        현재 시나리오에서 AI 에이전트들이 어떻게 의견을 교환하고 최적의 결정을 내리는지 실시간 토론을 시뮬레이션합니다.
+                        {t('현재 시나리오에서 AI 에이전트들이 어떻게 의견을 교환하고 최적의 결정을 내리는지 실시간 토론을 시뮬레이션합니다.')}
                       </p>
                       <div className="grid grid-cols-3 gap-1.5">
-                        {['🔍 품질', '🔧 예지보전', '⚙️ 생산', '⚡ 에너지', '🛡️ 안전', '🧠 슈퍼바이저'].map(agent => (
+                        {[t('🔍 품질'), t('🔧 예지보전'), t('⚙️ 생산'), t('⚡ 에너지'), t('🛡️ 안전'), t('🧠 슈퍼바이저')].map(agent => (
                           <div key={agent} className="px-2 py-1.5 rounded-lg bg-surface border border-border text-[9px] text-text-secondary text-center font-bold">{agent}</div>
                         ))}
                       </div>
@@ -174,7 +175,7 @@ export default function ExpoSidebar({
                         className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white font-black text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                       >
                         <MessageSquare size={14} />
-                        AI 토론 시뮬레이션 실행
+                        {t('AI 토론 시뮬레이션 실행')}
                       </button>
                     </div>
                   </motion.div>

@@ -1,0 +1,382 @@
+{
+ "점": [
+  "点",
+  "pts"
+ ],
+ "{score}점": [
+  "{score}点",
+  "{score} pts"
+ ],
+ "{name} 시나리오": [
+  "{name} シナリオ",
+  "{name} scenario"
+ ],
+ "{name} 에이전트": [
+  "{name}エージェント",
+  "{name} Agent"
+ ],
+ "언어 선택": [
+  "言語を選択",
+  "Select language"
+ ],
+ "승인": [
+  "承認",
+  "Approved"
+ ],
+ "거부": [
+  "却下",
+  "Rejected"
+ ],
+ "이벤트": [
+  "イベント",
+  "Events"
+ ],
+ "닫기": [
+  "閉じる",
+  "Close"
+ ],
+ "접기": [
+  "閉じる",
+  "Collapse"
+ ],
+ "상세 보기": [
+  "詳細を見る",
+  "View details"
+ ],
+ "박람회 체험 모드": [
+  "展示会体験モード",
+  "Expo Experience Mode"
+ ],
+ "체험 모드 종료": [
+  "体験モードを終了",
+  "Exit experience mode"
+ ],
+ "이벤트 트리거": [
+  "イベントトリガー",
+  "Event Trigger"
+ ],
+ "점수판": [
+  "スコアボード",
+  "Scoreboard"
+ ],
+ "AI 토론": [
+  "AI討論",
+  "AI Debate"
+ ],
+ "AI 에이전트 토론": [
+  "AIエージェント討論",
+  "AI Agent Debate"
+ ],
+ "6개의 AI 에이전트가 실시간으로 협의하는 과정을 관찰하세요": [
+  "6つのAIエージェントがリアルタイムで協議する過程をご覧ください",
+  "Watch six AI agents negotiate in real time"
+ ],
+ "현재 시나리오에서 AI 에이전트들이 어떻게 의견을 교환하고 최적의 결정을 내리는지 실시간 토론을 시뮬레이션합니다.": [
+  "現在のシナリオでAIエージェントがどのように意見を交わし、最適な意思決定に至るのかをリアルタイム討論としてシミュレーションします。",
+  "Simulates, as a live debate, how the AI agents exchange views and reach the best decision in the current scenario."
+ ],
+ "AI 토론 시뮬레이션 실행": [
+  "AI討論シミュレーションを実行",
+  "Run AI debate simulation"
+ ],
+ "🔍 품질": [
+  "🔍 品質",
+  "🔍 Quality"
+ ],
+ "🔧 예지보전": [
+  "🔧 予知保全",
+  "🔧 Maintenance"
+ ],
+ "⚙️ 생산": [
+  "⚙️ 生産",
+  "⚙️ Production"
+ ],
+ "⚡ 에너지": [
+  "⚡ エネルギー",
+  "⚡ Energy"
+ ],
+ "🛡️ 안전": [
+  "🛡️ 安全",
+  "🛡️ Safety"
+ ],
+ "🧠 슈퍼바이저": [
+  "🧠 スーパーバイザー",
+  "🧠 Supervisor"
+ ],
+ "체험 점수판": [
+  "体験スコアボード",
+  "Experience Scoreboard"
+ ],
+ "AI 추천 수용률": [
+  "AI推奨の受入率",
+  "AI recommendation acceptance"
+ ],
+ "AI 협업 스타일 분석": [
+  "AI協業スタイル分析",
+  "AI collaboration style"
+ ],
+ "AI 승인": [
+  "AI承認",
+  "AI approvals"
+ ],
+ "AI 거부": [
+  "AI却下",
+  "AI rejections"
+ ],
+ "AI 마스터": [
+  "AIマスター",
+  "AI Master"
+ ],
+ "AI 전문가": [
+  "AIエキスパート",
+  "AI Expert"
+ ],
+ "AI 숙련자": [
+  "AI上級者",
+  "AI Practitioner"
+ ],
+ "AI 입문자": [
+  "AI初級者",
+  "AI Beginner"
+ ],
+ "AI 견습생": [
+  "AI見習い",
+  "AI Apprentice"
+ ],
+ "아직 AI 추천을 평가하지 않았습니다.": [
+  "まだAIの推奨を評価していません。",
+  "You have not judged any AI recommendation yet."
+ ],
+ "AI 에이전트의 판단을 신뢰하는 스타일입니다. 자동화 수용도가 높습니다.": [
+  "AIエージェントの判断を信頼するスタイルです。自動化の受容度が高いといえます。",
+  "You trust the agents' judgement — a high tolerance for automation."
+ ],
+ "AI와 인간의 균형 잡힌 협업을 선호하는 스타일입니다.": [
+  "AIと人間のバランスの取れた協業を好むスタイルです。",
+  "You favour a balanced partnership between AI and people."
+ ],
+ "신중한 검토를 선호하는 스타일입니다. 중요 결정에 인간 판단을 중시합니다.": [
+  "慎重な検討を好むスタイルです。重要な意思決定では人の判断を重視します。",
+  "You prefer careful review, keeping human judgement in charge of the big calls."
+ ],
+ "체험 결과 공유하기": [
+  "体験結果を共有する",
+  "Share my result"
+ ],
+ "다시 체험": [
+  "もう一度体験",
+  "Try again"
+ ],
+ "다른 시나리오": [
+  "別のシナリオ",
+  "Another scenario"
+ ],
+ "AI EXPO 2026 — 박람회 체험 시뮬레이션": [
+  "AI EXPO 2026 — 展示会体験シミュレーション",
+  "AI EXPO 2026 — Expo Experience Simulation"
+ ],
+ "AI가 공장을": [
+  "AIが工場を",
+  "What if AI ran"
+ ],
+ "스스로 운영한다면?": [
+  "自ら運営したら?",
+  "the factory by itself?"
+ ],
+ "6개의 AI 에이전트가 실시간으로 협력하여 공장의 품질, 안전, 에너지, 물류를 동시에 최적화합니다. 지금 직접 체험해보세요.": [
+  "6つのAIエージェントがリアルタイムに連携し、工場の品質・安全・エネルギー・物流を同時に最適化します。今すぐ体験してみてください。",
+  "Six AI agents cooperate in real time to optimize quality, safety, energy and logistics at once. Try it for yourself."
+ ],
+ "AI 에이전트": [
+  "AIエージェント",
+  "AI agents"
+ ],
+ "데이터 처리": [
+  "データ処理",
+  "Data processing"
+ ],
+ "의사결정 신뢰도": [
+  "意思決定の信頼度",
+  "Decision confidence"
+ ],
+ "체험 시나리오": [
+  "体験シナリオ",
+  "Scenarios"
+ ],
+ "6개": [
+  "6つ",
+  "6"
+ ],
+ "실시간": [
+  "リアルタイム",
+  "Real time"
+ ],
+ "4가지": [
+  "4種類",
+  "4"
+ ],
+ "시나리오 선택하기": [
+  "シナリオを選ぶ",
+  "Choose a scenario"
+ ],
+ "바로 시작하기 ⚡": [
+  "すぐに始める ⚡",
+  "Start now ⚡"
+ ],
+ "또는 아래에서 시나리오를 선택하세요": [
+  "または下からシナリオを選択してください",
+  "Or pick a scenario below"
+ ],
+ "빠른 시나리오 선택": [
+  "クイックシナリオ選択",
+  "Quick scenario select"
+ ],
+ "관리자 모드로 입장 →": [
+  "管理者モードで入る →",
+  "Enter admin mode →"
+ ],
+ "체험 시나리오를 선택하세요": [
+  "体験するシナリオを選択してください",
+  "Choose your scenario"
+ ],
+ "각 시나리오는 실제 스마트 공장에서 발생하는 상황을 시뮬레이션합니다.": [
+  "各シナリオは実際のスマートファクトリーで起こる状況をシミュレーションしています。",
+  "Every scenario simulates a situation that really happens on a smart factory floor."
+ ],
+ "이 시나리오 체험하기": [
+  "このシナリオを体験する",
+  "Run this scenario"
+ ],
+ "← 돌아가기": [
+  "← 戻る",
+  "← Back"
+ ],
+ "시뮬레이션 시작!": [
+  "シミュレーション開始!",
+  "Simulation starting!"
+ ],
+ "시뮬레이션을 준비하는 중...": [
+  "シミュレーションを準備しています…",
+  "Preparing the simulation..."
+ ],
+ "약 5분": [
+  "約5分",
+  "About 5 min"
+ ],
+ "입문": [
+  "入門",
+  "Beginner"
+ ],
+ "중급": [
+  "中級",
+  "Intermediate"
+ ],
+ "고급": [
+  "上級",
+  "Advanced"
+ ],
+ "전사 생산 극대화": [
+  "全社生産最大化",
+  "Plant-wide Output Maximization"
+ ],
+ "OEE & 통합 최적화": [
+  "OEEと統合最適化",
+  "OEE & unified optimization"
+ ],
+ "공장 전체 가동 효율을 극대화하는 AI 에이전트들의 실시간 협업을 체험하세요.": [
+  "工場全体の稼働効率を最大化するAIエージェントのリアルタイム協業を体験してください。",
+  "Experience agents collaborating live to squeeze the most out of plant-wide efficiency."
+ ],
+ "실시간 KPI 모니터링": [
+  "リアルタイムKPI監視",
+  "Live KPI monitoring"
+ ],
+ "AI 추천 승인/거부": [
+  "AI推奨の承認・却下",
+  "Approve / reject AI advice"
+ ],
+ "에이전트 오케스트레이션": [
+  "エージェントオーケストレーション",
+  "Agent orchestration"
+ ],
+ "돌발 고장 & 안전 예방": [
+  "突発故障と安全予防",
+  "Breakdown & Safety Prevention"
+ ],
+ "비상 대응 시나리오": [
+  "非常対応シナリオ",
+  "Emergency response scenario"
+ ],
+ "갑작스러운 설비 이상과 가스 누출 상황에서 AI가 어떻게 대응하는지 직접 경험하세요.": [
+  "突然の設備異常やガス漏れの状況で、AIがどう対応するのかを直接体験してください。",
+  "See first-hand how AI responds to a sudden equipment fault and a gas leak."
+ ],
+ "비상 경보 시뮬레이션": [
+  "非常警報シミュレーション",
+  "Emergency alarm simulation"
+ ],
+ "CCTV AI 감시": [
+  "CCTV AI監視",
+  "CCTV AI surveillance"
+ ],
+ "안전 우선 정책 체험": [
+  "安全優先ポリシーの体験",
+  "Safety-first policy in action"
+ ],
+ "저에너지 피크 관리": [
+  "低エネルギーピーク管理",
+  "Low-Energy Peak Management"
+ ],
+ "ESS & 에너지 최적화": [
+  "ESSとエネルギー最適化",
+  "ESS & energy optimization"
+ ],
+ "전력 피크 시간대에 AI가 에너지를 최적화하고 비용을 절감하는 과정을 체험하세요.": [
+  "電力ピーク時間帯にAIがエネルギーを最適化し、コストを削減する過程を体験してください。",
+  "Watch AI optimize energy and cut cost through the peak-demand window."
+ ],
+ "피크 부하 관리": [
+  "ピーク負荷管理",
+  "Peak load management"
+ ],
+ "ESS 방전 제어": [
+  "ESS放電制御",
+  "ESS discharge control"
+ ],
+ "에너지 비용 절감": [
+  "エネルギーコスト削減",
+  "Energy cost reduction"
+ ],
+ "러시오더 품질 관리": [
+  "ラッシュオーダー品質管理",
+  "Rush-Order Quality Control"
+ ],
+ "긴급 납기 대응": [
+  "緊急納期対応",
+  "Urgent delivery response"
+ ],
+ "긴급 주문 상황에서 품질을 유지하며 생산 속도를 높이는 AI의 균형 잡힌 판단을 체험하세요.": [
+  "緊急受注の状況で品質を保ちながら生産速度を上げる、AIのバランスの取れた判断を体験してください。",
+  "Experience the balanced call AI makes when it must speed up output without losing quality."
+ ],
+ "생산 속도 최적화": [
+  "生産速度の最適化",
+  "Line-speed optimization"
+ ],
+ "품질 가드레일": [
+  "品質ガードレール",
+  "Quality guardrails"
+ ],
+ "다자 에이전트 협의": [
+  "マルチエージェント協議",
+  "Multi-agent negotiation"
+ ],
+ "죄송합니다. 답변을 생성할 수 없습니다.": [
+  "申し訳ありません。回答を生成できませんでした。",
+  "Sorry — I could not generate an answer."
+ ],
+ "죄송합니다. 요청을 처리하는 중에 오류가 발생했습니다.": [
+  "申し訳ありません。リクエストの処理中にエラーが発生しました。",
+  "Sorry — something went wrong while processing your request."
+ ]
+}

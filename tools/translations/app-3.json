@@ -1,0 +1,322 @@
+{
+ "AI 오케스트레이션": [
+  "AIオーケストレーション",
+  "AI Orchestration"
+ ],
+ "AI 오케스트레이션 센터": [
+  "AIオーケストレーションセンター",
+  "AI Orchestration Center"
+ ],
+ "Supervisor가 각 도메인 특화 에이전트들의 제안을 수집하고, 우선순위 및 가드레일에 따라 최종 합의를 도출하는 과정을 보여줍니다.": [
+  "Supervisorが各ドメイン特化エージェントの提案を集約し、優先順位とガードレールに従って最終合意を導き出す過程を示します。",
+  "Shows the Supervisor collecting proposals from each domain agent and driving them to a final agreement under the priority order and guardrails."
+ ],
+ "🔥 [통합] 6대 에이전트 전사 최적화 조율": [
+  "🔥[統合]6エージェントによる全社最適化の調整",
+  "🔥 [Unified] Six-agent plant-wide optimization"
+ ],
+ "생산 극대화 목표 하에 안전, 예지보전, 품질, 에너지, 물류 에이전트 간의 동시 다자 협업 및 실시간 중재": [
+  "生産最大化を目標に、安全・予知保全・品質・エネルギー・物流の各エージェントが同時に協働し、リアルタイムで調停を行います",
+  "Safety, maintenance, quality, energy and logistics collaborating simultaneously — and arbitrated live — under a maximize-output goal"
+ ],
+ "🚨 [EXPO] 가스 미세 누출 감지 대응": [
+  "🚨[EXPO]微量ガス漏れ検知への対応",
+  "🚨 [EXPO] Trace gas-leak response"
+ ],
+ "⚡ [EXPO] 피크 전력 긴급 부하 제약": [
+  "⚡[EXPO]ピーク電力の緊急負荷制限",
+  "⚡ [EXPO] Emergency peak-load curtailment"
+ ],
+ "B라인 생산 속도 최적화 충돌": [
+  "Bライン生産速度の最適化衝突",
+  "Line B speed-optimization conflict"
+ ],
+ "생산량 증대 요청과 품질 저하 우려 간의 실시간 조율": [
+  "増産の要請と品質低下の懸念との間のリアルタイム調整",
+  "Live arbitration between a call for more output and the risk of losing quality"
+ ],
+ "생산 최적화": [
+  "生産最適化",
+  "Production Optimization"
+ ],
+ "설비예지보전": [
+  "設備予知保全",
+  "Predictive Maintenance"
+ ],
+ "물류 에이전트": [
+  "物流エージェント",
+  "Logistics Agent"
+ ],
+ "신규 긴급 오더 대응을 위해 패키징 1라인 분당 가동 속도를 20% 초고속 모드로 상향 제안합니다.": [
+  "新規の緊急オーダーに対応するため、パッケージング第1ラインの分あたり稼働速度を20%引き上げ、超高速モードへ移行することを提案します。",
+  "To take the new rush order, I propose raising Packaging Line 1 by 20 % into overdrive."
+ ],
+ "반대합니다. 메인 구동 장치의 축 마모도가 최근 91%에 육박하여 즉각 가속 시 12시간 내 열화 고장 위험률이 89%입니다.": [
+  "反対します。主駆動装置の軸摩耗度が直近で91%に迫っており、即時に加速すれば12時間以内の劣化故障リスクは89%に達します。",
+  "I object. Shaft wear on the main drive is approaching 91 %, so accelerating now carries an 89 % risk of a degradation failure within 12 hours."
+ ],
+ "분석 보고: 한계 속도 도달 시 열접합 파트 온도 불안정으로 제품 원형 성형 스크래치 불량률이 7.5%로 상향 칩니다.": [
+  "分析報告: 限界速度に達すると、ヒートシール部の温度が不安定になり、成形時のスクラッチ不良率が7.5%まで上昇します。",
+  "Analysis: at the speed limit the heat-seal temperature destabilizes and forming-scratch defects climb to 7.5 %."
+ ],
+ "실하중 분석: 당일 정오 피크 전력 한계치 도달을 감안하면 모터 고 전력 모드가 겹쳐 계약 초과 위약 경고가 활성화됩니다.": [
+  "実負荷分析: 当日正午のピーク電力上限到達を踏まえると、モーターの高出力モードが重なり、契約超過の違約警告が発動します。",
+  "Load analysis: with the midday peak limit already in reach, stacking motors in high-power mode trips the contract-overrun penalty warning."
+ ],
+ "규정 파라미터: 과마모 구역 마찰열 증가로 주변 분위기 온도가 1급 가이드 한계를 근접하는 예방 안전 가드레일을 침범합니다.": [
+  "規定パラメータ: 過摩耗区域の摩擦熱の増加により周辺の雰囲気温度が第1級ガイド上限に近づき、予防安全ガードレールを侵します。",
+  "Regulatory parameter: friction heat in the worn zone pushes ambient temperature toward the class-1 guideline limit, breaching the preventive safety guardrail."
+ ],
+ "물류 최적화 대안: 출하 완료 물류를 바탕으로 AMR 이송 간격을 25% 가속 설정화하고 완충 적재 슬롯을 조기 전환하면 지연 분산 완충이 가능합니다.": [
+  "物流最適化の代案: 出荷済み物流を基点にAMRの搬送間隔を25%短縮し、バッファ積載スロットを前倒しで切り替えれば、遅延を分散して吸収できます。",
+  "Logistics alternative: tighten AMR dispatch intervals by 25 % against completed shipments and switch buffer slots early — that absorbs and spreads the delay."
+ ],
+ "최종 조율 결과: 생산 속도는 +5%만 완만하고 안정되게 가져가고, 전력 피크 타임은 백업 가동 ESS 120kW 방전으로 버티며, AMR 완충 버퍼 로직을 실시간 실행해 납기 차질률을 격파합니다.": [
+  "最終調整結果: 生産速度は+5%に留めて緩やかかつ安定的に運用し、電力ピーク時間帯はバックアップESSの120kW放電で乗り切り、AMRのバッファロジックをリアルタイムで実行して納期遅延をゼロにします。",
+  "Final arbitration: take line speed up a gentle, stable +5 %, ride out the power peak on 120 kW of backup ESS discharge, and run the AMR buffer logic live to eliminate the delivery shortfall."
+ ],
+ "품질 최우선 경영 가이드와 미세 이상 안전 가드레일을 100% 수호한 채, 물류 지능 조율 및 ESS 연동 복합 의사결정으로 단 한 번의 정지 없이 납품 목표를 실현함.": [
+  "品質最優先の経営指針と微細異常の安全ガードレールを100%守りながら、物流の知的調整とESS連携による複合的な意思決定で、一度も停止することなく納入目標を達成しました。",
+  "Holding the quality-first management guideline and the micro-anomaly safety guardrail at 100 %, intelligent logistics arbitration and ESS-linked decisions hit the delivery target without a single stop."
+ ],
+ "비전 검사 데이터와 라인 부하율을 종합 분석한 결과, 품질 우선 정책에 따라 속도 제한이 최적의 선택임.": [
+  "ビジョン検査データとラインの負荷率を総合的に分析した結果、品質優先ポリシーに沿えば速度制限が最適解となります。",
+  "Combining vision-inspection data with line load factor, the quality-first policy makes capping the speed the optimal choice."
+ ],
+ "반대합니다. 현재 온도 조건에서 속도 상향 시 핀홀 불량률이 4.2%까지 상승할 것으로 예측됩니다.": [
+  "反対します。現在の温度条件で増速すると、ピンホール不良率が4.2%まで上昇すると予測されます。",
+  "I object. At the current temperature, speeding up is forecast to push pinhole defects to 4.2 %."
+ ],
+ "Resolved: 품질 우선 정책 적용": [
+  "Resolved: 品質優先ポリシーを適用",
+  "Resolved: quality-first policy applied"
+ ],
+ "Resolved: L1 Safety 우선 제어 및 부분 우회 이송": [
+  "Resolved: L1 Safety優先制御と部分的な迂回搬送",
+  "Resolved: L1 safety precedence with partial detour transport"
+ ],
+ "Resolved: ESS 즉각 전원 방전 지원 및 비핵심 순차 제어 완충": [
+  "Resolved: ESSの即時放電支援と非重要設備の順次制御による緩衝",
+  "Resolved: immediate ESS discharge backed by staged non-critical curtailment"
+ ],
+ "Resolved: 냉각수 밸브 2도 보정 및 진공 밀착 유압 상향": [
+  "Resolved: 冷却水バルブの2度補正と真空密着油圧の引き上げ",
+  "Resolved: cooling-water valve trimmed 2° and vacuum-seal pressure raised"
+ ],
+ "C구역 CCTV에서 연기 감지. 즉시 가동 중단 및 소방 셔터 작동을 요청합니다.": [
+  "C区域のCCTVで煙を検知しました。直ちに稼働停止と防火シャッターの作動を要請します。",
+  "Smoke detected on Zone C CCTV. Requesting an immediate stop and fire-shutter activation."
+ ],
+ "C구역 가스 감지 환기팬 완전 가동 시 기기 압력 변화로 생산 정지 상충 발생.": [
+  "C区域のガス検知に伴い換気ファンを全開にすると、機器の圧力変化で生産停止と衝突します。",
+  "Running the exhaust fans flat out for the Zone C gas reading shifts equipment pressure and conflicts with keeping production up."
+ ],
+ "A-3 구역에서 메탄 가스 15ppm 감지. 환기 설비 풀 가동 및 국소 소화 제어가 시급합니다.": [
+  "A-3区域でメタンガス15ppmを検知。換気設備の全開稼働と局所消火制御が急務です。",
+  "Methane at 15 ppm in Zone A-3. Full ventilation and localized suppression are urgent."
+ ],
+ "Safety-First 정책에 따라 인명 피해 가능성이 0.1%라도 존재할 경우 즉시 중단이 원칙임. 경제적 손실보다 안전 가드레일이 상위 계층임.": [
+  "Safety-Firstポリシーに基づき、人的被害の可能性が0.1%でもあれば即時停止が原則です。経済的損失よりも安全ガードレールが上位に位置します。",
+  "Under the safety-first policy, even a 0.1 % chance of injury means stopping immediately. The safety guardrail sits above economic loss."
+ ],
+ "B 공정 열처리 가마 대기 소모 중단 불가. 임의 전력 차단 시 내부 공정물 전량 폐기 우려.": [
+  "B工程の熱処理炉は待機消費を止められません。任意に電力を遮断すると、炉内の仕掛品を全量廃棄するおそれがあります。",
+  "The Process B heat-treat furnace cannot drop its standby draw. Cutting its power arbitrarily risks scrapping everything inside."
+ ],
+ "가열 유지가 필수적이며 하강 온도가 15도 이상 떨어지지 않아야 품질 파라미터를 유지할 수 있습니다.": [
+  "加熱の維持が不可欠であり、温度低下を15度以内に抑えなければ品質パラメータを保てません。",
+  "Heat has to be maintained — the temperature cannot fall more than 15 degrees or the quality parameters go out of spec."
+ ],
+ "DR 감축 불이행에 따른 대규모 패널티(약 1200만원 상당) 및 정전 연동 방지. ESS를 즉각 구동하고 비핵심 건조 공정의 냉간 유예 주기를 밀어 조율함.": [
+  "DR(需要応答)の削減未達による大規模ペナルティ(約1,200万ウォン相当)と停電の連鎖を回避します。ESSを直ちに起動し、非重要な乾燥工程の冷間待機周期を後ろ倒しして調整します。",
+  "Avoiding the large penalty for missing the demand-response cut (about ₩12M) and the knock-on outage. The ESS starts now and the non-critical drying process has its cold-hold cycle pushed back."
+ ],
+ "B라인 가속 일시 감속(85%) 및 가드 제어 모드 유지": [
+  "Bラインの加速を一時的に85%へ減速し、ガード制御モードを維持",
+  "Line B eased back to 85 % with guard-control mode held"
+ ],
+ "배기팬 충방전 제약 및 ESS 120kW 방전 모드 실행": [
+  "排気ファンの充放電制約とESS 120kW放電モードの実行",
+  "Exhaust-fan charge limits with the ESS in 120 kW discharge mode"
+ ],
+ "비핵심 조업 건조실 냉간 감속 세이빙 완료": [
+  "非重要工程の乾燥室を冷間減速し、省エネを完了",
+  "Non-critical drying room slowed to cold-hold; saving secured"
+ ],
+ "밀착 진공 노즐 접착 기압 증합 보완 사수": [
+  "密着真空ノズルの接着圧を補正して品質を死守",
+  "Vacuum-nozzle seal pressure trimmed to hold quality"
+ ],
+ "L1 Safety Layer 수칙 가드 가동": [
+  "L1 Safety Layerの規則ガードを起動",
+  "L1 Safety Layer rule guard engaged"
+ ],
+ "3개 에이전트 합의 완료 (신뢰도 98.2%)": [
+  "3エージェントの合意が完了(信頼度98.2%)",
+  "Three agents in agreement (98.2 % confidence)"
+ ],
+ "가스 누출 농도 80% 가속 희석": [
+  "ガス漏れ濃度を80%まで加速希釈",
+  "Leak concentration diluted 80 % faster"
+ ],
+ "A-3 안전 환기댐퍼 100% 개방 조치 완료": [
+  "A-3安全換気ダンパーの100%開放措置が完了",
+  "Zone A-3 safety damper opened to 100 %"
+ ],
+ "가열 마찰 부하 예지 정비 팀 배치 워크오더 접수 완료": [
+  "加熱摩擦負荷に対する予知保全チームの配置ワークオーダーを受理",
+  "Work order raised to dispatch the maintenance team for the friction-heat load"
+ ],
+ "납량 긴급 수송량 100% 한시 조기 수용": [
+  "緊急輸送量を100%、期限内に前倒しで受け入れ",
+  "Urgent shipment volume accepted in full and ahead of time"
+ ],
+ "국가 전력망 주파수 급락 경보에 따른 신속 부하 셰딩": [
+  "国家電力網の周波数急低下警報に伴う迅速な負荷遮断",
+  "Rapid load shedding on a national grid under-frequency alert"
+ ],
+ "돌발 감지 분격 및 L1 안전 차단 가드": [
+  "突発検知への即応とL1安全遮断ガード",
+  "Snap response to the detection plus the L1 safety cut-off guard"
+ ],
+ "긴급 딜리버리 초속 가용 및 품질 보증 관리": [
+  "緊急デリバリーの即応可用性と品質保証の管理",
+  "Rush-delivery readiness with quality assurance in hand"
+ ],
+ "부하 완화 절전 정책 수립": [
+  "負荷緩和のための省電力ポリシーを策定",
+  "Load-relief power-saving policy established"
+ ],
+ "가스 누출 위험 상황 발생 시 위험 무력화 및 조치 가이드": [
+  "ガス漏れの危険発生時における危険の無力化と対応ガイド",
+  "Guide to neutralizing and responding to a gas-leak hazard"
+ ],
+ "C구역 화재 징후 감지 및 대응": [
+  "C区域の火災予兆の検知と対応",
+  "Zone C fire-signature detection and response"
+ ],
+ "B라인 가동 중단 위험 분석": [
+  "Bライン稼働停止リスクの分析",
+  "Line B stoppage-risk analysis"
+ ],
+ "↺ 처음부터": [
+  "↺ 最初から",
+  "↺ Restart"
+ ],
+ "다음 단계 강제 진행": [
+  "次のステップへ強制的に進む",
+  "Force next step"
+ ],
+ "느림 (4.5초)": [
+  "低速(4.5秒)",
+  "Slow (4.5 s)"
+ ],
+ "보통 (2.5초)": [
+  "標準(2.5秒)",
+  "Normal (2.5 s)"
+ ],
+ "빠름 (1.0초)": [
+  "高速(1.0秒)",
+  "Fast (1.0 s)"
+ ],
+ "디지털 트윈 환경에서 리스크 검증 중...": [
+  "デジタルツイン環境でリスクを検証中…",
+  "Validating risk in the digital twin..."
+ ],
+ "유압:": [
+  "油圧:",
+  "Hydraulic:"
+ ],
+ "온도:": [
+  "温度:",
+  "Temp:"
+ ],
+ "72.1°C (하한)": [
+  "72.1°C(下限)",
+  "72.1 °C (low limit)"
+ ],
+ "순환수량: 3.2 m³/h": [
+  "循環水量: 3.2 m³/h",
+  "Circulation: 3.2 m³/h"
+ ],
+ "온도: 185°C": [
+  "温度: 185°C",
+  "Temp: 185 °C"
+ ],
+ "속도:": [
+  "速度:",
+  "Speed:"
+ ],
+ "최적 가속 120%": [
+  "最適加速 120%",
+  "Optimal 120 %"
+ ],
+ "정상 대기 100%": [
+  "通常待機 100%",
+  "Standby 100 %"
+ ],
+ "충전율: 50.0 ml": [
+  "充填量: 50.0 ml",
+  "Fill: 50.0 ml"
+ ],
+ "캡핑 수율: 99.8%": [
+  "キャッピング歩留: 99.8%",
+  "Capping yield: 99.8 %"
+ ],
+ "연동 로봇: AMR #3 (활성)": [
+  "連動ロボット: AMR #3(稼働中)",
+  "Linked robot: AMR #3 (active)"
+ ],
+ "피크 출력:": [
+  "ピーク出力:",
+  "Peak output:"
+ ],
+ "120kW 급전": [
+  "120kW給電",
+  "120 kW supply"
+ ],
+ "0kW 대기": [
+  "0kW待機",
+  "0 kW standby"
+ ],
+ "중재 관제: Active": [
+  "調停管制: Active",
+  "Arbitration: active"
+ ],
+ "프로토콜: AI-S.2161": [
+  "プロトコル: AI-S.2161",
+  "Protocol: AI-S.2161"
+ ],
+ "가상 조율: 5개 분과": [
+  "仮想調整: 5分科",
+  "Virtual arbitration: 5 groups"
+ ],
+ "⚡ 부하 긴급방전": [
+  "⚡ 負荷の緊急放電",
+  "⚡ Emergency discharge"
+ ],
+ "대기 (SOC: 94%)": [
+  "待機(SOC: 94%)",
+  "Standby (SOC 94 %)"
+ ],
+ "가속가동": [
+  "加速稼働",
+  "Overdrive"
+ ],
+ "AMR우회": [
+  "AMR迂回",
+  "AMR detour"
+ ],
+ "공급": [
+  "供給",
+  "Supply"
+ ],
+ "검사": [
+  "検査",
+  "Inspection"
+ ],
+ "배출": [
+  "排出",
+  "Discharge"
+ ]
+}

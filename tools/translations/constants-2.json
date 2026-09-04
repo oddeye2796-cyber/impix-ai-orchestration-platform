@@ -1,0 +1,238 @@
+{
+ "라인별 가동 현황": [
+  "ライン別稼働状況",
+  "Line Operating Status"
+ ],
+ "가동/비가동/대기 상태 실시간 표시": [
+  "稼働・非稼働・待機ステータスのリアルタイム表示",
+  "Live running / down / idle status"
+ ],
+ "생산 라인별 가동 상태(Running/Idle/Down) 실시간 가시화 및 병목 구간(Bottleneck) 즉각 식별": [
+  "生産ライン別の稼働状態(Running/Idle/Down)のリアルタイム可視化とボトルネック区間の即時特定",
+  "Visualizes running/idle/down state per line and pinpoints bottlenecks"
+ ],
+ "Kafka 실시간 센서 스트림 분석 -> 온톨로지 기반 가동 판정 로직(Heuristics) 적용 -> WebSocket 기반 실시간 상태 맵 업데이트": [
+  "Kafkaリアルタイムセンサーストリーム解析 → オントロジーベースの稼働判定ロジック適用 → WebSocketによるリアルタイム状態マップ更新",
+  "Kafka sensor-stream analysis -> ontology heuristics for run-state -> WebSocket status-map updates"
+ ],
+ "비가동 시간(Downtime) 실시간 감지 및 라인 가동률(Availability) 95% 이상 상시 유지": [
+  "非稼働時間(Downtime)のリアルタイム検知とライン稼働率95%以上の常時維持",
+  "Detects downtime in real time and holds line availability above 95 %"
+ ],
+ "실시간 라인 토폴로지 맵 및 설비별 가동 상태 인디케이터": [
+  "リアルタイムのラインレイアウトマップと設備別稼働ステータスインジケーター",
+  "Live line topology map with per-equipment status indicators"
+ ],
+ "택트타임 분석": [
+  "タクトタイム分析",
+  "Tact Time Analysis"
+ ],
+ "설비별 사이클 타임 편차 + 병목 공정 탐지": [
+  "設備別サイクルタイムのばらつきとボトルネック工程の検出",
+  "Cycle-time variance by equipment and bottleneck detection"
+ ],
+ "공정별 택트타임(Tact Time) 편차 분석을 통한 생산 밸런싱(Line Balancing) 최적화": [
+  "工程別タクトタイムのばらつき分析による生産ライン balancing の最適化",
+  "Optimizes line balancing from per-process tact-time variance"
+ ],
+ "생산 로그 기반 사이클 타임 정밀 측정 -> 온톨로지 표준 택트타임 대비 편차 분석 -> 병목 공정 자동 탐지 알고리즘 실행": [
+  "生産ログによるサイクルタイムの精密測定 → オントロジー標準タクトタイムとの偏差分析 → ボトルネック工程の自動検出アルゴリズム実行",
+  "Precise cycle-time measurement from production logs -> deviation against the ontology standard -> automatic bottleneck detection"
+ ],
+ "표준 택트타임 준수율 98% 확보 및 공정 간 편차(Variation) 10% 이내 관리": [
+  "標準タクトタイム遵守率98%の確保と工程間ばらつき10%以内の管理",
+  "Holds standard tact-time compliance at 98 % and inter-process variation within 10 %"
+ ],
+ "공정별 택트타임 히트맵 및 라인 밸런싱 분석 리포트": [
+  "工程別タクトタイムのヒートマップとラインバランシング分析レポート",
+  "Per-process tact-time heatmap and line-balancing report"
+ ],
+ "생산 계획 대비 실적": [
+  "生産計画対実績",
+  "Plan vs Actual Output"
+ ],
+ "계획 수량 vs 실적 수량 갭 분석": [
+  "計画数量と実績数量のギャップ分析",
+  "Gap analysis between planned and actual volume"
+ ],
+ "생산 계획 대비 실시간 실적 분석을 통한 납기 준수율 관리 및 생산 목표 달성 가시화": [
+  "生産計画に対するリアルタイム実績分析による納期遵守率の管理と生産目標達成の可視化",
+  "Manages on-time delivery and makes target attainment visible by comparing plan with live actuals"
+ ],
+ "ERP 생산 계획 데이터 연동 -> 실시간 생산 실적 집계 -> 목표 대비 달성률(Achievement Rate) 및 예상 완료 시간(ETA) 산출": [
+  "ERP生産計画データ連携 → リアルタイム生産実績の集計 → 目標比の達成率と完了予定時刻(ETA)の算出",
+  "ERP plan integration -> live output aggregation -> achievement rate and ETA"
+ ],
+ "일일 생산 계획 달성률 100% 유지 및 계획 대비 편차 발생 시 즉각적인 원인 분석 및 조치 권고": [
+  "日次生産計画の達成率100%を維持し、計画との乖離発生時は即時に原因分析と対策を提示",
+  "Holds daily plan attainment at 100 % and recommends action the moment a deviation appears"
+ ],
+ "생산 목표 달성 현황 대시보드 및 미달 원인 분석 인사이트": [
+  "生産目標の達成状況ダッシュボードと未達要因の分析インサイト",
+  "Target attainment dashboard with shortfall root-cause insight"
+ ],
+ "OEE 대시보드": [
+  "OEEダッシュボード",
+  "OEE Dashboard"
+ ],
+ "가용률 x 성능 x 양품률 자동 산출": [
+  "時間稼働率 × 性能稼働率 × 良品率の自動算出",
+  "Automatic availability x performance x quality calculation"
+ ],
+ "설비 종합 효율(Overall Equipment Effectiveness) 분석을 통한 생산성 손실 요인 정밀 진단": [
+  "設備総合効率(OEE)分析による生産性損失要因の精密診断",
+  "Diagnoses productivity-loss factors through overall equipment effectiveness"
+ ],
+ "가용성(Availability), 성능(Performance), 품질(Quality) 3대 지표 실시간 집계 -> OEE 종합 지수 산출 및 손실 원인 분류": [
+  "可用性・性能・品質の3指標をリアルタイム集計 → OEE総合指数の算出と損失要因の分類",
+  "Real-time aggregation of availability, performance and quality -> OEE index and loss classification"
+ ],
+ "세계 수준(World Class) OEE 지표 85% 달성 목표 관리 및 성능 손실(Minor Stoppages) 최소화": [
+  "ワールドクラス水準のOEE 85%達成の目標管理とチョコ停による性能損失の最小化",
+  "Drives toward the world-class 85 % OEE target and minimizes minor stoppages"
+ ],
+ "OEE 종합 분석 대시보드 및 6대 손실(Six Big Losses) 분석 리포트": [
+  "OEE総合分析ダッシュボードと6大ロス分析レポート",
+  "OEE analysis dashboard and six-big-losses report"
+ ],
+ "배치별 생산 이력": [
+  "バッチ別生産履歴",
+  "Batch Production History"
+ ],
+ "batch_id 기준 역추적": [
+  "batch_id による遡及トレース",
+  "Reverse tracing by batch_id"
+ ],
+ "제품 배치(Batch) 단위의 전 공정 데이터 통합 추적(End-to-End Traceability) 및 품질 보증": [
+  "製品バッチ単位での全工程データの統合トレーサビリティと品質保証",
+  "End-to-end traceability across every process step for a product batch"
+ ],
+ "Batch ID 기반 다차원 데이터 조인(Join) -> 원자재-공정-품질-물류 통합 타임라인 구성 -> 데이터 무결성 검증": [
+  "Batch IDによる多次元データ結合 → 原材料・工程・品質・物流の統合タイムライン構成 → データ整合性の検証",
+  "Batch-ID joins -> unified material / process / quality / logistics timeline -> integrity verification"
+ ],
+ "품질 이슈 발생 시 원인 공정 역추적 시간 5분 이내 단축 및 배치별 생산 무결성 확보": [
+  "品質問題発生時の原因工程の遡及時間を5分以内に短縮し、バッチ単位の生産整合性を確保",
+  "Cuts root-process trace-back to under five minutes and secures per-batch integrity"
+ ],
+ "배치별 통합 생산 타임라인 및 품질 추적성 리포트": [
+  "バッチ別の統合生産タイムラインと品質トレーサビリティレポート",
+  "Unified per-batch production timeline and traceability report"
+ ],
+ "전력 사용 현황": [
+  "電力使用状況",
+  "Power Consumption"
+ ],
+ "설비별 실시간 전력 소비량 모니터링": [
+  "設備別のリアルタイム電力消費量モニタリング",
+  "Live power draw by equipment"
+ ],
+ "설비별 실시간 에너지 소비 패턴 분석을 통한 비효율 전력 소모 감지 및 에너지 비용 절감": [
+  "設備別のリアルタイムエネルギー消費パターン分析による非効率な電力消費の検知とコスト削減",
+  "Spots inefficient consumption from per-equipment energy patterns and cuts cost"
+ ],
+ "IoT 전력 센서 데이터 스트리밍 -> 온톨로지 기반 정격 전력 대비 부하율 산출 -> 에너지 소비 이상 징후 탐지 엔진 실행": [
+  "IoT電力センサーデータのストリーミング → オントロジーに基づく定格電力比の負荷率算出 → エネルギー消費異常の検知エンジン実行",
+  "IoT power telemetry -> load factor against ontology-rated power -> consumption-anomaly detection"
+ ],
+ "대기 전력(Standby Power) 최소화 및 정격 부하 120% 초과 시 에너지 과부하 경고 알림": [
+  "待機電力の最小化と定格負荷120%超過時のエネルギー過負荷警告",
+  "Minimizes standby power and alerts on overload above 120 % of rated load"
+ ],
+ "실시간 에너지 소비 현황판 및 설비별 부하율 분석 차트": [
+  "リアルタイムのエネルギー消費ボードと設備別負荷率分析チャート",
+  "Live consumption board and per-equipment load-factor chart"
+ ],
+ "에너지 비용 분석": [
+  "エネルギーコスト分析",
+  "Energy Cost Analysis"
+ ],
+ "시간대별 전력 단가 적용 비용 산출": [
+  "時間帯別電力単価を適用したコスト算出",
+  "Cost calculation using time-of-use tariffs"
+ ],
+ "시간대별 변동 요금제 기반 에너지 비용 분석 및 최적 가동 시간대 추천을 통한 원가 절감": [
+  "時間帯別変動料金に基づくエネルギーコスト分析と最適稼働時間帯の推奨による原価削減",
+  "Analyzes cost under time-of-use pricing and recommends the cheapest operating windows"
+ ],
+ "에너지 소비 데이터 + 시간대별 요금(Tariff) 매핑 -> 전력 원가 산출 -> Energy Agent 기반 비용 최적화 시뮬레이션": [
+  "エネルギー消費データと時間帯別料金のマッピング → 電力原価の算出 → Energy Agentによるコスト最適化シミュレーション",
+  "Consumption data mapped to tariffs -> power cost -> Energy Agent cost-optimization simulation"
+ ],
+ "에너지 원가 비중 분석 및 피크 시간대 부하 이동(Load Shifting)을 통한 연간 비용 10% 절감 목표": [
+  "エネルギー原価比率の分析とピーク時間帯のロードシフトによる年間コスト10%削減の目標",
+  "Targets a 10 % annual cost reduction through cost-share analysis and peak load shifting"
+ ],
+ "에너지 비용 분석 리포트 및 AI 기반 비용 최적화 권고안": [
+  "エネルギーコスト分析レポートとAIによるコスト最適化提案",
+  "Energy cost report and AI cost-optimization proposal"
+ ],
+ "피크 시간대 부하 분산 추천 + 자동 제어 연동": [
+  "ピーク時間帯の負荷分散推奨と自動制御連携",
+  "Peak load-shifting advice with automated control"
+ ],
+ "최대 수요 전력(Peak Demand) 관리 및 계약 전력 초과 방지를 위한 지능형 부하 제어": [
+  "最大需要電力(Peak Demand)の管理と契約電力超過を防ぐインテリジェント負荷制御",
+  "Intelligent load control to manage peak demand and stay inside the contract limit"
+ ],
+ "실시간 총 전력 수요 예측 -> 피크 임계치 도달 전 경고 트리거 -> 비필수 설비 순차적 부하 차단(Load Shedding) 알고리즘 실행": [
+  "リアルタイム総電力需要の予測 → ピークしきい値到達前の警告トリガー → 非重要設備の順次ロードシェディング実行",
+  "Live demand forecast -> pre-threshold warning -> staged load shedding of non-critical equipment"
+ ],
+ "계약 전력 대비 피크 부하 90% 이내 관리 및 피크 시간대 자동 부하 제어 성공률 100% 확보": [
+  "契約電力に対するピーク負荷を90%以内に管理し、ピーク時間帯の自動負荷制御の成功率100%を確保",
+  "Keeps peak load within 90 % of the contract and lands automated peak control every time"
+ ],
+ "피크 부하 관리 인터페이스 및 자동 제어 실행 이력 로그": [
+  "ピーク負荷管理インターフェースと自動制御の実行履歴ログ",
+  "Peak-load management console and automated-control execution log"
+ ],
+ "지능형 CCTV 화재 감시": [
+  "インテリジェントCCTV火災監視",
+  "Smart CCTV Fire Watch"
+ ],
+ "AI 비전 기반 화재/연기 실시간 감지 및 경보": [
+  "AIビジョンによる火災・煙のリアルタイム検知と警報",
+  "AI-vision fire and smoke detection with alerting"
+ ],
+ "공장 내 설치된 지능형 CCTV를 통해 화재 및 연기를 실시간으로 감지하여 대형 사고 예방": [
+  "工場内のインテリジェントCCTVで火災と煙をリアルタイムに検知し、重大事故を予防",
+  "Detects fire and smoke on plant CCTV in real time to prevent major incidents"
+ ],
+ "CCTV 비디오 스트림 분석 -> YOLOv8 기반 화재/연기 탐지 -> Safety Agent 위험 등급 판정 및 즉각 알림": [
+  "CCTV映像ストリーム解析 → YOLOv8による火災・煙検出 → Safety Agentの危険度判定と即時通知",
+  "CCTV stream analysis -> YOLOv8 fire/smoke detection -> Safety Agent severity grading and instant alert"
+ ],
+ "화재 감지 정확도 99% 이상 및 감지 후 알림 전파 시간 2초 이내 유지": [
+  "火災検知精度99%以上、検知後の通知伝達時間2秒以内を維持",
+  "Keeps fire-detection accuracy above 99 % and alert propagation under two seconds"
+ ],
+ "실시간 CCTV 화재 감시 뷰 및 위험 구역 하이라이트": [
+  "リアルタイムCCTV火災監視ビューと危険区域のハイライト",
+  "Live CCTV fire-watch view with hazard-zone highlighting"
+ ],
+ "AMR 충돌 방지 시스템": [
+  "AMR衝突防止システム",
+  "AMR Collision Avoidance"
+ ],
+ "AMR-작업자 근접 감지 및 자동 긴급 정지": [
+  "AMRと作業者の近接検知と自動緊急停止",
+  "AMR-worker proximity detection with automatic emergency stop"
+ ],
+ "자율 주행 로봇(AMR)과 작업자 간의 거리를 실시간으로 계산하여 충돌 위험 시 자동 정지": [
+  "自律走行ロボット(AMR)と作業者の距離をリアルタイムに算出し、衝突リスク時に自動停止",
+  "Continuously measures AMR-to-worker distance and stops automatically on collision risk"
+ ],
+ "LiDAR/UWB 센서 데이터 융합 -> 작업자 위치 추적 -> 충돌 위험 반경 진입 시 긴급 정지 명령(Interlock) 송신": [
+  "LiDAR/UWBセンサーデータの融合 → 作業者位置のトラッキング → 衝突リスク半径への進入時にインターロック緊急停止指令を送信",
+  "LiDAR/UWB sensor fusion -> worker position tracking -> interlock e-stop when the risk radius is breached"
+ ],
+ "충돌 사고 제로(Zero) 및 센서 데이터 처리 지연 시간 50ms 이내 유지": [
+  "衝突事故ゼロとセンサーデータ処理遅延50ms以内の維持",
+  "Zero collisions with sensor-processing latency under 50 ms"
+ ],
+ "AMR 주변 위험 반경 시각화 및 실시간 근접도 모니터": [
+  "AMR周辺の危険半径の可視化とリアルタイム近接モニター",
+  "AMR hazard-radius visualization and live proximity monitor"
+ ]
+}

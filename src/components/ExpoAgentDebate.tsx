@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Cpu, MessageSquare, CheckCircle2, AlertTriangle, Zap, Activity, ChevronRight } from 'lucide-react';
+import { t } from '../i18n';
 
 interface AgentMessage {
   id: string;
@@ -31,6 +32,16 @@ const AGENT_CONFIGS = {
   '에너지 에이전트': { color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', icon: '⚡' },
   '안전 에이전트': { color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30', icon: '🛡️' },
   '슈퍼바이저': { color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', icon: '🧠' },
+};
+
+/** Compact labels for the agent status bar; the full name is the catalog key. */
+const AGENT_SHORT_NAMES: Record<string, string> = {
+  '품질 에이전트': '품질',
+  '예지보전 에이전트': '예지보전',
+  '생산 에이전트': '생산',
+  '에너지 에이전트': '에너지',
+  '안전 에이전트': '안전',
+  '슈퍼바이저': '슈퍼바이저',
 };
 
 const DEBATE_SCRIPTS: Record<number, AgentMessage[]> = {
@@ -91,7 +102,7 @@ export default function ExpoAgentDebate({ scenarioIdx, isActive, onClose }: Expo
     setIsRunning(true);
     setIsComplete(false);
     setTypingAgent(null);
-    timeoutsRef.current.forEach(t => clearTimeout(t));
+    timeoutsRef.current.forEach(timer => clearTimeout(timer));
     timeoutsRef.current = [];
 
     script.forEach((msg, idx) => {
@@ -119,7 +130,7 @@ export default function ExpoAgentDebate({ scenarioIdx, isActive, onClose }: Expo
       startDebate();
     }
     return () => {
-      timeoutsRef.current.forEach(t => clearTimeout(t));
+      timeoutsRef.current.forEach(timer => clearTimeout(timer));
     };
   }, [isActive, scenarioIdx]);
 
@@ -136,11 +147,11 @@ export default function ExpoAgentDebate({ scenarioIdx, isActive, onClose }: Expo
 
   const getTypeLabel = (type: AgentMessage['type']) => {
     switch (type) {
-      case 'analysis': return { label: '분석', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
-      case 'proposal': return { label: '제안', color: 'text-green-400 bg-green-500/10 border-green-500/20' };
-      case 'objection': return { label: '이의', color: 'text-red-400 bg-red-500/10 border-red-500/20' };
-      case 'agreement': return { label: '동의', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
-      case 'decision': return { label: '최종 결정', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
+      case 'analysis': return { label: t('분석'), color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
+      case 'proposal': return { label: t('제안'), color: 'text-green-400 bg-green-500/10 border-green-500/20' };
+      case 'objection': return { label: t('이의'), color: 'text-red-400 bg-red-500/10 border-red-500/20' };
+      case 'agreement': return { label: t('동의'), color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
+      case 'decision': return { label: t('최종 결정'), color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
       default: return { label: '', color: '' };
     }
   };
@@ -167,21 +178,21 @@ export default function ExpoAgentDebate({ scenarioIdx, isActive, onClose }: Expo
               <MessageSquare size={16} className="text-purple-400" />
             </div>
             <div>
-              <h3 className="text-sm font-black text-text-primary">AI 에이전트 실시간 토론</h3>
-              <p className="text-[10px] text-text-secondary font-mono">MULTI-AGENT ORCHESTRATION DEBATE</p>
+              <h3 className="text-sm font-black text-text-primary">{t('AI 에이전트 실시간 토론')}</h3>
+              <p className="text-[10px] text-text-secondary font-mono">{t('MULTI-AGENT ORCHESTRATION DEBATE')}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {isRunning && (
               <span className="flex items-center gap-1.5 text-[10px] text-accent font-bold">
                 <Activity size={10} className="animate-pulse" />
-                토론 진행 중
+                {t('토론 진행 중')}
               </span>
             )}
             {isComplete && (
               <span className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-bold">
                 <CheckCircle2 size={10} />
-                합의 완료
+                {t('합의 완료')}
               </span>
             )}
             <button
@@ -205,7 +216,7 @@ export default function ExpoAgentDebate({ scenarioIdx, isActive, onClose }: Expo
                 'bg-surface border-border text-text-secondary opacity-50'
               }`}>
                 <span>{config.icon}</span>
-                <span className="hidden sm:inline">{name.replace(' 에이전트', '')}</span>
+                <span className="hidden sm:inline">{t(AGENT_SHORT_NAMES[name] ?? name)}</span>
                 {isTyping && <span className="animate-bounce">...</span>}
               </div>
             );
@@ -226,12 +237,12 @@ export default function ExpoAgentDebate({ scenarioIdx, isActive, onClose }: Expo
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-base">{msg.agentIcon}</span>
-                    <span className={`text-xs font-black ${msg.agentColor}`}>{msg.agent}</span>
+                    <span className={`text-xs font-black ${msg.agentColor}`}>{t(msg.agent)}</span>
                     <span className={`text-[9px] px-1.5 py-0.5 rounded-full border font-bold ${typeInfo.color}`}>
                       {typeInfo.label}
                     </span>
                   </div>
-                  <p className="text-xs text-text-primary leading-relaxed">{msg.message}</p>
+                  <p className="text-xs text-text-primary leading-relaxed">{t(msg.message)}</p>
                 </motion.div>
               );
             })}
@@ -248,9 +259,9 @@ export default function ExpoAgentDebate({ scenarioIdx, isActive, onClose }: Expo
               >
                 <span className="text-base">{AGENT_CONFIGS[typingAgent as keyof typeof AGENT_CONFIGS]?.icon || '🤖'}</span>
                 <span className={`text-xs font-bold ${AGENT_CONFIGS[typingAgent as keyof typeof AGENT_CONFIGS]?.color || 'text-text-secondary'}`}>
-                  {typingAgent}
+                  {t(typingAgent)}
                 </span>
-                <span className="text-text-secondary text-xs">분석 중</span>
+                <span className="text-text-secondary text-xs">{t('분석 중')}</span>
                 <div className="flex gap-1">
                   {[0, 1, 2].map(i => (
                     <motion.div
@@ -276,10 +287,10 @@ export default function ExpoAgentDebate({ scenarioIdx, isActive, onClose }: Expo
             className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs font-black disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity flex items-center gap-2"
           >
             <Zap size={12} />
-            {isComplete ? '다시 실행' : '토론 시작'}
+            {isComplete ? t('다시 실행') : t('토론 시작')}
           </button>
           <p className="text-[10px] text-text-secondary">
-            {visibleMessages.length} / {script.length} 메시지
+            {visibleMessages.length} / {script.length} {t('메시지')}
           </p>
         </div>
       </motion.div>

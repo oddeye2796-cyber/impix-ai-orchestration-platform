@@ -1,0 +1,226 @@
+{
+ "Scenario C: 피크 전력 한계 돌파 억제": [
+  "Scenario C: ピーク電力の限界突破の抑制",
+  "Scenario C: Holding back the power peak"
+ ],
+ "한낮 최고 고온 환경의 에너지 전력 피크 위력 완화 및 ESS, AMR 동원 친환경 연계 시나리오": [
+  "日中の高温環境における電力ピークを緩和し、ESSとAMRを動員して環境負荷を抑えるシナリオ",
+  "Softening the midday heat-driven power peak by bringing the ESS and idle AMRs into play"
+ ],
+ "전력 피크 경계 모니터링": [
+  "電力ピークの警戒監視",
+  "Peak-demand watch"
+ ],
+ "01 / 04단계: 에너지 피크 위험 감시": [
+  "ステップ01 / 04: エネルギーピークのリスク監視",
+  "Step 01 / 04: Peak risk monitoring"
+ ],
+ "💡 전력 누적 경보에 대응하는 '에너지 절전 우회 모드'를 [승인]해 보세요!": [
+  "💡 電力累積警報に対応する「省エネ迂回モード」を[承認]してみてください!",
+  "💡 Approve the energy-saving bypass mode that answers the cumulative power alarm."
+ ],
+ "외기 온도 급등으로 냉방 부하가 누적되며 한전 계약 피크 전력 한계치 돌파 30분 전입니다. AI 에너지 에이전트가 특정 비핵심 라인 감속 제어 및 비상 발전 충방전 제어를 즉각 가이드라인으로 전파합니다.": [
+  "外気温の急上昇で冷房負荷が積み上がり、契約ピーク電力の上限突破まで30分です。AIエネルギーエージェントが、非重要ラインの減速制御と非常用電源の充放電制御を直ちにガイドラインとして展開します。",
+  "A jump in outside temperature is stacking up cooling load, and the contracted peak limit is 30 minutes away. The AI energy agent immediately issues guidance to slow non-critical lines and manage backup charge/discharge."
+ ],
+ "계약 전력 피크 대비 전사 과부하 상태 파악": [
+  "契約ピーク電力に対する全社の過負荷状況を把握する",
+  "Read the plant-wide overload against the contracted peak"
+ ],
+ "에너지 에이전트의 '피크 완화 추천 가속 감속 조치' [승인] 승낙": [
+  "エネルギーエージェントの「ピーク緩和のための減速措置」を[承認]する",
+  "Approve the energy agent's peak-shaving slow-down"
+ ],
+ "전사 부하 감소 피드백 수치 및 제어 로그 이력 검조": [
+  "全社の負荷低減のフィードバック値と制御ログの履歴を確認する",
+  "Check the plant-wide load-reduction feedback and the control log"
+ ],
+ "AI 피크 에너지 부하 정비": [
+  "AIによるピークエネルギー負荷の調整",
+  "AI peak load management"
+ ],
+ "02 / 04단계: 피크 실시간 에너지 제어": [
+  "ステップ02 / 04: ピーク時のリアルタイムエネルギー制御",
+  "Step 02 / 04: Live peak energy control"
+ ],
+ "💡 한계치(Limit) 대비 실시간 라인 합산 전력 사용 추이를 모니터링하세요!": [
+  "💡 上限値に対する、ライン合算のリアルタイム電力使用推移を監視してみてください!",
+  "💡 Track the combined line draw against the limit in real time."
+ ],
+ "외기 전고 온도 부하 극대화 시 냉방 칠러 전력 소비가 폭등합니다. AI 에너지 에이전트는 15분 단위 누적 전력을 정교하게 타겟 연동하여 피크 임계치에 도달하지 않도록 피크 억제 가이드 제어를 발령합니다.": [
+  "外気温が最高水準まで上がると冷房チラーの電力消費が跳ね上がります。AIエネルギーエージェントは15分単位の累積電力を精緻に目標へ連動させ、ピークしきい値に到達しないよう抑制制御を発令します。",
+  "When outside temperature tops out, chiller draw spikes. The AI energy agent tracks 15-minute cumulative demand against target and issues shaving commands so the threshold is never reached."
+ ],
+ "실시간 정오 시간 전후 전사 피크 위험 한계치 격차 대조": [
+  "正午前後の全社ピークリスクと上限値との差をリアルタイムに比較する",
+  "Compare plant-wide peak risk against the limit either side of noon"
+ ],
+ "피크 부하 제어 알고리즘의 유휴 AMR 배터리 방전 지지선 이력 파악": [
+  "ピーク負荷制御アルゴリズムによる、遊休AMRバッテリーの放電支援の履歴を確認する",
+  "Look at how the peak-control algorithm has leaned on idle AMR batteries"
+ ],
+ "탄소 및 전력 통제 정책 가드": [
+  "炭素と電力の統制ポリシーガード",
+  "Carbon & power policy guard"
+ ],
+ "03 / 04단계: CO2 배출량 한계 관리": [
+  "ステップ03 / 04: CO2排出量の上限管理",
+  "Step 03 / 04: CO2 ceiling management"
+ ],
+ "💡 Supervisor Center of 'Energy Allocation Level' 가이드 등급을 확인해 보세요!": [
+  "💡 Supervisor Centerの「Energy Allocation Level」のガイド等級を確認してみてください!",
+  "💡 Check the Energy Allocation Level grade in the Supervisor Center."
+ ],
+ "AI Supervisor는 한낮 시간 동안 전사에너지 배분 가이드를 상향 기재하고, 조업 스케줄 분배 정책을 가동하여 전원에이전트의 합산 탄소 배출량이 목표치를 침범하지 않도록 통제 사령을 내립니다.": [
+  "AI Supervisorは日中の全社エネルギー配分ガイドを引き上げ、操業スケジュールの配分ポリシーを起動して、全エージェントの合計炭素排出量が目標値を超えないよう統制指令を出します。",
+  "Through the midday hours the AI Supervisor raises the plant-wide energy allocation guidance and activates the scheduling policy, holding every agent's combined carbon output inside the target."
+ ],
+ "Energy Allocation 탄소 저감 정책 우선순위 체크": [
+  "Energy Allocationの炭素削減ポリシーの優先順位を確認する",
+  "Check the priority of the energy-allocation carbon policy"
+ ],
+ "에스컬레이션 로그 수립 및 실시간 시뮬레이션 지수 감상": [
+  "エスカレーションログの生成とリアルタイムのシミュレーション指数を確認する",
+  "Watch the escalation log build and the live simulation index"
+ ],
+ "ESS 연동 피크 셰이빙 토론": [
+  "ESS連携によるピークシェービング討論",
+  "ESS peak-shaving debate"
+ ],
+ "04 / 04단계: ESS 연쇄 최적 오케스트레이션": [
+  "ステップ04 / 04: ESS連鎖の最適オーケストレーション",
+  "Step 04 / 04: ESS-chained orchestration"
+ ],
+ "💡 토론 비주얼라이저에서 [정오 피크 전력 한계 제어 충돌]을 동작하세요!": [
+  "💡 討論ビジュアライザーで[正午のピーク電力上限制御の衝突]を実行してください!",
+  "💡 Run [Midday peak-limit control conflict] in the debate visualizer."
+ ],
+ "속도를 낮추어야 한다는 에너지 에이전트와, 속도 축소 시 출하량 미달을 고지하는 생산 에이전트, 유휴 AMR 배터리 버퍼를 활용하자고 제안하는 물류 에이전트까지 얽힌 복합 전력 최적화 토론을 역동적으로 확인합니다.": [
+  "減速すべきだと主張するエネルギーエージェント、減速すれば出荷量が不足すると訴える生産エージェント、そして遊休AMRのバッテリーをバッファとして使おうと提案する物流エージェント——三者が絡み合う複合的な電力最適化の討論をダイナミックにご覧いただけます。",
+  "The energy agent wants to slow down, the production agent says that misses the shipment, and the logistics agent proposes using idle AMR batteries as a buffer. Watch that three-way power-optimization debate unfold."
+ ],
+ "'정오 피크 전력 한계 제어 충돌' 복합 시나리오 가동": [
+  "「正午のピーク電力上限制御の衝突」複合シナリオを実行する",
+  "Run the 'midday peak-limit conflict' composite scenario"
+ ],
+ "라이브 합조 타임라인 순차 흐름 및 가이 가속 스킨": [
+  "ライブ調整タイムラインの順次進行と再生速度の切替",
+  "Step through the live arbitration timeline and its playback speed"
+ ],
+ "AMR 충전 중단 및 ESS 배터리 방전 지원 합의 의사결정 수립 감상": [
+  "AMRの充電中断とESSバッテリー放電支援について合意が形成される過程を観る",
+  "Watch them agree to pause AMR charging and back it with ESS discharge"
+ ],
+ "Scenario D: 긴급 러시 오더 & 불량 보증": [
+  "Scenario D: 緊急ラッシュオーダーと不良ゼロ保証",
+  "Scenario D: Rush order & zero-defect guarantee"
+ ],
+ "고부가 고객사의 긴급 하루 출하량 대응을 위한 라인 스피드업 및 불량률 제로 분격 시나리오": [
+  "高付加価値顧客の緊急な当日出荷に対応するため、ラインを増速しつつ不良率ゼロを守り抜くシナリオ",
+  "Speeding the line for a high-value customer's same-day shipment while holding the defect rate at zero"
+ ],
+ "러시 오더 초가속 모드": [
+  "ラッシュオーダーの超加速モード",
+  "Rush-order overdrive"
+ ],
+ "01 / 04단계: 긴급 물류 대응": [
+  "ステップ01 / 04: 緊急物流対応",
+  "Step 01 / 04: Urgent logistics"
+ ],
+ "💡 '패키징 속도 120% 가속 수용안' 카드를 찾아 기재 [승인]해 보세요!": [
+  "💡「パッケージング速度120%への加速受入案」のカードを探して[承認]してみてください!",
+  "💡 Find the 'accept 120 % packaging speed' card and approve it."
+ ],
+ "글로벌 유통사에서 다음 근무조까지 긴급 물량을 수송 완료해 달라는 특급 거래 안건이 생성되었습니다. 물류 에이전트의 권고에 맞춰 생산 구동력을 안전 범위 내 최대치인 120%까지 끌어올리는 추천 연동 제어입니다.": [
+  "グローバル流通企業から、次の勤務シフトまでに緊急数量の輸送を完了してほしいという特急案件が発生しました。物流エージェントの推奨に沿って、生産の駆動力を安全範囲内の最大値である120%まで引き上げる連動制御の提案です。",
+  "A global distributor has raised an express request: the urgent volume must ship by the next shift. Following the logistics agent's advice, this proposal takes drive power up to 120 % — the top of the safe range."
+ ],
+ "긴급 델리버리 요청 수치 및 가동 종합 현황 인지": [
+  "緊急デリバリー要求の数値と稼働の総合状況を把握する",
+  "Take in the urgent delivery figures and the overall operating picture"
+ ],
+ "AI가 긴급하게 하달한 '라인 속도 초속 제어안' [승인] 실행": [
+  "AIが緊急に発した「ライン速度の高速制御案」を[承認]する",
+  "Approve the AI's urgent line-speed control proposal"
+ ],
+ "전체 적체 슬롯 and AMR 대기 상태 실시간 추적": [
+  "滞留スロット全体とAMRの待機状態をリアルタイムに追跡する",
+  "Track backlog slots and AMR standby status in real time"
+ ],
+ "초가속 패키징 품질 비전 검사": [
+  "超加速パッケージングの品質ビジョン検査",
+  "Overdrive packaging vision inspection"
+ ],
+ "02 / 04단계: 초경량 고품질 비전 탐지": [
+  "ステップ02 / 04: 超軽量・高品質ビジョン検出",
+  "Step 02 / 04: Lightweight high-precision vision"
+ ],
+ "💡 120% 초고속 라인 가동 상태에서 패키징 접착 비전 프레임을 실시간 진단해보세요!": [
+  "💡 120%の超高速稼働状態で、パッケージング接着のビジョンフレームをリアルタイムに診断してみてください!",
+  "💡 Diagnose the packaging-seal vision frames live while the line runs at 120 %."
+ ],
+ "초고속 가동 시에는 미세 기포나 밀봉 불량이 연속될 위험이 있습니다. AI 품질 에이전트는 YOLOv8 및 PatchCore 검증 이미지를 바탕으로 병 밀봉 검사 및 OCR 바코드를 오차 없이 고속 판독합니다.": [
+  "超高速稼働時には微細な気泡や密封不良が連続して発生するおそれがあります。AI品質エージェントはYOLOv8とPatchCoreの検証画像をもとに、ボトルの密封検査とOCRバーコードを誤りなく高速に読み取ります。",
+  "At extreme line speeds, micro-bubbles and seal defects can come in runs. The AI quality agent reads bottle seals and OCR barcodes at speed and without error, using YOLOv8 and PatchCore verification frames."
+ ],
+ "비전 검사 프레임 상의 실시간 패키징 OK/NG 전사 분류 확인": [
+  "ビジョン検査フレーム上でパッケージングのOK/NG分類をリアルタイムに確認する",
+  "Watch packaging sort into OK/NG live on the inspection frames"
+ ],
+ "불량 탐지를 위한 결함 스코어(Defect Score) 변화 시계열 분석": [
+  "不良検出のための欠陥スコアの時系列変化を分析する",
+  "Analyse how the defect score moves over time"
+ ],
+ "SLA 납량 및 불량 제로 가드": [
+  "SLA納期と不良ゼロのガード",
+  "SLA delivery & zero-defect guard"
+ ],
+ "03 / 04단계: SLA 납기 및 품질 보증 가드": [
+  "ステップ03 / 04: SLA納期と品質保証のガード",
+  "Step 03 / 04: SLA & quality-assurance guard"
+ ],
+ "💡 Supervisor Center에서 'SLA Delivery Priority' 정책 가드를 식별하세요!": [
+  "💡 Supervisor Centerで「SLA Delivery Priority」のポリシーガードを見つけてください!",
+  "💡 Spot the SLA Delivery Priority policy guard in the Supervisor Center."
+ ],
+ "초합리적 생산에서도 완벽 품질 수치가 최우선시 되어야 출고가 인정됩니다. AI Supervisor는 목표 불량율 가드레일 정책을 동시 가동하여 전원에이전트의 고품질 밀착 사수 비율을 종합 감시합니다.": [
+  "どれほど生産を突き詰めても、出荷が認められるのは完璧な品質数値が最優先されたときだけです。AI Supervisorは目標不良率のガードレールポリシーを同時に稼働させ、全エージェントが高品質を死守できているかを総合的に監視します。",
+  "However hard the line is pushed, nothing ships unless the quality numbers come first. The AI Supervisor runs the target-defect guardrail policy alongside, watching how tightly every agent holds the quality line."
+ ],
+ "SLA 납기 사전 보증 가이드라인 적용 상태 식별": [
+  "SLA納期の事前保証ガイドラインの適用状況を確認する",
+  "Identify how the SLA pre-assurance guidance is applied"
+ ],
+ "하단 각 에이전트 분할 목표 준수 지점 종합 관장": [
+  "下部に並ぶ各エージェントの分割目標の遵守状況を総合的に把握する",
+  "Take in how each agent is tracking against its share of the goal"
+ ],
+ "초가속 스크래치 방어 토론": [
+  "超加速時のスクラッチ防止討論",
+  "Overdrive scratch-defence debate"
+ ],
+ "04 / 04단계: 품질-생산-물류 상협 합의": [
+  "ステップ04 / 04: 品質・生産・物流の三者合意",
+  "Step 04 / 04: Quality-production-logistics accord"
+ ],
+ "💡 [B라인 생산 속도 최적화 충돌] 시나리오를 선택하여 오케스트레이션을 확인하세요!": [
+  "💡[Bライン生産速度の最適化衝突]シナリオを選び、オーケストレーションを確認してください!",
+  "💡 Pick the [Line B speed-optimization conflict] scenario and watch the orchestration."
+ ],
+ "속도를 높여서 납기를 맞추려는 '물류'의 급제안에 대하여 속도 증가 시 열접합 스크래치 불량이 치솟는다는 '품질'과, 발열 온도 수치를 냉각 파라미터 미세 조정으로 억제하자는 '예지보전', AMR 완충 스와프 라인을 조력하는 '물류 에이전트'가 최종 도출하는 황금 협업을 관찰합니다.": [
+  "増速で納期を守ろうとする「物流」の急な提案に対し、増速すればヒートシールのスクラッチ不良が急増すると訴える「品質」、発熱を冷却パラメータの微調整で抑えようとする「予知保全」、そしてAMRのバッファスワップで支える「物流エージェント」——四者が最終的に導き出す黄金の協業をご覧ください。",
+  "Logistics proposes going faster to make the deadline; quality warns heat-seal scratch defects will spike; maintenance offers to hold the temperature down with fine cooling adjustments; logistics backs it with an AMR buffer swap. Watch the golden compromise they reach."
+ ],
+ "'B라인 생산 속도 최적화 충돌' 시나리오 선택": [
+  "「Bライン生産速度の最適化衝突」シナリオを選択する",
+  "Select the 'Line B speed-optimization conflict' scenario"
+ ],
+ "실시간 다자 협조 합의 라이브 재생 관장": [
+  "多者間の協調と合意の形成をライブ再生で追う",
+  "Follow the multi-party agreement play out live"
+ ],
+ "냉각 밸브 개폐 압력 보정 + 전하 AMR 선회 이송을 융합한 합의안 확인": [
+  "冷却バルブの開閉圧力補正と、充電済みAMRの迂回搬送を組み合わせた合意案を確認する",
+  "Review the settlement that combines cooling-valve pressure trim with rerouted charged AMRs"
+ ]
+}

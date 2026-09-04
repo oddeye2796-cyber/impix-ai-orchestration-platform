@@ -1,0 +1,330 @@
+{
+ "엑스포 셀프 시연 가이드 시작": [
+  "展示会セルフデモガイドを開始",
+  "Start the self-guided expo demo"
+ ],
+ "셀프 시연 가이드 가동 중 (종료하려면 클릭)": [
+  "セルフデモガイド実行中(クリックで終了)",
+  "Self-guided demo running (click to exit)"
+ ],
+ "시연 가이드 종료": [
+  "デモガイドを終了",
+  "End the demo guide"
+ ],
+ "투어 종료": [
+  "ツアーを終了",
+  "End tour"
+ ],
+ "🔥 실습 시나리오 테마 선택 (체험 변경)": [
+  "🔥 実習シナリオのテーマを選択(体験を切替)",
+  "🔥 Pick a hands-on theme (switch experience)"
+ ],
+ "테마 개요:": [
+  "テーマ概要:",
+  "Theme:"
+ ],
+ "{step}단계로 이동": [
+  "ステップ{step}へ移動",
+  "Go to step {step}"
+ ],
+ "🎉 실습 미션 통과 완료!": [
+  "🎉 実習ミッション達成!",
+  "🎉 Mission complete!"
+ ],
+ "축하합니다! 이 단계의 실습 미션과 모니터링 체크리스트가 성공적으로 검증되었습니다. 다음으로 전진하세요!": [
+  "おめでとうございます! このステップの実習ミッションと監視チェックリストがすべて検証されました。次へ進みましょう!",
+  "Nicely done — this step's mission and monitoring checklist are both verified. On to the next one!"
+ ],
+ "🎯 관람객 실습 미션": [
+  "🎯 来場者ミッション",
+  "🎯 Visitor mission"
+ ],
+ "실시간 모니터링 체크리스트": [
+  "リアルタイム監視チェックリスト",
+  "Live monitoring checklist"
+ ],
+ "모두 완료": [
+  "すべて完了",
+  "Complete all"
+ ],
+ "◀ 이전": [
+  "◀ 前へ",
+  "◀ Back"
+ ],
+ "⚡ 라이브 토론 실행": [
+  "⚡ ライブ討論を実行",
+  "⚡ Run live debate"
+ ],
+ "화면 이동": [
+  "画面へ移動",
+  "Go to view"
+ ],
+ "종료 [닫기]": [
+  "終了[閉じる]",
+  "Finish [close]"
+ ],
+ "다음 ▶": [
+  "次へ ▶",
+  "Next ▶"
+ ],
+ "이벤트 대응": [
+  "イベント対応",
+  "Event response"
+ ],
+ "지표, 에이전트, 로그 검색...": [
+  "指標・エージェント・ログを検索…",
+  "Search metrics, agents, logs..."
+ ],
+ "공장에 대해 무엇이든 물어보세요...": [
+  "工場について何でも聞いてください…",
+  "Ask anything about the factory..."
+ ],
+ "안녕하세요! IMPIX AI Supervisor입니다. 무엇을 도와드릴까요?": [
+  "こんにちは! IMPIX AI Supervisorです。どのようなご用件でしょうか?",
+  "Hello — this is the IMPIX AI Supervisor. How can I help?"
+ ],
+ "Scenario A: 전사 생산 극대화 & 통합 OEE": [
+  "Scenario A: 全社生産最大化と統合OEE",
+  "Scenario A: Plant-wide output & unified OEE"
+ ],
+ "생산 극대화 목표 하에 품질, 예지보전, 에너지, 안전, 물류 등 전 에이전트의 실시간 최적화 협업 시나리오": [
+  "生産最大化を目標に、品質・予知保全・エネルギー・安全・物流の全エージェントがリアルタイムに最適化を協働するシナリオ",
+  "Every agent — quality, maintenance, energy, safety, logistics — optimizing together under a maximize-output goal"
+ ],
+ "생산 극대화": [
+  "生産最大化",
+  "Max output"
+ ],
+ "돌발 예방": [
+  "突発予防",
+  "Prevention"
+ ],
+ "저에너지 피크": [
+  "低エネルギーピーク",
+  "Energy peak"
+ ],
+ "러시오더 품질": [
+  "ラッシュ品質",
+  "Rush quality"
+ ],
+ "실시간 공정 진단 & 추천": [
+  "リアルタイム工程診断と推奨",
+  "Live process diagnosis & advice"
+ ],
+ "01 / 04단계: 통합 모니터링": [
+  "ステップ01 / 04: 統合モニタリング",
+  "Step 01 / 04: Unified monitoring"
+ ],
+ "💡 'AI 추천 제어 안건' 중 하나를 선택하시고 [승인] 버튼을 눌러보세요!": [
+  "💡「AI推奨の制御案」を一つ選び、[承認]ボタンを押してみてください!",
+  "💡 Pick one of the AI control proposals and hit [Approve]."
+ ],
+ "전 공장의 가동 종합 효율(OEE), 불량률, 온-불량 상관관계를 종합하여 수 밀리초만에 이상 징후를 감지하고, 에이전트가 생성한 추천 제어값을 오퍼레이터가 직접 확인 및 실시간 승인하는 시나리오를 자유롭게 조작해볼 수 있습니다.": [
+  "工場全体のOEE、不良率、温度と不良の相関を統合して数ミリ秒で異常予兆を検知し、エージェントが生成した推奨制御値をオペレーターが自ら確認してリアルタイムに承認する——その一連の流れを自由に操作して体験できます。",
+  "OEE, defect rate and temperature-defect correlation are fused to spot anomalies in milliseconds, and you get to review and approve the agents' proposed set-points yourself, live."
+ ],
+ "최상단 KPI 카드 및 '설비 가동 시간' 차트 감상": [
+  "最上段のKPIカードと「設備稼働時間」チャートを確認する",
+  "Look over the top KPI cards and the equipment-uptime chart"
+ ],
+ "실시간 AI 추천 목록 중 1개를 [승인] 또는 [조정 기재]해보기": [
+  "リアルタイムAI推奨リストから1件を[承認]または[調整して記入]してみる",
+  "Approve — or adjust — one item in the live AI recommendation list"
+ ],
+ "제어 덮어쓰기 기록 팝업이나 이력 변화 검증": [
+  "制御オーバーライドの記録ポップアップと履歴の変化を確認する",
+  "Check the override-log popup and the change in history"
+ ],
+ "설비 RUL 수명 예측 진단": [
+  "設備RUL寿命予測の診断",
+  "Equipment RUL forecast"
+ ],
+ "02 / 04단계: AI 설비 보전": [
+  "ステップ02 / 04: AI設備保全",
+  "Step 02 / 04: AI maintenance"
+ ],
+ "💡 GBR 인공지능 잔여 수명 예측 곡선과 AI 추천 정비 우선순위를 확인하세요!": [
+  "💡 GBRによる残存寿命予測曲線と、AI推奨の整備優先順位を確認してみてください!",
+  "💡 Check the GBR remaining-life curve and the AI's maintenance priority ranking."
+ ],
+ "Gradient Boosting Regression(GBR) 인공지능 알고리즘이 3축 진동값 및 냉각 온도를 머신러닝 분석하여 72시간 내 고장 발생 여부를 정밀 예측합니다. 설비 정비사의 대응 시간을 획기적으로 늘려 사전에 교체 오더를 내림으로써 예상치 못한 가동 중단을 사전에 무력화합니다.": [
+  "Gradient Boosting Regression(GBR)アルゴリズムが3軸振動値と冷却温度を機械学習で分析し、72時間以内の故障発生を精密に予測します。保全担当者の対応時間を大幅に確保し、事前に交換オーダーを発行することで、予期せぬ稼働停止を未然に無力化します。",
+  "A gradient-boosting regression model analyses three-axis vibration and cooling temperature to predict failure within 72 hours. That gives maintenance far more lead time — the replacement order goes out early and the unplanned stop never happens."
+ ],
+ "수명 위험 72시간 미만 경고 시스템 확인": [
+  "残存寿命72時間未満の警告システムを確認する",
+  "Look at the sub-72-hour life warning"
+ ],
+ "AI가 산출해 낸 최적 보전 스케줄링 가이드라인 읽어보기": [
+  "AIが算出した最適な保全スケジュールのガイドラインを読む",
+  "Read the AI's optimal maintenance schedule guidance"
+ ],
+ "에이전트 지휘 컨트롤 타워": [
+  "エージェント指揮コントロールタワー",
+  "Agent command tower"
+ ],
+ "03 / 04단계: 에이전트 지휘관": [
+  "ステップ03 / 04: エージェント指揮官",
+  "Step 03 / 04: Agent commander"
+ ],
+ "💡 'Active Goal' 영역과 '수립된 정책' 가드가 충돌하는 것을 찾아보세요!": [
+  "💡「Active Goal」の領域と「策定済みポリシー」のガードが衝突している箇所を探してみてください!",
+  "💡 Find where the Active Goal collides with the established policy guardrails."
+ ],
+ "생산 극대화와 안전/에너지 가드레일은 수시로 상충합니다. AI Supervisor는 최상위 전사 목표(Active Goal)를 제시하고, 각 에이전트들에게 하위 작업 목록을 완벽하게 분해 매핑하여 지휘하는 AI 컨트롤 타워를 감상해보세요.": [
+  "生産の最大化と安全・エネルギーのガードレールは頻繁に衝突します。AI Supervisorが全社の最上位目標(Active Goal)を提示し、各エージェントへ下位タスクを余さず分解・マッピングして指揮する——そのAIコントロールタワーをご覧ください。",
+  "Maximizing output and respecting safety and energy guardrails collide constantly. Watch the AI Supervisor set the top-level goal and decompose it cleanly into tasks for each agent."
+ ],
+ "L1: Safety Layer 우선 적용 규칙 지표 확인하기": [
+  "L1: Safety Layerが優先適用される規則の指標を確認する",
+  "Check the indicators for the L1 Safety Layer's precedence rules"
+ ],
+ "수립된 각 AI 에이전트의 구체적인 목표 준수 비율 체크": [
+  "各AIエージェントに割り当てられた具体的な目標の遵守率を確認する",
+  "Check each agent's compliance rate against its assigned goal"
+ ],
+ "AI 에이전트 라이브 조율": [
+  "AIエージェントのライブ調整",
+  "Live agent arbitration"
+ ],
+ "04 / 04단계: 에이전트 협의체 융합": [
+  "ステップ04 / 04: エージェント協議体の融合",
+  "Step 04 / 04: Agent council"
+ ],
+ "💡 아래 [오케스트레이션 라이브 실행]을 눌러 토론 비주얼라이저를 재생하세요!": [
+  "💡 下の[オーケストレーションのライブ実行]を押して、討論ビジュアライザーを再生してください!",
+  "💡 Hit [Run live orchestration] below to play the debate visualizer."
+ ],
+ "가장 중요한 핵심 기능입니다! 생산, 예지보전, 품질, 에너지, 안전, 물류 에이전트 전사 주요 6대 에이전트의 가스 누출이나 피크 전력, 또는 초대형 복합 최적화 시나리오에서 다자 의견 조율 상황을 시뮬레이션할 수 있습니다.": [
+  "最も重要な中核機能です! 生産・予知保全・品質・エネルギー・安全・物流という主要6エージェントが、ガス漏れやピーク電力、あるいは大規模な複合最適化シナリオにおいて多者間で意見を調整する様子をシミュレーションできます。",
+  "This is the centrepiece. Simulate how the six core agents — production, maintenance, quality, energy, safety, logistics — negotiate through a gas leak, a power peak, or a large combined optimization problem."
+ ],
+ "통합 6대 에이전트 시나리오를 선택하여 오케스트레이션 감상하기": [
+  "6エージェント統合シナリオを選び、オーケストレーションを観る",
+  "Pick the six-agent scenario and watch the orchestration"
+ ],
+ "가스 미세 누출 / 피크 전력 시나리오로 번갈아 전환 작동": [
+  "微量ガス漏れとピーク電力のシナリオを交互に切り替えて動かす",
+  "Switch back and forth between the gas-leak and power-peak scenarios"
+ ],
+ "자동 재생 일시 정지 및 수동으로 SkipForward/Reset 조작해보기": [
+  "自動再生を一時停止し、手動でスキップ・リセットを操作してみる",
+  "Pause autoplay and try the manual skip / reset controls"
+ ],
+ "하단에 축적되는 실시간 타임라인 오케스트레이션 Event Log 분석": [
+  "下部に蓄積されるリアルタイムのオーケストレーションEvent Logを分析する",
+  "Read the orchestration event log building up at the bottom"
+ ],
+ "Scenario B: 돌발 고장 및 안전 예방 가드레일": [
+  "Scenario B: 突発故障と安全予防のガードレール",
+  "Scenario B: Breakdown & safety guardrails"
+ ],
+ "갑작스러운 설비 진동 폭발 예측 및 공조 제어 가드, 안전-배기-물류 연쇄 대응 시나리오": [
+  "突発的な設備振動の急増を予測し、空調制御ガードと安全・排気・物流の連鎖対応を行うシナリオ",
+  "Predicting a sudden vibration spike and chaining safety, exhaust and logistics responses under HVAC guardrails"
+ ],
+ "이상 징후 및 공조 제어": [
+  "異常予兆と空調制御",
+  "Anomaly signs & HVAC control"
+ ],
+ "01 / 04단계: 안전 초동 조치": [
+  "ステップ01 / 04: 安全の初動対応",
+  "Step 01 / 04: First safety response"
+ ],
+ "💡 미세 가스 감지 관련 '공조 배기 제어' 추천 안건을 선택하고 [승인]해 보세요!": [
+  "💡 微量ガス検知に関する「空調排気制御」の推奨案を選んで[承認]してみてください!",
+  "💡 Pick the HVAC exhaust-control proposal for the trace gas reading and approve it."
+ ],
+ "가열 설비 근처에 설치된 안전 감지기가 아주 희박한 특이 유증기/가스를 모니터링하여 즉각적으로 공조 통풍 가이드라인을 전개하고 장비 가속을 일시 중단시키는 실시간 초동 대응을 확인합니다.": [
+  "加熱設備の近くに設置された安全検知器が、ごく希薄な油蒸気・ガスを監視し、ただちに空調換気のガイドラインを展開して装置の加速を一時停止する——そのリアルタイム初動対応を確認します。",
+  "A safety sensor near the heating equipment picks up a very faint oil-vapour/gas trace, immediately rolls out ventilation guidance and pauses the speed-up. See that first response play out live."
+ ],
+ "안전 센서 공조 가이드라인 및 위험 경고 확인": [
+  "安全センサーの空調ガイドラインと危険警告を確認する",
+  "Review the sensor's HVAC guidance and hazard warning"
+ ],
+ "AI가 실시간 생성한 추천 배기 오버라이드 제어 항목 [승인] 클릭": [
+  "AIがリアルタイムに生成した排気オーバーライド制御の推奨項目を[承認]する",
+  "Approve the exhaust-override control the AI generated live"
+ ],
+ "제어 이력 변화와 안전 피드백 로그 확인": [
+  "制御履歴の変化と安全フィードバックログを確認する",
+  "Check the control history and the safety feedback log"
+ ],
+ "지능형 CCTV 안전 화재 구획": [
+  "インテリジェントCCTVによる安全・火災区画管理",
+  "Smart CCTV fire zoning"
+ ],
+ "02 / 04단계: AI 안전 실시간 비전 감시": [
+  "ステップ02 / 04: AI安全のリアルタイムビジョン監視",
+  "Step 02 / 04: Live AI safety vision"
+ ],
+ "💡 CCTV 비전 탐지 피드가 유증기 잔여 확산 및 이상 발열 분포를 격리 분석하는 것을 검토하세요!": [
+  "💡 CCTVビジョン検知フィードが、残留油蒸気の拡散と異常発熱の分布を隔離して分析する様子を見てみてください!",
+  "💡 Watch the CCTV vision feed isolate and analyse residual vapour spread and the abnormal heat distribution."
+ ],
+ "센서 오열 구역 배지에서 미세 가스 전파가 우려됩니다. AI 안전 에이전트는 YOLOv8 비전 분석 엔진을 적용해 고열 배지 구역을 지능형 격리 감시하고 실시간 연기/화재 발생 등급을 즉시 확인합니다.": [
+  "センサーが検知した高温区域から微量ガスが広がる懸念があります。AI安全エージェントはYOLOv8ビジョン解析エンジンを適用して高温区域をインテリジェントに隔離監視し、煙・火災の発生等級をリアルタイムに判定します。",
+  "There is concern that trace gas is spreading from the overheated zone. The AI safety agent applies its YOLOv8 vision engine to isolate and watch that zone, grading smoke and fire risk in real time."
+ ],
+ "열화상 필터링과 실시간 연기 검출 신뢰도 변화 확인": [
+  "熱画像フィルタリングとリアルタイム煙検出の信頼度の変化を確認する",
+  "Watch the thermal filtering and the confidence on live smoke detection"
+ ],
+ "비전 AI가 하달하는 Zone B-4 화재 등급 상향 전조 경고 추적": [
+  "ビジョンAIが発するZone B-4の火災等級引き上げの前兆警告を追跡する",
+  "Follow the vision AI's early warning as it raises the Zone B-4 fire grade"
+ ],
+ "L1 Safety 정책 우선 제어": [
+  "L1 Safetyポリシーの優先制御",
+  "L1 safety policy override"
+ ],
+ "03 / 04단계: 안전 절대 우선 정책": [
+  "ステップ03 / 04: 安全絶対優先のポリシー",
+  "Step 03 / 04: Safety-absolute policy"
+ ],
+ "💡 'Safety Core Level 1' 우선 적용 정책 가드가 활성화된 것을 감상해 보세요!": [
+  "💡「Safety Core Level 1」の優先適用ポリシーガードが有効になる様子をご覧ください!",
+  "💡 Watch the Safety Core Level 1 policy guard take precedence."
+ ],
+ "비상 가동 중에는 생산 극대화 지표보다 인체 안전 및 폭발 방지 우선 가치가 활성화됩니다. AI Supervisor는 L1 Safety Layer 규칙을 기동하여 생산 목표를 안전하게 블로킹하고 안전 가드를 강화합니다.": [
+  "非常時には、生産最大化の指標よりも人命の安全と爆発防止の価値が優先されます。AI SupervisorはL1 Safety Layerの規則を起動し、生産目標を安全にブロックしたうえで安全ガードを強化します。",
+  "In an emergency, human safety and explosion prevention outrank the output metric. The AI Supervisor activates the L1 Safety Layer rules, safely blocking the production goal and tightening the guardrails."
+ ],
+ "L1 Safety Rule 강제 지상 명령 지표 확인": [
+  "L1 Safety Ruleの強制優先指令の指標を確認する",
+  "Check the indicator for the mandatory L1 safety-rule override"
+ ],
+ "에이전트 권장 정책의 소방 감리 로그 우선 검토": [
+  "エージェント推奨ポリシーの防火監理ログを優先的に確認する",
+  "Review the fire-supervision log for the agent's recommended policy first"
+ ],
+ "안전-배기 다자 조율 토론": [
+  "安全と排気の多者間調整討論",
+  "Safety vs exhaust negotiation"
+ ],
+ "04 / 04단계: 안전 중심 에이전트 오케스트레이션": [
+  "ステップ04 / 04: 安全中心のエージェントオーケストレーション",
+  "Step 04 / 04: Safety-centred orchestration"
+ ],
+ "💡 라이브 토론 리스트 중 [가스 미세 누출 경보 & 배기 제어 충돌]을 동작시키세요!": [
+  "💡 ライブ討論リストから[微量ガス漏れ警報と排気制御の衝突]を実行してください!",
+  "💡 Run [Trace gas alarm vs exhaust control] from the live debate list."
+ ],
+ "배기팬 완전 가동 시 압력 변화로 인해 라인이 일시 중단될 수 있어 생산 에이전트가 완만 배기를 요청한 상태입니다. 세밀한 해결책을 내기 위해 안전, 품질, 설비예지, 물류 에이전트 간 벌어지는 고난도 중재 토론을 감상하십시오.": [
+  "排気ファンを全開にすると圧力変化でラインが一時停止するおそれがあるため、生産エージェントは緩やかな排気を求めています。精緻な解を導くために、安全・品質・予知保全・物流の各エージェントが繰り広げる高難度の調停討論をご覧ください。",
+  "Running the exhaust fans flat out could shift pressure enough to pause the line, so the production agent has asked for a gentler ramp. Watch safety, quality, maintenance and logistics work through a genuinely hard arbitration."
+ ],
+ "'가스 미세 누출 경보 & 배기 제어 충돌' 모의 실행": [
+  "「微量ガス漏れ警報と排気制御の衝突」を模擬実行する",
+  "Run the 'trace gas alarm vs exhaust control' simulation"
+ ],
+ "자동 재생 혹은 스킵 조작을 통해 토론 타임라인 관찰": [
+  "自動再生またはスキップ操作で討論のタイムラインを観察する",
+  "Follow the debate timeline using autoplay or the skip control"
+ ],
+ "가류 우회 이송 솔루션과 가스 소강 합의 도출 판가름 분석": [
+  "迂回搬送ソリューションとガス沈静化の合意形成の分かれ目を分析する",
+  "Analyse how the detour-transport solution and the gas-abatement agreement are settled"
+ ]
+}
