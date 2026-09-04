@@ -1,0 +1,30 @@
+{
+ "AI 오케스트레이션 체험 시뮬레이션": [
+  "AIオーケストレーション体験シミュレーション",
+  "AI Orchestration Experience Simulation"
+ ],
+ "체험 가이드": [
+  "体験ガイド",
+  "Guided demo"
+ ],
+ "대응 중": [
+  "対応中",
+  "Responding"
+ ],
+ "거부 사유": [
+  "却下の理由",
+  "Reason for rejection"
+ ],
+ "거부 확정": [
+  "却下を確定",
+  "Confirm rejection"
+ ],
+ "이 추천을 거부하는 이유를 남겨주세요 (선택)": [
+  "この推奨を却下する理由をご記入ください(任意)",
+  "Why are you rejecting this recommendation? (optional)"
+ ],
+ "고급 파라미터가 저장되었습니다.": [
+  "詳細パラメータを保存しました。",
+  "Advanced parameters saved."
+ ]
+}

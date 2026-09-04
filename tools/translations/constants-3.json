@@ -1,0 +1,370 @@
+{
+ "공정별 택트타임(Tact Time) 편차 분석을 통한 생산 밸런싱(Line Balancing) 최적화": [
+  "工程別タクトタイムのばらつき分析によるラインバランシングの最適化",
+  "Optimizes line balancing from per-process tact-time variance"
+ ],
+ "긴급 정지 및 알람 제어": [
+  "緊急停止とアラーム制御",
+  "Emergency Stop & Alarm Control"
+ ],
+ "비상 상황 시 전 공정 즉각 정지 및 다채널 알림": [
+  "非常時における全工程の即時停止とマルチチャネル通知",
+  "Immediate all-process stop and multi-channel alerting in an emergency"
+ ],
+ "중대 재해 발생 또는 감지 시 전체 공정 및 설비를 즉각 정지시키고 비상 대응 체계 가동": [
+  "重大災害の発生または検知時に全工程・全設備を即時停止し、非常対応体制を発動",
+  "Halts every process and machine and activates emergency response when a major incident is detected"
+ ],
+ "긴급 정지 신호(E-Stop) 수신 -> 전 설비 PLC 인터락 작동 -> 전 직원 다채널(Siren, SMS, App) 비상 알림": [
+  "緊急停止信号(E-Stop)の受信 → 全設備PLCインターロックの作動 → 全従業員へのマルチチャネル(サイレン・SMS・アプリ)非常通知",
+  "E-stop signal -> PLC interlock across all equipment -> siren / SMS / app notification to every employee"
+ ],
+ "비상 정지 명령 실행 시간 100ms 이내 및 전파 성공률 100% 확보": [
+  "非常停止指令の実行時間100ms以内と伝達成功率100%の確保",
+  "Executes the e-stop within 100 ms with 100 % delivery"
+ ],
+ "전 공정 비상 정지 상태 대시보드 및 비상 대응 가이드": [
+  "全工程の非常停止状態ダッシュボードと非常対応ガイド",
+  "Plant-wide e-stop status dashboard and emergency response guide"
+ ],
+ "AI 추천 액션 목록": [
+  "AI推奨アクション一覧",
+  "AI Recommended Actions"
+ ],
+ "Agent별 추천 조치 리스트 + 근거 표시": [
+  "エージェント別の推奨措置リストと根拠の表示",
+  "Per-agent recommendation list with supporting rationale"
+ ],
+ "다중 에이전트(Multi-Agent) 분석 결과 기반 최적의 공정 개선 및 문제 해결 액션 추천": [
+  "マルチエージェントの分析結果に基づく最適な工程改善・問題解決アクションの推奨",
+  "Recommends the best process-improvement and problem-solving actions from multi-agent analysis"
+ ],
+ "에이전트별 분석 결과 통합 -> 우선순위 매트릭스(안전>품질>생산) 기반 정렬 -> 추천 조치별 기대 효과 및 근거(Reasoning) 생성": [
+  "エージェント別分析結果の統合 → 優先順位マトリクス(安全>品質>生産)による並べ替え → 推奨措置ごとの期待効果と根拠の生成",
+  "Consolidates agent findings -> ranks by the safety > quality > production matrix -> generates expected impact and reasoning"
+ ],
+ "추천 액션의 현장 적용률 향상 및 의사결정 지원을 위한 정량적 근거 제시율 100% 확보": [
+  "推奨アクションの現場適用率の向上と、意思決定支援のための定量的根拠の提示率100%の確保",
+  "Raises field adoption of recommendations and attaches quantitative evidence to every one"
+ ],
+ "통합 AI 추천 액션 리스트 및 상세 분석 근거 패널": [
+  "統合AI推奨アクションリストと詳細な分析根拠パネル",
+  "Unified AI action list with a detailed evidence panel"
+ ],
+ "Agent 실행 이력": [
+  "エージェント実行履歴",
+  "Agent Execution Log"
+ ],
+ "6개 Agent의 판단/실행 이력 타임라인 뷰": [
+  "6つのエージェントの判断・実行履歴のタイムラインビュー",
+  "Timeline of decisions and executions across the six agents"
+ ],
+ "AI 에이전트의 판단 과정 및 실행 이력에 대한 투명성(Explainability) 확보 및 사후 감사(Audit)": [
+  "AIエージェントの判断過程と実行履歴の説明可能性(Explainability)の確保と事後監査",
+  "Explainability of agent reasoning and execution history, plus after-the-fact audit"
+ ],
+ "Agent Action Log 기반 시계열 타임라인 구성 -> 판단 근거(Reasoning Path) 시각화 -> 실행 결과 피드백 루프 분석": [
+  "Agent Action Logに基づく時系列タイムラインの構成 → 判断根拠(Reasoning Path)の可視化 → 実行結果のフィードバックループ分析",
+  "Builds a timeline from the agent action log -> visualizes the reasoning path -> analyses the outcome feedback loop"
+ ],
+ "AI 의사결정 이력 100% 기록 및 추적성 확보를 통한 시스템 신뢰도 제고": [
+  "AI意思決定履歴の100%記録とトレーサビリティ確保によるシステム信頼性の向上",
+  "Records 100 % of AI decisions and raises system trust through traceability"
+ ],
+ "에이전트 실행 이력 타임라인 및 판단 근거 상세 뷰어": [
+  "エージェント実行履歴のタイムラインと判断根拠の詳細ビューア",
+  "Agent execution timeline with a detailed reasoning viewer"
+ ],
+ "승인 대기 큐": [
+  "承認待ちキュー",
+  "Approval Queue"
+ ],
+ "Level 2+ 조치 승인/거부 워크플로우": [
+  "レベル2以上の措置の承認・却下ワークフロー",
+  "Approve / reject workflow for level 2+ actions"
+ ],
+ "고위험 또는 중요 공정 제어에 대한 인간-AI 협업(HITL) 승인 프로세스 관리": [
+  "高リスクまたは重要な工程制御における人間とAIの協業(HITL)承認プロセスの管理",
+  "Human-in-the-loop approval for high-risk or critical process control"
+ ],
+ "자율 제어 레벨(Level 2+) 트리거 감지 -> 승인 대기 상태 전환 -> 관리자 검토 및 승인/거부 피드백 수집 -> 제어 명령 실행 또는 중단": [
+  "自律制御レベル(Level 2+)トリガーの検知 → 承認待ち状態への遷移 → 管理者のレビューと承認・却下フィードバックの収集 → 制御指令の実行または中止",
+  "Level 2+ trigger -> pending state -> manager review and approve/reject -> command executed or cancelled"
+ ],
+ "중요 공정 제어의 안전성 확보 및 승인 프로세스 평균 처리 시간 10분 이내 관리": [
+  "重要な工程制御の安全性確保と承認プロセス平均処理時間10分以内の管理",
+  "Secures critical control and keeps average approval turnaround within 10 minutes"
+ ],
+ "승인 대기 목록 관리 인터페이스 및 의사결정 지원 데이터 패널": [
+  "承認待ちリストの管理インターフェースと意思決定支援データパネル",
+  "Pending-approval console with a decision-support data panel"
+ ],
+ "AI 챗봇 (자연어 질의)": [
+  "AIチャットボット(自然言語クエリ)",
+  "AI Chatbot (Natural Language)"
+ ],
+ "자연어 질의 -> Text-to-SQL / RAG 자동 응답": [
+  "自然言語クエリ → Text-to-SQL / RAG による自動応答",
+  "Natural-language query -> automatic Text-to-SQL / RAG answer"
+ ],
+ "자연어 질의를 통한 실시간 생산 데이터 조회, 도메인 지식 검색 및 의사결정 지원": [
+  "自然言語クエリによるリアルタイム生産データの照会、ドメイン知識の検索、意思決定支援",
+  "Query live production data, search domain knowledge and support decisions in natural language"
+ ],
+ "LLM 기반 의도 파악 -> Text-to-SQL 엔진(데이터 조회) 또는 RAG 엔진(매뉴얼/지식 검색) 분기 실행 -> 결과 요약 및 시각화 응답": [
+  "LLMによる意図把握 → Text-to-SQLエンジン(データ照会)またはRAGエンジン(マニュアル・知識検索)への分岐実行 → 結果の要約と可視化応答",
+  "LLM intent detection -> branch to the Text-to-SQL engine or the RAG engine -> summarized, visualized answer"
+ ],
+ "자연어 질의 응답 정확도 95% 이상 확보 및 복합 질의 처리 지연 시간 3초 이내 관리": [
+  "自然言語応答の精度95%以上の確保と複合クエリの処理遅延3秒以内の管理",
+  "Holds answer accuracy above 95 % and complex-query latency within three seconds"
+ ],
+ "대화형 텍스트 응답, 동적 차트 생성 및 관련 문서 링크 제공": [
+  "対話型のテキスト応答、動的チャート生成、関連ドキュメントリンクの提供",
+  "Conversational answers, generated charts and links to the source documents"
+ ],
+ "슈퍼바이저 센터": [
+  "スーパーバイザーセンター",
+  "Supervisor Center"
+ ],
+ "통합 판단, 목표 관리 및 플레이북 실행": [
+  "統合判断・目標管理・プレイブックの実行",
+  "Unified judgement, goal management and playbook execution"
+ ],
+ "상위 목표 기반 태스크 분해 및 에이전트 간 충돌 조정": [
+  "上位目標に基づくタスク分解とエージェント間の衝突調整",
+  "Decomposes top-level goals into tasks and arbitrates conflicts between agents"
+ ],
+ "Goal-to-Task 분해 엔진 + Conflict Resolver + Evidence Pack 생성": [
+  "Goal-to-Task分解エンジン + Conflict Resolver + Evidence Packの生成",
+  "Goal-to-task decomposition engine + conflict resolver + evidence pack generation"
+ ],
+ "안전/품질 우선 정책 기반 최종 의사결정 신뢰도 98% 확보": [
+  "安全・品質優先ポリシーに基づく最終意思決定の信頼度98%の確保",
+  "98 % confidence on final decisions under the safety-and-quality-first policy"
+ ],
+ "통합 판단 대시보드 및 감사 리포트": [
+  "統合判断ダッシュボードと監査レポート",
+  "Unified decision dashboard and audit report"
+ ],
+ "온톨로지 관리": [
+  "オントロジー管理",
+  "Ontology Management"
+ ],
+ "규칙/임계치 편집, 새 규칙 추가": [
+  "ルール・しきい値の編集と新規ルールの追加",
+  "Edit rules and thresholds, add new rules"
+ ],
+ "지식 기반 시스템의 핵심인 온톨로지(Ontology) 스키마, 규칙 및 도메인 지식 관리": [
+  "知識ベースシステムの中核であるオントロジースキーマ・ルール・ドメイン知識の管理",
+  "Manages the ontology schema, rules and domain knowledge at the core of the knowledge base"
+ ],
+ "그래프 데이터베이스 기반 엔티티 관계 편집 -> Heuristic 규칙 엔진 설정 -> 스키마 무결성 및 규칙 충돌 자동 검증": [
+  "グラフデータベースによるエンティティ関係の編集 → ヒューリスティックルールエンジンの設定 → スキーマ整合性とルール競合の自動検証",
+  "Graph-database entity editing -> heuristic rule-engine setup -> automatic schema and rule-conflict validation"
+ ],
+ "공정 지식의 디지털 자산화 및 지식 베이스 업데이트 주기 단축을 통한 시스템 유연성 확보": [
+  "工程知識のデジタル資産化と知識ベース更新サイクルの短縮によるシステム柔軟性の確保",
+  "Turns process knowledge into a digital asset and shortens the knowledge-base update cycle"
+ ],
+ "온톨로지 시각화 편집기 및 지식 베이스 관리 인터페이스": [
+  "オントロジー可視化エディタと知識ベース管理インターフェース",
+  "Ontology visual editor and knowledge-base console"
+ ],
+ "모델 레지스트리": [
+  "モデルレジストリ",
+  "Model Registry"
+ ],
+ "MLflow 모델 버전/성능/배포 상태 관리": [
+  "MLflowによるモデルバージョン・性能・デプロイ状態の管理",
+  "MLflow model version, performance and deployment status"
+ ],
+ "머신러닝 모델의 생애주기 관리(MLOps) 및 운영 환경 배포 모델의 성능 모니터링": [
+  "機械学習モデルのライフサイクル管理(MLOps)と本番環境デプロイモデルの性能監視",
+  "MLOps lifecycle management and production model performance monitoring"
+ ],
+ "MLflow 기반 모델 버전 관리 -> 성능 메트릭(Accuracy, RMSE 등) 추적 -> 모델 드리프트(Drift) 감지 및 재학습 트리거 관리": [
+  "MLflowによるモデルバージョン管理 → 性能メトリクス(Accuracy、RMSEなど)の追跡 → モデルドリフトの検知と再学習トリガーの管理",
+  "MLflow versioning -> accuracy / RMSE tracking -> drift detection and retraining triggers"
+ ],
+ "운영 모델의 성능 저하 방지 및 모델 배포/교체 프로세스의 안정성 확보": [
+  "本番モデルの性能劣化の防止とモデルのデプロイ・入れ替えプロセスの安定性確保",
+  "Prevents production model degradation and stabilizes deploy / swap processes"
+ ],
+ "모델 버전 관리 대시보드 및 성능 비교 분석 리포트": [
+  "モデルバージョン管理ダッシュボードと性能比較分析レポート",
+  "Model-version dashboard and performance comparison report"
+ ],
+ "사용자/권한 관리": [
+  "ユーザー・権限管理",
+  "Users & Permissions"
+ ],
+ "역할별 메뉴 접근 권한 + 승인 권한 설정": [
+  "ロール別のメニューアクセス権限と承認権限の設定",
+  "Role-based menu access and approval rights"
+ ],
+ "사용자 역할 기반 접근 제어(RBAC) 및 시스템 기능별 권한 세분화 관리": [
+  "ロールベースアクセス制御(RBAC)とシステム機能ごとの権限の細分化管理",
+  "Role-based access control with fine-grained per-feature permissions"
+ ],
+ "사용자 프로필 관리 -> 역할별 권한 매트릭스 설정 -> 메뉴 접근 및 중요 조치 승인 권한 제어 엔진 연동": [
+  "ユーザープロファイル管理 → ロール別権限マトリクスの設定 → メニューアクセスと重要措置の承認権限を制御するエンジンとの連携",
+  "User profiles -> role permission matrix -> engine controlling menu access and approval rights"
+ ],
+ "시스템 보안성 강화 및 역할에 따른 업무 분장(Segregation of Duties) 명확화": [
+  "システムセキュリティの強化とロールに応じた職務分離(Segregation of Duties)の明確化",
+  "Hardens security and makes segregation of duties explicit"
+ ],
+ "사용자 계정 관리 그리드 및 역할별 권한 설정 인터페이스": [
+  "ユーザーアカウント管理グリッドとロール別権限設定インターフェース",
+  "User-account grid and role permission editor"
+ ],
+ "알림 설정": [
+  "通知設定",
+  "Notification Settings"
+ ],
+ "알림 채널, 임계치, 수신자 설정": [
+  "通知チャネル・しきい値・受信者の設定",
+  "Configure channels, thresholds and recipients"
+ ],
+ "이벤트 등급별 알림 전파 정책 수립 및 다채널 알림 수신 환경 최적화": [
+  "イベント重大度別の通知伝達ポリシーの策定とマルチチャネル受信環境の最適化",
+  "Sets severity-based escalation policy and tunes multi-channel delivery"
+ ],
+ "알림 규칙 정의 -> 수신 그룹 및 채널(SMS, Email, App) 매핑 -> 알림 중복 방지 및 에스컬레이션(Escalation) 정책 적용": [
+  "通知ルールの定義 → 受信グループとチャネル(SMS・メール・アプリ)のマッピング → 重複通知の防止とエスカレーションポリシーの適用",
+  "Rule definition -> recipient group and channel mapping (SMS, email, app) -> de-duplication and escalation policy"
+ ],
+ "중요 알림의 수신 누락 제로화 및 알림 피로도(Alert Fatigue) 관리를 통한 대응 효율성 제고": [
+  "重要通知の受信漏れゼロ化とアラート疲れの管理による対応効率の向上",
+  "Zero missed critical alerts and better response efficiency by managing alert fatigue"
+ ],
+ "알림 정책 설정 인터페이스 및 채널별 발송 이력 로그": [
+  "通知ポリシー設定インターフェースとチャネル別の送信履歴ログ",
+  "Notification policy editor and per-channel delivery log"
+ ],
+ "시스템 모니터링": [
+  "システム監視",
+  "System Monitoring"
+ ],
+ "서비스 헬스, CPU/GPU/메모리, Kafka Lag": [
+  "サービスヘルス、CPU/GPU/メモリ、Kafka Lag",
+  "Service health, CPU / GPU / memory, Kafka lag"
+ ],
+ "플랫폼 인프라 및 마이크로서비스의 가용성, 성능 및 리소스 사용량 통합 관제": [
+  "プラットフォームインフラとマイクロサービスの可用性・性能・リソース使用量の統合監視",
+  "Unified monitoring of platform infrastructure and microservice availability, performance and resource use"
+ ],
+ "Prometheus/Grafana 메트릭 수집 -> 서비스별 헬스 체크 -> 인프라 부하 및 메시지 큐(Kafka) 지연 시간 실시간 분석": [
+  "Prometheus/Grafanaによるメトリクス収集 → サービス別ヘルスチェック → インフラ負荷とメッセージキュー(Kafka)遅延のリアルタイム分析",
+  "Prometheus / Grafana metrics -> per-service health checks -> live infra load and Kafka lag analysis"
+ ],
+ "시스템 가동률(Uptime) 99.9% 유지 및 인프라 병목 현상 사전 탐지 및 대응": [
+  "システム稼働率99.9%の維持とインフラボトルネックの事前検知・対応",
+  "Holds 99.9 % uptime and catches infrastructure bottlenecks before they bite"
+ ],
+ "인프라 통합 관제 대시보드 및 서비스 상태 매트릭스": [
+  "インフラ統合監視ダッシュボードとサービス状態マトリクス",
+  "Infrastructure control dashboard and service status matrix"
+ ],
+ "출하 리스크 오늘 0으로": [
+  "本日の出荷リスクをゼロに",
+  "Zero shipment risk today"
+ ],
+ "비전검사 강화 및 공정변동 분석": [
+  "ビジョン検査の強化と工程変動の分析",
+  "Tighten vision inspection and analyse process variation"
+ ],
+ "라인 Tact 재산정 및 병목 제거": [
+  "ラインタクトの再算定とボトルネックの解消",
+  "Recompute line tact and clear the bottleneck"
+ ],
+ "AMR 운영정책 조정 및 물류 최적화": [
+  "AMR運用ポリシーの調整と物流の最適化",
+  "Adjust AMR operating policy and optimize logistics"
+ ],
+ "불량 유출 위험 대응": [
+  "不良流出リスク対応",
+  "Defect escape response"
+ ],
+ "불량률 > 8% 감지": [
+  "不良率 > 8% を検知",
+  "Defect rate > 8 % detected"
+ ],
+ "검사 기준 강화": [
+  "検査基準の強化",
+  "Tighten inspection criteria"
+ ],
+ "대시보드 경보 발송": [
+  "ダッシュボード警報の発報",
+  "Send dashboard alert"
+ ],
+ "출하 홀드 요청": [
+  "出荷ホールドの要請",
+  "Request shipment hold"
+ ],
+ "안전 위험 감지 대응": [
+  "安全リスク検知対応",
+  "Safety hazard response"
+ ],
+ "CCTV 위험 감지": [
+  "CCTVによる危険検知",
+  "CCTV hazard detection"
+ ],
+ "즉시 감속/정지": [
+  "即時減速・停止",
+  "Slow down / stop immediately"
+ ],
+ "로봇/AMR 안전모드 전환": [
+  "ロボット・AMRの安全モードへの切替",
+  "Switch robots / AMRs to safe mode"
+ ],
+ "시전종합검사": [
+  "事前総合検査",
+  "Pre-Inspection"
+ ],
+ "검사 데이터 분석 중... 특이사항 없음.": [
+  "検査データを分析中… 特記事項はありません。",
+  "Analysing inspection data... nothing unusual."
+ ],
+ "공급부": [
+  "供給部",
+  "Supply"
+ ],
+ "원자재 공급 원활. 전력망 상태 양호.": [
+  "原材料の供給は順調。電力網の状態も良好です。",
+  "Raw-material supply steady. Grid condition good."
+ ],
+ "도금": [
+  "めっき",
+  "Plating"
+ ],
+ "도금액 농도 미세 저하 감지. 보충 필요.": [
+  "めっき液濃度のわずかな低下を検知。補充が必要です。",
+  "Slight drop in plating-solution concentration detected. Top-up required."
+ ],
+ "배출부": [
+  "排出部",
+  "Discharge"
+ ],
+ "제품 배출 정상 속도 유지 중.": [
+  "製品の排出は正常な速度を維持しています。",
+  "Product discharge holding a normal rate."
+ ],
+ "물류 팔레타이저": [
+  "物流パレタイザー",
+  "Palletizer"
+ ],
+ "팔레트 적재 완료. 다음 배치 대기 중.": [
+  "パレット積載が完了。次のバッチを待機中です。",
+  "Pallet loaded. Waiting for the next batch."
+ ],
+ "공정 최적화 봇": [
+  "工程最適化ボット",
+  "Process Optimization Bot"
+ ],
+ "도금 공정 효율 개선을 위한 온도 2도 상향 제안.": [
+  "めっき工程の効率改善のため、温度を2度上げることを提案します。",
+  "Proposing a 2 °C increase to improve plating-process efficiency."
+ ]
+}

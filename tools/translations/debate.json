@@ -1,0 +1,190 @@
+{
+ "AI 에이전트 실시간 토론": [
+  "AIエージェントのリアルタイム討論",
+  "Live AI Agent Debate"
+ ],
+ "토론 진행 중": [
+  "討論中",
+  "Debating"
+ ],
+ "합의 완료": [
+  "合意完了",
+  "Consensus reached"
+ ],
+ "토론 시작": [
+  "討論を開始",
+  "Start debate"
+ ],
+ "다시 실행": [
+  "もう一度実行",
+  "Run again"
+ ],
+ "메시지": [
+  "メッセージ",
+  "messages"
+ ],
+ "분석 중": [
+  "分析中",
+  "analysing"
+ ],
+ "분석": [
+  "分析",
+  "Analysis"
+ ],
+ "제안": [
+  "提案",
+  "Proposal"
+ ],
+ "이의": [
+  "異議",
+  "Objection"
+ ],
+ "동의": [
+  "同意",
+  "Agreement"
+ ],
+ "최종 결정": [
+  "最終決定",
+  "Final decision"
+ ],
+ "품질 에이전트": [
+  "品質エージェント",
+  "Quality Agent"
+ ],
+ "예지보전 에이전트": [
+  "予知保全エージェント",
+  "Maintenance Agent"
+ ],
+ "생산 에이전트": [
+  "生産エージェント",
+  "Production Agent"
+ ],
+ "에너지 에이전트": [
+  "エネルギーエージェント",
+  "Energy Agent"
+ ],
+ "안전 에이전트": [
+  "安全エージェント",
+  "Safety Agent"
+ ],
+ "슈퍼바이저": [
+  "スーパーバイザー",
+  "Supervisor"
+ ],
+ "품질": [
+  "品質",
+  "Quality"
+ ],
+ "예지보전": [
+  "予知保全",
+  "Maintenance"
+ ],
+ "생산": [
+  "生産",
+  "Production"
+ ],
+ "에너지": [
+  "エネルギー",
+  "Energy"
+ ],
+ "안전": [
+  "安全",
+  "Safety"
+ ],
+ "라인 2 가동률이 68%로 목표치(85%) 대비 17% 부족합니다. 병목 구간 분석 결과 수축포장기-01의 처리 속도가 원인입니다.": [
+  "ライン2の稼働率が68%で、目標(85%)を17ポイント下回っています。ボトルネック分析の結果、シュリンク包装機-01の処理速度が原因です。",
+  "Line 2 availability is 68 %, 17 points short of the 85 % target. Bottleneck analysis points to the throughput of Shrink Wrapper-01."
+ ],
+ "속도 증가 전 주의가 필요합니다. 현재 불량률이 2.1%로 기준치(1.5%)를 초과하고 있습니다. 속도 증가 시 불량률이 추가 상승할 위험이 있습니다.": [
+  "増速の前に注意が必要です。現在の不良率は2.1%で基準値(1.5%)を超えています。増速すると不良率がさらに上がるおそれがあります。",
+  "Careful before speeding up. The defect rate is already 2.1 % against a 1.5 % limit, and more speed risks pushing it higher."
+ ],
+ "수축포장기-01의 진동값이 3.8mm/s로 상승 중입니다. 온도를 173°C로 최적화하면 진동을 줄이면서 처리 속도도 개선할 수 있습니다.": [
+  "シュリンク包装機-01の振動値が3.8mm/sまで上昇しています。温度を173°Cに最適化すれば、振動を抑えつつ処理速度も改善できます。",
+  "Vibration on Shrink Wrapper-01 is climbing to 3.8 mm/s. Tuning the temperature to 173 °C would cut vibration and improve throughput at the same time."
+ ],
+ "온도 조정 시 에너지 소비는 약 3% 증가하지만, 생산 효율 향상으로 단위당 에너지 비용은 오히려 감소합니다. 동의합니다.": [
+  "温度調整でエネルギー消費は約3%増えますが、生産効率の向上により単位あたりのエネルギーコストはむしろ下がります。同意します。",
+  "The temperature change adds about 3 % energy use, but better throughput actually lowers energy cost per unit. I agree."
+ ],
+ "173°C 온도 조정 후 비전 검사 민감도를 높이면 불량률을 1.2%로 낮출 수 있습니다. 예지보전 에이전트의 제안에 동의합니다.": [
+  "173°Cへの調整後にビジョン検査の感度を上げれば、不良率を1.2%まで下げられます。予知保全エージェントの提案に同意します。",
+  "After moving to 173 °C, raising vision-inspection sensitivity brings the defect rate down to 1.2 %. I support the Maintenance Agent's proposal."
+ ],
+ "✅ 합의 완료: 수축포장기-01 온도 173°C 조정 + 비전 검사 강화 + 라인 2 속도 8% 증속. 예상 OEE +12%, 불량률 1.2% 달성.": [
+  "✅ 合意完了: シュリンク包装機-01の温度を173°Cに調整 + ビジョン検査を強化 + ライン2を8%増速。OEE +12%、不良率1.2%を見込みます。",
+  "✅ Agreed: Shrink Wrapper-01 to 173 °C + tighter vision inspection + Line 2 up 8 %. Expected OEE +12 % and a 1.2 % defect rate."
+ ],
+ "🚨 긴급 경보: Zone B-4 가스 농도 LEL 15% 감지. 즉시 해당 구역 작업 중단 및 대피 필요합니다.": [
+  "🚨 緊急警報: Zone B-4でガス濃度LEL 15%を検知。直ちに当該区域の作業を中止し、避難が必要です。",
+  "🚨 Emergency: gas at 15 % LEL in Zone B-4. Stop work in that zone and evacuate immediately."
+ ],
+ "Zone B-4 라인 3개 즉시 정지합니다. 생산 손실 예상이지만 안전이 최우선입니다. AMR 경로 우회 설정 완료.": [
+  "Zone B-4の3ラインを直ちに停止します。生産損失は見込まれますが安全が最優先です。AMRの迂回経路の設定も完了しました。",
+  "Stopping all three Zone B-4 lines now. There will be a production loss, but safety comes first. AMR detour routing is set."
+ ],
+ "가스 누출 원인 분석 중: 배관 연결부 압력 이상 감지. 긴급 점검 작업지시 생성 완료. 추정 수리 시간 45분.": [
+  "ガス漏れの原因を分析中: 配管接続部の圧力異常を検知しました。緊急点検の作業指示を起票済み、推定修理時間は45分です。",
+  "Analysing the leak: abnormal pressure at a pipe joint. An urgent inspection work order is raised; estimated repair time 45 minutes."
+ ],
+ "환기 시스템 최대 출력으로 전환합니다. 추가 전력 소비 발생하지만 안전 확보가 우선입니다.": [
+  "換気システムを最大出力に切り替えます。追加の電力消費は発生しますが、安全確保が優先です。",
+  "Switching ventilation to maximum. It costs extra power, but securing safety comes first."
+ ],
+ "작업자 12명 안전 대피 완료 확인. 소방서 자동 신고 완료. 가스 농도 모니터링 계속 중.": [
+  "作業者12名の安全な避難完了を確認。消防への自動通報も完了し、ガス濃度の監視を継続しています。",
+  "All 12 workers confirmed evacuated. The fire service has been notified automatically. Gas monitoring continues."
+ ],
+ "✅ 비상 대응 완료: 구역 격리 + 환기 가동 + 작업자 대피 + 긴급 수리 지시. 45분 후 재가동 예정.": [
+  "✅ 非常対応完了: 区域隔離 + 換気稼働 + 作業者避難 + 緊急修理指示。45分後に再稼働予定です。",
+  "✅ Emergency handled: zone isolated, ventilation running, workers evacuated, urgent repair ordered. Restart planned in 45 minutes."
+ ],
+ "현재 전력 소비 4,850kW로 계약 한도(5,000kW)의 97%입니다. 피크 요금 구간 진입 10분 전입니다.": [
+  "現在の電力消費は4,850kWで、契約上限(5,000kW)の97%です。ピーク料金帯に入るまで10分です。",
+  "Draw is 4,850 kW — 97 % of the 5,000 kW contract limit. We enter the peak tariff band in 10 minutes."
+ ],
+ "비핵심 설비 전력을 줄이면 생산에 영향이 있습니다. 어떤 설비를 우선 감전할지 결정이 필요합니다.": [
+  "非重要設備の電力を落とすと生産に影響します。どの設備から先に絞るかの判断が必要です。",
+  "Cutting power to non-critical equipment will hit output. We need to decide which machines get throttled first."
+ ],
+ "ESS 잔량 68%, 즉시 방전 가능합니다. ESS 방전 500kW + 냉각 시스템 20% 감전으로 한도 내 유지 가능합니다.": [
+  "ESS残量は68%で即時放電が可能です。ESSから500kWを放電し、冷却システムを20%絞れば上限内に収まります。",
+  "The ESS is at 68 % and can discharge now. 500 kW from the ESS plus a 20 % cut to cooling keeps us inside the limit."
+ ],
+ "냉각 시스템 감전 시 온도 변화로 불량률 영향 가능성이 있습니다. 냉각 대신 조명 및 공조 시스템 감전을 권장합니다.": [
+  "冷却システムを絞ると温度変化で不良率に影響するおそれがあります。冷却ではなく照明と空調を絞ることを推奨します。",
+  "Throttling cooling shifts temperature and may move the defect rate. I recommend trimming lighting and HVAC instead."
+ ],
+ "품질 에이전트 의견 반영: 조명 30% + 공조 15% 감전 + ESS 방전 300kW로 조정합니다. 피크 요금 절감 ₩2.8M 예상.": [
+  "品質エージェントの意見を反映し、照明30% + 空調15%の抑制 + ESS放電300kWに調整します。ピーク料金の削減額は₩2.8M の見込みです。",
+  "Taking the Quality Agent's point: lighting -30 %, HVAC -15 %, ESS discharge 300 kW. Expected peak-tariff saving ₩2.8M."
+ ],
+ "✅ 최적 합의: ESS 방전 300kW + 조명/공조 감전 + 생산 영향 최소화. 피크 요금 ₩2.8M 절감 달성.": [
+  "✅ 最適合意: ESS放電300kW + 照明・空調の抑制 + 生産への影響を最小化。ピーク料金₩2.8Mの削減を達成。",
+  "✅ Optimal agreement: 300 kW ESS discharge, trimmed lighting and HVAC, minimal production impact. ₩2.8M peak-tariff saving achieved."
+ ],
+ "긴급 주문 500개, 납기 4시간. 현재 생산 속도로는 3.2시간 소요 예상. 속도를 15% 증속하면 납기 달성 가능합니다.": [
+  "緊急受注500個、納期は4時間。現在の生産速度では3.2時間かかる見込みです。15%増速すれば納期を達成できます。",
+  "Rush order of 500 units, four hours to delivery. At the current rate it takes 3.2 hours; a 15 % speed-up makes the deadline."
+ ],
+ "⚠️ 반대합니다. 15% 증속 시 불량률이 현재 1.8%에서 3.5%로 상승 예측됩니다. 긴급 주문 품질 보증이 불가합니다.": [
+  "⚠️ 反対します。15%増速すると不良率が現在の1.8%から3.5%に上がると予測されます。緊急受注の品質保証ができません。",
+  "⚠️ I object. A 15 % speed-up is forecast to push the defect rate from 1.8 % to 3.5 %. We could not guarantee quality on this order."
+ ],
+ "절충안: 속도 8% 증속 + 인라인 비전 검사 강화. 불량률 2.0% 이하 유지하면서 납기 달성 가능합니다.": [
+  "折衷案: 8%の増速 + インラインビジョン検査の強化。不良率を2.0%以下に保ちながら納期を達成できます。",
+  "A middle path: 8 % faster plus tighter in-line vision inspection. That holds the defect rate under 2.0 % and still makes the deadline."
+ ],
+ "8% 증속 + 비전 검사 강화 조합이라면 불량률 1.9% 유지 가능합니다. 이 조건에서 동의합니다.": [
+  "8%増速とビジョン検査強化の組み合わせなら不良率1.9%を維持できます。この条件で同意します。",
+  "With 8 % speed-up and stronger vision inspection we can hold 1.9 %. On those terms, I agree."
+ ],
+ "증속으로 에너지 소비 5% 증가하지만 납기 달성 시 수익이 더 크므로 동의합니다.": [
+  "増速でエネルギー消費は5%増えますが、納期を達成した際の収益の方が大きいため同意します。",
+  "The speed-up adds 5 % energy use, but hitting the deadline is worth more. I agree."
+ ],
+ "✅ 황금 합의: 속도 8% 증속 + 인라인 비전 검사 강화. 납기 준수 + 불량률 1.9% 이하 + 품질 보증 달성.": [
+  "✅ ゴールデン合意: 8%増速 + インラインビジョン検査の強化。納期遵守、不良率1.9%以下、品質保証をすべて達成。",
+  "✅ Golden agreement: 8 % faster with reinforced in-line vision inspection. Deadline met, defect rate under 1.9 %, quality guaranteed."
+ ]
+}

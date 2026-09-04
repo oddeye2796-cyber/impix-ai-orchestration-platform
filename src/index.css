@@ -1,10 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-pixel: "Press Start 2P", cursive;
+  /* Latin first, then the CJK families so Japanese and Korean copy stays legible. */
+  --font-sans: "Inter", "Noto Sans JP", "Noto Sans KR", "Hiragino Sans", "Yu Gothic UI",
+    "Malgun Gothic", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Noto Sans JP", "Noto Sans KR", ui-monospace,
+    SFMono-Regular, monospace;
+  /* Press Start 2P has no CJK glyphs; Noto backs it up for non-Latin runs. */
+  --font-pixel: "Press Start 2P", "Noto Sans JP", "Noto Sans KR", cursive;
   
   --color-bg: #0f172a;
   --color-surface: #1e293b;
@@ -18,13 +22,58 @@
   --color-text-secondary: #94a3b8;
 }
 
+/* Light theme: the same token names, re-pointed. Every surface in the app is
+   painted from these, so the whole shell follows without per-component work. */
+:root[data-theme="light"] {
+  --color-bg: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-surface-hover: #e2e8f0;
+  --color-border: #cbd5e1;
+  --color-accent: #059669;
+  --color-accent-hover: #047857;
+  --color-warning: #b45309;
+  --color-danger: #dc2626;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+}
+
 @layer base {
   body {
     @apply bg-bg text-text-primary font-sans antialiased;
   }
+
+  /* CJK line breaking: keep punctuation off the start of a line. */
+  :root[lang="ja"] body,
+  :root[lang="ko"] body {
+    line-break: strict;
+  }
 }
 
 @layer components {
+  /* Attention without a moving hit area: `animate-bounce` on a primary button
+     physically shifts the tap target, which is hard to hit on a touch kiosk and
+     impossible to click reliably in automation. This pulses a ring instead. */
+  .attention-ring {
+    position: relative;
+  }
+  .attention-ring::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    border: 2px solid currentColor;
+    opacity: 0;
+    pointer-events: none;
+    animation: attention-ring 1.8s ease-out infinite;
+  }
+  @keyframes attention-ring {
+    0% { opacity: 0.55; transform: scale(1); }
+    70%, 100% { opacity: 0; transform: scale(1.12); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .attention-ring::after { animation: none; }
+  }
+
   .dashboard-card {
     @apply bg-surface border border-border rounded-xl p-4 shadow-lg;
   }

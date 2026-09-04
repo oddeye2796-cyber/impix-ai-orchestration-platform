@@ -6,6 +6,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Factory, Sparkles, Play, ChevronRight, Zap, Shield, Leaf, Target, Users, Award, Clock } from 'lucide-react';
+import { t } from '../i18n';
+import LanguageSwitcher from '../i18n/LanguageSwitcher';
+import ThemeSwitcher from '../theme/ThemeSwitcher';
 
 interface ExpoLandingProps {
   onStart: (scenarioIdx: number) => void;
@@ -154,11 +157,11 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                 {countdown === 0 ? '🚀' : countdown}
               </motion.div>
               <p className="text-xl font-bold text-text-secondary">
-                {countdown === 0 ? '시뮬레이션 시작!' : '시뮬레이션을 준비하는 중...'}
+                {countdown === 0 ? t('시뮬레이션 시작!') : t('시뮬레이션을 준비하는 중...')}
               </p>
               {selectedScenario !== null && (
                 <p className="text-sm text-text-secondary mt-2">
-                  {SCENARIOS[selectedScenario].title} 시나리오
+                  {t('{name} 시나리오', { name: t(SCENARIOS[selectedScenario].title) })}
                 </p>
               )}
             </div>
@@ -175,15 +178,19 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
             </div>
             <div>
               <h1 className="font-bold text-lg tracking-tight">IMPIX AI</h1>
-              <p className="text-xs text-text-secondary font-mono">ORCHESTRATION PLATFORM</p>
+              <p className="text-xs text-text-secondary font-mono">{t('ORCHESTRATION PLATFORM')}</p>
             </div>
           </div>
-          <button
-            onClick={onSkip}
-            className="px-4 py-2 text-xs text-text-secondary hover:text-text-primary border border-border hover:border-accent/30 rounded-lg transition-all"
-          >
-            관리자 모드로 입장 →
-          </button>
+          <div className="flex items-center gap-3">
+            <ThemeSwitcher />
+            <LanguageSwitcher variant="inline" />
+            <button
+              onClick={onSkip}
+              className="px-4 py-2 text-xs text-text-secondary hover:text-text-primary border border-border hover:border-accent/30 rounded-lg transition-all"
+            >
+              {t('관리자 모드로 입장 →')}
+            </button>
+          </div>
         </div>
 
         {/* Hero Section */}
@@ -205,7 +212,7 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                   className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-400 text-sm font-bold"
                 >
                   <Sparkles size={16} className="animate-pulse" />
-                  AI EXPO 2026 — 박람회 체험 시뮬레이션
+                  {t('AI 오케스트레이션 체험 시뮬레이션')}
                 </motion.div>
 
                 {/* Title */}
@@ -215,15 +222,14 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                   transition={{ delay: 0.3 }}
                 >
                   <h2 className="text-5xl md:text-6xl font-black tracking-tight mb-4">
-                    AI가 공장을
+                    {t('AI가 공장을')}
                     <br />
                     <span className="bg-gradient-to-r from-accent to-blue-400 bg-clip-text text-transparent">
-                      스스로 운영한다면?
+                      {t('스스로 운영한다면?')}
                     </span>
                   </h2>
                   <p className="text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">
-                    6개의 AI 에이전트가 실시간으로 협력하여 공장의 품질, 안전, 에너지, 물류를 동시에 최적화합니다.
-                    지금 직접 체험해보세요.
+                    {t('6개의 AI 에이전트가 실시간으로 협력하여 공장의 품질, 안전, 에너지, 물류를 동시에 최적화합니다. 지금 직접 체험해보세요.')}
                   </p>
                 </motion.div>
 
@@ -232,13 +238,13 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto"
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
                 >
                   {STATS.map((stat, i) => (
                     <div key={i} className="bg-surface/50 border border-border rounded-xl p-4 text-center">
                       <div className="text-accent mb-2 flex justify-center">{stat.icon}</div>
-                      <div className="text-xl font-black">{stat.value}</div>
-                      <div className="text-xs text-text-secondary">{stat.label}</div>
+                      <div className="text-xl font-black leading-tight">{t(stat.value)}</div>
+                      <div className="text-xs text-text-secondary">{t(stat.label)}</div>
                     </div>
                   ))}
                 </motion.div>
@@ -255,14 +261,14 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                     className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-bg font-black text-lg rounded-2xl shadow-2xl shadow-orange-500/20 flex items-center gap-3 justify-center transition-all hover:scale-105 active:scale-95"
                   >
                     <Play size={20} />
-                    시나리오 선택하기
+                    {t('시나리오 선택하기')}
                     <ChevronRight size={20} />
                   </button>
                   <button
                     onClick={() => handleStartCountdown(0)}
                     className="px-8 py-4 bg-surface border border-border hover:border-accent/40 text-text-primary font-bold text-lg rounded-2xl transition-all hover:scale-105 active:scale-95"
                   >
-                    바로 시작하기 ⚡
+                    {t('바로 시작하기 ⚡')}
                   </button>
                 </motion.div>
 
@@ -273,7 +279,7 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                   transition={{ delay: 1 }}
                   className="text-xs text-text-secondary"
                 >
-                  또는 아래에서 시나리오를 선택하세요
+                  {t('또는 아래에서 시나리오를 선택하세요')}
                 </motion.p>
               </motion.div>
             ) : (
@@ -285,8 +291,8 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                 className="max-w-6xl mx-auto w-full space-y-8"
               >
                 <div>
-                  <h2 className="text-3xl font-black mb-2">체험 시나리오를 선택하세요</h2>
-                  <p className="text-text-secondary">각 시나리오는 실제 스마트 공장에서 발생하는 상황을 시뮬레이션합니다.</p>
+                  <h2 className="text-3xl font-black mb-2">{t('체험 시나리오를 선택하세요')}</h2>
+                  <p className="text-text-secondary">{t('각 시나리오는 실제 스마트 공장에서 발생하는 상황을 시뮬레이션합니다.')}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -304,30 +310,30 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                         <div className="flex items-center gap-3">
                           <span className="text-4xl">{scenario.icon}</span>
                           <div>
-                            <h3 className="text-lg font-black">{scenario.title}</h3>
-                            <p className={`text-xs font-bold ${scenario.textColor}`}>{scenario.subtitle}</p>
+                            <h3 className="text-lg font-black">{t(scenario.title)}</h3>
+                            <p className={`text-xs font-bold ${scenario.textColor}`}>{t(scenario.subtitle)}</p>
                           </div>
                         </div>
                         <div className="flex flex-col items-end gap-1">
                           <span className="text-[10px] text-text-secondary flex items-center gap-1">
-                            <Clock size={10} /> {scenario.duration}
+                            <Clock size={10} /> {t(scenario.duration)}
                           </span>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${scenario.bgColor} ${scenario.textColor} border ${scenario.borderColor}`}>
-                            {scenario.difficulty}
+                            {t(scenario.difficulty)}
                           </span>
                         </div>
                       </div>
 
                       {/* Description */}
                       <p className="text-sm text-text-secondary leading-relaxed mb-4">
-                        {scenario.description}
+                        {t(scenario.description)}
                       </p>
 
                       {/* Features */}
                       <div className="flex flex-wrap gap-2 mb-4">
                         {scenario.features.map((feature, i) => (
                           <span key={i} className="text-[10px] px-2 py-1 bg-white/5 border border-white/10 rounded-full text-text-secondary">
-                            {feature}
+                            {t(feature)}
                           </span>
                         ))}
                       </div>
@@ -335,7 +341,7 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                       {/* Start Button */}
                       <div className={`w-full py-3 rounded-xl bg-gradient-to-r ${scenario.color} text-bg font-black text-sm flex items-center justify-center gap-2 group-hover:opacity-90 transition-opacity`}>
                         <Play size={16} />
-                        이 시나리오 체험하기
+                        {t('이 시나리오 체험하기')}
                       </div>
                     </motion.div>
                   ))}
@@ -345,7 +351,7 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                   onClick={() => setPhase('intro')}
                   className="text-sm text-text-secondary hover:text-text-primary transition-colors"
                 >
-                  ← 돌아가기
+                  {t('← 돌아가기')}
                 </button>
               </motion.div>
             )}
@@ -361,7 +367,7 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
             className="px-8 pb-12"
           >
             <div className="max-w-4xl mx-auto">
-              <p className="text-xs text-text-secondary text-center mb-4 uppercase tracking-widest font-bold">빠른 시나리오 선택</p>
+              <p className="text-xs text-text-secondary text-center mb-4 uppercase tracking-widest font-bold">{t('빠른 시나리오 선택')}</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {SCENARIOS.map((scenario) => (
                   <button
@@ -370,7 +376,7 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
                     className={`p-4 rounded-xl border-2 ${scenario.borderColor} ${scenario.bgColor} hover:scale-105 transition-all text-center`}
                   >
                     <span className="text-2xl block mb-2">{scenario.icon}</span>
-                    <span className={`text-xs font-bold ${scenario.textColor}`}>{scenario.title}</span>
+                    <span className={`text-xs font-bold ${scenario.textColor}`}>{t(scenario.title)}</span>
                   </button>
                 ))}
               </div>

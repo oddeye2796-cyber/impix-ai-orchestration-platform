@@ -1,0 +1,214 @@
+{
+ "\n# Hierarchical Message-Based Orchestration (HMBO) Framework\n\n## 1. 개요\nHMBO는 복잡한 제조 환경에서 다수의 특화 AI 에이전트들이 상호 협력하고 충돌을 해결하기 위한 계층적 의사결정 프레임워크입니다.\n\n## 2. 핵심 메커니즘\n*   **Proposal (제안)**: 각 도메인 에이전트(품질, 생산, 에너지 등)가 자신의 목표 최적화를 위한 액션을 제안합니다.\n*   **Critique (비판)**: 제안된 액션이 다른 도메인의 가드레일이나 목표를 침해할 경우, 해당 에이전트가 반대 의견과 근거를 제시합니다.\n*   **Info (정보 제공)**: 의사결정에 필요한 추가 데이터나 상황 정보를 공유합니다.\n*   **Agreement (합의)**: AI 슈퍼바이저가 모든 의견을 종합하고, 전사적 우선순위(예: 안전 > 품질 > 생산)에 따라 최종 결정을 내립니다.\n\n## 3. 의사결정 계층\n1.  **L1: Safety Layer**: 물리적 위험 및 법적 규제 준수 여부 판단\n2.  **L2: Policy Layer**: 전사 운영 정책(품질 우선, 비용 절감 등) 반영\n3.  **L3: Optimization Layer**: 도메인 간 트레이드오프 조율 및 최적값 도출\n\n## 4. 기대 효과\n*   **의사결정 투명성**: 모든 에이전트의 발언과 슈퍼바이저의 판단 근거가 로그로 남습니다.\n*   **유연한 정책 대응**: 전사 정책 변경 시 슈퍼바이저의 가드레일 설정만으로 전체 에이전트의 행동을 제어할 수 있습니다.\n*   **실시간 최적화**: 인간 관리자가 개입하기 어려운 초단위 공정 변화에 즉각 대응합니다.\n": [
+  "\n# Hierarchical Message-Based Orchestration (HMBO) Framework\n\n## 1. 概要\nHMBOは、複雑な製造環境において多数の特化型AIエージェントが相互に協力し、衝突を解決するための階層的意思決定フレームワークです。\n\n## 2. 中核メカニズム\n*   **Proposal(提案)**: 各ドメインエージェント(品質・生産・エネルギーなど)が、自らの目標を最適化するアクションを提案します。\n*   **Critique(批判)**: 提案されたアクションが他ドメインのガードレールや目標を侵す場合、該当エージェントが反対意見とその根拠を提示します。\n*   **Info(情報提供)**: 意思決定に必要な追加データや状況情報を共有します。\n*   **Agreement(合意)**: AIスーパーバイザーがすべての意見を統合し、全社的な優先順位(例: 安全 > 品質 > 生産)に従って最終決定を下します。\n\n## 3. 意思決定の階層\n1.  **L1: Safety Layer**: 物理的危険および法規制の遵守可否を判断\n2.  **L2: Policy Layer**: 全社の運用ポリシー(品質優先、コスト削減など)を反映\n3.  **L3: Optimization Layer**: ドメイン間のトレードオフを調整し最適値を導出\n\n## 4. 期待効果\n*   **意思決定の透明性**: すべてのエージェントの発言とスーパーバイザーの判断根拠がログとして残ります。\n*   **柔軟なポリシー対応**: 全社ポリシーの変更時も、スーパーバイザーのガードレール設定だけで全エージェントの挙動を制御できます。\n*   **リアルタイム最適化**: 人間の管理者では介入が難しい秒単位の工程変化にも即座に対応します。\n",
+  "\n# Hierarchical Message-Based Orchestration (HMBO) Framework\n\n## 1. Overview\nHMBO is a layered decision-making framework that lets many specialized AI agents cooperate — and settle their conflicts — inside a complex manufacturing environment.\n\n## 2. Core mechanics\n*   **Proposal**: each domain agent (quality, production, energy, and so on) proposes the action that optimizes its own objective.\n*   **Critique**: when a proposed action would breach another domain's guardrails or goals, that agent raises its objection along with the evidence.\n*   **Info**: agents share the additional data or situational context the decision needs.\n*   **Agreement**: the AI Supervisor weighs every position and makes the final call under the plant-wide priority order (for example safety > quality > production).\n\n## 3. Decision layers\n1.  **L1: Safety Layer** — judges physical hazard and regulatory compliance.\n2.  **L2: Policy Layer** — applies plant-wide operating policy (quality first, cost reduction, and so on).\n3.  **L3: Optimization Layer** — arbitrates cross-domain trade-offs and derives the optimum.\n\n## 4. What it buys you\n*   **Transparent decisions**: every agent statement and the Supervisor's reasoning are written to the log.\n*   **Flexible policy response**: when plant policy changes, adjusting the Supervisor's guardrails alone re-steers every agent.\n*   **Real-time optimization**: it reacts instantly to second-by-second process shifts that no human manager could catch.\n"
+ ],
+ "자동 재생": [
+  "自動再生",
+  "Autoplay"
+ ],
+ "자동 일시정지": [
+  "自動再生を一時停止",
+  "Pause autoplay"
+ ],
+ "자동 제어": [
+  "自動制御",
+  "Auto control"
+ ],
+ "적재": [
+  "積載",
+  "Loading"
+ ],
+ "전류": [
+  "電流",
+  "Current"
+ ],
+ "진동": [
+  "振動",
+  "Vibration"
+ ],
+ "지연": [
+  "遅延",
+  "Latency"
+ ],
+ "진행": [
+  "進行",
+  "In progress"
+ ],
+ "찢김": [
+  "裂け",
+  "Tears"
+ ],
+ "정밀검사": [
+  "精密検査",
+  "Detailed inspection"
+ ],
+ "정상가동": [
+  "正常稼働",
+  "Running normally"
+ ],
+ "정지 (STOP)": [
+  "停止(STOP)",
+  "Stop"
+ ],
+ "피크감축": [
+  "ピーク削減",
+  "Peak cut"
+ ],
+ "종합중재": [
+  "総合調停",
+  "Arbitration"
+ ],
+ "질의 응답": [
+  "質疑応答",
+  "Q&A"
+ ],
+ "지식 검색": [
+  "知識検索",
+  "Knowledge search"
+ ],
+ "추천 액션": [
+  "推奨アクション",
+  "Recommended action"
+ ],
+ "확인": [
+  "確認",
+  "OK"
+ ],
+ "확인 및 닫기": [
+  "確認して閉じる",
+  "Confirm and close"
+ ],
+ "포장1라인": [
+  "包装第1ライン",
+  "Packaging Line 1"
+ ],
+ "포장1라인 - 수축포장기-01": [
+  "包装第1ライン - シュリンク包装機-01",
+  "Packaging Line 1 — Shrink Wrapper-01"
+ ],
+ "포장라인 보관실 [2129]": [
+  "包装ライン保管室[2129]",
+  "Packaging line store room [2129]"
+ ],
+ "칠러 냉각 펌프-01B": [
+  "チラー冷却ポンプ-01B",
+  "Chiller Cooling Pump-01B"
+ ],
+ "패키징 주동 기어-02": [
+  "パッケージング主駆動ギア-02",
+  "Packaging Main Drive Gear-02"
+ ],
+ "종합 조율 AI": [
+  "総合調整AI",
+  "Orchestrator AI"
+ ],
+ "종합 조율 AI (오케스트레이터)": [
+  "総合調整AI(オーケストレーター)",
+  "Orchestrator AI"
+ ],
+ "통합 판단, 목표 관리 및 플레이북 실행 센터": [
+  "統合判断・目標管理・プレイブック実行のセンター",
+  "Centre for unified judgement, goal management and playbook execution"
+ ],
+ "현재 오케스트레이션 레이어에서 작동 중인 에이전트들의 상태입니다.": [
+  "現在オーケストレーションレイヤーで稼働中のエージェントの状態です。",
+  "Status of the agents currently running on the orchestration layer."
+ ],
+ "전사 가동 효율 OEE 극대화": [
+  "全社稼働効率(OEE)の最大化",
+  "Maximize plant-wide OEE"
+ ],
+ "한낮 에너지 전력 피크 셰이빙 및 절전": [
+  "日中のエネルギーピークシェービングと節電",
+  "Midday peak shaving and power saving"
+ ],
+ "최근 발생한 안전 경보 이력 조회": [
+  "直近の安全警報履歴の照会",
+  "Look up recent safety alarms"
+ ],
+ "현재 전체 불량률 요약해줘": [
+  "現在の全体の不良率を要約して",
+  "Summarize the current overall defect rate"
+ ],
+ "지수 (품질 수석 연구원)": [
+  "ジス(品質主席研究員)",
+  "Jisu (Principal Quality Researcher)"
+ ],
+ "지수 연구원": [
+  "ジス 研究員",
+  "Jisu, Researcher"
+ ],
+ "철수 (예지정비 총괄 기장)": [
+  "チョルス(予知保全統括主任)",
+  "Cheolsu (Predictive Maintenance Chief)"
+ ],
+ "철수 기장": [
+  "チョルス 主任",
+  "Cheolsu, Chief"
+ ],
+ "품질 리스크 -1.5% 감소": [
+  "品質リスクを1.5%低減",
+  "Quality risk down 1.5 %"
+ ],
+ "품질 가드레일(핀홀 불량)과 에너지 비용 최적화를 고려하여 절충안을 도출함. ESS 활용을 통해 생산성 저하를 최소화함.": [
+  "品質ガードレール(ピンホール不良)とエネルギーコストの最適化を踏まえ、折衷案を導き出しました。ESSの活用により生産性の低下を最小限に抑えます。",
+  "Derived a compromise that respects the quality guardrail (pinholes) and energy-cost optimization, using the ESS to keep the productivity loss minimal."
+ ],
+ "피크 시간대입니다. 15% 상향 시 계약 전력 초과 위험이 있습니다.": [
+  "ピーク時間帯です。15%引き上げると契約電力を超過するおそれがあります。",
+  "We are in the peak window. A 15 % increase risks breaching the contracted power limit."
+ ],
+ "진공 유압 증대로 표면 원형 성형 스크래치 불량률 0.0% 보증": [
+  "真空油圧の増強により、成形時のスクラッチ不良率0.0%を保証",
+  "Raised vacuum pressure guarantees a 0.0 % forming-scratch defect rate"
+ ],
+ "진단 결과 밸브 No.12 개스킷 미세 노후화 확인됨. 임시 압력 저하 상태로 운전 시 누출량 80% 저감 가능합니다.": [
+  "診断の結果、バルブNo.12のガスケットに微細な劣化が確認されました。一時的に圧力を下げて運転すれば、漏洩量を80%低減できます。",
+  "Diagnosis confirms slight gasket degradation on valve No. 12. Running at temporarily reduced pressure cuts the leak by 80 %."
+ ],
+ "초고부하 정성 유성 기어 부품 사후 예약 배치 완료": [
+  "超高負荷の遊星ギア部品について、事後の点検配置を予約完了",
+  "Follow-up inspection booked for the planetary-gear parts under extreme load"
+ ],
+ "칠러 냉각수 순측 유압 보강 예지 정비 접수": [
+  "チラー冷却水の循環側の油圧補強について予知保全を受理",
+  "Predictive-maintenance request accepted to reinforce chiller circulation pressure"
+ ],
+ "패키징 1라인 120% 초속 가이 딜리버리 합의 완료": [
+  "パッケージング第1ラインの120%高速運転によるデリバリーで合意",
+  "Agreed: Packaging Line 1 delivers at 120 % run speed"
+ ],
+ "한전 긴급 수요 감전 250kW 즉시 감축 완수": [
+  "電力会社の緊急需要調整に応じ、250kWの即時削減を完了",
+  "Utility's emergency demand cut of 250 kW delivered immediately"
+ ],
+ "한국전력 거래소 긴급 수요감축(DR) 지시 하달. 5분 이내 전력 사용량 250kW 감축 의무 발생.": [
+  "電力取引所から緊急の需要削減(DR)指示が発令されました。5分以内に電力使用量を250kW削減する義務が生じます。",
+  "The power exchange has issued an emergency demand-response instruction: 250 kW must come off within five minutes."
+ ],
+ "한낮 피크 전력 칠러 감속 가이드 vs 출하량 미달 생산 가동 속도 유지 상충 발생.": [
+  "日中のピーク電力に伴うチラー減速の指針と、出荷量不足を避けるための稼働速度維持とが衝突しています。",
+  "Guidance to slow the chiller through the midday peak collides with holding line speed to avoid a shipment shortfall."
+ ],
+ "출량 초가속 120% 스루풋 vs 접합 정밀 노즐 온도 밀착 스크래치 결합 우려 상충 발생.": [
+  "120%の超加速によるスループットと、接合ノズルの温度精度に起因するスクラッチ不良の懸念とが衝突しています。",
+  "Throughput at 120 % overdrive collides with concern that seal-nozzle temperature precision will produce scratch defects."
+ ],
+ "현재 공정 중단 시 5억원 상당의 원부자재 손실이 발생합니다. 오탐 가능성 확인이 필요합니다.": [
+  "いま工程を止めれば5億ウォン相当の原材料損失が発生します。誤検知の可能性を確認する必要があります。",
+  "Stopping the process now costs about ₩500M in materials. We need to rule out a false positive first."
+ ],
+ "중재 결과: 속도 상향을 5%로 제한하고, 품질 유지를 위해 냉각 온도를 2도 하향 조정합니다. 에너지 피크는 ESS 방전으로 상쇄합니다.": [
+  "調停結果: 増速は5%に制限し、品質維持のため冷却温度を2度下げます。エネルギーピークはESSの放電で相殺します。",
+  "Arbitration: cap the speed increase at 5 % and drop cooling temperature 2 degrees to hold quality. The energy peak is offset by ESS discharge."
+ ],
+ "중재 결과: 즉시 우회관로 전환 실행 및 해당 밸브 메인 차단. 환기팬 100% 가동 상태를 유지하며 설비 유지보수팀 현장 급파 지시.": [
+  "調停結果: 直ちに迂回配管へ切り替え、該当バルブのメインを遮断します。換気ファンは100%稼働を維持し、保全チームの現場急派を指示します。",
+  "Arbitration: switch to the bypass line immediately and shut the valve's main. Hold ventilation at 100 % and dispatch the maintenance team to the floor."
+ ],
+ "중재 결과: 긴급히 유틸리티 ESS 배터리에서 150kW 급전하고, 제3건조실 순차 제어로 110kW 일시 감축 처리하여 패널티 회피 및 공정 영향 무력화 완료.": [
+  "調停結果: ユーティリティESSから緊急に150kWを給電し、第3乾燥室の順次制御で110kWを一時削減。ペナルティを回避し、工程への影響も無力化しました。",
+  "Arbitration: draw 150 kW from the utility ESS immediately and stage a temporary 110 kW cut in drying room 3. Penalty avoided and process impact neutralized."
+ ]
+}

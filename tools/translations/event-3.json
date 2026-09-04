@@ -1,0 +1,242 @@
+{
+ "가스 누출 감지": [
+  "ガス漏れの検知",
+  "Gas leak detected"
+ ],
+ "Zone B-4 가스 농도 위험 수준 초과": [
+  "Zone B-4のガス濃度が危険水準を超過",
+  "Zone B-4 gas concentration past the danger level"
+ ],
+ "가스 센서가 Zone B-4에서 LPG 농도 LEL(폭발하한계) 25%를 감지했습니다. 해당 구역에는 작업자 8명이 있으며, 근처에 전기 설비가 가동 중입니다. 경보음이 울리기 시작했습니다.": [
+  "ガスセンサーがZone B-4でLPG濃度LEL(爆発下限界)25%を検知しました。当該区域には作業者8名がおり、近くでは電気設備が稼働中です。警報音が鳴り始めています。",
+  "A gas sensor reads LPG at 25 % LEL in Zone B-4. Eight workers are in the zone and electrical equipment is running nearby. The alarm has started sounding."
+ ],
+ "가스 누출은 폭발 위험이 있어 인명 안전이 최우선입니다. AI는 즉각적인 전기 설비 차단(점화원 제거), 환기 가동, 작업자 대피를 동시에 실행하는 것이 최선임을 판단했습니다.": [
+  "ガス漏れは爆発の危険を伴うため、人命の安全が最優先です。AIは、電気設備の即時遮断(着火源の除去)、換気の起動、作業者の避難を同時に実行することが最善と判断しました。",
+  "A gas leak carries explosion risk, so human safety comes first. The AI judged the best move is to cut electrical equipment (removing the ignition source), start ventilation and evacuate — all at once."
+ ],
+ "전기 설비 즉시 차단 + 환기 가동 + 작업자 대피": [
+  "電気設備の即時遮断 + 換気の起動 + 作業者の避難",
+  "Cut electrical power, start ventilation, evacuate"
+ ],
+ "점화원(전기 설비)을 즉시 차단하고, 환기 시스템을 최대로 가동하며, 작업자를 안전 구역으로 대피시킨다.": [
+  "着火源(電気設備)を直ちに遮断し、換気システムを最大で稼働させ、作業者を安全区域へ避難させる。",
+  "Cut the ignition source (electrical equipment) at once, run ventilation flat out and move workers to a safe zone."
+ ],
+ "정답! AI 권장 대응입니다. 점화원 제거 → 환기 → 대피의 순서가 폭발 방지의 핵심입니다.": [
+  "正解! AI推奨の対応です。着火源の除去 → 換気 → 避難という順序が爆発防止の要です。",
+  "Correct — the AI's recommendation. Ignition source, then ventilation, then evacuation: that order is what prevents an explosion."
+ ],
+ "폭발 위험 제거, 인명 피해 방지, 가스 농도 10분 내 안전 수준으로 감소": [
+  "爆発リスクを排除し人的被害を防止、ガス濃度は10分以内に安全水準まで低下します",
+  "Explosion risk removed, no injuries, gas back to a safe level within 10 minutes"
+ ],
+ "환기만 가동하고 생산 계속": [
+  "換気のみ起動して生産を継続",
+  "Run ventilation only and keep producing"
+ ],
+ "환기 시스템을 가동하면서 생산을 중단하지 않는다.": [
+  "換気システムを稼働させつつ、生産は止めない。",
+  "Start ventilation but do not stop production."
+ ],
+ "오답: 전기 설비(점화원)가 가동 중인 상태에서 가스가 있으면 폭발 위험이 있습니다.": [
+  "不正解: 電気設備(着火源)が稼働したままガスが存在すると、爆発の危険があります。",
+  "Wrong: gas plus live electrical equipment as an ignition source is an explosion waiting to happen."
+ ],
+ "전기 스파크로 인한 폭발 가능성, 중대 재해 위험": [
+  "電気スパークによる爆発の可能性があり、重大災害のリスクがあります",
+  "An electrical spark could set off an explosion — a major-incident risk"
+ ],
+ "소방서 신고 후 대기": [
+  "消防へ通報して待機",
+  "Call the fire service and wait"
+ ],
+ "119에 신고하고 전문가가 올 때까지 대기한다.": [
+  "消防に通報し、専門家の到着まで待機する。",
+  "Call the emergency services and wait for the specialists to arrive."
+ ],
+ "오답: 신고는 필요하지만, 그 전에 즉각적인 안전 조치(전기 차단, 대피)를 먼저 해야 합니다.": [
+  "不正解: 通報は必要ですが、その前に即時の安全措置(電源遮断・避難)を行う必要があります。",
+  "Wrong: calling is necessary, but the immediate safety steps — cutting power, evacuating — have to come first."
+ ],
+ "소방차 도착 전 가스 농도 위험 수준 도달, 대피 지연": [
+  "消防車の到着前にガス濃度が危険水準に達し、避難が遅れます",
+  "Gas reaches the danger level before the fire service arrives, delaying evacuation"
+ ],
+ "가스 누출 위치 먼저 파악 후 조치": [
+  "まず漏洩箇所を特定してから対処",
+  "Locate the leak first, then act"
+ ],
+ "정확한 누출 위치를 파악한 후 선별적으로 조치한다.": [
+  "正確な漏洩箇所を特定してから、選択的に対処する。",
+  "Pin down exactly where the leak is, then respond selectively."
+ ],
+ "오답: 위험! 가스 누출 시 원인 파악보다 즉각적인 안전 조치가 우선입니다. 지연 시 폭발 위험이 급증합니다.": [
+  "不正解: 危険です。ガス漏れでは原因究明より即時の安全措置が優先されます。遅れれば爆発リスクが急増します。",
+  "Wrong — and dangerous. With a gas leak, immediate safety action outranks diagnosis. Every delay multiplies the explosion risk."
+ ],
+ "가스 농도 계속 상승 → 폭발 위험 임박, 인명 피해 가능성": [
+  "ガス濃度が上昇し続け → 爆発の危険が差し迫り、人的被害の可能性があります",
+  "Gas keeps rising -> explosion imminent, injuries likely"
+ ],
+ "화재 감지": [
+  "火災の検知",
+  "Fire detected"
+ ],
+ "CCTV AI — Zone C-2 연기 감지 92%": [
+  "CCTV AI — Zone C-2で煙を92%の確度で検知",
+  "CCTV AI — smoke in Zone C-2 at 92 % confidence"
+ ],
+ "AI CCTV가 Zone C-2 전기 패널 근처에서 연기를 92% 신뢰도로 감지했습니다. 육안으로는 아직 확인되지 않았으나, 해당 구역 온도 센서도 평소보다 15°C 높게 측정되고 있습니다. 스프링클러 시스템이 대기 중입니다.": [
+  "AI CCTVがZone C-2の配電盤付近で煙を92%の信頼度で検知しました。目視ではまだ確認されていませんが、当該区域の温度センサーも通常より15°C高い値を示しています。スプリンクラーは待機状態です。",
+  "The AI CCTV detected smoke near the electrical panel in Zone C-2 at 92 % confidence. Nothing is visible to the eye yet, but the zone's temperature sensor reads 15 °C above normal. The sprinkler system is on standby."
+ ],
+ "전기 화재에는 물(스프링클러)이 오히려 위험할 수 있습니다. AI는 먼저 전원을 차단하고, 해당 구역 인원을 대피시키며, 소방서에 신고하는 것이 최선임을 판단했습니다. 스프링클러는 전기 화재 확인 후 선별적으로 가동해야 합니다.": [
+  "電気火災では水(スプリンクラー)がかえって危険になり得ます。AIは、まず電源を遮断し、当該区域の人員を避難させ、消防に通報することが最善と判断しました。スプリンクラーは電気火災を確認したうえで選択的に作動させる必要があります。",
+  "Water can make an electrical fire worse. The AI judged the right order is: cut the power, evacuate the zone, call the fire service. Sprinklers should only be triggered selectively once the nature of the fire is confirmed."
+ ],
+ "전원 차단 + 대피 + 119 신고 + 소화기 대기": [
+  "電源遮断 + 避難 + 消防通報 + 消火器の待機",
+  "Cut power, evacuate, call the fire service, ready the extinguisher"
+ ],
+ "해당 구역 전원을 즉시 차단하고, 인원을 대피시키며, 119에 신고하고 CO2 소화기를 준비한다.": [
+  "当該区域の電源を直ちに遮断し、人員を避難させ、消防に通報してCO2消火器を準備する。",
+  "Cut power to the zone at once, evacuate, call the emergency services and ready a CO2 extinguisher."
+ ],
+ "정답! AI 권장 대응입니다. 전기 화재 대응 순서: 전원 차단 → 대피 → 신고 → CO2 소화기 사용이 올바릅니다.": [
+  "正解! AI推奨の対応です。電気火災の対応順序は、電源遮断 → 避難 → 通報 → CO2消火器の使用が正しい手順です。",
+  "Correct — the AI's recommendation. For an electrical fire the order is: cut power, evacuate, call, then use a CO2 extinguisher."
+ ],
+ "초기 진압 성공, 인명 피해 없음, 피해 최소화": [
+  "初期消火に成功、人的被害はなく、被害を最小限に抑えます",
+  "Contained early, no injuries, damage kept to a minimum"
+ ],
+ "스프링클러 즉시 전체 가동": [
+  "スプリンクラーを直ちに全面作動",
+  "Trigger every sprinkler immediately"
+ ],
+ "화재 감지 즉시 스프링클러를 전체 가동한다.": [
+  "火災を検知したら直ちにスプリンクラーを全面作動させる。",
+  "Fire the whole sprinkler system the moment smoke is detected."
+ ],
+ "오답: 전기 패널 화재에 물을 뿌리면 감전 및 화재 확산 위험이 있습니다.": [
+  "不正解: 配電盤の火災に放水すると、感電や延焼のリスクがあります。",
+  "Wrong: spraying water on an electrical-panel fire risks electrocution and spreads the fire."
+ ],
+ "전기 패널 합선으로 화재 확산, 감전 사고 위험": [
+  "配電盤の短絡で延焼し、感電事故のリスクがあります",
+  "The panel shorts out, the fire spreads and there is a shock hazard"
+ ],
+ "작업자가 직접 확인 후 판단": [
+  "作業者が直接確認してから判断",
+  "Send someone to look first"
+ ],
+ "육안 확인이 안 됐으므로 작업자를 보내 직접 확인한다.": [
+  "目視で確認できていないため、作業者を送って直接確認する。",
+  "Nothing is visible yet, so send a worker to check in person."
+ ],
+ "오답: 연기 감지 + 온도 상승은 화재 초기 징후입니다. 직접 확인을 위해 작업자를 보내는 것은 위험합니다.": [
+  "不正解: 煙の検知と温度上昇は火災初期の兆候です。確認のために作業者を送るのは危険です。",
+  "Wrong: smoke plus rising temperature is an early fire signature. Sending someone in to look is dangerous."
+ ],
+ "작업자 연기 흡입 위험, 화재 초기 대응 지연": [
+  "作業者が煙を吸入する危険があり、初期対応も遅れます",
+  "The worker risks smoke inhalation and the early response is delayed"
+ ],
+ "경보만 울리고 자연 진화 대기": [
+  "警報だけ鳴らして自然鎮火を待つ",
+  "Sound the alarm and wait for it to burn out"
+ ],
+ "경보를 울려 인지시키고 자연적으로 진화되는지 지켜본다.": [
+  "警報を鳴らして周知し、自然に鎮火するか様子を見る。",
+  "Sound the alarm to make people aware and see whether it goes out by itself."
+ ],
+ "오답: 화재는 초기 대응이 가장 중요합니다. 방치하면 대형 화재로 번질 수 있습니다.": [
+  "不正解: 火災は初期対応が最も重要です。放置すれば大規模火災に発展しかねません。",
+  "Wrong: the first minutes matter most in a fire. Left alone it can grow into a major blaze."
+ ],
+ "화재 확산으로 공장 전체 피해, 중대 재해 발생 가능": [
+  "延焼により工場全体が被害を受け、重大災害に至る可能性があります",
+  "The fire spreads through the plant and could become a major incident"
+ ],
+ "전기실 온도 급등": [
+  "電気室の温度急上昇",
+  "Switchroom temperature spike"
+ ],
+ "전기실 온도 38°C 초과 — 냉각 필요": [
+  "電気室の温度が38°C超 — 冷却が必要",
+  "Switchroom over 38 °C — cooling required"
+ ],
+ "전기실 온도가 38°C를 초과했습니다(정상 범위: 20~35°C). 주요 인버터와 변압기가 과열 경고를 표시하고 있습니다. 냉각 시스템은 현재 70% 가동 중이며, 외부 기온은 34°C입니다.": [
+  "電気室の温度が38°Cを超えました(正常範囲: 20〜35°C)。主要なインバータと変圧器が過熱警告を表示しています。冷却システムは現在70%稼働、外気温は34°Cです。",
+  "The switchroom has passed 38 °C (normal range 20-35 °C). The main inverters and transformers are flagging overheat warnings. Cooling is running at 70 % and the outside temperature is 34 °C."
+ ],
+ "전기 설비 과열은 화재와 고장으로 이어질 수 있습니다. AI는 냉각 시스템을 100%로 즉시 강화하고, 발열이 큰 설비의 부하를 분산하는 것이 가장 빠르고 효과적인 대응임을 판단했습니다.": [
+  "電気設備の過熱は火災や故障につながります。AIは、冷却システムを直ちに100%へ引き上げ、発熱の大きい設備の負荷を分散させることが最も速く効果的な対応と判断しました。",
+  "Overheating switchgear leads to fires and failures. The AI judged the fastest, most effective response is to take cooling to 100 % immediately and spread the load away from the hottest equipment."
+ ],
+ "냉각 시스템 100% 가동 + 발열 설비 부하 분산": [
+  "冷却システムを100%稼働 + 発熱設備の負荷分散",
+  "Cooling to 100 % and shift load off the hot equipment"
+ ],
+ "AI가 냉각 시스템을 최대로 가동하고, 인버터·변압기의 부하를 다른 설비로 분산한다.": [
+  "AIが冷却システムを最大稼働させ、インバータ・変圧器の負荷を他設備へ分散する。",
+  "The AI runs cooling at maximum and redistributes inverter and transformer load to other equipment."
+ ],
+ "정답! AI 권장 대응입니다. 냉각 강화와 부하 분산으로 온도를 빠르게 정상 범위로 낮춥니다.": [
+  "正解! AI推奨の対応です。冷却強化と負荷分散により、温度を速やかに正常範囲まで下げます。",
+  "Correct — the AI's recommendation. More cooling plus load spreading brings the temperature back into range quickly."
+ ],
+ "15분 내 온도 35°C 이하로 감소, 설비 과열 방지": [
+  "15分以内に温度が35°C以下まで下がり、設備の過熱を防ぎます",
+  "Down below 35 °C within 15 minutes, overheating averted"
+ ],
+ "전기실 전체 전원 차단": [
+  "電気室の全電源を遮断",
+  "Cut all power to the switchroom"
+ ],
+ "과열을 막기 위해 전기실 전원을 전면 차단한다.": [
+  "過熱を防ぐため、電気室の電源を全面的に遮断する。",
+  "Kill power to the switchroom entirely to stop the overheating."
+ ],
+ "오답: 전원 차단은 공장 전체 생산 중단을 의미합니다. 냉각 강화로 충분히 해결 가능한 상황입니다.": [
+  "不正解: 電源遮断は工場全体の生産停止を意味します。冷却強化で十分に対応できる状況です。",
+  "Wrong: cutting power stops the entire plant, and more cooling is enough to handle this."
+ ],
+ "공장 전체 생산 중단, 복구 시간 2시간 이상 소요": [
+  "工場全体の生産が停止し、復旧には2時間以上かかります",
+  "The whole plant stops and recovery takes over two hours"
+ ],
+ "전기실 문을 열어 자연 환기": [
+  "電気室の扉を開けて自然換気",
+  "Open the switchroom door for natural ventilation"
+ ],
+ "전기실 문을 개방하여 자연 환기로 온도를 낮춘다.": [
+  "電気室の扉を開放し、自然換気で温度を下げる。",
+  "Open the switchroom door and let natural airflow bring the temperature down."
+ ],
+ "오답: 외부 기온이 34°C로 높아 자연 환기 효과가 없으며, 먼지와 습기가 유입될 수 있습니다.": [
+  "不正解: 外気温が34°Cと高く自然換気の効果はなく、粉塵や湿気の侵入を招きます。",
+  "Wrong: at 34 °C outside there is nothing to gain, and you invite dust and humidity in."
+ ],
+ "온도 하강 효과 없음, 먼지 유입으로 설비 오염 위험": [
+  "温度低下の効果はなく、粉塵の侵入で設備が汚損するリスクがあります",
+  "No temperature benefit, and dust ingress risks contaminating the equipment"
+ ],
+ "이동식 에어컨 추가 투입": [
+  "移動式エアコンの追加投入",
+  "Bring in portable air conditioning"
+ ],
+ "이동식 에어컨을 전기실에 추가로 투입한다.": [
+  "移動式エアコンを電気室に追加投入する。",
+  "Wheel additional portable air conditioners into the switchroom."
+ ],
+ "부분 정답: 추가 냉각은 도움이 되지만, 기존 냉각 시스템을 100%로 먼저 가동하는 것이 더 빠릅니다.": [
+  "部分正解: 追加冷却は有効ですが、まず既存の冷却システムを100%で稼働させる方が速いです。",
+  "Partly right: extra cooling helps, but taking the existing system to 100 % first is quicker."
+ ],
+ "온도 하강 가능하나 대응 속도가 느림, 설비 투입 시간 소요": [
+  "温度は下げられますが対応が遅く、機材の搬入に時間がかかります",
+  "It does cool the room, but slowly — the units take time to set up"
+ ]
+}

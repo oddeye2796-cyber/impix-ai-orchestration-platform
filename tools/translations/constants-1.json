@@ -1,0 +1,318 @@
+{
+ "시스템 개요": [
+  "システム概要",
+  "System Overview"
+ ],
+ "AI 품질 에이전트": [
+  "AI品質エージェント",
+  "AI Quality Agent"
+ ],
+ "AI 설비예지보전 에이전트": [
+  "AI設備予知保全エージェント",
+  "AI Predictive Maintenance Agent"
+ ],
+ "AI 생산 최적화 에이전트": [
+  "AI生産最適化エージェント",
+  "AI Production Optimization Agent"
+ ],
+ "AI 에너지 에이전트": [
+  "AIエネルギーエージェント",
+  "AI Energy Agent"
+ ],
+ "AI 안전 에이전트": [
+  "AI安全エージェント",
+  "AI Safety Agent"
+ ],
+ "AI 슈퍼바이저 에이전트": [
+  "AIスーパーバイザーエージェント",
+  "AI Supervisor Agent"
+ ],
+ "시스템 관리": [
+  "システム管理",
+  "System Administration"
+ ],
+ "전체": [
+  "全ロール",
+  "All roles"
+ ],
+ "오퍼레이터": [
+  "オペレーター",
+  "Operator"
+ ],
+ "품질관리자": [
+  "品質管理者",
+  "Quality Manager"
+ ],
+ "설비엔지니어": [
+  "設備エンジニア",
+  "Equipment Engineer"
+ ],
+ "공장장": [
+  "工場長",
+  "Plant Manager"
+ ],
+ "통합 대시보드": [
+  "統合ダッシュボード",
+  "Unified Dashboard"
+ ],
+ "공장 전체 가동 현황 및 주요 KPI 요약": [
+  "工場全体の稼働状況と主要KPIのサマリー",
+  "Plant-wide operating status and key KPI summary"
+ ],
+ "공장 전체의 OEE, 불량률, 에너지 소비량을 한눈에 파악": [
+  "工場全体のOEE・不良率・エネルギー消費量を一目で把握",
+  "See plant-wide OEE, defect rate and energy consumption at a glance"
+ ],
+ "모든 에이전트의 데이터를 통합하여 실시간 KPI 산출": [
+  "全エージェントのデータを統合してリアルタイムKPIを算出",
+  "Consolidates data from every agent to compute real-time KPIs"
+ ],
+ "공장 전체 가동 효율 85% 이상 유지": [
+  "工場全体の稼働効率85%以上を維持",
+  "Keep plant-wide operating efficiency at or above 85%"
+ ],
+ "종합 KPI 카드 및 실시간 모니터링 차트": [
+  "総合KPIカードとリアルタイム監視チャート",
+  "Consolidated KPI cards and real-time monitoring charts"
+ ],
+ "실시간 불량률 현황": [
+  "リアルタイム不良率",
+  "Live Defect Rate"
+ ],
+ "라인별/설비별 불량률 실시간 게이지 + 추세": [
+  "ライン別・設備別の不良率リアルタイムゲージとトレンド",
+  "Per-line / per-equipment defect-rate gauges and trends"
+ ],
+ "실시간 센서 데이터 스트림 분석을 통한 라인별 공정 이상 징후 감지 및 품질 저하 예방": [
+  "リアルタイムセンサーデータストリーム解析によるライン別工程異常の予兆検知と品質低下の予防",
+  "Detects per-line process anomalies from real-time sensor streams and prevents quality drift"
+ ],
+ "Kafka 기반 실시간 데이터 파이프라인 -> 온톨로지 기반 Heuristic 규칙 평가 -> Quality Agent 추론 엔진 실행": [
+  "Kafkaベースのリアルタイムデータパイプライン → オントロジーベースのヒューリスティック規則評価 → Quality Agent推論エンジン実行",
+  "Kafka real-time pipeline -> ontology-driven heuristic rule evaluation -> Quality Agent inference engine"
+ ],
+ "공정 불량률(Defect Rate) 임계치 관리 (Warning: 5%, Critical: 8%) 및 자동 제어 권고": [
+  "工程不良率(Defect Rate)のしきい値管理(Warning: 5%、Critical: 8%)と自動制御の推奨",
+  "Defect-rate threshold management (warning 5%, critical 8%) with automated control advice"
+ ],
+ "실시간 품질 KPI 대시보드 및 지능형 공정 최적화 추천 가이드": [
+  "リアルタイム品質KPIダッシュボードとインテリジェント工程最適化の推奨ガイド",
+  "Live quality KPI dashboard and intelligent process-optimization guidance"
+ ],
+ "비전검사 결과 뷰어": [
+  "ビジョン検査結果ビューア",
+  "Vision Inspection Viewer"
+ ],
+ "Anomalib/YOLOv8 검사 이미지 + 판정 결과": [
+  "Anomalib/YOLOv8の検査画像と判定結果",
+  "Anomalib / YOLOv8 inspection frames and verdicts"
+ ],
+ "고해상도 카메라 프레임 분석을 통한 제품 외관 결함 및 라벨 부착 정밀 검사": [
+  "高解像度カメラフレーム解析による製品外観欠陥とラベル貼付の精密検査",
+  "High-resolution frame analysis for surface defects and label placement"
+ ],
+ "RTSP 비디오 스트림 캡처 -> Anomalib(PatchCore) 비지도 학습 추론 -> YOLOv8 객체 탐지 기반 라벨 검증": [
+  "RTSPビデオストリーム取得 → Anomalib(PatchCore)教師なし学習推論 → YOLOv8物体検出によるラベル検証",
+  "RTSP stream capture -> Anomalib (PatchCore) unsupervised inference -> YOLOv8 label verification"
+ ],
+ "결함 탐지 점수(Defect Score) 0.5 미만 유지 및 미검출/오검출율 2% 이내 관리": [
+  "欠陥検出スコア(Defect Score)0.5未満の維持と未検出・誤検出率2%以内の管理",
+  "Keep defect score below 0.5 and miss/false-positive rate within 2%"
+ ],
+ "검사 이미지 오버레이 시각화 및 실시간 결함 판정 리포트": [
+  "検査画像のオーバーレイ可視化とリアルタイム欠陥判定レポート",
+  "Inspection overlay visualization and live defect verdict report"
+ ],
+ "불량 유형 분석": [
+  "不良タイプ分析",
+  "Defect Type Analysis"
+ ],
+ "파레토 차트, 불량 유형별 빈도/추세 분석": [
+  "パレート図による不良タイプ別の頻度・トレンド分析",
+  "Pareto chart with frequency and trend by defect type"
+ ],
+ "다차원 품질 데이터 분석을 통한 주요 불량 원인(Root Cause) 식별 및 개선 우선순위 도출": [
+  "多次元品質データ分析による主要な不良原因(Root Cause)の特定と改善優先度の導出",
+  "Identifies root causes from multidimensional quality data and ranks improvement priorities"
+ ],
+ "자연어 질의 -> Text-to-SQL 변환 엔진 -> TimescaleDB 시계열 쿼리 실행 -> 통계적 유의성 검정 및 시각화": [
+  "自然言語クエリ → Text-to-SQL変換エンジン → TimescaleDB時系列クエリ実行 → 統計的有意性検定と可視化",
+  "Natural-language query -> Text-to-SQL engine -> TimescaleDB time-series query -> significance testing and charts"
+ ],
+ "불량 유형별(찢김, 기포, 변색 등) 발생 빈도 Pareto 분석을 통한 집중 관리 항목 도출": [
+  "不良タイプ別(裂け・気泡・変色など)発生頻度のパレート分析による重点管理項目の抽出",
+  "Pareto analysis of defect types (tears, bubbles, discoloration) to pick focus items"
+ ],
+ "불량 유형별 분포 차트 및 AI 기반 원인 분석 인사이트 리포트": [
+  "不良タイプ別の分布チャートとAIによる原因分析インサイトレポート",
+  "Defect-type distribution chart and AI root-cause insight report"
+ ],
+ "온도-불량 상관분석": [
+  "温度-不良 相関分析",
+  "Temperature-Defect Correlation"
+ ],
+ "온도 파라미터 vs 불량률 산점도 + 최적구간": [
+  "温度パラメータと不良率の散布図および最適区間",
+  "Temperature vs defect-rate scatter plot with the optimal band"
+ ],
+ "공정 파라미터(온도)와 품질 지표 간의 상관관계 분석을 통한 최적 운전 조건(Golden Batch) 도출": [
+  "工程パラメータ(温度)と品質指標の相関分析による最適運転条件(Golden Batch)の導出",
+  "Correlates the temperature parameter with quality metrics to derive the golden batch"
+ ],
+ "다변량 상관분석(Multivariate Correlation) -> 최적 가동 범위(Optimal Range) 산출 -> 산점도 및 회귀 분석": [
+  "多変量相関分析(Multivariate Correlation) → 最適稼働範囲(Optimal Range)の算出 → 散布図と回帰分析",
+  "Multivariate correlation -> optimal range calculation -> scatter plot and regression"
+ ],
+ "온도 설정값(165~180°C) 최적화 및 온톨로지 정의 최적 가동 구간(Measures) 준수율 관리": [
+  "温度設定値(165〜180°C)の最適化とオントロジー定義の最適稼働区間(Measures)遵守率の管理",
+  "Optimizes the 165-180 °C set-point and tracks compliance with the ontology-defined operating band"
+ ],
+ "상관관계 산점도 및 AI 추천 최적 공정 파라미터 가이드": [
+  "相関散布図とAI推奨の最適工程パラメータガイド",
+  "Correlation scatter plot and AI-recommended process parameters"
+ ],
+ "품질 이력 검색": [
+  "品質履歴検索",
+  "Quality History Search"
+ ],
+ "기간/배치/설비별 품질검사 이력 조회": [
+  "期間・バッチ・設備別の品質検査履歴の照会",
+  "Query inspection history by period, batch or equipment"
+ ],
+ "배치(Batch) 단위 생산 이력 추적성(Traceability) 확보 및 과거 품질 데이터 정밀 조회": [
+  "バッチ単位の生産履歴トレーサビリティ確保と過去品質データの精密照会",
+  "Batch-level traceability and precise lookup of historical quality data"
+ ],
+ "시계열 데이터 인덱싱 기반 고속 검색 -> 온톨로지 엔티티 매핑 -> 데이터 무결성 검증 및 리스트 렌더링": [
+  "時系列データインデックスによる高速検索 → オントロジーエンティティのマッピング → データ整合性検証とリスト描画",
+  "Indexed time-series search -> ontology entity mapping -> integrity check and list rendering"
+ ],
+ "데이터 조회 지연 시간 1초 이내 유지 및 SQL 화이트리스트 기반 보안 쿼리 실행": [
+  "データ照会の遅延を1秒以内に維持し、SQLホワイトリストによる安全なクエリを実行",
+  "Keeps query latency under 1 s and runs SQL through a whitelist"
+ ],
+ "상세 품질 이력 그리드 및 배치별 생산 품질 리포트": [
+  "詳細な品質履歴グリッドとバッチ別生産品質レポート",
+  "Detailed quality-history grid and per-batch quality report"
+ ],
+ "설비 상태 종합": [
+  "設備状態サマリー",
+  "Equipment Health Overview"
+ ],
+ "전체 설비 정상/경고/위험 현황 맵": [
+  "全設備の正常・警告・危険ステータスマップ",
+  "Normal / warning / critical status map for all equipment"
+ ],
+ "디지털 트윈 기반 공장 전체 설비 가동 상태 실시간 모니터링 및 이상 징후 즉각 식별": [
+  "デジタルツインによる工場全体の設備稼働状態のリアルタイム監視と異常予兆の即時特定",
+  "Digital-twin monitoring of plant-wide equipment with immediate anomaly identification"
+ ],
+ "Redis In-memory 데이터 동기화 -> 설비별 3축(진동, 온도, 전류) 상태 평가 -> WebSocket 기반 실시간 상태 전파": [
+  "Redisインメモリデータ同期 → 設備別3軸(振動・温度・電流)の状態評価 → WebSocketによるリアルタイム状態配信",
+  "Redis in-memory sync -> three-axis (vibration, temperature, current) assessment -> WebSocket state broadcast"
+ ],
+ "설비 가동 중단 시간(Downtime) 최소화 및 주요 설비 가동률(Availability) 95% 이상 유지": [
+  "設備停止時間(Downtime)の最小化と主要設備の稼働率(Availability)95%以上の維持",
+  "Minimizes downtime and holds availability of key equipment above 95%"
+ ],
+ "3D 공장 레이아웃 맵 및 설비별 상태 인디케이터": [
+  "3D工場レイアウトマップと設備別ステータスインジケーター",
+  "3D plant layout map with per-equipment status indicators"
+ ],
+ "진동/온도 추세": [
+  "振動・温度トレンド",
+  "Vibration / Temperature Trend"
+ ],
+ "시계열 차트 + 임계치 표시": [
+  "時系列チャートとしきい値の表示",
+  "Time-series chart with threshold markers"
+ ],
+ "설비별 진동(Vibration) 및 온도(Temperature) 시계열 데이터 분석을 통한 기계적 마모 및 과열 징후 정밀 모니터링": [
+  "設備別の振動・温度時系列データ解析による機械的摩耗と過熱予兆の精密監視",
+  "Monitors mechanical wear and overheating from per-equipment vibration and temperature series"
+ ],
+ "TimescaleDB 시계열 쿼리 최적화 -> 온톨로지 정의 임계치(Warning/Danger) 동적 로드 -> 다중 축 추세 시각화 및 이상 구간 하이라이트": [
+  "TimescaleDB時系列クエリの最適化 → オントロジー定義しきい値(Warning/Danger)の動的ロード → 多軸トレンド可視化と異常区間のハイライト",
+  "Optimized TimescaleDB queries -> dynamic ontology thresholds (warning/danger) -> multi-axis trend view with anomaly highlighting"
+ ],
+ "진동(3.5~5.0 mm/s) 및 온도(80°C 이상) 임계치 준수 여부 실시간 검증 및 시각적 가이드 제공": [
+  "振動(3.5〜5.0 mm/s)および温度(80°C以上)しきい値の遵守をリアルタイム検証し、視覚的なガイドを提供",
+  "Live verification against vibration (3.5-5.0 mm/s) and temperature (80 °C+) thresholds with visual guidance"
+ ],
+ "다중 파라미터 시계열 추세 분석 차트 및 임계치 위반 이력 리포트": [
+  "複数パラメータの時系列トレンド分析チャートとしきい値違反履歴レポート",
+  "Multi-parameter trend chart and threshold-breach history report"
+ ],
+ "RUL 잔여수명 예측": [
+  "RUL残存寿命予測",
+  "RUL Remaining-Life Forecast"
+ ],
+ "GBR 모델 기반 72h 예측 + 보전 권장 시점": [
+  "GBRモデルによる72時間予測と保全推奨タイミング",
+  "GBR-based 72 h forecast with the recommended maintenance window"
+ ],
+ "머신러닝 기반 잔여 수명(Remaining Useful Life) 예측을 통한 예방 정비(PdM) 스케줄링 최적화": [
+  "機械学習による残存寿命(Remaining Useful Life)予測に基づく予防保全(PdM)スケジューリングの最適化",
+  "Optimizes predictive-maintenance scheduling from machine-learned remaining useful life"
+ ],
+ "BentoML 서빙 엔진 호출 -> Gradient Boosting Regressor 모델 추론 -> RUL 확률 분포 산출 및 보전 권장 윈도우(Window) 도출": [
+  "BentoMLサービングエンジン呼び出し → Gradient Boosting Regressorモデル推論 → RUL確率分布の算出と保全推奨ウィンドウの導出",
+  "BentoML serving call -> gradient-boosting regressor inference -> RUL distribution and recommended maintenance window"
+ ],
+ "예측 오차(MAE) 5% 이내 유지 및 RUL 72시간 미만 도달 시 자동 보전 워크오더(Work Order) 트리거": [
+  "予測誤差(MAE)5%以内を維持し、RULが72時間未満になった時点で保全ワークオーダーを自動起票",
+  "Keeps MAE within 5 % and auto-triggers a work order once RUL drops below 72 h"
+ ],
+ "RUL 예측 곡선 시각화 및 AI 기반 최적 보전 시점 추천 가이드": [
+  "RUL予測曲線の可視化とAIによる最適保全タイミングの推奨ガイド",
+  "RUL curve visualization and AI-recommended maintenance timing"
+ ],
+ "보전 작업 오더": [
+  "保全作業オーダー",
+  "Maintenance Work Orders"
+ ],
+ "AI 추천 -> 작업 오더 생성/배정/완료 워크플로우": [
+  "AI推奨 → 作業オーダーの起票・割当・完了ワークフロー",
+  "AI recommendation -> work-order creation, assignment and completion workflow"
+ ],
+ "AI 분석 기반 예방 보전 추천 항목의 워크플로우 관리 및 작업 이력 디지털화": [
+  "AI分析に基づく予防保全推奨項目のワークフロー管理と作業履歴のデジタル化",
+  "Manages the workflow for AI-recommended preventive maintenance and digitizes work history"
+ ],
+ "PM Agent 추천 엔진 -> Human-in-the-loop(HITL) 승인 프로세스 -> ERP/MES 연동 작업 오더 생성 및 담당자 자동 배정": [
+  "PM Agent推奨エンジン → Human-in-the-loop(HITL)承認プロセス → ERP/MES連携の作業オーダー起票と担当者の自動割当",
+  "PM Agent recommendation -> human-in-the-loop approval -> ERP/MES work order with automatic assignment"
+ ],
+ "보전 작업 리드타임(Lead Time) 단축 및 AI 추천 승인율(Acceptance Rate) 90% 이상 확보": [
+  "保全作業のリードタイム短縮とAI推奨の承認率90%以上の確保",
+  "Shortens maintenance lead time and holds AI recommendation acceptance above 90 %"
+ ],
+ "지능형 보전 작업 관리 칸반 보드 및 작업 이력 추적 그리드": [
+  "インテリジェント保全作業管理カンバンボードと作業履歴トラッキンググリッド",
+  "Smart maintenance kanban board and work-history tracking grid"
+ ],
+ "보전 이력 조회": [
+  "保全履歴照会",
+  "Maintenance History"
+ ],
+ "설비별 보전 이력, MTBF/MTTR 통계": [
+  "設備別の保全履歴とMTBF/MTTR統計",
+  "Per-equipment maintenance history with MTBF / MTTR statistics"
+ ],
+ "설비 신뢰성 지표(MTBF, MTTR) 분석을 통한 장기 보전 전략 수립 및 설비 자산 관리 최적화": [
+  "設備信頼性指標(MTBF・MTTR)分析による長期保全戦略の策定と設備資産管理の最適化",
+  "Builds long-term maintenance strategy and asset management from MTBF / MTTR analysis"
+ ],
+ "설비 온톨로지 계층 구조(Hierarchy) 기반 데이터 집계 -> 보전 이력 텍스트 마이닝 -> 주요 신뢰성 KPI 산출 엔진 실행": [
+  "設備オントロジー階層構造に基づくデータ集計 → 保全履歴のテキストマイニング → 主要信頼性KPI算出エンジンの実行",
+  "Ontology-hierarchy aggregation -> maintenance-log text mining -> reliability KPI engine"
+ ],
+ "평균 고장 간격(MTBF) 연간 15% 향상 및 평균 수리 시간(MTTR) 2시간 이내 관리 목표 수립": [
+  "平均故障間隔(MTBF)を年15%向上させ、平均修理時間(MTTR)を2時間以内に管理する目標を設定",
+  "Targets a 15 % annual MTBF gain and keeps MTTR within two hours"
+ ],
+ "설비 신뢰성 분석 대시보드 및 상세 보전 이력 리포트": [
+  "設備信頼性分析ダッシュボードと詳細な保全履歴レポート",
+  "Equipment reliability dashboard and detailed maintenance-history report"
+ ]
+}

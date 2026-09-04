@@ -1,0 +1,446 @@
+{
+ "수축포장기-01": [
+  "シュリンク包装機-01",
+  "Shrink Wrapper-01"
+ ],
+ "케이스패커-02": [
+  "ケースパッカー-02",
+  "Case Packer-02"
+ ],
+ "컨베이어-04": [
+  "コンベア-04",
+  "Conveyor-04"
+ ],
+ "로봇팔-02": [
+  "ロボットアーム-02",
+  "Robot Arm-02"
+ ],
+ "모터-08": [
+  "モーター-08",
+  "Motor-08"
+ ],
+ "A-3 안전 환기댐퍼": [
+  "A-3安全換気ダンパー",
+  "Zone A-3 safety damper"
+ ],
+ "가열 공조 모터-03": [
+  "加熱空調モーター-03",
+  "Heating HVAC Motor-03"
+ ],
+ "칠러 보완 펌프 & ESS": [
+  "チラー補助ポンプとESS",
+  "Chiller booster pump & ESS"
+ ],
+ "칠러 냉각 펌프": [
+  "チラー冷却ポンプ",
+  "Chiller cooling pump"
+ ],
+ "패키징 1라인": [
+  "パッケージング第1ライン",
+  "Packaging Line 1"
+ ],
+ "열접합 패키지 헤드": [
+  "ヒートシールパッケージヘッド",
+  "Heat-seal package head"
+ ],
+ "교체 권장": [
+  "交換を推奨",
+  "Replacement advised"
+ ],
+ "자동 급유 개시": [
+  "自動給油の開始",
+  "Start auto-lubrication"
+ ],
+ "환기량 100% 가동 (오버라이드)": [
+  "換気量100%稼働(オーバーライド)",
+  "Ventilation to 100 % (override)"
+ ],
+ "운전 속도 85% 감속": [
+  "運転速度を85%へ減速",
+  "Slow to 85 % of running speed"
+ ],
+ "에너지 절전 우회 모드 (피크 피쇄)": [
+  "省エネ迂回モード(ピークシェービング)",
+  "Energy-saving bypass mode (peak shaving)"
+ ],
+ "순환 유량 +15% 유압 상향": [
+  "循環流量+15%・油圧の引き上げ",
+  "Circulation +15 % with higher hydraulic pressure"
+ ],
+ "가속 운전 수용 120%": [
+  "加速運転の受入 120%",
+  "Accept 120 % run speed"
+ ],
+ "진공 밀착 압력 +0.2bar 강화": [
+  "真空密着圧を+0.2bar強化",
+  "Vacuum seal pressure +0.2 bar"
+ ],
+ "불량률이 7.3%로 상승함에 따라 최적 온도 173°C로 조정을 권장합니다. 과거 데이터 분석 결과 이 온도에서 불량률이 2.1%로 감소했습니다.": [
+  "不良率が7.3%まで上昇したため、最適温度である173°Cへの調整を推奨します。過去データの分析では、この温度で不良率は2.1%まで低下しています。",
+  "With the defect rate up at 7.3 %, I recommend moving to the optimal 173 °C. Historically the rate falls to 2.1 % at that temperature."
+ ],
+ "진동 수치가 4.2mm/s로 임계치(3.5)를 초과했습니다. 72시간 내 베어링 파손 위험이 85%로 예측됩니다.": [
+  "振動値が4.2mm/sとしきい値(3.5)を超えました。72時間以内のベアリング破損リスクは85%と予測されます。",
+  "Vibration has hit 4.2 mm/s against a 3.5 threshold. Bearing failure within 72 hours is 85 % likely."
+ ],
+ "불량률 상승(7.3%) 차단 및 OEE 가동 효율 극대화를 위해 최적 수축 온도 173.0°C 조정을 강력 권장합니다.": [
+  "不良率の上昇(7.3%)を抑え、OEEを最大化するため、最適シュリンク温度173.0°Cへの調整を強く推奨します。",
+  "To stop the defect rate climbing past 7.3 % and maximize OEE, I strongly recommend setting the shrink temperature to 173.0 °C."
+ ],
+ "3축 진동값 미세 패턴 변화가 발견되었습니다. 사전에 1라인 급유 장치를 가동해 가동 중단을 정밀 차단합니다.": [
+  "3軸振動値に微細なパターン変化が見られます。第1ラインの給油装置を先んじて稼働させ、稼働停止を確実に防ぎます。",
+  "A subtle pattern shift has appeared in the three-axis vibration. Running Line 1's lubricator pre-emptively heads off a stoppage."
+ ],
+ "가열 설비 인근 A-3 영역에서 특이 유증기/가스 15ppm 미세 감지가 포착되어 환기량 100% 강제 가동과 일시 경계 모드로 전환할 것을 가이드라인합니다.": [
+  "加熱設備近傍のA-3区域で油蒸気・ガス15ppmの微量検知があったため、換気量100%の強制稼働と一時的な警戒モードへの移行を推奨します。",
+  "A trace reading of 15 ppm oil vapour/gas near the heating equipment in Zone A-3 calls for forcing ventilation to 100 % and switching to temporary alert mode."
+ ],
+ "유증 연쇄 가열 마찰 축의 발열 기성을 완정 차폐하기 위해 운전 속도 85% 감속 제어할 것을 추천합니다.": [
+  "油蒸気に連なる加熱摩擦軸の発熱をしっかり抑え込むため、運転速度を85%へ減速制御することを推奨します。",
+  "To fully contain heat build-up on the friction shaft feeding the vapour, I recommend slowing the drive to 85 %."
+ ],
+ "한낮 기온 상승으로 전원 계약 피크 전력 한계 돌입 30분 전입니다. ESS 즉시 방전과 비핵심 라인의 감속 에너지 세이빙 우회 모드를 수락 승인해 주시기 바랍니다.": [
+  "日中の気温上昇により、契約ピーク電力の上限到達まで30分です。ESSの即時放電と、非重要ラインを減速する省エネ迂回モードの承認をお願いします。",
+  "The midday temperature rise puts us 30 minutes from the contracted peak limit. Please approve immediate ESS discharge and the energy-saving bypass that slows non-critical lines."
+ ],
+ "세이빙 가동 부하에 따른 임계 모터 발열 냉각을 위해 펌프 순환수 압압을 강화 보정 가동할 것을 권고합니다.": [
+  "省エネ運転時の負荷に伴う臨界モーターの発熱を冷却するため、ポンプ循環水の圧力を強化して補正運転することを推奨します。",
+  "To cool the critical motor under the saving-mode load, I advise raising and trimming the pump's circulation pressure."
+ ],
+ "고부가 파트너 긴급 하루 딜리버리 할당 수율 달성을 위해 패키징 1라인 분 속도를 안전 모드 최대 가용치인 120%까지 상향 제어 기제를 강력 권장합니다.": [
+  "高付加価値パートナーの緊急当日デリバリーの割当を達成するため、パッケージング第1ラインの分あたり速度を、安全モードでの最大値である120%まで引き上げることを強く推奨します。",
+  "To hit the high-value partner's same-day delivery allocation, I strongly recommend taking Packaging Line 1 up to 120 % — the ceiling of safe mode."
+ ],
+ "120% 가속 환경에서도 미세 가공 스크래치 및 핀홀 불량 발생을 완벽 소지 관리하기 위해 접착 흡축 기압을 상압 조정합니다.": [
+  "120%の加速環境下でも微細な加工スクラッチやピンホール不良を完全に抑え込むため、接着吸引圧を調整します。",
+  "Even at 120 %, trimming the adhesion vacuum pressure keeps micro-scratches and pinholes fully under control."
+ ],
+ "실시간 불량 7.3% 차단 최적 온도 173°C 조도 유지": [
+  "リアルタイム不良7.3%を抑える最適温度173°Cを維持",
+  "Hold the optimal 173 °C that caps live defects at 7.3 %"
+ ],
+ "수축포장기 예지보전 자동 급유 장치 기동 완료": [
+  "シュリンク包装機の予知保全用自動給油装置を起動完了",
+  "Shrink wrapper's predictive auto-lubricator started"
+ ],
+ "안전 폭발 가드레일 위험도 0.05% 격하": [
+  "安全・爆発ガードレールのリスクを0.05%まで低減",
+  "Explosion-safety guardrail risk cut to 0.05 %"
+ ],
+ "위약 가산 페널티 회피 성공 (예상 절감: 1,200만원)": [
+  "違約ペナルティの回避に成功(想定削減額: 1,200万ウォン)",
+  "Contract penalty avoided (estimated saving ₩12M)"
+ ],
+ "생산성 +5.2% 예상": [
+  "生産性 +5.2%の見込み",
+  "Productivity expected up 5.2 %"
+ ],
+ "계약 전력 피크 셰이빙 연동 백업 운전으로 기온/열부하가 급증하였습니다. 29시간 이내에 보완 임계 모터 검진 및 배기 펌프 보전을 실시간 접수하는 것을 강력 권장합니다.": [
+  "契約電力のピークシェービングに連動したバックアップ運転により、気温・熱負荷が急増しました。29時間以内に臨界モーターの点検と排気ポンプの保全を受け付けることを強く推奨します。",
+  "Backup running tied to contract peak-shaving has spiked temperature and thermal load. I strongly recommend booking a critical-motor check and exhaust-pump service within 29 hours."
+ ],
+ "공조 배기 제어 부하 및 가스 누출 인근 고열화 징후가 증폭되었습니다. 밸브 및 기기 마찰 축 손실을 사전에 차단하기 위한 정비 팀 급파 예약을 발행하세요.": [
+  "空調排気制御の負荷と、ガス漏れ近傍での高温化の兆候が強まっています。バルブおよび機器の摩擦軸の損耗を未然に防ぐため、保全チームの緊急派遣を予約してください。",
+  "Exhaust-control load and heat build-up near the leak are both intensifying. Book an urgent maintenance dispatch to head off wear on the valve and the friction shaft."
+ ],
+ "긴급 오더에 따른 120% 초속 가속 가동 충격으로 유성 기어 마찰 과열 진동이 임계치를 급박하게 침범하는 중입니다. 납량 완료 즉시 가동 정지를 통한 검수를 미리 신청해 두십시오.": [
+  "緊急オーダーによる120%の超加速運転の衝撃で、遊星ギアの摩擦過熱に伴う振動がしきい値に急速に迫っています。出荷完了後ただちに停止して検査できるよう、事前に申請しておいてください。",
+  "The 120 % overdrive for the rush order is driving planetary-gear friction heat, and vibration is closing fast on the threshold. File now for an inspection stop the moment the shipment is done."
+ ],
+ "AI 슈퍼바이저 어시스턴트": [
+  "AIスーパーバイザーアシスタント",
+  "AI Supervisor Assistant"
+ ],
+ "안녕하세요! AI 슈퍼바이저 어시스턴트입니다. 무엇을 도와드릴까요?": [
+  "こんにちは! AIスーパーバイザーアシスタントです。どのようなご用件でしょうか?",
+  "Hello — this is the AI Supervisor Assistant. How can I help?"
+ ],
+ "메시지를 입력하세요 (Shift+Enter로 줄바꿈)": [
+  "メッセージを入力してください(Shift+Enterで改行)",
+  "Type a message (Shift+Enter for a new line)"
+ ],
+ "현재 전체 라인의 평균 불량률은 3.2%입니다. B라인의 도금 공정에서 미세한 변동이 감지되었으나, 허용 범위 내에 있습니다.": [
+  "現在の全ラインの平均不良率は3.2%です。Bラインのめっき工程でわずかな変動が見られますが、許容範囲内です。",
+  "The average defect rate across all lines is 3.2 %. There is slight variation in Line B's plating step, but it stays inside tolerance."
+ ],
+ "오늘의 종합 설비 효율(OEE)은 87.5%로 목표치(85%)를 상회하고 있습니다. 특히 조립 라인의 성능 지표가 전일 대비 4% 향상되었습니다.": [
+  "本日の設備総合効率(OEE)は87.5%で、目標(85%)を上回っています。特に組立ラインの性能指標が前日比4%改善しました。",
+  "Today's OEE is 87.5 %, above the 85 % target. The assembly line's performance metric in particular is up 4 % on yesterday."
+ ],
+ "현재 모든 안전 센서가 정상 작동 중입니다. 구역 C에서 작업자 1명이 보호구 미착용으로 경고 조치되었으며, 현재는 시정 완료되었습니다.": [
+  "現在すべての安全センサーは正常に稼働しています。C区域で作業者1名が保護具未着用のため警告を受けましたが、すでに是正済みです。",
+  "All safety sensors are operating normally. One worker in Zone C was warned for missing PPE; that has since been corrected."
+ ],
+ "요청하신 내용을 분석 중입니다. Supervisor 에이전트가 관련 데이터를 취합하여 최적의 답변을 준비하고 있습니다.": [
+  "ご依頼の内容を分析しています。Supervisorエージェントが関連データを集約し、最適な回答を準備中です。",
+  "Analysing your request now. The Supervisor agent is gathering the relevant data to prepare the best answer."
+ ],
+ "불량률": [
+  "不良率",
+  "Defect rate"
+ ],
+ "가동률": [
+  "稼働率",
+  "Availability"
+ ],
+ "분석 요청": [
+  "分析を依頼",
+  "Request analysis"
+ ],
+ "데이터 조회": [
+  "データ照会",
+  "Query data"
+ ],
+ "에너지 절감을 위한 최적 가동 시간은?": [
+  "エネルギー削減のための最適な稼働時間は?",
+  "What are the best operating hours for saving energy?"
+ ],
+ "에이전트 간 의사결정 조율 시각화": [
+  "エージェント間の意思決定調整を可視化",
+  "Visualize decision arbitration between agents"
+ ],
+ "안전 가드레일 설정": [
+  "安全ガードレールの設定",
+  "Safety guardrail settings"
+ ],
+ "시뮬레이션": [
+  "シミュレーション",
+  "Simulation"
+ ],
+ "시뮬레이션을 실행하여 조치 전 리스크를 확인하세요.": [
+  "シミュレーションを実行して、実施前のリスクを確認してください。",
+  "Run the simulation to check the risk before acting."
+ ],
+ "생성된 증거 패키지가 없습니다.": [
+  "生成された証跡パッケージはありません。",
+  "No evidence pack has been generated yet."
+ ],
+ "생산 목표 달성을 위해 B라인 속도를 15% 상향 제안합니다.": [
+  "生産目標の達成のため、Bラインの速度を15%引き上げることを提案します。",
+  "To reach the output target, I propose raising Line B's speed by 15 %."
+ ],
+ "생산성 극대화(Tact 단축) vs 검사 정확도(속도 제한) 상충 발생.": [
+  "生産性の最大化(タクト短縮)と検査精度(速度制限)が衝突しています。",
+  "Maximizing productivity (shorter tact) collides with inspection accuracy (speed cap)."
+ ],
+ "설비 진동 데이터는 안정적입니다. 속도 상향에 따른 기계적 과부하 위험은 낮습니다.": [
+  "設備の振動データは安定しています。増速による機械的過負荷のリスクは低いです。",
+  "Vibration data is stable. The mechanical overload risk from speeding up is low."
+ ],
+ "생산 정지 시 납기 지연 발생. 밸브 No.12의 메인 라인을 우회로로 전환 요청합니다.": [
+  "生産を止めれば納期が遅延します。バルブNo.12のメインラインを迂回経路へ切り替えるよう要請します。",
+  "Stopping production makes us late. Requesting that valve No. 12's main line be switched to the detour route."
+ ],
+ "안전 우선 원칙 적용. 즉시 가동 중단 명령 하달. 소방 연동 시스템 가동. 손실보다 인명 및 설비 보호가 최우선입니다.": [
+  "安全優先の原則を適用し、直ちに稼働停止を指令します。消防連動システムを起動。損失よりも人命と設備の保護が最優先です。",
+  "Applying the safety-first principle: stop production immediately and activate the fire-linkage system. Protecting people and equipment outranks the loss."
+ ],
+ "안전 최우선 원칙에 따른 생산 중단 및 소방 연동": [
+  "安全最優先の原則に基づく生産停止と消防連動",
+  "Production stop and fire-service linkage under the safety-first principle"
+ ],
+ "안전 수칙 범위 내 가스 희석 및 확산 방지는 필수. 우회 관로 조치가 가능하므로 생산 중단 없이 가스 누출 부위를 무해하게 격리함.": [
+  "安全基準の範囲内でのガス希釈と拡散防止は必須です。迂回配管での対応が可能なため、生産を止めずに漏洩箇所を無害に隔離します。",
+  "Diluting the gas and containing its spread within the safety rules is mandatory. A bypass line is available, so the leak point can be isolated harmlessly without stopping production."
+ ],
+ "관리자": [
+  "管理者",
+  "Administrator"
+ ],
+ "설비": [
+  "設備",
+  "Equipment"
+ ],
+ "온도": [
+  "温度",
+  "Temperature"
+ ],
+ "압력": [
+  "圧力",
+  "Pressure"
+ ],
+ "소음": [
+  "騒音",
+  "Noise"
+ ],
+ "성능": [
+  "性能",
+  "Performance"
+ ],
+ "대기": [
+  "待機",
+  "Standby"
+ ],
+ "기타": [
+  "その他",
+  "Other"
+ ],
+ "규칙": [
+  "ルール",
+  "Rules"
+ ],
+ "관계": [
+  "関係",
+  "Relations"
+ ],
+ "속성": [
+  "属性",
+  "Attributes"
+ ],
+ "엔티티": [
+  "エンティティ",
+  "Entities"
+ ],
+ "기포": [
+  "気泡",
+  "Bubbles"
+ ],
+ "변색": [
+  "変色",
+  "Discoloration"
+ ],
+ "라벨누락": [
+  "ラベル欠落",
+  "Missing label"
+ ],
+ "예후진단": [
+  "予兆診断",
+  "Prognosis"
+ ],
+ "위험감시": [
+  "危険監視",
+  "Hazard watch"
+ ],
+ "생산가속": [
+  "生産加速",
+  "Speed-up"
+ ],
+ "시작 (START)": [
+  "開始(START)",
+  "Start"
+ ],
+ "이전 단계로": [
+  "前のステップへ",
+  "Previous step"
+ ],
+ "자동 간격:": [
+  "自動再生間隔:",
+  "Autoplay interval:"
+ ],
+ "Availability (가동률)": [
+  "Availability(時間稼働率)",
+  "Availability"
+ ],
+ "Performance (성능)": [
+  "Performance(性能稼働率)",
+  "Performance"
+ ],
+ "Quality (품질)": [
+  "Quality(良品率)",
+  "Quality"
+ ],
+ "OEE 산출 공식 및 기준": [
+  "OEEの算出式と基準",
+  "OEE formula and criteria"
+ ],
+ "설비의 가동률, 성능, 품질을 종합적으로 나타내는 지표입니다.": [
+  "設備の稼働率・性能・品質を総合的に示す指標です。",
+  "A single measure combining equipment availability, performance and quality."
+ ],
+ "실시간 비전 검사 데이터를 기반으로 산출된 불량률 상세 분석입니다.": [
+  "リアルタイムのビジョン検査データに基づいて算出した不良率の詳細分析です。",
+  "A detailed defect-rate breakdown computed from live vision-inspection data."
+ ],
+ "공장 전체 및 개별 라인별 에너지 사용량 분석 데이터입니다.": [
+  "工場全体および個別ラインごとのエネルギー使用量の分析データです。",
+  "Energy-consumption analysis for the whole plant and for each individual line."
+ ],
+ "유압식 순환 분무 세척 구역": [
+  "油圧循環スプレー洗浄エリア",
+  "Hydraulic spray-wash section"
+ ],
+ "Work Order Created! (현장 접수 완료)": [
+  "ワークオーダーを起票しました(現場受理済み)",
+  "Work order created — accepted on the floor"
+ ],
+ "2024 품질 관리 표준 매뉴얼": [
+  "2024年 品質管理標準マニュアル",
+  "2024 Quality Management Standard Manual"
+ ],
+ "B라인 설비 유지보수 가이드": [
+  "Bライン設備メンテナンスガイド",
+  "Line B Equipment Maintenance Guide"
+ ],
+ "안전 수칙 및 비상 대응 절차": [
+  "安全基準と非常時対応手順",
+  "Safety Rules & Emergency Procedures"
+ ],
+ "+ 문서 추가하기": [
+  "+ ドキュメントを追加",
+  "+ Add document"
+ ],
+ "15건": [
+  "15件",
+  "15"
+ ],
+ "2건": [
+  "2件",
+  "2"
+ ],
+ "-3건": [
+  "-3件",
+  "-3"
+ ],
+ "1월": [
+  "1月",
+  "Jan"
+ ],
+ "2월": [
+  "2月",
+  "Feb"
+ ],
+ "3월": [
+  "3月",
+  "Mar"
+ ],
+ "4월": [
+  "4月",
+  "Apr"
+ ],
+ "5월": [
+  "5月",
+  "May"
+ ],
+ "민혁 (생산 관리 리드)": [
+  "ミンヒョク(生産管理リード)",
+  "Minhyuk (Production Lead)"
+ ],
+ "민혁 리드": [
+  "ミンヒョク リード",
+  "Minhyuk, Lead"
+ ],
+ "동현 (물류 이송 지휘관)": [
+  "ドンヒョン(物流搬送指揮官)",
+  "Donghyun (Logistics Commander)"
+ ],
+ "동현 팀장": [
+  "ドンヒョン チーム長",
+  "Donghyun, Team Lead"
+ ],
+ "선우 (그리드 에너지 엔지니어)": [
+  "ソヌ(グリッドエネルギーエンジニア)",
+  "Seonwoo (Grid Energy Engineer)"
+ ],
+ "선우 책임": [
+  "ソヌ 主任",
+  "Seonwoo, Principal"
+ ],
+ "예지 (안전환경 감독관)": [
+  "イェジ(安全環境監督官)",
+  "Yeji (Safety & Environment Supervisor)"
+ ],
+ "예지 감독관": [
+  "イェジ 監督官",
+  "Yeji, Supervisor"
+ ]
+}

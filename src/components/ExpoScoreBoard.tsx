@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { t } from '../i18n';
 import {
   Trophy, Star, CheckCircle2, X, TrendingUp,
   Award, Share2, RotateCcw, ChevronRight, Zap,
@@ -34,20 +35,20 @@ const SCENARIO_NAMES = ['전사 생산 극대화', '돌발 고장 & 안전 예�
 const SCENARIO_ICONS = ['⚡', '🛡️', '🌿', '🎯'];
 
 const getRank = (score: number) => {
-  if (score >= 200) return { label: 'AI 마스터', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', icon: '🏆' };
-  if (score >= 150) return { label: 'AI 전문가', color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', icon: '🥇' };
-  if (score >= 100) return { label: 'AI 숙련자', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', icon: '🥈' };
-  if (score >= 50) return { label: 'AI 입문자', color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', icon: '🥉' };
-  return { label: 'AI 견습생', color: 'text-text-secondary', bg: 'bg-surface', border: 'border-border', icon: '🎖️' };
+  if (score >= 200) return { label: t('AI 마스터'), color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', icon: '🏆' };
+  if (score >= 150) return { label: t('AI 전문가'), color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', icon: '🥇' };
+  if (score >= 100) return { label: t('AI 숙련자'), color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', icon: '🥈' };
+  if (score >= 50) return { label: t('AI 입문자'), color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', icon: '🥉' };
+  return { label: t('AI 견습생'), color: 'text-text-secondary', bg: 'bg-surface', border: 'border-border', icon: '🎖️' };
 };
 
 const getInsight = (approvedCount: number, rejectedCount: number, score: number) => {
   const total = approvedCount + rejectedCount;
-  if (total === 0) return '아직 AI 추천을 평가하지 않았습니다.';
+  if (total === 0) return t('아직 AI 추천을 평가하지 않았습니다.');
   const approvalRate = (approvedCount / total) * 100;
-  if (approvalRate >= 80) return 'AI 에이전트의 판단을 신뢰하는 스타일입니다. 자동화 수용도가 높습니다.';
-  if (approvalRate >= 50) return 'AI와 인간의 균형 잡힌 협업을 선호하는 스타일입니다.';
-  return '신중한 검토를 선호하는 스타일입니다. 중요 결정에 인간 판단을 중시합니다.';
+  if (approvalRate >= 80) return t('AI 에이전트의 판단을 신뢰하는 스타일입니다. 자동화 수용도가 높습니다.');
+  if (approvalRate >= 50) return t('AI와 인간의 균형 잡힌 협업을 선호하는 스타일입니다.');
+  return t('신중한 검토를 선호하는 스타일입니다. 중요 결정에 인간 판단을 중시합니다.');
 };
 
 export default function ExpoScoreBoard({
@@ -74,13 +75,13 @@ export default function ExpoScoreBoard({
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
           <Trophy size={14} className="text-yellow-400" />
-          체험 점수판
+          {t('체험 점수판')}
         </h3>
         <button
           onClick={() => setShowDetail(!showDetail)}
           className="text-[10px] text-accent hover:text-accent/80 transition-colors"
         >
-          {showDetail ? '접기' : '상세 보기'}
+          {showDetail ? t('접기') : t('상세 보기')}
         </button>
       </div>
 
@@ -106,22 +107,22 @@ export default function ExpoScoreBoard({
             >
               {score}
             </motion.div>
-            <div className="text-sm text-text-secondary mb-1">점</div>
+            <div className="text-sm text-text-secondary mb-1">{t('점')}</div>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center">
               <div className="text-lg font-black text-emerald-400">{approvedCount}</div>
-              <div className="text-[9px] text-text-secondary uppercase tracking-widest">승인</div>
+              <div className="text-[9px] text-text-secondary uppercase tracking-widest">{t('승인')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-black text-red-400">{rejectedCount}</div>
-              <div className="text-[9px] text-text-secondary uppercase tracking-widest">거부</div>
+              <div className="text-[9px] text-text-secondary uppercase tracking-widest">{t('거부')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-black text-blue-400">{eventsTriggered}</div>
-              <div className="text-[9px] text-text-secondary uppercase tracking-widest">이벤트</div>
+              <div className="text-[9px] text-text-secondary uppercase tracking-widest">{t('이벤트')}</div>
             </div>
           </div>
         </div>
@@ -131,7 +132,7 @@ export default function ExpoScoreBoard({
       {total > 0 && (
         <div className="space-y-2">
           <div className="flex justify-between text-[10px]">
-            <span className="text-text-secondary">AI 추천 수용률</span>
+            <span className="text-text-secondary">{t('AI 추천 수용률')}</span>
             <span className="font-bold text-accent">{approvalRate}%</span>
           </div>
           <div className="h-2 bg-border rounded-full overflow-hidden">
@@ -147,7 +148,7 @@ export default function ExpoScoreBoard({
 
       {/* Insight */}
       <div className="p-3 rounded-xl bg-accent/5 border border-accent/20">
-        <p className="text-[10px] text-text-secondary mb-1 font-bold uppercase tracking-widest">AI 협업 스타일 분석</p>
+        <p className="text-[10px] text-text-secondary mb-1 font-bold uppercase tracking-widest">{t('AI 협업 스타일 분석')}</p>
         <p className="text-xs text-text-primary leading-relaxed">{insight}</p>
       </div>
 
@@ -171,7 +172,7 @@ export default function ExpoScoreBoard({
                     ) : (
                       <Zap size={12} className="text-blue-400 shrink-0" />
                     )}
-                    <span className="text-[10px] text-text-secondary truncate max-w-[150px]">{entry.label}</span>
+                    <span className="text-[10px] text-text-secondary truncate max-w-[150px]">{t(entry.label)}</span>
                   </div>
                   <span className={`text-[10px] font-bold shrink-0 ${entry.points > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {entry.points > 0 ? '+' : ''}{entry.points}
@@ -190,7 +191,7 @@ export default function ExpoScoreBoard({
           className="w-full py-2.5 rounded-xl bg-gradient-to-r from-accent to-blue-500 text-bg font-black text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
         >
           <Share2 size={14} />
-          체험 결과 공유하기
+          {t('체험 결과 공유하기')}
         </button>
         <div className="grid grid-cols-2 gap-2">
           <button
@@ -198,13 +199,13 @@ export default function ExpoScoreBoard({
             className="py-2.5 rounded-xl border border-border hover:bg-surface-hover text-xs font-bold flex items-center justify-center gap-2 transition-colors"
           >
             <RotateCcw size={12} />
-            다시 체험
+            {t('다시 체험')}
           </button>
           <button
             onClick={onNewScenario}
             className="py-2.5 rounded-xl border border-accent/30 bg-accent/10 text-accent text-xs font-bold flex items-center justify-center gap-2 hover:bg-accent/20 transition-colors"
           >
-            다른 시나리오
+            {t('다른 시나리오')}
             <ChevronRight size={12} />
           </button>
         </div>
@@ -241,12 +242,12 @@ export default function ExpoScoreBoard({
 
                   {/* Scenario */}
                   <div className="text-3xl">{SCENARIO_ICONS[scenarioIdx]}</div>
-                  <div className="text-sm font-bold text-accent">{SCENARIO_NAMES[scenarioIdx]}</div>
+                  <div className="text-sm font-bold text-accent">{t(SCENARIO_NAMES[scenarioIdx])}</div>
 
                   {/* Score */}
                   <div>
                     <div className="text-6xl font-black">{score}</div>
-                    <div className="text-sm text-text-secondary">점</div>
+                    <div className="text-sm text-text-secondary">{t('점')}</div>
                   </div>
 
                   {/* Rank */}
@@ -259,15 +260,15 @@ export default function ExpoScoreBoard({
                   <div className="grid grid-cols-3 gap-3 pt-2 border-t border-border">
                     <div>
                       <div className="text-lg font-black text-emerald-400">{approvedCount}</div>
-                      <div className="text-[9px] text-text-secondary">AI 승인</div>
+                      <div className="text-[9px] text-text-secondary">{t('AI 승인')}</div>
                     </div>
                     <div>
                       <div className="text-lg font-black text-red-400">{rejectedCount}</div>
-                      <div className="text-[9px] text-text-secondary">AI 거부</div>
+                      <div className="text-[9px] text-text-secondary">{t('AI 거부')}</div>
                     </div>
                     <div>
                       <div className="text-lg font-black text-blue-400">{eventsTriggered}</div>
-                      <div className="text-[9px] text-text-secondary">이벤트</div>
+                      <div className="text-[9px] text-text-secondary">{t('이벤트')}</div>
                     </div>
                   </div>
 
@@ -275,7 +276,7 @@ export default function ExpoScoreBoard({
                   <p className="text-[10px] text-text-secondary leading-relaxed">{insight}</p>
 
                   {/* Watermark */}
-                  <div className="text-[9px] text-text-secondary/50 font-mono">AI EXPO 2026 · IMPIX</div>
+                  <div className="text-[9px] text-text-secondary/50 font-mono">IMPIX AI ORCHESTRATION</div>
                 </div>
               </div>
 
@@ -283,7 +284,7 @@ export default function ExpoScoreBoard({
                 onClick={() => setShowShareCard(false)}
                 className="w-full mt-4 py-3 rounded-xl border border-border text-sm font-bold hover:bg-surface-hover transition-colors"
               >
-                닫기
+                {t('닫기')}
               </button>
             </motion.div>
           </motion.div>

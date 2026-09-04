@@ -1,0 +1,81 @@
+# Builds, publishes to GitHub Pages, then proves the live site actually works.
+#
+# The smoke test lives here rather than beside the build because the agent
+# sandbox that develops this app cannot reach *.github.io — nor pages.dev,
+# vercel.app or netlify.app; the whole public web is off its egress allowlist.
+# GitHub's runners have no such limit. Free on public repositories.
+name: Deploy and verify
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+  schedule:
+    # Catch a site that broke without a deploy (expired build, bad cache).
+    - cron: '17 6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Scheduled runs only verify what is already live.
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - name: Check translation coverage
+        run: npm run i18n:report
+
+      - name: Build
+        env:
+          GITHUB_PAGES: 'true'
+          BUILD_REF: ${{ github.sha }}
+          # Optional: set this repository variable to route AI through the
+          # Worker proxy instead of demo mode. Safe to expose — it holds no key.
+          AI_PROXY_URL: ${{ vars.AI_PROXY_URL }}
+        run: npm run build
+
+      - name: Publish to gh-pages
+        run: |
+          touch dist/.nojekyll
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npx gh-pages -d dist --dotfiles -m "Deploy ${GITHUB_SHA::7}"
+
+  verify:
+    needs: [deploy]
+    # Runs after a deploy, and on its own for the daily check.
+    if: always() && (needs.deploy.result == 'success' || github.event_name == 'schedule')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Wait for Pages to serve the new build
+        if: github.event_name != 'schedule'
+        run: sleep 60
+
+      - name: Install Playwright
+        run: npm i --no-save playwright@1 && npx playwright install --with-deps chromium
+
+      - name: Smoke-test the live site
+        env:
+          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          EXPECTED_BUILD: ${{ github.event_name == 'schedule' && '' || github.sha }}
+        run: node .github/scripts/smoke.mjs

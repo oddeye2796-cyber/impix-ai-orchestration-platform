@@ -1,0 +1,18 @@
+{
+ "프록시 주소 (권장)": [
+  "プロキシのURL(推奨)",
+  "Proxy URL (recommended)"
+ ],
+ "API 키 (프록시가 없을 때)": [
+  "APIキー(プロキシがない場合)",
+  "API key (when no proxy)"
+ ],
+ "프록시를 쓰면 키가 브라우저에 노출되지 않고, 관람객은 아무 설정 없이 실제 AI를 사용할 수 있습니다.": [
+  "プロキシを使えばキーがブラウザに露出せず、来場者は設定なしで実際のAIを利用できます。",
+  "With a proxy the key never reaches the browser, and visitors get the real model with nothing to configure."
+ ],
+ "프록시 주소나 API 키 중 하나를 설정하면 실제 모델에 연결됩니다. 둘 다 없으면 AI 기능은 시뮬레이션 응답으로 동작합니다.": [
+  "プロキシのURLかAPIキーのいずれかを設定すると実際のモデルに接続されます。どちらもない場合、AI機能はシミュレーション応答で動作します。",
+  "Set either a proxy URL or an API key to connect to the real model. With neither, the AI surfaces run on simulated responses."
+ ]
+}

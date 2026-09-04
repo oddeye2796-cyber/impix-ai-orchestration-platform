@@ -1,0 +1,11 @@
+name = "impix-gemini-proxy"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Origins allowed to call the proxy. Without this any site could spend your
+# quota. Comma-separated; set it to the deployed front end.
+[vars]
+ALLOWED_ORIGINS = "https://oddeye2796-cyber.github.io"
+
+# GEMINI_API_KEY is a secret, not a var:
+#   npx wrangler secret put GEMINI_API_KEY

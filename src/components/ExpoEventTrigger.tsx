@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { t } from '../i18n';
 import {
   Flame, Zap, AlertTriangle, Thermometer, Wind,
   Activity, CheckCircle2, X, Cpu,
@@ -763,7 +764,7 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
             onClick={handleBackToList}
             className="text-text-secondary hover:text-text-primary transition-colors text-xs flex items-center gap-1"
           >
-            ← 목록
+            {t('← 목록')}
           </button>
           <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold border ${
             event.severity === 'critical'
@@ -772,7 +773,7 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
               ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
               : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
           }`}>
-            {event.severity === 'critical' ? '🚨 긴급 상황' : event.severity === 'warning' ? '⚠️ 경고' : 'ℹ️ 정보'}
+            {event.severity === 'critical' ? t('🚨 긴급 상황') : event.severity === 'warning' ? t('⚠️ 경고') : t('ℹ️ 정보')}
           </span>
         </div>
 
@@ -780,13 +781,13 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
         <div className={`rounded-xl border-2 ${event.borderColor} ${event.bgColor} p-4 space-y-2`}>
           <div className="flex items-center gap-2">
             <span className={event.color}>{event.icon}</span>
-            <h3 className={`font-black text-sm ${event.color}`}>{event.label}</h3>
+            <h3 className={`font-black text-sm ${event.color}`}>{t(event.label)}</h3>
           </div>
-          <p className="text-xs text-text-primary leading-relaxed">{event.situation}</p>
+          <p className="text-xs text-text-primary leading-relaxed">{t(event.situation)}</p>
           <div className="flex flex-wrap gap-1 pt-1">
             {event.affectedAgents.map(a => (
               <span key={a} className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/10 text-text-secondary border border-white/10 font-bold">
-                {a} 에이전트
+                {t('{name} 에이전트', { name: t(a) })}
               </span>
             ))}
           </div>
@@ -795,7 +796,7 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
         {/* 질문 */}
         <div className="flex items-center gap-2">
           <HelpCircle size={14} className="text-accent shrink-0" />
-          <p className="text-xs font-black text-text-primary">당신이라면 어떻게 대응하겠습니까?</p>
+          <p className="text-xs font-black text-text-primary">{t('당신이라면 어떻게 대응하겠습니까?')}</p>
         </div>
 
         {/* 선택지 */}
@@ -814,8 +815,8 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
                   {String.fromCharCode(65 + i)}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-snug">{choice.label}</p>
-                  <p className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">{choice.description}</p>
+                  <p className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-snug">{t(choice.label)}</p>
+                  <p className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">{t(choice.description)}</p>
                 </div>
                 <ChevronRight size={14} className="shrink-0 text-text-secondary group-hover:text-accent transition-colors mt-0.5" />
               </div>
@@ -850,10 +851,10 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
         >
           <div className="text-2xl mb-1">{isCorrect ? '🎯' : '❌'}</div>
           <p className={`text-sm font-black ${isCorrect ? 'text-emerald-400' : 'text-red-400'}`}>
-            {isCorrect ? '정답! AI와 같은 판단입니다' : '오답입니다'}
+            {isCorrect ? t('정답! AI와 같은 판단입니다') : t('오답입니다')}
           </p>
           <p className={`text-lg font-black mt-1 ${isCorrect ? 'text-emerald-400' : 'text-red-400'}`}>
-            {choice.scoreEffect > 0 ? '+' : ''}{choice.scoreEffect}점
+            {t('{score}점', { score: `${choice.scoreEffect > 0 ? '+' : ''}${choice.scoreEffect}` })}
           </p>
         </motion.div>
 
@@ -861,12 +862,12 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
         <div className={`rounded-xl border p-3 space-y-2 ${
           isCorrect ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'
         }`}>
-          <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">내 선택</p>
-          <p className="text-xs font-bold text-text-primary">{choice.label}</p>
-          <p className="text-[10px] text-text-secondary leading-relaxed">{choice.feedback}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">{t('내 선택')}</p>
+          <p className="text-xs font-bold text-text-primary">{t(choice.label)}</p>
+          <p className="text-[10px] text-text-secondary leading-relaxed">{t(choice.feedback)}</p>
           <div className="pt-1 border-t border-white/10">
-            <p className="text-[9px] text-text-secondary font-bold uppercase tracking-widest mb-1">예상 결과</p>
-            <p className="text-[10px] text-text-primary">{choice.consequence}</p>
+            <p className="text-[9px] text-text-secondary font-bold uppercase tracking-widest mb-1">{t('예상 결과')}</p>
+            <p className="text-[10px] text-text-primary">{t(choice.consequence)}</p>
           </div>
         </div>
 
@@ -878,12 +879,12 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
             transition={{ delay: 0.2 }}
             className="rounded-xl border border-accent/30 bg-accent/5 p-3 space-y-2"
           >
-            <p className="text-[10px] font-black uppercase tracking-widest text-accent">🤖 AI 권장 대응</p>
-            <p className="text-xs font-bold text-text-primary">{correctChoice.label}</p>
-            <p className="text-[10px] text-text-secondary leading-relaxed">{event.aiReasoning}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-accent">{t('🤖 AI 권장 대응')}</p>
+            <p className="text-xs font-bold text-text-primary">{t(correctChoice.label)}</p>
+            <p className="text-[10px] text-text-secondary leading-relaxed">{t(event.aiReasoning)}</p>
             <div className="pt-1 border-t border-accent/20">
-              <p className="text-[9px] text-accent font-bold uppercase tracking-widest mb-1">AI 선택 시 예상 결과</p>
-              <p className="text-[10px] text-text-primary">{correctChoice.consequence}</p>
+              <p className="text-[9px] text-accent font-bold uppercase tracking-widest mb-1">{t('AI 선택 시 예상 결과')}</p>
+              <p className="text-[10px] text-text-primary">{t(correctChoice.consequence)}</p>
             </div>
           </motion.div>
         )}
@@ -893,7 +894,7 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
           onClick={handleBackToList}
           className="w-full py-3 rounded-xl bg-gradient-to-r from-accent to-blue-500 text-bg font-black text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
         >
-          다음 이벤트 체험하기
+          {t('다음 이벤트 체험하기')}
           <ChevronRight size={14} />
         </button>
       </motion.div>
@@ -908,14 +909,14 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
         <div>
           <h3 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
             <Radio size={14} className="text-accent animate-pulse" />
-            이상 상황 대응 체험
+            {t('이상 상황 대응 체험')}
           </h3>
-          <p className="text-[10px] text-text-secondary mt-0.5">상황을 선택하고 최선의 대응을 결정하세요</p>
+          <p className="text-[10px] text-text-secondary mt-0.5">{t('상황을 선택하고 최선의 대응을 결정하세요')}</p>
         </div>
         <div className="text-right">
-          <div className="text-[10px] text-text-secondary font-mono">{answeredCount}/{events.length} 완료</div>
+          <div className="text-[10px] text-text-secondary font-mono">{answeredCount}/{events.length} {t('완료')}</div>
           {answeredCount > 0 && (
-            <div className="text-[10px] font-bold text-emerald-400">{correctCount}/{answeredCount} 정답</div>
+            <div className="text-[10px] font-bold text-emerald-400">{correctCount}/{answeredCount} {t('정답')}</div>
           )}
         </div>
       </div>
@@ -973,7 +974,7 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
                         ? result!.isCorrect ? 'text-emerald-400' : 'text-red-400'
                         : event.color
                     }`}>
-                      {event.label}
+                      {t(event.label)}
                     </span>
                     <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold border ${
                       event.severity === 'critical'
@@ -982,21 +983,21 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
                         ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
                         : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
                     }`}>
-                      {event.severity === 'critical' ? '긴급' : event.severity === 'warning' ? '경고' : '정보'}
+                      {event.severity === 'critical' ? t('긴급') : event.severity === 'warning' ? t('경고') : t('정보')}
                     </span>
                   </div>
-                  <p className="text-[10px] text-text-secondary truncate">{event.description}</p>
+                  <p className="text-[10px] text-text-secondary truncate">{t(event.description)}</p>
                 </div>
                 <div className="shrink-0 text-right">
                   {isAnswered ? (
                     <div>
                       <span className={`text-xs font-black ${result!.isCorrect ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {result!.scoreEffect > 0 ? '+' : ''}{result!.scoreEffect}점
+                        {t('{score}점', { score: `${result!.scoreEffect > 0 ? '+' : ''}${result!.scoreEffect}` })}
                       </span>
-                      <p className="text-[9px] text-text-secondary">{result!.isCorrect ? '정답' : '오답'}</p>
+                      <p className="text-[9px] text-text-secondary">{result!.isCorrect ? t('정답') : t('오답')}</p>
                     </div>
                   ) : (
-                    <span className={`text-[9px] font-bold ${event.color}`}>도전 →</span>
+                    <span className={`text-[9px] font-bold ${event.color}`}>{t('도전 →')}</span>
                   )}
                 </div>
               </div>
@@ -1014,14 +1015,14 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
         >
           <div className="text-2xl">{correctCount === events.length ? '🏆' : correctCount >= events.length / 2 ? '🥈' : '📚'}</div>
           <p className="text-sm font-black text-text-primary">
-            {correctCount}/{events.length} 정답 달성!
+            {correctCount}/{events.length} {t('정답 달성!')}
           </p>
           <p className="text-[10px] text-text-secondary leading-relaxed">
             {correctCount === events.length
-              ? 'AI와 완벽히 동일한 판단력을 보여주셨습니다!'
+              ? t('AI와 완벽히 동일한 판단력을 보여주셨습니다!')
               : correctCount >= events.length / 2
-              ? 'AI의 판단 기준을 잘 이해하고 계십니다.'
-              : 'AI의 데이터 기반 의사결정 방식을 더 살펴보세요.'}
+              ? t('AI의 판단 기준을 잘 이해하고 계십니다.')
+              : t('AI의 데이터 기반 의사결정 방식을 더 살펴보세요.')}
           </p>
           <div className="flex justify-center gap-3 pt-1">
             {results.map(r => (
@@ -1029,7 +1030,7 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
                 <span className={`text-base ${r.isCorrect ? 'text-emerald-400' : 'text-red-400'}`}>
                   {r.isCorrect ? '✓' : '✗'}
                 </span>
-                <span className="text-[8px] text-text-secondary">{r.eventLabel.slice(0, 4)}</span>
+                <span className="text-[8px] text-text-secondary">{t(r.eventLabel).slice(0, 6)}</span>
               </div>
             ))}
           </div>
@@ -1039,7 +1040,7 @@ export default function ExpoEventTrigger({ scenarioIdx, onEventTriggered, onScor
       {/* 진행 중 힌트 */}
       {answeredCount < events.length && (
         <p className="text-[10px] text-text-secondary text-center">
-          💡 각 상황 카드를 클릭하여 AI와 같은 판단을 내려보세요
+          {t('💡 각 상황 카드를 클릭하여 AI와 같은 판단을 내려보세요')}
         </p>
       )}
     </div>
