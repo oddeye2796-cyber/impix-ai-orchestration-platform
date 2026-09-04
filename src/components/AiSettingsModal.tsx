@@ -8,7 +8,15 @@ import { AlertCircle, Check, ExternalLink, KeyRound, Trash2, X } from 'lucide-re
 
 import { t } from '../i18n';
 import { useSafeTimeout } from '../hooks/useSafeTimeout';
-import { clearApiKey, getApiKey, isKeyFromBuild, setApiKey } from '../services/aiConfig';
+import {
+  clearApiKey,
+  getApiKey,
+  getProxyUrl,
+  isKeyFromBuild,
+  isProxyFromBuild,
+  setApiKey,
+  setProxyUrl,
+} from '../services/aiConfig';
 
 /**
  * Lets the operator bring their own Gemini key. The deployment is a static
@@ -23,16 +31,19 @@ export default function AiSettingsModal({
   onClose: () => void;
 }) {
   const [value, setValue] = useState('');
+  const [proxy, setProxy] = useState('');
   const [saved, setSaved] = useState(false);
   const safeTimeout = useSafeTimeout();
   const fromBuild = isKeyFromBuild();
+  const proxyFromBuild = isProxyFromBuild();
 
   useEffect(() => {
     if (isOpen) {
       setValue(fromBuild ? '' : getApiKey());
+      setProxy(proxyFromBuild ? getProxyUrl() : getProxyUrl());
       setSaved(false);
     }
-  }, [isOpen, fromBuild]);
+  }, [isOpen, fromBuild, proxyFromBuild]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -44,6 +55,7 @@ export default function AiSettingsModal({
   if (!isOpen) return null;
 
   const save = () => {
+    if (!proxyFromBuild) setProxyUrl(proxy);
     setApiKey(value);
     setSaved(true);
     safeTimeout(() => setSaved(false), 2000);
@@ -51,7 +63,9 @@ export default function AiSettingsModal({
 
   const remove = () => {
     clearApiKey();
+    if (!proxyFromBuild) setProxyUrl('');
     setValue('');
+    setProxy('');
   };
 
   return (
@@ -95,12 +109,32 @@ export default function AiSettingsModal({
           ) : (
             <>
               <p className="text-xs leading-relaxed text-text-secondary">
-                {t('키를 등록하지 않으면 AI 기능은 시뮬레이션 응답으로 동작합니다. 아래에 Gemini API 키를 입력하면 실제 모델에 연결됩니다.')}
+                {t('프록시 주소나 API 키 중 하나를 설정하면 실제 모델에 연결됩니다. 둘 다 없으면 AI 기능은 시뮬레이션 응답으로 동작합니다.')}
               </p>
 
               <label className="block">
                 <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-                  {t('API 키')}
+                  {t('프록시 주소 (권장)')}
+                </span>
+                <input
+                  type="url"
+                  value={proxy}
+                  disabled={proxyFromBuild}
+                  onChange={e => setProxy(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && save()}
+                  placeholder="https://impix-gemini-proxy.<account>.workers.dev"
+                  autoComplete="off"
+                  spellCheck={false}
+                  className="w-full rounded-lg border border-border bg-bg px-3 py-2 font-mono text-xs text-text-primary outline-none transition-colors focus:border-accent disabled:opacity-60"
+                />
+                <span className="mt-1.5 block text-[10px] leading-relaxed text-text-secondary">
+                  {t('프록시를 쓰면 키가 브라우저에 노출되지 않고, 관람객은 아무 설정 없이 실제 AI를 사용할 수 있습니다.')}
+                </span>
+              </label>
+
+              <label className="block">
+                <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+                  {t('API 키 (프록시가 없을 때)')}
                 </span>
                 <input
                   type="password"

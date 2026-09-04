@@ -5434,7 +5434,7 @@
     ]
   },
   {
-    "key": "API 키",
+    "key": "API 키 (프록시가 없을 때)",
     "lang": "ko",
     "files": [
       "src/components/AiSettingsModal.tsx"
@@ -5491,7 +5491,21 @@
     ]
   },
   {
-    "key": "키를 등록하지 않으면 AI 기능은 시뮬레이션 응답으로 동작합니다. 아래에 Gemini API 키를 입력하면 실제 모델에 연결됩니다.",
+    "key": "프록시 주소 (권장)",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "프록시 주소나 API 키 중 하나를 설정하면 실제 모델에 연결됩니다. 둘 다 없으면 AI 기능은 시뮬레이션 응답으로 동작합니다.",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "프록시를 쓰면 키가 브라우저에 노출되지 않고, 관람객은 아무 설정 없이 실제 AI를 사용할 수 있습니다.",
     "lang": "ko",
     "files": [
       "src/components/AiSettingsModal.tsx"

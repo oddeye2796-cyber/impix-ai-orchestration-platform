@@ -6,7 +6,7 @@
 import type { SensorData } from '../types';
 import { getLocale, t } from '../i18n';
 import type { Locale } from '../i18n';
-import { AiResult, getApiKey, isDemoMode } from './aiConfig';
+import { AiResult, getApiKey, getProxyUrl, isDemoMode } from './aiConfig';
 import { demoChatResponse, demoRecommendations } from './demoResponses';
 
 const MODEL = 'gemini-3-flash-preview';
@@ -39,6 +39,31 @@ async function getClient() {
   return clientPromise;
 }
 
+/**
+ * Ask the proxy. The key lives on the Worker, so nothing sensitive is in the
+ * bundle and the visitor has nothing to configure. Errors carry the upstream
+ * status so `describeError` can still tell a bad key from a rate limit.
+ */
+async function callProxy(
+  proxyUrl: string,
+  body: { contents: unknown; systemInstruction?: string; responseMimeType?: string },
+): Promise<string> {
+  const response = await fetch(proxyUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: MODEL, ...body }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Proxy returned ${response.status}`);
+  }
+
+  const data = (await response.json()) as { text?: string };
+  const text = data.text?.trim();
+  if (!text) throw new Error('Empty response');
+  return text;
+}
+
 /** Turns an unknown throw into copy the operator can act on. */
 function describeError(error: unknown): string {
   const raw = error instanceof Error ? error.message : String(error);
@@ -61,8 +86,9 @@ export async function generateRecommendations(
     return { status: 'ok', data: demoRecommendations(sensorData), source: 'demo' };
   }
 
+  const proxyUrl = getProxyUrl();
+
   try {
-    const ai = await getClient();
     const prompt = `You are the recommendation engine of the IMPIX AI orchestration platform for a smart factory.
 
 Here is the current real-time sensor data from the plant:
@@ -85,13 +111,22 @@ Write every human-readable field ("target_equipment", "recommended_value",
 "reasoning") in ${responseLanguage()}. Keep "agent" and "action" as English
 identifiers. Return the JSON data only.`;
 
-    const response = await ai.models.generateContent({
-      model: MODEL,
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      config: { responseMimeType: 'application/json' },
-    });
+    const contents = [{ role: 'user', parts: [{ text: prompt }] }];
+    let raw: string;
 
-    const parsed = JSON.parse(response.text || '[]');
+    if (proxyUrl) {
+      raw = await callProxy(proxyUrl, { contents, responseMimeType: 'application/json' });
+    } else {
+      const ai = await getClient();
+      const response = await ai.models.generateContent({
+        model: MODEL,
+        contents,
+        config: { responseMimeType: 'application/json' },
+      });
+      raw = response.text || '[]';
+    }
+
+    const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) throw new Error('Unexpected response shape');
     return { status: 'ok', data: parsed, source: 'live' };
   } catch (error) {
@@ -109,25 +144,34 @@ export async function generateChatResponse(
     return { status: 'ok', data: demoChatResponse(prompt, sensorData), source: 'demo' };
   }
 
+  const proxyUrl = getProxyUrl();
+
   try {
-    const ai = await getClient();
-    const response = await ai.models.generateContent({
-      model: MODEL,
-      contents: [...history, { role: 'user', parts: [{ text: prompt }] }],
-      config: {
-        systemInstruction: `You are the Supervisor AI of the IMPIX AI orchestration platform.
+    const contents = [...history, { role: 'user', parts: [{ text: prompt }] }];
+    const systemInstruction = `You are the Supervisor AI of the IMPIX AI orchestration platform.
 Answer the operator's questions with the expertise of factory automation, quality
 management, equipment maintenance and energy optimisation.
 
 Always reply in ${responseLanguage()}, regardless of the language the question was
 asked in. Use technical vocabulary where it is warranted, but stay approachable and
 explain the terms you introduce.
-When asked to analyse data, provide insight based on plausible real-time plant data.`,
-      },
-    });
+When asked to analyse data, provide insight based on plausible real-time plant data.`;
 
-    const text = response.text?.trim();
-    if (!text) throw new Error('Empty response');
+    let text: string;
+    if (proxyUrl) {
+      text = await callProxy(proxyUrl, { contents, systemInstruction });
+    } else {
+      const ai = await getClient();
+      const response = await ai.models.generateContent({
+        model: MODEL,
+        contents,
+        config: { systemInstruction },
+      });
+      const raw = response.text?.trim();
+      if (!raw) throw new Error('Empty response');
+      text = raw;
+    }
+
     return { status: 'ok', data: text, source: 'live' };
   } catch (error) {
     console.error('Gemini API Error:', error);

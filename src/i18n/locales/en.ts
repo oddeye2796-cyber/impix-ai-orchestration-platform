@@ -417,7 +417,7 @@ export const en: Catalog = {
   "확인 및 닫기": "Confirm and close",
   "환기량 100% 가동 (오버라이드)": "Ventilation to 100 % (override)",
   // ── src/components/AiSettingsModal.tsx ────────────────────────
-  "API 키": "API key",
+  "API 키 (프록시가 없을 때)": "API key (when no proxy)",
   "Google AI Studio에서 키 발급받기": "Get a key from Google AI Studio",
   "닫기": "Close",
   "이 빌드에는 API 키가 포함되어 있어 실제 모델에 연결됩니다. 브라우저에서 키를 변경할 수 없습니다.": "This build ships with an API key, so it is connected to the real model. The key cannot be changed from the browser.",
@@ -425,7 +425,9 @@ export const en: Catalog = {
   "저장됨": "Saved",
   "키 삭제": "Delete key",
   "키는 이 브라우저에만 저장되며 서버로 전송되지 않습니다. 공용 단말에서는 사용 후 삭제해 주세요.": "The key is stored in this browser only and is never sent to a server. On a shared terminal, please delete it after use.",
-  "키를 등록하지 않으면 AI 기능은 시뮬레이션 응답으로 동작합니다. 아래에 Gemini API 키를 입력하면 실제 모델에 연결됩니다.": "Without a key the AI surfaces run on simulated responses. Enter a Gemini API key below to connect to the real model.",
+  "프록시 주소 (권장)": "Proxy URL (recommended)",
+  "프록시 주소나 API 키 중 하나를 설정하면 실제 모델에 연결됩니다. 둘 다 없으면 AI 기능은 시뮬레이션 응답으로 동작합니다.": "Set either a proxy URL or an API key to connect to the real model. With neither, the AI surfaces run on simulated responses.",
+  "프록시를 쓰면 키가 브라우저에 노출되지 않고, 관람객은 아무 설정 없이 실제 AI를 사용할 수 있습니다.": "With a proxy the key never reaches the browser, and visitors get the real model with nothing to configure.",
   // ── src/components/DemoModeBadge.tsx ──────────────────────────
   "Gemini API 키가 설정되지 않아 시뮬레이션 응답을 표시합니다. 설정에서 키를 등록하면 실제 모델에 연결됩니다.": "No Gemini API key is configured, so these are simulated responses. Register a key in settings to connect to the real model.",
   "데모": "Demo",

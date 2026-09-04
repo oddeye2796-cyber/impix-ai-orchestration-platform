@@ -41,10 +41,23 @@ by anyone who opened the bundle. The key is resolved in three tiers instead:
 3. neither — the platform runs in **demo mode**.
 
 Demo mode is the normal state on the public deployment, not an error. The
-chatbot and the recommendation engine answer from the live mock telemetry, in the
-active language, so a booth demo works with no network and no credentials. AI
-output is marked with a small **Demo** badge, and a real key switches every
-surface to the live model with no further configuration.
+chatbot and the recommendation engine answer from the live plant simulation, in
+the active language, so a booth demo works with no network and no credentials.
+AI output is marked with a small **Demo** badge.
+
+**For a booth where visitors should reach the real model**, deploy the
+[Cloudflare Worker proxy](workers/README.md) and set `AI_PROXY_URL`. The key
+stays on the Worker, the page ships no credential, and the visitor configures
+nothing. Free tier covers booth traffic.
+
+## Verifying the deployment
+
+`.github/workflows/verify-deployment.yml` smoke-tests the live URL after every
+`gh-pages` push and once a day. It asserts the page actually renders — a Pages
+deploy can serve a stale or blank page while every asset still returns 200 — and
+reports the build stamp (`<html data-build>`) so you can confirm which commit is
+live. It runs on GitHub's runners, which can reach `*.github.io`; the agent
+sandbox that builds this app cannot.
 
 ## Run Locally
 
