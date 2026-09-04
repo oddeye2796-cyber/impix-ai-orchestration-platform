@@ -22,6 +22,21 @@
   --color-text-secondary: #94a3b8;
 }
 
+/* Light theme: the same token names, re-pointed. Every surface in the app is
+   painted from these, so the whole shell follows without per-component work. */
+:root[data-theme="light"] {
+  --color-bg: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-surface-hover: #e2e8f0;
+  --color-border: #cbd5e1;
+  --color-accent: #059669;
+  --color-accent-hover: #047857;
+  --color-warning: #b45309;
+  --color-danger: #dc2626;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+}
+
 @layer base {
   body {
     @apply bg-bg text-text-primary font-sans antialiased;

@@ -12,8 +12,6 @@ import React, {
   useState,
 } from 'react';
 
-import { ja } from './locales/ja';
-import { en } from './locales/en';
 import {
   Catalog,
   DEFAULT_LOCALE,
@@ -29,10 +27,34 @@ export { LOCALES, DEFAULT_LOCALE, isLocale };
 const STORAGE_KEY = 'impix.locale';
 
 /**
- * Korean is the authoring language, so it needs no catalog: `t()` falls back to
- * the key, which *is* the Korean copy.
+ * Catalogs are fetched per locale rather than bundled together: the two of them
+ * are ~120 KB gzipped and a visitor only ever needs one. Korean is the
+ * authoring language, so it needs no catalog at all — `t()` falls back to the
+ * key, which *is* the Korean copy.
  */
-const CATALOGS: Record<Locale, Catalog> = { ja, en, ko: {} };
+const CATALOGS: Record<Locale, Catalog> = { ja: {}, en: {}, ko: {} };
+
+const LOADERS: Record<Locale, (() => Promise<Catalog>) | null> = {
+  ja: () => import('./locales/ja').then(m => m.ja),
+  en: () => import('./locales/en').then(m => m.en),
+  ko: null,
+};
+
+const loaded = new Set<Locale>(['ko']);
+
+/** Fetch a locale's catalog once. Resolves immediately if it is already in. */
+export async function loadCatalog(locale: Locale): Promise<void> {
+  if (loaded.has(locale)) return;
+  const load = LOADERS[locale];
+  if (!load) return;
+  try {
+    CATALOGS[locale] = await load();
+  } catch (error) {
+    // Fall back to the Korean source copy rather than blocking the UI.
+    console.error(`Failed to load the ${locale} catalog:`, error);
+  }
+  loaded.add(locale);
+}
 
 /**
  * Mirror of the React state, kept at module scope so that `t()` can be called
@@ -83,8 +105,10 @@ export function t(key: string, vars?: Record<string, string | number>): string {
 }
 
 /**
- * Every known spelling of a key across the catalogs (Korean source included).
- * Used to keyword-match free-text the operator typed in any supported language.
+ * Every known spelling of a key across the catalogs that have been fetched so
+ * far (the Korean source always counts). In practice the operator types in the
+ * language the interface is showing, which is exactly the catalog that is
+ * loaded, so keyword matching still lands.
  */
 export const tAll = (key: string): string[] => {
   const spellings = new Set<string>([key]);
@@ -154,10 +178,25 @@ const I18nContext = createContext<I18nContextValue>({
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(detectLocale);
+  // Gates the *first* paint only. Later switches keep the tree mounted, so an
+  // operator changing language mid-demo does not lose the tour progress, the
+  // chat history or anything else held in component state.
+  const [ready, setReady] = useState(() => loaded.has(detectLocale()));
 
   // Assigning during render (rather than in an effect) guarantees the module
   // level `t()` already sees the new locale while this subtree renders.
   currentLocale = locale;
+
+  useEffect(() => {
+    if (ready) return;
+    let cancelled = false;
+    loadCatalog(locale).then(() => {
+      if (!cancelled) setReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [locale, ready]);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -169,9 +208,13 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     }
   }, [locale]);
 
+  // Load the catalog *before* flipping the locale, so the tree never renders a
+  // frame of untranslated Korean and never has to unmount.
   const setLocale = useCallback((next: Locale) => {
-    currentLocale = next;
-    setLocaleState(next);
+    void loadCatalog(next).then(() => {
+      currentLocale = next;
+      setLocaleState(next);
+    });
   }, []);
 
   const value = useMemo<I18nContextValue>(
@@ -179,7 +222,11 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     [locale, setLocale],
   );
 
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+  // Holding the first paint avoids a flash of the Korean source copy while the
+  // active catalog is still in flight.
+  return (
+    <I18nContext.Provider value={value}>{ready ? children : null}</I18nContext.Provider>
+  );
 }
 
 /**

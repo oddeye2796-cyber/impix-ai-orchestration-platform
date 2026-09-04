@@ -915,6 +915,14 @@
     ]
   },
   {
+    "key": "AI 연결 설정",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
     "key": "AI 오케스트레이션",
     "lang": "ko",
     "files": [
@@ -3355,7 +3363,8 @@
     "key": "가동률",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -3538,7 +3547,8 @@
     "key": "교체 권장",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -3875,7 +3885,8 @@
     "key": "불량률",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -4036,7 +4047,8 @@
     "key": "설비",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -4163,14 +4175,16 @@
     "key": "수축포장기-01",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
     "key": "순환 유량 +15% 유압 상향",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -4308,7 +4322,8 @@
     "files": [
       "src/App.tsx",
       "src/components/ExpoAgentDebate.tsx",
-      "src/components/ExpoEventTrigger.tsx"
+      "src/components/ExpoEventTrigger.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -4388,7 +4403,8 @@
     "files": [
       "src/App.tsx",
       "src/components/ExpoAgentDebate.tsx",
-      "src/components/ExpoEventTrigger.tsx"
+      "src/components/ExpoEventTrigger.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -4417,7 +4433,8 @@
     "key": "에너지 절전 우회 모드 (피크 피쇄)",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -4643,7 +4660,8 @@
     "key": "자동 급유 개시",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -4902,7 +4920,8 @@
     "key": "진동",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -5147,7 +5166,8 @@
     "key": "포장1라인",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/services/demoResponses.ts"
     ]
   },
   {
@@ -5362,6 +5382,119 @@
     "lang": "ko",
     "files": [
       "src/App.tsx"
+    ]
+  },
+  {
+    "key": "API 키",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "Google AI Studio에서 키 발급받기",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "닫기",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx",
+      "src/components/ExpoScoreBoard.tsx"
+    ]
+  },
+  {
+    "key": "이 빌드에는 API 키가 포함되어 있어 실제 모델에 연결됩니다. 브라우저에서 키를 변경할 수 없습니다.",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "저장",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "저장됨",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "키 삭제",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "키는 이 브라우저에만 저장되며 서버로 전송되지 않습니다. 공용 단말에서는 사용 후 삭제해 주세요.",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "키를 등록하지 않으면 AI 기능은 시뮬레이션 응답으로 동작합니다. 아래에 Gemini API 키를 입력하면 실제 모델에 연결됩니다.",
+    "lang": "ko",
+    "files": [
+      "src/components/AiSettingsModal.tsx"
+    ]
+  },
+  {
+    "key": "Gemini API 키가 설정되지 않아 시뮬레이션 응답을 표시합니다. 설정에서 키를 등록하면 실제 모델에 연결됩니다.",
+    "lang": "ko",
+    "files": [
+      "src/components/DemoModeBadge.tsx"
+    ]
+  },
+  {
+    "key": "데모",
+    "lang": "ko",
+    "files": [
+      "src/components/DemoModeBadge.tsx"
+    ]
+  },
+  {
+    "key": "다시 시도",
+    "lang": "ko",
+    "files": [
+      "src/components/ErrorBoundary.tsx"
+    ]
+  },
+  {
+    "key": "예상치 못한 오류가 발생했습니다",
+    "lang": "ko",
+    "files": [
+      "src/components/ErrorBoundary.tsx"
+    ]
+  },
+  {
+    "key": "오류 상세",
+    "lang": "ko",
+    "files": [
+      "src/components/ErrorBoundary.tsx"
+    ]
+  },
+  {
+    "key": "페이지 새로고침",
+    "lang": "ko",
+    "files": [
+      "src/components/ErrorBoundary.tsx"
+    ]
+  },
+  {
+    "key": "화면을 다시 불러오면 대부분 해결됩니다. 문제가 계속되면 페이지를 새로고침해 주세요.",
+    "lang": "ko",
+    "files": [
+      "src/components/ErrorBoundary.tsx"
     ]
   },
   {
@@ -7998,13 +8131,6 @@
     ]
   },
   {
-    "key": "닫기",
-    "lang": "ko",
-    "files": [
-      "src/components/ExpoScoreBoard.tsx"
-    ]
-  },
-  {
     "key": "상세 보기",
     "lang": "ko",
     "files": [
@@ -9713,17 +9839,136 @@
     ]
   },
   {
-    "key": "죄송합니다. 답변을 생성할 수 없습니다.",
+    "key": "{equipment}의 3축 진동값은 {vib}mm/s입니다. 임계치 대비 여유가 있으나 추세를 계속 관측하고 있으며, 4.2mm/s를 넘으면 보전 워크오더가 자동 생성됩니다.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "3축 진동값이 {vib}mm/s로 임계치(3.5)를 초과했습니다. 동일 패턴의 과거 이력에서는 72시간 내 베어링 손상으로 이어졌습니다. 다음 정지 시점에 점검을 예약하십시오.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "라인 전류는 {current}A로 정격 대비 여유가 있습니다. 피크 시간대 진입 전 비핵심 부하를 미리 분산하면 계약 전력 초과 없이 현재 생산 속도를 유지할 수 있습니다.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "전 구역 안전 센서는 정상입니다. 가스 농도, 화재 감지, AMR 근접 인터락 모두 임계치 이내이며 최근 1시간 내 경보 이력은 없습니다.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "전력",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "종합 설비 효율(OEE)은 84.2%로 목표치 85%에 근접해 있습니다. 성능 손실의 대부분은 포장1라인의 짧은 정지에서 발생하고 있으며, 예지보전 에이전트가 원인을 추적 중입니다.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "진동값 {vib}mm/s는 정상 범위이나 상승 추세가 관측됩니다. 자동 급유를 선행 가동하면 마모 진행을 늦추고 가동 중단을 예방할 수 있습니다.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "질문을 분석했습니다. 현재 공장은 불량률 {defect}%, 진동 {vib}mm/s, 온도 {temp}°C로 안정 구간에서 운전 중입니다. 품질·보전·에너지·안전 에이전트 중 어느 관점으로 더 자세히 살펴볼까요?",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "현재 라인 전류는 {current}A이고 누적 전력은 계약 한도의 여유 구간에 있습니다. 정오 피크 진입 전 ESS 방전과 비핵심 부하 분산을 예약해 두는 것을 권장합니다.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "현재 불량률은 {defect}%이며 수축 온도는 {temp}°C입니다. 과거 배치 분석에서 이 구간의 최적 온도는 {target}°C였고, 조정 시 불량률이 약 {expected}%까지 낮아질 것으로 예측됩니다.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "현재 평균 불량률은 {defect}%입니다. 수축 온도 {temp}°C 구간에서 미세한 변동이 있으나 관리 한계 안에 있습니다. 온도를 최적값으로 낮추면 추가 개선 여지가 있습니다.",
+    "lang": "ko",
+    "files": [
+      "src/services/demoResponses.ts"
+    ]
+  },
+  {
+    "key": "AI 응답을 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.",
     "lang": "ko",
     "files": [
       "src/services/geminiService.ts"
     ]
   },
   {
-    "key": "죄송합니다. 요청을 처리하는 중에 오류가 발생했습니다.",
+    "key": "API 키가 유효하지 않습니다. 설정에서 키를 다시 확인해 주세요.",
     "lang": "ko",
     "files": [
       "src/services/geminiService.ts"
+    ]
+  },
+  {
+    "key": "네트워크에 연결할 수 없습니다. 연결 상태를 확인해 주세요.",
+    "lang": "ko",
+    "files": [
+      "src/services/geminiService.ts"
+    ]
+  },
+  {
+    "key": "요청 한도를 초과했습니다. 잠시 후 다시 시도해 주세요.",
+    "lang": "ko",
+    "files": [
+      "src/services/geminiService.ts"
+    ]
+  },
+  {
+    "key": "다크",
+    "lang": "ko",
+    "files": [
+      "src/theme/ThemeSwitcher.tsx"
+    ]
+  },
+  {
+    "key": "라이트",
+    "lang": "ko",
+    "files": [
+      "src/theme/ThemeSwitcher.tsx"
+    ]
+  },
+  {
+    "key": "시스템",
+    "lang": "ko",
+    "files": [
+      "src/theme/ThemeSwitcher.tsx"
+    ]
+  },
+  {
+    "key": "테마 선택",
+    "lang": "ko",
+    "files": [
+      "src/theme/ThemeSwitcher.tsx"
     ]
   }
 ]

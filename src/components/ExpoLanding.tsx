@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Factory, Sparkles, Play, ChevronRight, Zap, Shield, Leaf, Target, Users, Award, Clock } from 'lucide-react';
 import { t } from '../i18n';
 import LanguageSwitcher from '../i18n/LanguageSwitcher';
+import ThemeSwitcher from '../theme/ThemeSwitcher';
 
 interface ExpoLandingProps {
   onStart: (scenarioIdx: number) => void;
@@ -181,6 +182,7 @@ export default function ExpoLanding({ onStart, onSkip }: ExpoLandingProps) {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <ThemeSwitcher />
             <LanguageSwitcher variant="inline" />
             <button
               onClick={onSkip}

@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { 
   LayoutDashboard, 
   Activity, 
@@ -145,9 +143,27 @@ import {
 } from './types';
 import { generateChatResponse, generateRecommendations } from './services/geminiService';
 import ExpoLanding from './components/ExpoLanding';
-import ExpoSidebar from './components/ExpoSidebar';
 import { t, tValue, matchesKeyword, useI18n } from './i18n';
 import LanguageSwitcher from './i18n/LanguageSwitcher';
+import AiSettingsModal from './components/AiSettingsModal';
+import ThemeSwitcher from './theme/ThemeSwitcher';
+
+// Split out of the initial download: markdown is one tab of one modal, and the
+// expo sidebar only exists in interactive booth mode.
+const MarkdownView = lazy(() => import('./components/MarkdownView'));
+const ExpoSidebar = lazy(() => import('./components/ExpoSidebar'));
+import DemoModeBadge from './components/DemoModeBadge';
+import { useSafeTimeout } from './hooks/useSafeTimeout';
+import { chartPalette, useTheme } from './theme';
+
+/** Placeholder shown while a lazily loaded chunk arrives. */
+function ChunkFallback() {
+  return (
+    <div className="flex items-center justify-center py-12 text-text-secondary">
+      <Loader2 size={20} className="animate-spin" />
+    </div>
+  );
+}
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -523,6 +539,7 @@ export default function App() {
   // Subscribing here re-renders the entire (unmemoized) tree when the operator
   // switches language, so every module level t() call is re-evaluated.
   const { locale } = useI18n();
+  const { theme } = useTheme();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<MenuItem>(MENU_ITEMS[0]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -535,6 +552,8 @@ export default function App() {
   const [chatInput, setChatInput] = useState('');
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isRecommending, setIsRecommending] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // EXPO Landing & Interactive Mode States
@@ -630,9 +649,12 @@ export default function App() {
 
   const fetchAIRecommendations = async () => {
     setIsRecommending(true);
-    const newRecommendations = await generateRecommendations(sensorData);
-    if (newRecommendations && newRecommendations.length > 0) {
-      const formatted = newRecommendations.map((r: any) => ({
+    setAiError(null);
+    const result = await generateRecommendations(sensorData);
+    if (result.status === 'error') {
+      setAiError(result.message);
+    } else if (result.data.length > 0) {
+      const formatted = result.data.map((r: any) => ({
         ...r,
         timestamp: new Date().toISOString(),
         status: 'pending'
@@ -680,8 +702,12 @@ export default function App() {
       parts: [{ text: m.content }]
     }));
 
-    const response = await generateChatResponse(chatInput, history);
-    const assistantMsg: ChatMessage = { role: 'assistant', content: response, timestamp: new Date().toLocaleTimeString() };
+    const result = await generateChatResponse(chatInput, history, sensorData);
+    const assistantMsg: ChatMessage = {
+      role: 'assistant',
+      content: result.status === 'ok' ? result.data : result.message,
+      timestamp: new Date().toLocaleTimeString(),
+    };
     setChatMessages(prev => [...prev, assistantMsg]);
     setIsChatLoading(false);
   };
@@ -801,6 +827,7 @@ export default function App() {
             decisions={decisions} 
             fetchAIRecommendations={fetchAIRecommendations} 
             isRecommending={isRecommending}
+            aiError={aiError}
             handleApprove={handleApprove}
             handleReject={handleReject}
           />
@@ -876,7 +903,7 @@ export default function App() {
   };
 
   return (
-    <div lang={locale} className="flex h-screen overflow-hidden bg-bg text-text-primary">
+    <div lang={locale} data-theme={theme} className="flex h-screen overflow-hidden bg-bg text-text-primary">
       {/* Expo Landing Screen */}
       <AnimatePresence>
         {showExpoLanding && (
@@ -955,10 +982,12 @@ export default function App() {
               {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <div className="h-4 w-[1px] bg-border" />
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-text-secondary">{t(selectedMenu.category)}</span>
-              <ChevronRight size={12} className="text-text-secondary" />
-              <span className="text-sm font-medium">{t(selectedMenu.name)}</span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="hidden truncate whitespace-nowrap text-xs text-text-secondary lg:inline">
+                {t(selectedMenu.category)}
+              </span>
+              <ChevronRight size={12} className="hidden shrink-0 text-text-secondary lg:inline" />
+              <span className="truncate whitespace-nowrap text-sm font-medium">{t(selectedMenu.name)}</span>
             </div>
             
             <div className="h-4 w-[1px] bg-border" />
@@ -1003,12 +1032,18 @@ export default function App() {
                 className="bg-surface border border-border rounded-full py-1.5 pl-10 pr-4 text-xs w-64 focus:outline-none focus:border-accent transition-colors"
               />
             </div>
+            <ThemeSwitcher />
             <LanguageSwitcher />
             <button className="p-2 rounded-lg hover:bg-surface-hover relative">
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-bg" />
             </button>
-            <button className="p-2 rounded-lg hover:bg-surface-hover">
+            <button
+              onClick={() => setIsAiSettingsOpen(true)}
+              className="p-2 rounded-lg hover:bg-surface-hover cursor-pointer"
+              title={t('AI 연결 설정')}
+              aria-label={t('AI 연결 설정')}
+            >
               <Settings size={20} />
             </button>
           </div>
@@ -1041,7 +1076,10 @@ export default function App() {
                   <Cpu size={18} className="text-white" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold">{t('AI Supervisor')}</h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-bold">{t('AI Supervisor')}</h4>
+                    <DemoModeBadge />
+                  </div>
                   <div className="flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
                     <span className="text-[10px] text-text-secondary">{t('Online & Ready')}</span>
@@ -1350,6 +1388,8 @@ export default function App() {
           })()}
         </AnimatePresence>
 
+        <AiSettingsModal isOpen={isAiSettingsOpen} onClose={() => setIsAiSettingsOpen(false)} />
+
         {/* Global Orchestration Center Modal for Tour Mode */}
         <OrchestrationCenterModal 
           isOpen={isTourOrchestrationOpen} 
@@ -1358,6 +1398,7 @@ export default function App() {
 
         {/* Expo Interactive Sidebar */}
         {isExpoInteractiveMode && (
+          <Suspense fallback={null}>
           <ExpoSidebar
             scenarioIdx={tourScenarioIdx}
             score={expoScore}
@@ -1391,6 +1432,7 @@ export default function App() {
               setIsTourOrchestrationOpen(false);
             }}
           />
+          </Suspense>
         )}
       </main>
     </div>
@@ -1477,6 +1519,8 @@ function RULPredictionView({
   isTourMode?: boolean; 
   tourScenarioIdx?: number; 
 }) {
+  const chart = chartPalette();
+  const safeTimeout = useSafeTimeout();
   const [created, setCreated] = useState(false);
 
   useEffect(() => {
@@ -1490,7 +1534,7 @@ function RULPredictionView({
     // Reinforce tour step checks on action
     window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 1, checklistIdx: 0 } }));
     window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 1, checklistIdx: 1 } }));
-    setTimeout(() => {
+    safeTimeout(() => {
       setCreated(false);
     }, 3000);
   };
@@ -1616,12 +1660,12 @@ function RULPredictionView({
           <h3 className="font-bold mb-6">{t('Health Degradation Curve')}</h3>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-              <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+              <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+              <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
-                itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
               />
               <Line type="monotone" dataKey="health" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} />
               <Line type="monotone" dataKey="threshold" stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} dot={false} />
@@ -1983,6 +2027,7 @@ function OverrideLogView({ logs }: { logs: OverrideLog[] }) {
 }
 
 function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) {
+  const chart = chartPalette();
   const kpiData: Record<string, any> = {
     'OEE': {
       title: 'Overall Equipment Effectiveness',
@@ -2000,9 +2045,9 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
           { name: t('품질'), value: 98.7 },
           { name: 'OEE', value: 84.2 },
         ]}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-          <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} />
-          <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+          <XAxis dataKey="name" stroke={chart.axis} fontSize={10} />
+          <YAxis stroke={chart.axis} fontSize={10} domain={[0, 100]} />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
           <Bar dataKey="value" radius={[4, 4, 0, 0]}>
             <Cell fill="#60a5fa" />
@@ -2030,9 +2075,9 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
           { time: '12:00', rate: 1.1 },
           { time: '13:00', rate: 1.24 },
         ]}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-          <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} />
-          <YAxis stroke="#94a3b8" fontSize={10} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+          <XAxis dataKey="time" stroke={chart.axis} fontSize={10} />
+          <YAxis stroke={chart.axis} fontSize={10} />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
           <Line type="monotone" dataKey="rate" stroke="#ef4444" strokeWidth={2} dot={{ r: 4, fill: '#ef4444' }} />
         </LineChart>
@@ -2055,9 +2100,9 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
           { time: '14:00', usage: 110 },
           { time: '16:00', usage: 95 },
         ]}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-          <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} />
-          <YAxis stroke="#94a3b8" fontSize={10} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+          <XAxis dataKey="time" stroke={chart.axis} fontSize={10} />
+          <YAxis stroke={chart.axis} fontSize={10} />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
           <Area type="monotone" dataKey="usage" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.2} />
         </AreaChart>
@@ -2169,6 +2214,7 @@ function DashboardView({
   decisions, 
   fetchAIRecommendations, 
   isRecommending,
+  aiError,
   handleApprove,
   handleReject
 }: { 
@@ -2176,9 +2222,11 @@ function DashboardView({
   decisions: AgentDecision[], 
   fetchAIRecommendations: () => void,
   isRecommending: boolean,
+  aiError: string | null,
   handleApprove: (i: number) => void,
   handleReject: (i: number) => void
 }) {
+  const chart = chartPalette();
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
 
   useEffect(() => {
@@ -2248,16 +2296,16 @@ function DashboardView({
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis 
                   dataKey="timestamp" 
-                  stroke="#94a3b8" 
+                  stroke={chart.axis} 
                   fontSize={10} 
                   tickLine={false} 
                   axisLine={false} 
                 />
                 <YAxis 
-                  stroke="#94a3b8" 
+                  stroke={chart.axis} 
                   fontSize={10} 
                   tickLine={false} 
                   axisLine={false} 
@@ -2265,7 +2313,7 @@ function DashboardView({
                 />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area 
                   type="monotone" 
@@ -2296,11 +2344,21 @@ function DashboardView({
               >
                 {isRecommending ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
               </button>
+              <DemoModeBadge />
               <span className="bg-warning/10 text-warning text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">
                 {decisions.filter(d => d.status === 'pending').length} {t('Action Required')}
               </span>
             </div>
           </div>
+          {aiError && (
+            <div
+              role="alert"
+              className="mb-3 flex items-start gap-2 rounded-lg border border-danger/30 bg-danger/10 p-2.5 text-[11px] leading-relaxed text-danger"
+            >
+              <AlertCircle size={13} className="mt-0.5 shrink-0" />
+              <span>{aiError}</span>
+            </div>
+          )}
           <div className="flex-1 space-y-4 overflow-y-auto custom-scrollbar pr-2">
             {decisions.map((decision, idx) => (
               <div key={idx} className={cn(
@@ -2362,12 +2420,12 @@ function DashboardView({
                 { name: t('라벨누락'), value: 5 },
                 { name: t('기타'), value: 3 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {[0, 1, 2, 3, 4].map((entry, index) => (
@@ -2802,6 +2860,7 @@ function CoordinationVisualizer({
   isTourMode?: boolean;
   tourScenarioIdx?: number;
 }) {
+  const safeTimeout = useSafeTimeout();
   const [step, setStep] = useState(0);
   const [events, setEvents] = useState<CoordinationEvent[]>([]);
   const [activeScenario, setActiveScenario] = useState(0);
@@ -2973,7 +3032,7 @@ function CoordinationVisualizer({
         setEvents(prev => [...prev, newEvent as CoordinationEvent]);
         setStep(s => s + 1);
         setFlashActive(true);
-        setTimeout(() => setFlashActive(false), 300);
+        safeTimeout(() => setFlashActive(false), 300);
       }, simulationSpeed);
       return () => clearTimeout(timer);
     }
@@ -3026,7 +3085,7 @@ function CoordinationVisualizer({
       setEvents(prev => [...prev, newEvent as CoordinationEvent]);
       setStep(s => s + 1);
       setFlashActive(true);
-      setTimeout(() => setFlashActive(false), 300);
+      safeTimeout(() => setFlashActive(false), 300);
 
       // Auto check Skip/Reset control interaction
       window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 3, checklistIdx: 2 } }));
@@ -3953,13 +4012,9 @@ function OrchestrationCenterModal({
                 <CoordinationVisualizer isTourMode={isTourMode} tourScenarioIdx={tourScenarioIdx} />
               </div>
             ) : (
-              <div className="prose prose-invert prose-sm max-w-none">
-                <div className="markdown-body">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {methodologyContent}
-                  </ReactMarkdown>
-                </div>
-              </div>
+              <Suspense fallback={<ChunkFallback />}>
+                <MarkdownView>{methodologyContent}</MarkdownView>
+              </Suspense>
             )}
           </div>
         </div>
@@ -3986,6 +4041,7 @@ function SupervisorCenterView({
   isTourMode?: boolean; 
   tourScenarioIdx?: number; 
 }) {
+  const safeTimeout = useSafeTimeout();
   const [isOrchestrationOpen, setIsOrchestrationOpen] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResult, setSimulationResult] = useState<{gain: string, risk: string} | null>(null);
@@ -4125,7 +4181,7 @@ function SupervisorCenterView({
     // Dispatches checks
     window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 2, checklistIdx: 0 } }));
     window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 2, checklistIdx: 1 } }));
-    setTimeout(() => {
+    safeTimeout(() => {
       setIsSimulating(false);
       setSimulationResult(getSimulationResult());
     }, 2000);
@@ -4444,6 +4500,7 @@ function SupervisorCenterView({
 
 
 function VisionInspectionViewer() {
+  const safeTimeout = useSafeTimeout();
   const [status, setStatus] = useState<'Ready' | 'Inspecting' | 'Complete'>('Ready');
   const [currentResult, setCurrentResult] = useState<'OK' | 'NG' | null>(null);
   const [history, setHistory] = useState<{id: number, time: string, result: 'OK' | 'NG'}[]>(
@@ -4461,7 +4518,7 @@ function VisionInspectionViewer() {
     setCurrentResult(null);
     
     // Simulate inspection steps
-    setTimeout(() => {
+    safeTimeout(() => {
       const isOk = Math.random() > 0.05;
       setCurrentResult(isOk ? 'OK' : 'NG');
       setStatus('Complete');
@@ -4792,6 +4849,7 @@ function VisionInspectionViewer() {
 }
 
 function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, isOpen: boolean, onClose: () => void }) {
+  const chart = chartPalette();
   const [subView, setSubView] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
@@ -5056,12 +5114,12 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                         <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                    <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                    <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                    <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                      itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                      contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                      itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                     />
                     <Area type="monotone" dataKey="cpu" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorCpu)" name="CPU Usage (%)" />
                     <Area type="monotone" dataKey="mem" stroke="#3b82f6" fill="transparent" name="Memory Usage (%)" />
@@ -6558,6 +6616,7 @@ function AMRCollisionViewer() {
 }
 
 function ChatbotViewer() {
+  const safeTimeout = useSafeTimeout();
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'assistant', content: t('안녕하세요! AI 슈퍼바이저 어시스턴트입니다. 무엇을 도와드릴까요?'), timestamp: new Date().toLocaleTimeString() }
   ]);
@@ -6585,7 +6644,7 @@ function ChatbotViewer() {
     setIsTyping(true);
 
     // Simulate AI Response
-    setTimeout(() => {
+    safeTimeout(() => {
       let response = '';
       if (matchesKeyword(input, '불량률')) {
         response = t('현재 전체 라인의 평균 불량률은 3.2%입니다. B라인의 도금 공정에서 미세한 변동이 감지되었으나, 허용 범위 내에 있습니다.');
@@ -6801,6 +6860,7 @@ function ModuleDetailView({
   isTourMode?: boolean;
   tourScenarioIdx?: number;
 }) {
+  const chart = chartPalette();
   const [logs, setLogs] = useState<{time: string, msg: string, type: 'info' | 'warn' | 'success'}[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -6866,12 +6926,12 @@ function ModuleDetailView({
                 { name: t('속성'), value: 312 },
                 { name: t('규칙'), value: 84 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -6884,12 +6944,12 @@ function ModuleDetailView({
                 { name: 'ResNet', acc: 0.91, f1: 0.89 },
                 { name: 'ViT', acc: 0.96, f1: 0.95 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="acc" fill="#3b82f6" name="Accuracy" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="f1" fill="#10b981" name="F1 Score" radius={[4, 4, 0, 0]} />
@@ -6917,8 +6977,8 @@ function ModuleDetailView({
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
               </PieChart>
             );
@@ -6931,12 +6991,12 @@ function ModuleDetailView({
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area type="monotone" dataKey="vibration" stroke="#3b82f6" fillOpacity={1} fill="url(#colorCpu)" name="CPU Usage (%)" />
               </AreaChart>
@@ -6949,12 +7009,12 @@ function ModuleDetailView({
                 { name: t('Push'), value: 2431 },
                 { name: t('Siren'), value: 12 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="value" fill="#f59e0b" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -6972,12 +7032,12 @@ function ModuleDetailView({
                 { type: t('분석 요청'), count: 180 },
                 { type: t('기타'), count: 50 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="type" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="type" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -7004,8 +7064,8 @@ function ModuleDetailView({
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
               </PieChart>
             );
@@ -7018,12 +7078,12 @@ function ModuleDetailView({
                 { agent: 'Energy', runs: 600 },
                 { agent: 'Safety', runs: 300 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
-                <XAxis type="number" stroke="#94a3b8" fontSize={10} />
-                <YAxis dataKey="agent" type="category" stroke="#94a3b8" fontSize={10} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} horizontal={false} />
+                <XAxis type="number" stroke={chart.axis} fontSize={10} />
+                <YAxis dataKey="agent" type="category" stroke={chart.axis} fontSize={10} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="runs" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
               </BarChart>
@@ -7035,12 +7095,12 @@ function ModuleDetailView({
                 { status: 'Approved', count: 42 },
                 { status: 'Rejected', count: 3 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="status" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="status" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="count">
                   {['#f59e0b', '#10b981', '#ef4444'].map((color, index) => (
@@ -7058,13 +7118,13 @@ function ModuleDetailView({
                 { subject: 'Energy', A: 80, fullMark: 100 },
                 { subject: 'Cost', A: 75, fullMark: 100 },
               ]}>
-                <PolarGrid stroke="#334155" />
-                <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={10} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#94a3b8" fontSize={8} />
+                <PolarGrid stroke={chart.grid} />
+                <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={chart.axis} fontSize={8} />
                 <Radar name="Supervisor Priority" dataKey="A" stroke="#ef4444" fill="#ef4444" fillOpacity={0.6} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
               </RadarChart>
             );
@@ -7076,12 +7136,12 @@ function ModuleDetailView({
                 { name: t('자동 제어'), value: 85 },
                 { name: t('시뮬레이션'), value: 42 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="value" fill="#6366f1" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -7098,12 +7158,12 @@ function ModuleDetailView({
                     <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area type="monotone" dataKey="defect_rate" stroke="#ef4444" fillOpacity={1} fill="url(#colorDefect)" name="Defect Rate (%)" />
               </AreaChart>
@@ -7117,12 +7177,12 @@ function ModuleDetailView({
                 { name: t('Frame 4'), score: 0.88 },
                 { name: t('Frame 5'), score: 0.15 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="score" name="Defect Score">
                   {[0, 1, 2, 3, 4].map((entry, index) => (
@@ -7154,8 +7214,8 @@ function ModuleDetailView({
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '10px' }} />
               </PieChart>
@@ -7163,9 +7223,9 @@ function ModuleDetailView({
           case 4: // 온도-불량 상관분석
             return (
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis type="number" dataKey="temp" name="Temperature" unit="°C" stroke="#94a3b8" fontSize={10} />
-                <YAxis type="number" dataKey="defect" name="Defect Rate" unit="%" stroke="#94a3b8" fontSize={10} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis type="number" dataKey="temp" name="Temperature" unit="°C" stroke={chart.axis} fontSize={10} />
+                <YAxis type="number" dataKey="defect" name="Defect Rate" unit="%" stroke={chart.axis} fontSize={10} />
                 <ZAxis type="number" range={[50, 400]} />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                 <Scatter name="Temp vs Defect" data={[
@@ -7188,12 +7248,12 @@ function ModuleDetailView({
                 { batch: 'B004', yield: 88.4 },
                 { batch: 'B005', yield: 97.8 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="batch" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis domain={[80, 100]} stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="batch" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis domain={[80, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="yield" fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -7207,12 +7267,12 @@ function ModuleDetailView({
                 { name: t('라벨누락'), value: 5 },
                 { name: t('기타'), value: 3 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {[0, 1, 2, 3, 4].map((entry, index) => (
@@ -7233,25 +7293,25 @@ function ModuleDetailView({
                 { subject: t('압력'), A: 99, fullMark: 150 },
                 { subject: t('소음'), A: 85, fullMark: 150 },
               ]}>
-                <PolarGrid stroke="#334155" />
-                <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={10} />
-                <PolarRadiusAxis angle={30} domain={[0, 150]} stroke="#94a3b8" fontSize={8} />
+                <PolarGrid stroke={chart.grid} />
+                <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
+                <PolarRadiusAxis angle={30} domain={[0, 150]} stroke={chart.axis} fontSize={8} />
                 <Radar name="Maintenance Health" dataKey="A" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
               </RadarChart>
             );
           case 7: // 진동/온도 추세
             return (
               <LineChart data={sensorData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Line type="monotone" dataKey="vibration" stroke="#3b82f6" strokeWidth={2} dot={false} name="Vibration (mm/s)" />
                 <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name="Temp (°C)" />
@@ -7274,12 +7334,12 @@ function ModuleDetailView({
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area type="monotone" dataKey="prob" stroke="#3b82f6" fillOpacity={1} fill="url(#colorRul)" name="Survival Probability (%)" />
               </AreaChart>
@@ -7292,12 +7352,12 @@ function ModuleDetailView({
                 { name: t('완료'), value: 45 },
                 { name: t('지연'), value: 3 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="value" name="Order Count">
                   {['#f59e0b', '#3b82f6', '#10b981', '#ef4444'].map((color, index) => (
@@ -7315,13 +7375,13 @@ function ModuleDetailView({
                 { month: t('4월'), mtbf: 510, mttr: 1.8 },
                 { month: t('5월'), mtbf: 550, mttr: 1.5 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="month" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="month" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="left" stroke="#3b82f6" fontSize={10} tickLine={false} axisLine={false} />
                 <YAxis yAxisId="right" orientation="right" stroke="#ef4444" fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar yAxisId="left" dataKey="mtbf" fill="#3b82f6" name="MTBF (h)" radius={[4, 4, 0, 0]} />
                 <Line yAxisId="right" type="monotone" dataKey="mttr" stroke="#ef4444" name="MTTR (h)" strokeWidth={2} />
@@ -7330,12 +7390,12 @@ function ModuleDetailView({
           default:
             return (
               <LineChart data={sensorData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Line type="monotone" dataKey="vibration" stroke="#3b82f6" strokeWidth={2} dot={false} name="Vibration (mm/s)" />
                 <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name="Temp (°C)" />
@@ -7353,12 +7413,12 @@ function ModuleDetailView({
                     <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area type="monotone" dataKey="current_amp" stroke="#f59e0b" fillOpacity={1} fill="url(#colorEnergy)" name="Energy Load (A)" />
               </AreaChart>
@@ -7371,12 +7431,12 @@ function ModuleDetailView({
                 { time: '12-18', cost: 4200 },
                 { time: '18-24', cost: 2800 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="cost" name="Cost (KRW)" fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -7391,12 +7451,12 @@ function ModuleDetailView({
                 { time: '14:00', load: 940, limit: 1000 },
                 { time: '15:00', load: 880, limit: 1000 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Line type="stepAfter" dataKey="load" stroke="#ef4444" strokeWidth={2} name="Current Load (kW)" />
                 <Line type="monotone" dataKey="limit" stroke="#94a3b8" strokeDasharray="5 5" name="Contract Limit" />
@@ -7411,12 +7471,12 @@ function ModuleDetailView({
                     <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area type="monotone" dataKey="current_amp" stroke="#f59e0b" fillOpacity={1} fill="url(#colorEnergy)" name="Energy Load (A)" />
               </AreaChart>
@@ -7434,12 +7494,12 @@ function ModuleDetailView({
                 { time: '10:20', score: 45, threshold: 80 },
                 { time: '10:25', score: 20, threshold: 80 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area type="monotone" dataKey="score" fill="#ef4444" fillOpacity={0.3} stroke="#ef4444" name="Fire Confidence (%)" />
                 <Line type="monotone" dataKey="threshold" stroke="#94a3b8" strokeDasharray="5 5" name="Alert Threshold" />
@@ -7448,9 +7508,9 @@ function ModuleDetailView({
           case 20: // AMR 충돌 방지 시스템
             return (
               <ScatterChart>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis type="number" dataKey="x" name="Distance X" unit="m" stroke="#94a3b8" fontSize={10} domain={[-5, 5]} />
-                <YAxis type="number" dataKey="y" name="Distance Y" unit="m" stroke="#94a3b8" fontSize={10} domain={[-5, 5]} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis type="number" dataKey="x" name="Distance X" unit="m" stroke={chart.axis} fontSize={10} domain={[-5, 5]} />
+                <YAxis type="number" dataKey="y" name="Distance Y" unit="m" stroke={chart.axis} fontSize={10} domain={[-5, 5]} />
                 <ZAxis type="number" dataKey="z" range={[50, 400]} name="Risk" />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                 <Scatter name="Nearby Workers" data={[
@@ -7469,12 +7529,12 @@ function ModuleDetailView({
                 { type: 'Manual', count: 2 },
                 { type: 'System', count: 0 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="type" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="type" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} name="E-Stop Events" />
               </BarChart>
@@ -7499,8 +7559,8 @@ function ModuleDetailView({
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
               </PieChart>
             );
@@ -7515,12 +7575,12 @@ function ModuleDetailView({
                 { line: t('Line 3'), running: 78, idle: 15, down: 7 },
                 { line: t('Line 4'), running: 88, idle: 8, down: 4 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="line" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="line" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="running" stackId="a" fill="#10b981" name="Running" />
                 <Bar dataKey="idle" stackId="a" fill="#f59e0b" name="Idle" />
@@ -7534,13 +7594,13 @@ function ModuleDetailView({
                 { subject: t('Performance'), A: 88, fullMark: 100 },
                 { subject: t('Quality'), A: 99, fullMark: 100 },
               ]}>
-                <PolarGrid stroke="#334155" />
-                <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={10} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#94a3b8" fontSize={8} />
+                <PolarGrid stroke={chart.grid} />
+                <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={chart.axis} fontSize={8} />
                 <Radar name="OEE Components" dataKey="A" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
               </RadarChart>
             );
@@ -7553,12 +7613,12 @@ function ModuleDetailView({
                 { process: t('배출'), time: 8, target: 10 },
                 { process: t('적재'), time: 22, target: 20 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="process" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="process" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="time" fill="#3b82f6" name="Actual Tact (s)" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="target" fill="#94a3b8" name="Target Tact (s)" radius={[4, 4, 0, 0]} />
@@ -7574,11 +7634,11 @@ function ModuleDetailView({
                 { step: t('Pack'), val: 92 },
                 { step: t('Finish'), val: 100 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="step" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="step" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Line type="monotone" dataKey="val" stroke="#10b981" strokeWidth={3} name="Completion %" />
               </LineChart>
@@ -7592,12 +7652,12 @@ function ModuleDetailView({
                 { day: t('Thu'), plan: 1200, actual: 900 },
                 { day: t('Fri'), plan: 1000, actual: 1050 },
               ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="day" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="day" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="plan" fill="#334155" name="Plan" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="actual" fill="#6366f1" name="Actual" radius={[4, 4, 0, 0]} />
@@ -7612,12 +7672,12 @@ function ModuleDetailView({
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
+                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area type="monotone" dataKey="defect_rate" stroke="#10b981" fillOpacity={1} fill="url(#colorDefect)" name="Defect Rate (%)" />
               </AreaChart>
