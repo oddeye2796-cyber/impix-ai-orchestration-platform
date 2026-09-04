@@ -44,3 +44,21 @@ works as a CI gate.
   displayed (`case '시스템 관리':`, `status === 'Inspecting'`). Use `matchesKeyword()`
   from `src/i18n` when free-text typed by the operator has to match a concept in
   any language.
+
+# Deployment verification
+
+`npm run verify:deploy [commit-ish]` inspects the published `gh-pages` branch
+rather than requesting the live URL, because the sandbox this app is developed in
+cannot reach `*.github.io` — nor `pages.dev`, `vercel.app` or `netlify.app`; the
+whole public web is off its egress allowlist, so changing host does not help. Git
+reaches GitHub fine, so the check reads the served bytes directly.
+
+It asserts the entry bundle is actually published (not just referenced), the base
+path is the project subpath, `.nojekyll` and the SPA `404.html` are present, the
+build stamp matches the commit you expect — which is how a cached older build
+gets caught, since that looks identical to a healthy site — and that no Gemini
+key leaked into the bundle.
+
+`.github/workflows/deploy.yml` covers the other half: it runs on GitHub's
+runners, which *can* reach the site, and asserts the page renders for a real
+browser.

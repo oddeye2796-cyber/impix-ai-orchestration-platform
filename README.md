@@ -66,6 +66,12 @@ host would not help).
 
 To deploy by hand instead: `GITHUB_PAGES=true npm run build && npx gh-pages -d dist --dotfiles`.
 
+`npm run verify:deploy` checks what Pages is serving without fetching the site —
+it reads the published `gh-pages` branch over git (which is reachable even where
+the site is not) and asserts the entry bundle is published, the base path is the
+project subpath, `.nojekyll` and `404.html` are in place, the build stamp matches
+the commit you expect, and no API key leaked into the bundle.
+
 Set the repository variable `AI_PROXY_URL` (Settings → Secrets and variables →
 Actions → Variables) to route the deployed site through the Worker proxy. It
 holds no credential, so it is a variable rather than a secret.

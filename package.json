@@ -12,7 +12,8 @@
     "i18n:extract": "node tools/i18n-extract.mjs",
     "i18n:build": "node tools/i18n-build.mjs",
     "i18n:report": "node tools/i18n-extract.mjs && node tools/i18n-report.mjs",
-    "i18n": "node tools/i18n-extract.mjs && node tools/i18n-build.mjs && node tools/i18n-report.mjs"
+    "i18n": "node tools/i18n-extract.mjs && node tools/i18n-build.mjs && node tools/i18n-report.mjs",
+    "verify:deploy": "node tools/verify-deploy.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
