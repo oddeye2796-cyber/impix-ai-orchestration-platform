@@ -17,11 +17,24 @@ check your quota separately.
 ## Deploy
 
 ```bash
+bash workers/gemini-proxy/setup.sh
+```
+
+Logs in, deploys, stores the key, smoke-tests the result, and prints the exact
+value to paste into the `AI_PROXY_URL` repository variable.
+
+Run it on your own machine. It needs a browser for the Cloudflare login, and the
+API key should never be pasted into a chat transcript — the script reads it
+silently and hands it straight to Cloudflare.
+
+<details>
+<summary>Manual equivalent</summary>
+
+```bash
 cd workers/gemini-proxy
 
 # 1. Restrict who may call it, so the key cannot be borrowed by another site.
-#    Edit ALLOWED_ORIGINS in wrangler.toml to your deployed front end, e.g.
-#    https://<owner>.github.io
+#    Edit ALLOWED_ORIGINS in wrangler.toml to your deployed front end.
 npx wrangler deploy
 
 # 2. Store the key as a secret (never a var — vars are readable in the dashboard)
@@ -30,6 +43,7 @@ npx wrangler secret put GEMINI_API_KEY
 
 `wrangler deploy` prints the URL, e.g.
 `https://impix-gemini-proxy.<account>.workers.dev`.
+</details>
 
 ## Point the front end at it
 
