@@ -72,9 +72,16 @@ the site is not) and asserts the entry bundle is published, the base path is the
 project subpath, `.nojekyll` and `404.html` are in place, the build stamp matches
 the commit you expect, and no API key leaked into the bundle.
 
-Set the repository variable `AI_PROXY_URL` (Settings → Secrets and variables →
-Actions → Variables) to route the deployed site through the Worker proxy. It
-holds no credential, so it is a variable rather than a secret.
+### Wiring up the AI proxy
+
+`.github/workflows/deploy-worker.yml` (**Actions → Deploy AI proxy**) deploys the
+Cloudflare Worker from CI, so no local Node or `wrangler` install is needed. It
+wants two repository *secrets* — `CLOUDFLARE_API_TOKEN` and `GEMINI_API_KEY` —
+and stores the Gemini key on the Worker, never in the bundle. Then set the
+repository *variable* `AI_PROXY_URL` (Settings → Secrets and variables → Actions
+→ Variables) to the Worker URL it prints and re-run **Deploy and verify**. That
+one is a variable rather than a secret because it holds no credential and the
+build has to embed it. Full walkthrough: [workers/README.md](workers/README.md).
 
 ## Run Locally
 

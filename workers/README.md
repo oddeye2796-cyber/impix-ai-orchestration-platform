@@ -16,6 +16,29 @@ check your quota separately.
 
 ## Deploy
 
+Two ways in, both free. Neither needs a Gemini key in a chat window, a shell
+history or a commit — it goes straight into Cloudflare as a Worker secret.
+
+### From GitHub Actions (nothing to install)
+
+1. Get the two credentials:
+   - **Cloudflare API token** — dash.cloudflare.com → My Profile → API Tokens →
+     Create Token → *Edit Cloudflare Workers* template.
+   - **Gemini API key** — <https://aistudio.google.com/apikey>.
+2. Add both as repository **secrets** (Settings → Secrets and variables →
+   Actions → New repository secret), named exactly `CLOUDFLARE_API_TOKEN` and
+   `GEMINI_API_KEY`.
+3. Actions tab → **Deploy AI proxy** → *Run workflow*. It deploys the Worker and
+   stores the key as a Worker secret.
+4. Copy the `https://impix-gemini-proxy.<subdomain>.workers.dev` URL from the
+   run's summary into the repository **variable** `AI_PROXY_URL` (same settings
+   page, Variables tab — a variable, not a secret: it holds no credential and
+   the build has to embed it).
+5. Actions tab → **Deploy and verify** → *Run workflow* to rebuild the site with
+   the proxy wired in.
+
+### From your own machine
+
 ```bash
 bash workers/gemini-proxy/setup.sh
 ```
@@ -23,9 +46,9 @@ bash workers/gemini-proxy/setup.sh
 Logs in, deploys, stores the key, smoke-tests the result, and prints the exact
 value to paste into the `AI_PROXY_URL` repository variable.
 
-Run it on your own machine. It needs a browser for the Cloudflare login, and the
-API key should never be pasted into a chat transcript — the script reads it
-silently and hands it straight to Cloudflare.
+It needs a browser for the Cloudflare login. The API key should never be pasted
+into a chat transcript — the script reads it silently and hands it straight to
+Cloudflare.
 
 <details>
 <summary>Manual equivalent</summary>
