@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+
 // Shared look for the IMPIX AI decks. The palette is lifted straight from the
 // product's own dark theme (src/index.css), so a screenshot dropped on a slide
 // sits on the same slate the app paints itself.
@@ -15,7 +17,38 @@ export const C = {
   dim:     '64748B',
 };
 
+// The body face follows the deck's language. Both ship with Office on Windows
+// and have a sane substitute on macOS, so the slides open correctly as sent.
 export const F = { ko: 'Malgun Gothic', mono: 'Consolas', latin: 'Arial' };
+
+// Copy lives in docs/decks/copy/. The Korean source string is the lookup key, so
+// a missing entry falls back to readable Korean rather than to an identifier —
+// the same contract the app's own catalogues use.
+let DICT = {};
+let LOCALE = 'ko';
+
+export function useLocale(locale, dict) {
+  LOCALE = locale;
+  DICT = dict || {};
+  F.ko = locale === 'ja' ? 'Meiryo' : 'Malgun Gothic';
+  SHOTS.path = fileURLToPath(new URL(locale === 'ko' ? './shots' : `./shots-${locale}`, import.meta.url));
+}
+
+const missing = new Set();
+
+export const tr = (s) => {
+  if (typeof s !== 'string') return s;
+  if (DICT[s] !== undefined) return DICT[s];
+  if (LOCALE !== 'ko') missing.add(s);
+  return s;
+};
+
+/** Print anything the copy file forgot. Called at the end of each generator. */
+export function reportMissing() {
+  if (!missing.size) return;
+  console.warn(`\n${missing.size} string(s) with no ${LOCALE} translation — shown in Korean:`);
+  for (const k of missing) console.warn('  ' + JSON.stringify(k));
+}
 
 export const W = 13.333, H = 7.5;
 export const M = 0.62;                 // page margin
@@ -97,4 +130,5 @@ export function stat(slide, { x, y, w, value, label, color = C.accent, vSize = 3
 
 // Screenshots of the running app, captured with Playwright at 2x and cropped.
 // Kept beside the generators so the decks can be rebuilt from a fresh checkout.
-export const SHOTS = new URL('./shots', import.meta.url).pathname;
+// One directory per language: the deck shows the UI in the language it is written in.
+export const SHOTS = { path: fileURLToPath(new URL('./shots', import.meta.url)) };
