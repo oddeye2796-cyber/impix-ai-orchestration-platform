@@ -51,9 +51,12 @@ if (expected) {
 check('no page errors', pageErrors.length === 0, pageErrors.slice(0, 3).join(' | '));
 check('no broken assets', brokenAssets.length === 0, brokenAssets.slice(0, 3).join(' | '));
 
-// The landing CTA is the first thing a visitor touches.
-const cta = await page.getByRole('button', { name: /シナリオ|scenario|시나리오/i }).count();
-check('landing CTA present', cta > 0);
+// The integrated dashboard is the first screen: its KPI cards and the AI
+// orchestration panel must both be on it.
+const kpis = await page.getByTestId('kpi-card').count();
+check('dashboard KPIs rendered', kpis > 0, `found ${kpis}`);
+const orchestration = await page.locator('#orchestration-panel').count();
+check('orchestration panel on dashboard', orchestration === 1);
 
 await browser.close();
 

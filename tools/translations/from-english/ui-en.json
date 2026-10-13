@@ -127,10 +127,6 @@
   "変更を保存",
   null
  ],
- "Steps": [
-  "ステップ",
-  null
- ],
  "Speed": [
   "速度",
   null
@@ -425,10 +421,6 @@
  ],
  "Hierarchical Message-Based Orchestration Framework (HMBO)": [
   "階層型メッセージベース・オーケストレーションフレームワーク(HMBO)",
-  null
- ],
- "Visualization": [
-  "可視化",
   null
  ],
  "Methodology": [
@@ -1257,22 +1249,6 @@
  ],
  "AI Supervisor Cores": [
   "AIスーパーバイザーコア",
-  null
- ],
- "SELF-GUIDED DEMO TOUR": [
-  "セルフガイド デモツアー",
-  null
- ],
- "EXPO SIMULATION": [
-  "展示会シミュレーション",
-  null
- ],
- "MULTI-AGENT ORCHESTRATION DEBATE": [
-  "マルチエージェント・オーケストレーション討論",
-  null
- ],
- "ORCHESTRATION PLATFORM": [
-  "オーケストレーションプラットフォーム",
   null
  ]
 }

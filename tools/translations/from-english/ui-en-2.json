@@ -35,48 +35,12 @@
   "完了",
   null
  ],
- "Stopped": [
-  "停止中",
-  null
- ],
  "Standby": [
   "待機中",
   null
  ],
- "Ready": [
-  "準備完了",
-  null
- ],
  "Active": [
   "稼働中",
-  null
- ],
- "Online": [
-  "オンライン",
-  null
- ],
- "ONLINE": [
-  "オンライン",
-  null
- ],
- "Pending": [
-  "保留中",
-  null
- ],
- "Approved": [
-  "承認済み",
-  null
- ],
- "Rejected": [
-  "却下済み",
-  null
- ],
- "Manual": [
-  "手動",
-  null
- ],
- "NORMAL": [
-  "正常",
   null
  ],
  "STABLE": [
@@ -95,34 +59,6 @@
   "非常警報",
   null
  ],
- "LEAK WARN": [
-  "漏洩警告",
-  null
- ],
- "DISCHARGING": [
-  "放電中",
-  null
- ],
- "SPEED UP": [
-  "増速",
-  null
- ],
- "FAST MODE": [
-  "高速モード",
-  null
- ],
- "ACTIVE (EMERGENCY)": [
-  "稼働中(非常時)",
-  null
- ],
- "ACTIVE (PEAK)": [
-  "稼働中(ピーク)",
-  null
- ],
- "ACTIVE (RUSH ORDER)": [
-  "稼働中(緊急受注)",
-  null
- ],
  "INSPECTING...": [
   "検査中…",
   null
@@ -135,10 +71,6 @@
   "検査",
   null
  ],
- "Inspecting": [
-  "検査中",
-  null
- ],
  "Availability": [
   "時間稼働率",
   null
@@ -149,30 +81,6 @@
  ],
  "Quality": [
   "品質",
-  null
- ],
- "Production": [
-  "生産",
-  null
- ],
- "Energy": [
-  "エネルギー",
-  null
- ],
- "Safety": [
-  "安全",
-  null
- ],
- "Cost": [
-  "コスト",
-  null
- ],
- "Fire": [
-  "火災",
-  null
- ],
- "Collision": [
-  "衝突",
   null
  ],
  "Siren": [
@@ -189,10 +97,6 @@
  ],
  "Pack": [
   "梱包",
-  null
- ],
- "Line": [
-  "ライン",
   null
  ],
  "Line 1": [
@@ -251,14 +155,6 @@
   "金",
   null
  ],
- "System Admin": [
-  "システム管理者",
-  null
- ],
- "Auditor": [
-  "監査担当",
-  null
- ],
  "System": [
   "システム",
   null
@@ -277,34 +173,6 @@
  ],
  "Restricted view-only access to dashboards.": [
   "ダッシュボードのみを閲覧できる制限付きアクセス。",
-  null
- ],
- "🔥 Live DEMO": [
-  "🔥 ライブデモ",
-  null
- ],
- "Offline": [
-  "オフライン",
-  null
- ],
- "Quality Lead": [
-  "品質リーダー",
-  null
- ],
- "Maintenance": [
-  "保全",
-  null
- ],
- "Viewer": [
-  "閲覧者",
-  null
- ],
- "Just now": [
-  "たった今",
-  null
- ],
- "LIVE DEMO MODE": [
-  "ライブデモモード",
   null
  ]
 }

@@ -75,10 +75,6 @@
   "確認",
   "OK"
  ],
- "확인 및 닫기": [
-  "確認して閉じる",
-  "Confirm and close"
- ],
  "포장1라인": [
   "包装第1ライン",
   "Packaging Line 1"
@@ -90,14 +86,6 @@
  "포장라인 보관실 [2129]": [
   "包装ライン保管室[2129]",
   "Packaging line store room [2129]"
- ],
- "칠러 냉각 펌프-01B": [
-  "チラー冷却ポンプ-01B",
-  "Chiller Cooling Pump-01B"
- ],
- "패키징 주동 기어-02": [
-  "パッケージング主駆動ギア-02",
-  "Packaging Main Drive Gear-02"
  ],
  "종합 조율 AI": [
   "総合調整AI",
@@ -114,14 +102,6 @@
  "현재 오케스트레이션 레이어에서 작동 중인 에이전트들의 상태입니다.": [
   "現在オーケストレーションレイヤーで稼働中のエージェントの状態です。",
   "Status of the agents currently running on the orchestration layer."
- ],
- "전사 가동 효율 OEE 극대화": [
-  "全社稼働効率(OEE)の最大化",
-  "Maximize plant-wide OEE"
- ],
- "한낮 에너지 전력 피크 셰이빙 및 절전": [
-  "日中のエネルギーピークシェービングと節電",
-  "Midday peak shaving and power saving"
  ],
  "최근 발생한 안전 경보 이력 조회": [
   "直近の安全警報履歴の照会",
@@ -159,41 +139,13 @@
   "ピーク時間帯です。15%引き上げると契約電力を超過するおそれがあります。",
   "We are in the peak window. A 15 % increase risks breaching the contracted power limit."
  ],
- "진공 유압 증대로 표면 원형 성형 스크래치 불량률 0.0% 보증": [
-  "真空油圧の増強により、成形時のスクラッチ不良率0.0%を保証",
-  "Raised vacuum pressure guarantees a 0.0 % forming-scratch defect rate"
- ],
  "진단 결과 밸브 No.12 개스킷 미세 노후화 확인됨. 임시 압력 저하 상태로 운전 시 누출량 80% 저감 가능합니다.": [
   "診断の結果、バルブNo.12のガスケットに微細な劣化が確認されました。一時的に圧力を下げて運転すれば、漏洩量を80%低減できます。",
   "Diagnosis confirms slight gasket degradation on valve No. 12. Running at temporarily reduced pressure cuts the leak by 80 %."
  ],
- "초고부하 정성 유성 기어 부품 사후 예약 배치 완료": [
-  "超高負荷の遊星ギア部品について、事後の点検配置を予約完了",
-  "Follow-up inspection booked for the planetary-gear parts under extreme load"
- ],
- "칠러 냉각수 순측 유압 보강 예지 정비 접수": [
-  "チラー冷却水の循環側の油圧補強について予知保全を受理",
-  "Predictive-maintenance request accepted to reinforce chiller circulation pressure"
- ],
- "패키징 1라인 120% 초속 가이 딜리버리 합의 완료": [
-  "パッケージング第1ラインの120%高速運転によるデリバリーで合意",
-  "Agreed: Packaging Line 1 delivers at 120 % run speed"
- ],
- "한전 긴급 수요 감전 250kW 즉시 감축 완수": [
-  "電力会社の緊急需要調整に応じ、250kWの即時削減を完了",
-  "Utility's emergency demand cut of 250 kW delivered immediately"
- ],
  "한국전력 거래소 긴급 수요감축(DR) 지시 하달. 5분 이내 전력 사용량 250kW 감축 의무 발생.": [
   "電力取引所から緊急の需要削減(DR)指示が発令されました。5分以内に電力使用量を250kW削減する義務が生じます。",
   "The power exchange has issued an emergency demand-response instruction: 250 kW must come off within five minutes."
- ],
- "한낮 피크 전력 칠러 감속 가이드 vs 출하량 미달 생산 가동 속도 유지 상충 발생.": [
-  "日中のピーク電力に伴うチラー減速の指針と、出荷量不足を避けるための稼働速度維持とが衝突しています。",
-  "Guidance to slow the chiller through the midday peak collides with holding line speed to avoid a shipment shortfall."
- ],
- "출량 초가속 120% 스루풋 vs 접합 정밀 노즐 온도 밀착 스크래치 결합 우려 상충 발생.": [
-  "120%の超加速によるスループットと、接合ノズルの温度精度に起因するスクラッチ不良の懸念とが衝突しています。",
-  "Throughput at 120 % overdrive collides with concern that seal-nozzle temperature precision will produce scratch defects."
  ],
  "현재 공정 중단 시 5억원 상당의 원부자재 손실이 발생합니다. 오탐 가능성 확인이 필요합니다.": [
   "いま工程を止めれば5億ウォン相当の原材料損失が発生します。誤検知の可能性を確認する必要があります。",

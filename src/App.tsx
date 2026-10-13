@@ -142,17 +142,15 @@ import {
   CoordinationEvent
 } from './types';
 import { generateChatResponse, generateRecommendations } from './services/geminiService';
-import ExpoLanding from './components/ExpoLanding';
 import { t, tValue, matchesKeyword, useI18n } from './i18n';
 import LanguageSwitcher from './i18n/LanguageSwitcher';
 import AiSettingsModal from './components/AiSettingsModal';
 import ThemeSwitcher from './theme/ThemeSwitcher';
 import { useToast } from './components/Toast';
 
-// Split out of the initial download: markdown is one tab of one modal, and the
-// expo sidebar only exists in interactive booth mode.
+// Split out of the initial download: markdown is only needed for the
+// orchestration methodology tab.
 const MarkdownView = lazy(() => import('./components/MarkdownView'));
-const ExpoSidebar = lazy(() => import('./components/ExpoSidebar'));
 import DemoModeBadge from './components/DemoModeBadge';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
@@ -196,328 +194,15 @@ const INITIAL_DECISIONS: AgentDecision[] = [
   }
 ];
 
-const SCENARIO_SPECIFIC_DECISIONS: Record<number, AgentDecision[]> = {
-  0: [ // Scenario A
-    {
-      agent: 'Quality Agent',
-      action: 'adjust_temperature',
-      target_equipment: '수축포장기-01',
-      recommended_value: 173.0,
-      level: 2,
-      reasoning: '불량률 상승(7.3%) 차단 및 OEE 가동 효율 극대화를 위해 최적 수축 온도 173.0°C 조정을 강력 권장합니다.',
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    },
-    {
-      agent: 'PM Agent',
-      action: 'lubricator_operation',
-      target_equipment: '수축포장기-01',
-      recommended_value: '자동 급유 개시',
-      level: 1,
-      reasoning: '3축 진동값 미세 패턴 변화가 발견되었습니다. 사전에 1라인 급유 장치를 가동해 가동 중단을 정밀 차단합니다.',
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    }
-  ],
-  1: [ // Scenario B
-    {
-      agent: 'Safety Agent',
-      action: 'exhaust_fan_boost',
-      target_equipment: 'A-3 안전 환기댐퍼',
-      recommended_value: '환기량 100% 가동 (오버라이드)',
-      level: 2,
-      reasoning: '가열 설비 인근 A-3 영역에서 특이 유증기/가스 15ppm 미세 감지가 포착되어 환기량 100% 강제 가동과 일시 경계 모드로 전환할 것을 가이드라인합니다.',
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    },
-    {
-      agent: 'PM Agent',
-      action: 'vibration_damping',
-      target_equipment: '가열 공조 모터-03',
-      recommended_value: '운전 속도 85% 감속',
-      level: 1,
-      reasoning: '유증 연쇄 가열 마찰 축의 발열 기성을 완정 차폐하기 위해 운전 속도 85% 감속 제어할 것을 추천합니다.',
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    }
-  ],
-  2: [ // Scenario C
-    {
-      agent: 'Energy Agent',
-      action: 'peak_shaving_bypass',
-      target_equipment: '칠러 보완 펌프 & ESS',
-      recommended_value: '에너지 절전 우회 모드 (피크 피쇄)',
-      level: 2,
-      reasoning: '한낮 기온 상승으로 전원 계약 피크 전력 한계 돌입 30분 전입니다. ESS 즉시 방전과 비핵심 라인의 감속 에너지 세이빙 우회 모드를 수락 승인해 주시기 바랍니다.',
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    },
-    {
-      agent: 'PM Agent',
-      action: 'cooling_water_boost',
-      target_equipment: '칠러 냉각 펌프',
-      recommended_value: '순환 유량 +15% 유압 상향',
-      level: 1,
-      reasoning: '세이빙 가동 부하에 따른 임계 모터 발열 냉각을 위해 펌프 순환수 압압을 강화 보정 가동할 것을 권고합니다.',
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    }
-  ],
-  3: [ // Scenario D
-    {
-      agent: 'Logistics Agent',
-      action: 'rush_order_upspeed',
-      target_equipment: '패키징 1라인',
-      recommended_value: '가속 운전 수용 120%',
-      level: 2,
-      reasoning: '고부가 파트너 긴급 하루 딜리버리 할당 수율 달성을 위해 패키징 1라인 분 속도를 안전 모드 최대 가용치인 120%까지 상향 제어 기제를 강력 권장합니다.',
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    },
-    {
-      agent: 'Quality Agent',
-      action: 'joint_vacuum_boost',
-      target_equipment: '열접합 패키지 헤드',
-      recommended_value: '진공 밀착 압력 +0.2bar 강화',
-      level: 1,
-      reasoning: '120% 가속 환경에서도 미세 가공 스크래치 및 핀홀 불량 발생을 완벽 소지 관리하기 위해 접착 흡축 기압을 상압 조정합니다.',
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    }
-  ]
-};
+/** Operator identity stamped on approvals and audit entries. */
+const CURRENT_OPERATOR = 'oddeye2796@gmail.com';
 
-const TOUR_SCENARIOS = [
-  {
-    id: 0,
-    name: "Scenario A: 전사 생산 극대화 & 통합 OEE",
-    description: "생산 극대화 목표 하에 품질, 예지보전, 에너지, 안전, 물류 등 전 에이전트의 실시간 최적화 협업 시나리오",
-    steps: [
-      {
-        stepId: 1,
-        title: "실시간 공정 진단 & 추천",
-        targetMenuId: 0,
-        badge: "01 / 04단계: 통합 모니터링",
-        highlightAction: "💡 'AI 추천 제어 안건' 중 하나를 선택하시고 [승인] 버튼을 눌러보세요!",
-        explanation: "전 공장의 가동 종합 효율(OEE), 불량률, 온-불량 상관관계를 종합하여 수 밀리초만에 이상 징후를 감지하고, 에이전트가 생성한 추천 제어값을 오퍼레이터가 직접 확인 및 실시간 승인하는 시나리오를 자유롭게 조작해볼 수 있습니다.",
-        checklist: [
-          "최상단 KPI 카드 및 '설비 가동 시간' 차트 감상",
-          "실시간 AI 추천 목록 중 1개를 [승인] 또는 [조정 기재]해보기",
-          "제어 덮어쓰기 기록 팝업이나 이력 변화 검증"
-        ]
-      },
-      {
-        stepId: 2,
-        title: "설비 RUL 수명 예측 진단",
-        targetMenuId: 8,
-        badge: "02 / 04단계: AI 설비 보전",
-        highlightAction: "💡 GBR 인공지능 잔여 수명 예측 곡선과 AI 추천 정비 우선순위를 확인하세요!",
-        explanation: "Gradient Boosting Regression(GBR) 인공지능 알고리즘이 3축 진동값 및 냉각 온도를 머신러닝 분석하여 72시간 내 고장 발생 여부를 정밀 예측합니다. 설비 정비사의 대응 시간을 획기적으로 늘려 사전에 교체 오더를 내림으로써 예상치 못한 가동 중단을 사전에 무력화합니다.",
-        checklist: [
-          "수명 위험 72시간 미만 경고 시스템 확인",
-          "AI가 산출해 낸 최적 보전 스케줄링 가이드라인 읽어보기"
-        ]
-      },
-      {
-        stepId: 3,
-        title: "에이전트 지휘 컨트롤 타워",
-        targetMenuId: 31,
-        badge: "03 / 04단계: 에이전트 지휘관",
-        highlightAction: "💡 'Active Goal' 영역과 '수립된 정책' 가드가 충돌하는 것을 찾아보세요!",
-        explanation: "생산 극대화와 안전/에너지 가드레일은 수시로 상충합니다. AI Supervisor는 최상위 전사 목표(Active Goal)를 제시하고, 각 에이전트들에게 하위 작업 목록을 완벽하게 분해 매핑하여 지휘하는 AI 컨트롤 타워를 감상해보세요.",
-        checklist: [
-          "L1: Safety Layer 우선 적용 규칙 지표 확인하기",
-          "수립된 각 AI 에이전트의 구체적인 목표 준수 비율 체크"
-        ]
-      },
-      {
-        stepId: 4,
-        title: "AI 에이전트 라이브 조율",
-        targetMenuId: 31,
-        badge: "04 / 04단계: 에이전트 협의체 융합",
-        highlightAction: "💡 아래 [오케스트레이션 라이브 실행]을 눌러 토론 비주얼라이저를 재생하세요!",
-        explanation: "가장 중요한 핵심 기능입니다! 생산, 예지보전, 품질, 에너지, 안전, 물류 에이전트 전사 주요 6대 에이전트의 가스 누출이나 피크 전력, 또는 초대형 복합 최적화 시나리오에서 다자 의견 조율 상황을 시뮬레이션할 수 있습니다.",
-        checklist: [
-          "통합 6대 에이전트 시나리오를 선택하여 오케스트레이션 감상하기",
-          "가스 미세 누출 / 피크 전력 시나리오로 번갈아 전환 작동",
-          "자동 재생 일시 정지 및 수동으로 SkipForward/Reset 조작해보기",
-          "하단에 축적되는 실시간 타임라인 오케스트레이션 Event Log 분석"
-        ]
-      }
-    ]
-  },
-  {
-    id: 1,
-    name: "Scenario B: 돌발 고장 및 안전 예방 가드레일",
-    description: "갑작스러운 설비 진동 폭발 예측 및 공조 제어 가드, 안전-배기-물류 연쇄 대응 시나리오",
-    steps: [
-      {
-        stepId: 1,
-        title: "이상 징후 및 공조 제어",
-        targetMenuId: 0,
-        badge: "01 / 04단계: 안전 초동 조치",
-        highlightAction: "💡 미세 가스 감지 관련 '공조 배기 제어' 추천 안건을 선택하고 [승인]해 보세요!",
-        explanation: "가열 설비 근처에 설치된 안전 감지기가 아주 희박한 특이 유증기/가스를 모니터링하여 즉각적으로 공조 통풍 가이드라인을 전개하고 장비 가속을 일시 중단시키는 실시간 초동 대응을 확인합니다.",
-        checklist: [
-          "안전 센서 공조 가이드라인 및 위험 경고 확인",
-          "AI가 실시간 생성한 추천 배기 오버라이드 제어 항목 [승인] 클릭",
-          "제어 이력 변화와 안전 피드백 로그 확인"
-        ]
-      },
-      {
-        stepId: 2,
-        title: "지능형 CCTV 안전 화재 구획",
-        targetMenuId: 19,
-        badge: "02 / 04단계: AI 안전 실시간 비전 감시",
-        highlightAction: "💡 CCTV 비전 탐지 피드가 유증기 잔여 확산 및 이상 발열 분포를 격리 분석하는 것을 검토하세요!",
-        explanation: "센서 오열 구역 배지에서 미세 가스 전파가 우려됩니다. AI 안전 에이전트는 YOLOv8 비전 분석 엔진을 적용해 고열 배지 구역을 지능형 격리 감시하고 실시간 연기/화재 발생 등급을 즉시 확인합니다.",
-        checklist: [
-          "열화상 필터링과 실시간 연기 검출 신뢰도 변화 확인",
-          "비전 AI가 하달하는 Zone B-4 화재 등급 상향 전조 경고 추적"
-        ]
-      },
-      {
-        stepId: 3,
-        title: "L1 Safety 정책 우선 제어",
-        targetMenuId: 31,
-        badge: "03 / 04단계: 안전 절대 우선 정책",
-        highlightAction: "💡 'Safety Core Level 1' 우선 적용 정책 가드가 활성화된 것을 감상해 보세요!",
-        explanation: "비상 가동 중에는 생산 극대화 지표보다 인체 안전 및 폭발 방지 우선 가치가 활성화됩니다. AI Supervisor는 L1 Safety Layer 규칙을 기동하여 생산 목표를 안전하게 블로킹하고 안전 가드를 강화합니다.",
-        checklist: [
-          "L1 Safety Rule 강제 지상 명령 지표 확인",
-          "에이전트 권장 정책의 소방 감리 로그 우선 검토"
-        ]
-      },
-      {
-        stepId: 4,
-        title: "안전-배기 다자 조율 토론",
-        targetMenuId: 31,
-        badge: "04 / 04단계: 안전 중심 에이전트 오케스트레이션",
-        highlightAction: "💡 라이브 토론 리스트 중 [가스 미세 누출 경보 & 배기 제어 충돌]을 동작시키세요!",
-        explanation: "배기팬 완전 가동 시 압력 변화로 인해 라인이 일시 중단될 수 있어 생산 에이전트가 완만 배기를 요청한 상태입니다. 세밀한 해결책을 내기 위해 안전, 품질, 설비예지, 물류 에이전트 간 벌어지는 고난도 중재 토론을 감상하십시오.",
-        checklist: [
-          "'가스 미세 누출 경보 & 배기 제어 충돌' 모의 실행",
-          "자동 재생 혹은 스킵 조작을 통해 토론 타임라인 관찰",
-          "가류 우회 이송 솔루션과 가스 소강 합의 도출 판가름 분석"
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: "Scenario C: 피크 전력 한계 돌파 억제",
-    description: "한낮 최고 고온 환경의 에너지 전력 피크 위력 완화 및 ESS, AMR 동원 친환경 연계 시나리오",
-    steps: [
-      {
-        stepId: 1,
-        title: "전력 피크 경계 모니터링",
-        targetMenuId: 0,
-        badge: "01 / 04단계: 에너지 피크 위험 감시",
-        highlightAction: "💡 전력 누적 경보에 대응하는 '에너지 절전 우회 모드'를 [승인]해 보세요!",
-        explanation: "외기 온도 급등으로 냉방 부하가 누적되며 한전 계약 피크 전력 한계치 돌파 30분 전입니다. AI 에너지 에이전트가 특정 비핵심 라인 감속 제어 및 비상 발전 충방전 제어를 즉각 가이드라인으로 전파합니다.",
-        checklist: [
-          "계약 전력 피크 대비 전사 과부하 상태 파악",
-          "에너지 에이전트의 '피크 완화 추천 가속 감속 조치' [승인] 승낙",
-          "전사 부하 감소 피드백 수치 및 제어 로그 이력 검조"
-        ]
-      },
-      {
-        stepId: 2,
-        title: "AI 피크 에너지 부하 정비",
-        targetMenuId: 18,
-        badge: "02 / 04단계: 피크 실시간 에너지 제어",
-        highlightAction: "💡 한계치(Limit) 대비 실시간 라인 합산 전력 사용 추이를 모니터링하세요!",
-        explanation: "외기 전고 온도 부하 극대화 시 냉방 칠러 전력 소비가 폭등합니다. AI 에너지 에이전트는 15분 단위 누적 전력을 정교하게 타겟 연동하여 피크 임계치에 도달하지 않도록 피크 억제 가이드 제어를 발령합니다.",
-        checklist: [
-          "실시간 정오 시간 전후 전사 피크 위험 한계치 격차 대조",
-          "피크 부하 제어 알고리즘의 유휴 AMR 배터리 방전 지지선 이력 파악"
-        ]
-      },
-      {
-        stepId: 3,
-        title: "탄소 및 전력 통제 정책 가드",
-        targetMenuId: 31,
-        badge: "03 / 04단계: CO2 배출량 한계 관리",
-        highlightAction: "💡 Supervisor Center of 'Energy Allocation Level' 가이드 등급을 확인해 보세요!",
-        explanation: "AI Supervisor는 한낮 시간 동안 전사에너지 배분 가이드를 상향 기재하고, 조업 스케줄 분배 정책을 가동하여 전원에이전트의 합산 탄소 배출량이 목표치를 침범하지 않도록 통제 사령을 내립니다.",
-        checklist: [
-          "Energy Allocation 탄소 저감 정책 우선순위 체크",
-          "에스컬레이션 로그 수립 및 실시간 시뮬레이션 지수 감상"
-        ]
-      },
-      {
-        stepId: 4,
-        title: "ESS 연동 피크 셰이빙 토론",
-        targetMenuId: 31,
-        badge: "04 / 04단계: ESS 연쇄 최적 오케스트레이션",
-        highlightAction: "💡 토론 비주얼라이저에서 [정오 피크 전력 한계 제어 충돌]을 동작하세요!",
-        explanation: "속도를 낮추어야 한다는 에너지 에이전트와, 속도 축소 시 출하량 미달을 고지하는 생산 에이전트, 유휴 AMR 배터리 버퍼를 활용하자고 제안하는 물류 에이전트까지 얽힌 복합 전력 최적화 토론을 역동적으로 확인합니다.",
-        checklist: [
-          "'정오 피크 전력 한계 제어 충돌' 복합 시나리오 가동",
-          "라이브 합조 타임라인 순차 흐름 및 가이 가속 스킨",
-          "AMR 충전 중단 및 ESS 배터리 방전 지원 합의 의사결정 수립 감상"
-        ]
-      }
-    ]
-  },
-  {
-    id: 3,
-    name: "Scenario D: 긴급 러시 오더 & 불량 보증",
-    description: "고부가 고객사의 긴급 하루 출하량 대응을 위한 라인 스피드업 및 불량률 제로 분격 시나리오",
-    steps: [
-      {
-        stepId: 1,
-        title: "러시 오더 초가속 모드",
-        targetMenuId: 0,
-        badge: "01 / 04단계: 긴급 물류 대응",
-        highlightAction: "💡 '패키징 속도 120% 가속 수용안' 카드를 찾아 기재 [승인]해 보세요!",
-        explanation: "글로벌 유통사에서 다음 근무조까지 긴급 물량을 수송 완료해 달라는 특급 거래 안건이 생성되었습니다. 물류 에이전트의 권고에 맞춰 생산 구동력을 안전 범위 내 최대치인 120%까지 끌어올리는 추천 연동 제어입니다.",
-        checklist: [
-          "긴급 델리버리 요청 수치 및 가동 종합 현황 인지",
-          "AI가 긴급하게 하달한 '라인 속도 초속 제어안' [승인] 실행",
-          "전체 적체 슬롯 and AMR 대기 상태 실시간 추적"
-        ]
-      },
-      {
-        stepId: 2,
-        title: "초가속 패키징 품질 비전 검사",
-        targetMenuId: 2,
-        badge: "02 / 04단계: 초경량 고품질 비전 탐지",
-        highlightAction: "💡 120% 초고속 라인 가동 상태에서 패키징 접착 비전 프레임을 실시간 진단해보세요!",
-        explanation: "초고속 가동 시에는 미세 기포나 밀봉 불량이 연속될 위험이 있습니다. AI 품질 에이전트는 YOLOv8 및 PatchCore 검증 이미지를 바탕으로 병 밀봉 검사 및 OCR 바코드를 오차 없이 고속 판독합니다.",
-        checklist: [
-          "비전 검사 프레임 상의 실시간 패키징 OK/NG 전사 분류 확인",
-          "불량 탐지를 위한 결함 스코어(Defect Score) 변화 시계열 분석"
-        ]
-      },
-      {
-        stepId: 3,
-        title: "SLA 납량 및 불량 제로 가드",
-        targetMenuId: 31,
-        badge: "03 / 04단계: SLA 납기 및 품질 보증 가드",
-        highlightAction: "💡 Supervisor Center에서 'SLA Delivery Priority' 정책 가드를 식별하세요!",
-        explanation: "초합리적 생산에서도 완벽 품질 수치가 최우선시 되어야 출고가 인정됩니다. AI Supervisor는 목표 불량율 가드레일 정책을 동시 가동하여 전원에이전트의 고품질 밀착 사수 비율을 종합 감시합니다.",
-        checklist: [
-          "SLA 납기 사전 보증 가이드라인 적용 상태 식별",
-          "하단 각 에이전트 분할 목표 준수 지점 종합 관장"
-        ]
-      },
-      {
-        stepId: 4,
-        title: "초가속 스크래치 방어 토론",
-        targetMenuId: 31,
-        badge: "04 / 04단계: 품질-생산-물류 상협 합의",
-        highlightAction: "💡 [B라인 생산 속도 최적화 충돌] 시나리오를 선택하여 오케스트레이션을 확인하세요!",
-        explanation: "속도를 높여서 납기를 맞추려는 '물류'의 급제안에 대하여 속도 증가 시 열접합 스크래치 불량이 치솟는다는 '품질'과, 발열 온도 수치를 냉각 파라미터 미세 조정으로 억제하자는 '예지보전', AMR 완충 스와프 라인을 조력하는 '물류 에이전트'가 최종 도출하는 황금 협업을 관찰합니다.",
-        checklist: [
-          "'B라인 생산 속도 최적화 충돌' 시나리오 선택",
-          "실시간 다자 협조 합의 라이브 재생 관장",
-          "냉각 밸브 개폐 압력 보정 + 전하 AMR 선회 이송을 융합한 합의안 확인"
-        ]
-      }
-    ]
-  }
-];
+/** Short random id for client-side records (logs, events, evidence packs). */
+const newId = () => Math.random().toString(36).slice(2, 11);
+
+/** Menu id of the integrated dashboard, and the anchor of its orchestration panel. */
+const DASHBOARD_MENU_ID = 0;
+const ORCHESTRATION_ANCHOR = 'orchestration-panel';
 
 export default function App() {
   // Subscribing here re-renders the entire (unmemoized) tree when the operator
@@ -539,114 +224,40 @@ export default function App() {
   const [isRecommending, setIsRecommending] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
+  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // EXPO Landing & Interactive Mode States
-  const [showExpoLanding, setShowExpoLanding] = useState(true);
-  const [isExpoInteractiveMode, setIsExpoInteractiveMode] = useState(false);
-  const [expoScore, setExpoScore] = useState(0);
-  const [expoApprovedCount, setExpoApprovedCount] = useState(0);
-  const [expoRejectedCount, setExpoRejectedCount] = useState(0);
-  const [expoEventsTriggered, setExpoEventsTriggered] = useState(0);
-  const [expoScoreHistory, setExpoScoreHistory] = useState<{id: string; label: string; type: 'approved' | 'rejected' | 'event'; points: number; timestamp: Date}[]>([]);
-
-  // EXPO Self-Guided Tour States
-  const [isTourMode, setIsTourMode] = useState(false);
-  const [tourScenarioIdx, setTourScenarioIdx] = useState(0);
-  const [tourStep, setTourStep] = useState(0);
-  const [isTourOrchestrationOpen, setIsTourOrchestrationOpen] = useState(false);
-
-  // Custom checklist completion states mapping "scenarioIdx_stepIdx" to boolean array
-  const [tourChecklistState, setTourChecklistState] = useState<Record<string, boolean[]>>(() => {
-    const states: Record<string, boolean[]> = {};
-    [0, 1, 2, 3].forEach(sIdx => {
-      states[`${sIdx}_0`] = [false, false, false];
-      states[`${sIdx}_1`] = [false, false];
-      states[`${sIdx}_2`] = [false, false];
-      states[`${sIdx}_3`] = [false, false, false, false];
-    });
-    return states;
-  });
-
-  // Dynamic recommendations update depending on active tour scenario
-  useEffect(() => {
-    if (isTourMode) {
-      const specific = SCENARIO_SPECIFIC_DECISIONS[tourScenarioIdx];
-      if (specific) {
-        setDecisions(specific.map(d => ({ ...d, timestamp: new Date().toISOString(), status: 'pending' })));
-      }
-    } else {
-      setDecisions(INITIAL_DECISIONS.map(d => ({ ...d, timestamp: new Date().toISOString(), status: 'pending' })));
-    }
-  }, [tourScenarioIdx, isTourMode]);
-
-  // Track automated actions taken across different workspaces
-  useEffect(() => {
-    const handleTourAction = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail && typeof detail.step === 'number' && typeof detail.checklistIdx === 'number') {
-        const sIdx = typeof detail.scenario === 'number' ? detail.scenario : tourScenarioIdx;
-        setTourChecklistState(prev => {
-          const key = `${sIdx}_${detail.step}`;
-          const current = [...(prev[key] || [])];
-          current[detail.checklistIdx] = true;
-          return { ...prev, [key]: current };
-        });
-      }
-    };
-    window.addEventListener('tour-action', handleTourAction);
-    return () => window.removeEventListener('tour-action', handleTourAction);
-  }, [tourScenarioIdx]);
-
-  const handleChecklistClick = (stepIdx: number, itemIdx: number) => {
-    // 1. Toggle checked state manually
-    setTourChecklistState(prev => {
-      const key = `${tourScenarioIdx}_${stepIdx}`;
-      const current = [...(prev[key] || [])];
-      current[itemIdx] = !current[itemIdx];
-      return { ...prev, [key]: current };
-    });
-
-    // 2. Guide user to relevant views automatically depending on active step targetMenuId
-    const activeScenario = TOUR_SCENARIOS[tourScenarioIdx];
-    if (activeScenario && activeScenario.steps[stepIdx]) {
-      const activeStep = activeScenario.steps[stepIdx];
-      const targetMenu = MENU_ITEMS.find(m => m.id === activeStep.targetMenuId);
-      if (targetMenu) {
-        setSelectedMenu(targetMenu);
-      }
-      
-      // If stepIdx is 0 and they clicked item 2 (Logs)
-      if (stepIdx === 0 && itemIdx === 2) {
-        const logMenu = MENU_ITEMS.find(m => m.id === 23);
-        if (logMenu) setSelectedMenu(logMenu);
-      }
-
-      // Special logic for Step 4 (index 3) - Show Live Orchestration
-      if (stepIdx === 3) {
-        setIsTourOrchestrationOpen(true);
-      } else {
-        setIsTourOrchestrationOpen(false);
-      }
-    }
+  /** Switch view, optionally scrolling to an anchor once the new view has rendered. */
+  const navigateTo = (menuId: number, anchor?: string) => {
+    const target = MENU_ITEMS.find(m => m.id === menuId);
+    if (target) setSelectedMenu(target);
+    setScrollTarget(anchor ?? null);
   };
 
+  useEffect(() => {
+    if (!scrollTarget) return;
+    document.getElementById(scrollTarget)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setScrollTarget(null);
+  }, [scrollTarget, selectedMenu]);
 
   const fetchAIRecommendations = async () => {
     setIsRecommending(true);
     setAiError(null);
-    const result = await generateRecommendations(sensorData);
-    if (result.status === 'error') {
-      setAiError(result.message);
-    } else if (result.data.length > 0) {
-      const formatted = result.data.map((r: any) => ({
-        ...r,
-        timestamp: new Date().toISOString(),
-        status: 'pending'
-      }));
-      setDecisions(prev => [...formatted, ...prev].slice(0, 10));
+    try {
+      const result = await generateRecommendations(sensorData);
+      if (result.status === 'error') {
+        setAiError(result.message);
+      } else if (result.data.length > 0) {
+        const formatted: AgentDecision[] = result.data.map((r: any) => ({
+          ...r,
+          timestamp: new Date().toISOString(),
+          status: 'pending'
+        }));
+        setDecisions(prev => [...formatted, ...prev].slice(0, 10));
+      }
+    } finally {
+      setIsRecommending(false);
     }
-    setIsRecommending(false);
   };
 
   useEffect(() => {
@@ -654,9 +265,10 @@ export default function App() {
   }, [chatMessages]);
 
   const handleSendMessage = async () => {
-    if (!chatInput.trim()) return;
+    const prompt = chatInput.trim();
+    if (!prompt || isChatLoading) return;
 
-    const userMsg: ChatMessage = { role: 'user', content: chatInput, timestamp: new Date().toLocaleTimeString() };
+    const userMsg: ChatMessage = { role: 'user', content: prompt, timestamp: new Date().toLocaleTimeString() };
     setChatMessages(prev => [...prev, userMsg]);
     setChatInput('');
     setIsChatLoading(true);
@@ -666,145 +278,104 @@ export default function App() {
       parts: [{ text: m.content }]
     }));
 
-    const result = await generateChatResponse(chatInput, history, sensorData);
-    const assistantMsg: ChatMessage = {
-      role: 'assistant',
-      content: result.status === 'ok' ? result.data : result.message,
-      timestamp: new Date().toLocaleTimeString(),
-    };
-    setChatMessages(prev => [...prev, assistantMsg]);
-    setIsChatLoading(false);
+    try {
+      const result = await generateChatResponse(prompt, history, sensorData);
+      const assistantMsg: ChatMessage = {
+        role: 'assistant',
+        content: result.status === 'ok' ? result.data : result.message,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setChatMessages(prev => [...prev, assistantMsg]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  const appendLog = (log: Omit<OverrideLog, 'id' | 'timestamp' | 'operator'>) => {
+    setOverrideLogs(prev => [{ id: newId(), timestamp: new Date().toISOString(), operator: CURRENT_OPERATOR, ...log }, ...prev]);
   };
 
   const handleApprove = (index: number, adjustedValue?: number | string, notes?: string) => {
     const decision = decisions[index];
+    if (!decision || decision.status !== 'pending') return;
     const finalValue = adjustedValue !== undefined ? adjustedValue : decision.recommended_value;
-    
-    setDecisions(prev => prev.map((d, i) => i === index ? { 
-      ...d, 
+
+    setDecisions(prev => prev.map((d, i) => i === index ? {
+      ...d,
       status: 'approved',
       adjusted_value: adjustedValue,
       operator_notes: notes
     } : d));
 
-    // Expo score update
-    if (isExpoInteractiveMode) {
-      const points = 20;
-      setExpoScore(prev => prev + points);
-      setExpoApprovedCount(prev => prev + 1);
-      setExpoScoreHistory(prev => [{
-        id: Math.random().toString(36).substr(2, 9),
-        label: `${decision.agent}: ${decision.action}`,
-        type: 'approved',
-        points,
-        timestamp: new Date()
-      }, ...prev]);
-    }
-
-    // Log the override if adjusted or just log the approval
-    const newLog: OverrideLog = {
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toISOString(),
-      operator: 'oddeye2796@gmail.com', // Current user
+    appendLog({
       equipment: decision.target_equipment,
       parameter: decision.action,
       original_value: decision.recommended_value,
       new_value: finalValue,
       reason: notes || 'Approved as recommended',
       type: adjustedValue !== undefined ? 'manual_override' : 'ai_adjustment'
-    };
-    setOverrideLogs(prev => [newLog, ...prev]);
-
-    // Dispatch auto-completion for Step 1 checklist items
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 0, checklistIdx: 1 } }));
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 0, checklistIdx: 2 } }));
+    });
   };
 
   const handleReject = (index: number, notes?: string) => {
-    setDecisions(prev => prev.map((d, i) => i === index ? { 
-      ...d, 
+    const decision = decisions[index];
+    if (!decision || decision.status !== 'pending') return;
+
+    setDecisions(prev => prev.map((d, i) => i === index ? {
+      ...d,
       status: 'rejected',
       operator_notes: notes
     } : d));
-    
-    const decision = decisions[index];
 
-    // Expo score update
-    if (isExpoInteractiveMode) {
-      const points = -5;
-      setExpoScore(prev => Math.max(0, prev + points));
-      setExpoRejectedCount(prev => prev + 1);
-      setExpoScoreHistory(prev => [{
-        id: Math.random().toString(36).substr(2, 9),
-        label: `${decision.agent}: ${decision.action}`,
-        type: 'rejected',
-        points,
-        timestamp: new Date()
-      }, ...prev]);
-    }
-    const newLog: OverrideLog = {
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toISOString(),
-      operator: 'oddeye2796@gmail.com',
+    appendLog({
       equipment: decision.target_equipment,
       parameter: decision.action,
       original_value: decision.recommended_value,
       new_value: 'REJECTED',
       reason: notes || 'Rejected by operator',
       type: 'manual_override'
-    };
-    setOverrideLogs(prev => [newLog, ...prev]);
-
-    // Dispatch auto-completion for Step 1 checklist items
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 0, checklistIdx: 1 } }));
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 0, checklistIdx: 2 } }));
+    });
   };
 
   const handleLog = (index: number) => {
     const decision = decisions[index];
+    if (!decision) return;
     setDecisions(prev => prev.map((d, i) => i === index ? { ...d, status: 'logged' } : d));
-    
-    const newLog: OverrideLog = {
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toISOString(),
-      operator: 'oddeye2796@gmail.com',
+
+    appendLog({
       equipment: decision.target_equipment,
       parameter: decision.action,
       original_value: decision.recommended_value,
       new_value: 'ARCHIVED',
       reason: 'Manual log to history for audit',
       type: 'ai_adjustment'
-    };
-    setOverrideLogs(prev => [newLog, ...prev]);
-
-    // Dispatch auto-completion for Step 1 checklist items
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 0, checklistIdx: 1 } }));
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 0, checklistIdx: 2 } }));
+    });
   };
 
   const renderContent = () => {
     switch (selectedMenu.id) {
-      case 0: // Dashboard
+      case DASHBOARD_MENU_ID: // 통합 대시보드
         return (
-          <DashboardView 
-            sensorData={sensorData} 
-            decisions={decisions} 
-            fetchAIRecommendations={fetchAIRecommendations} 
+          <DashboardView
+            sensorData={sensorData}
+            decisions={decisions}
+            fetchAIRecommendations={fetchAIRecommendations}
             isRecommending={isRecommending}
             aiError={aiError}
             handleApprove={handleApprove}
             handleReject={handleReject}
+            onNavigate={navigateTo}
           />
         );
       case 8: // RUL 잔여수명 예측
-        return <RULPredictionView isTourMode={isTourMode} tourScenarioIdx={tourScenarioIdx} />;
+        return <RULPredictionView />;
       case 9: // 보전 작업 오더
         return <WorkOrderView />;
       case 22: // AI 추천 액션 목록
         return (
-          <RecommendationEngineView 
-            decisions={decisions} 
-            onApprove={handleApprove} 
+          <RecommendationEngineView
+            decisions={decisions}
+            onApprove={handleApprove}
             onReject={handleReject}
             onLog={handleLog}
             onRefresh={fetchAIRecommendations}
@@ -814,77 +385,19 @@ export default function App() {
       case 23: // Agent 실행 이력 (Override Logs)
         return <OverrideLogView logs={overrideLogs} />;
       case 31: // 슈퍼바이저 센터
-        return <SupervisorCenterView isTourMode={isTourMode} tourScenarioIdx={tourScenarioIdx} />;
+        return <SupervisorCenterView onOpenOrchestration={() => navigateTo(DASHBOARD_MENU_ID, ORCHESTRATION_ANCHOR)} />;
       default:
-        return (
-          <ModuleDetailView 
-            item={selectedMenu} 
-            sensorData={sensorData} 
-            isTourMode={isTourMode}
-            tourScenarioIdx={tourScenarioIdx}
-          />
-        );
+        return <ModuleDetailView key={selectedMenu.id} item={selectedMenu} sensorData={sensorData} />;
     }
-  };
-
-  const handleExpoStart = (scenarioIdx: number) => {
-    setShowExpoLanding(false);
-    setIsExpoInteractiveMode(true);
-    setTourScenarioIdx(scenarioIdx);
-    setTourStep(0);
-    setIsTourMode(true);
-    setExpoScore(0);
-    setExpoApprovedCount(0);
-    setExpoRejectedCount(0);
-    setExpoEventsTriggered(0);
-    setExpoScoreHistory([]);
-    const firstStepMenu = MENU_ITEMS.find(m => m.id === TOUR_SCENARIOS[scenarioIdx].steps[0].targetMenuId);
-    if (firstStepMenu) setSelectedMenu(firstStepMenu);
-    setIsTourOrchestrationOpen(false);
-    const specific = SCENARIO_SPECIFIC_DECISIONS[scenarioIdx];
-    if (specific) {
-      setDecisions(specific.map(d => ({ ...d, timestamp: new Date().toISOString(), status: 'pending' as const })));
-    }
-  };
-
-  const handleExpoReset = () => {
-    setExpoScore(0);
-    setExpoApprovedCount(0);
-    setExpoRejectedCount(0);
-    setExpoEventsTriggered(0);
-    setExpoScoreHistory([]);
-    const specific = SCENARIO_SPECIFIC_DECISIONS[tourScenarioIdx];
-    if (specific) {
-      setDecisions(specific.map(d => ({ ...d, timestamp: new Date().toISOString(), status: 'pending' as const })));
-    }
-  };
-
-  const handleExpoNewScenario = () => {
-    setShowExpoLanding(true);
-    setIsExpoInteractiveMode(false);
-    setIsTourMode(false);
-    setIsTourOrchestrationOpen(false);
   };
 
   return (
     <div lang={locale} data-theme={theme} className="flex h-screen overflow-hidden bg-bg text-text-primary">
-      {/* Expo Landing Screen */}
-      <AnimatePresence>
-        {showExpoLanding && (
-          <ExpoLanding
-            onStart={handleExpoStart}
-            onSkip={() => {
-              setShowExpoLanding(false);
-              setIsExpoInteractiveMode(false);
-            }}
-          />
-        )}
-      </AnimatePresence>
       {/* Sidebar */}
-      <motion.aside 
+      <motion.aside
         initial={false}
         animate={{ width: isSidebarOpen ? 280 : 0, opacity: isSidebarOpen ? 1 : 0 }}
-        className="border-r border-border bg-surface/50 backdrop-blur-xl flex flex-col overflow-hidden"
+        className="border-r border-border bg-surface/50 backdrop-blur-xl flex flex-col overflow-hidden shrink-0"
       >
         <div className="p-6 border-b border-border flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-accent/20">
@@ -896,7 +409,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+        <nav className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
           {CATEGORIES.map(category => (
             <div key={category} className="space-y-1">
               <h2 className="px-3 text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-2">
@@ -905,9 +418,8 @@ export default function App() {
               {MENU_ITEMS.filter(item => item.category === category).map(item => (
                 <button
                   key={item.id}
-                  onClick={() => {
-                    setSelectedMenu(item);
-                  }}
+                  onClick={() => navigateTo(item.id)}
+                  aria-current={selectedMenu.id === item.id ? 'page' : undefined}
                   className={cn(
                     "sidebar-item w-full text-left text-sm",
                     selectedMenu.id === item.id && "sidebar-item-active"
@@ -919,7 +431,7 @@ export default function App() {
               ))}
             </div>
           ))}
-        </div>
+        </nav>
 
         <div className="p-4 border-t border-border bg-surface/30">
           <div className="flex items-center gap-3 p-2 rounded-lg bg-white/5">
@@ -927,7 +439,7 @@ export default function App() {
               <User size={16} className="text-text-secondary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium truncate">oddeye2796@gmail.com</p>
+              <p className="text-xs font-medium truncate">{CURRENT_OPERATOR}</p>
               <p className="text-[10px] text-text-secondary">{t('Administrator')}</p>
             </div>
           </div>
@@ -938,10 +450,11 @@ export default function App() {
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Header */}
         <header className="h-16 border-b border-border bg-surface/30 backdrop-blur-md flex items-center justify-between px-6 z-10">
-          <div className="flex items-center gap-4">
-            <button 
+          <div className="flex min-w-0 items-center gap-4">
+            <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="p-2 rounded-lg hover:bg-surface-hover transition-colors"
+              aria-label={t('메뉴 열기/닫기')}
             >
               {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -953,52 +466,20 @@ export default function App() {
               <ChevronRight size={12} className="hidden shrink-0 text-text-secondary lg:inline" />
               <span className="truncate whitespace-nowrap text-sm font-medium">{t(selectedMenu.name)}</span>
             </div>
-            
-            <div className="h-4 w-[1px] bg-border" />
-            
-            {!isTourMode ? (
-              <button
-                onClick={() => {
-                  setIsTourMode(true);
-                  setTourStep(0);
-                  const firstStepMenu = MENU_ITEMS.find(m => m.id === TOUR_SCENARIOS[tourScenarioIdx].steps[0].targetMenuId);
-                  if (firstStepMenu) setSelectedMenu(firstStepMenu);
-                  setIsTourOrchestrationOpen(false);
-                }}
-                className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-bg text-[10px] md:text-xs font-black rounded-full flex items-center gap-1.5 shadow-lg shadow-orange-500/10 border border-orange-400/30 attention-ring transition-all active:scale-95 cursor-pointer"
-                id="btn-start-expo-tour"
-              >
-                <Sparkles size={11} />
-                <span>{t('엑스포 셀프 시연 가이드 시작')}</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  setIsTourMode(false);
-                  setIsTourOrchestrationOpen(false);
-                }}
-                className="px-3 py-1 bg-accent/20 hover:bg-accent/30 border border-accent/40 rounded-full text-[10px] text-accent font-bold animate-pulse flex items-center gap-1.5 cursor-pointer"
-                id="btn-active-expo-tour"
-                title={t('시연 가이드 종료')}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
-                <span>{t('셀프 시연 가이드 가동 중 (종료하려면 클릭)')}</span>
-              </button>
-            )}
           </div>
 
           <div className="flex items-center gap-4">
             <div className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={16} />
-              <input 
-                type="text" 
-                placeholder={t('지표, 에이전트, 로그 검색...')} 
+              <input
+                type="text"
+                placeholder={t('지표, 에이전트, 로그 검색...')}
                 className="bg-surface border border-border rounded-full py-1.5 pl-10 pr-4 text-xs w-64 focus:outline-none focus:border-accent transition-colors"
               />
             </div>
             <ThemeSwitcher />
             <LanguageSwitcher />
-            <button className="p-2 rounded-lg hover:bg-surface-hover relative">
+            <button className="p-2 rounded-lg hover:bg-surface-hover relative" aria-label={t('알림')}>
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-bg" />
             </button>
@@ -1018,10 +499,11 @@ export default function App() {
           {renderContent()}
         </div>
 
-      {/* Chatbot Toggle Button */}
-        <button 
+        {/* Chatbot Toggle Button */}
+        <button
           onClick={() => setIsChatOpen(!isChatOpen)}
           className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent text-white shadow-2xl shadow-accent/40 flex items-center justify-center hover:scale-110 transition-transform z-50"
+          aria-label={t('AI Supervisor')}
         >
           {isChatOpen ? <X size={24} /> : <MessageSquare size={24} />}
         </button>
@@ -1029,11 +511,11 @@ export default function App() {
         {/* Chatbot Panel */}
         <AnimatePresence>
           {isChatOpen && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="fixed bottom-24 right-6 w-96 h-[500px] bg-surface border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
+              className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] bg-surface border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
             >
               <div className="p-4 border-b border-border bg-accent/10 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
@@ -1058,7 +540,7 @@ export default function App() {
                     msg.role === 'user' ? "ml-auto items-end" : "items-start"
                   )}>
                     <div className={cn(
-                      "p-3 rounded-2xl text-xs leading-relaxed",
+                      "p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap",
                       msg.role === 'user' ? "bg-accent text-white rounded-tr-none" : "bg-surface-hover text-text-primary rounded-tl-none"
                     )}>
                       {t(msg.content)}
@@ -1078,18 +560,22 @@ export default function App() {
 
               <div className="p-4 border-t border-border bg-surface/50">
                 <div className="relative">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder={t('공장에 대해 무엇이든 물어보세요...')} 
+                    onKeyDown={(e) => {
+                      // Ignore the Enter that commits an IME composition (Korean/Japanese input).
+                      if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSendMessage();
+                    }}
+                    placeholder={t('공장에 대해 무엇이든 물어보세요...')}
                     className="w-full bg-bg border border-border rounded-xl py-2 pl-4 pr-10 text-xs focus:outline-none focus:border-accent transition-colors"
                   />
-                  <button 
+                  <button
                     onClick={handleSendMessage}
                     disabled={isChatLoading || !chatInput.trim()}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-accent hover:text-accent-hover disabled:opacity-50"
+                    aria-label={t('보내기')}
                   >
                     <Send size={16} />
                   </button>
@@ -1099,307 +585,7 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* EXPO Guided Tour Floating Panel */}
-        <AnimatePresence>
-          {isTourMode && (() => {
-            const currentSteps = TOUR_SCENARIOS[tourScenarioIdx].steps;
-            const currentStepData = currentSteps[tourStep];
-            if (!currentStepData) return null;
-
-            return (
-              <motion.div
-                initial={{ opacity: 0, x: -50, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: -50, scale: 0.95 }}
-                className="fixed bottom-6 left-6 w-[350px] md:w-[420px] bg-surface/95 border-2 border-amber-500/40 rounded-2xl shadow-[0_20px_50px_rgba(245,158,11,0.15)] backdrop-blur-xl p-5 z-40 flex flex-col gap-4 text-text-primary animate-fade-in"
-              >
-                {/* Tour Header */}
-                <div className="flex items-center justify-between border-b border-border/80 pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded bg-amber-500/20 text-amber-500 flex items-center justify-center animate-pulse">
-                      <Sparkles size={14} />
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-black uppercase tracking-wider text-amber-500 font-sans">{t('체험 가이드')}</h3>
-                      <p className="text-[9px] text-text-secondary font-mono">{t('SELF-GUIDED DEMO TOUR')}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setIsTourMode(false);
-                      setIsTourOrchestrationOpen(false);
-                    }}
-                    className="p-1 rounded-md hover:bg-surface-hover text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
-                    title={t('투어 종료')}
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-
-                {/* Scenario Selector */}
-                <div className="space-y-1.5 bg-amber-500/5 p-2 rounded-xl border border-amber-500/10">
-                  <span className="text-[9px] font-black uppercase text-amber-500 tracking-wider block mb-1">
-                    {t('🔥 실습 시나리오 테마 선택 (체험 변경)')}
-                  </span>
-                  <div className="grid grid-cols-4 gap-1">
-                    {TOUR_SCENARIOS.map((item, idx) => {
-                      const icons = ["⚡", "🛡️", "🌿", "🎯"];
-                      const labels = [t('생산 극대화'), t('돌발 예방'), t('저에너지 피크'), t('러시오더 품질')];
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            setTourScenarioIdx(idx);
-                            setTourStep(0);
-                            const targetMenuId = TOUR_SCENARIOS[idx].steps[0].targetMenuId;
-                            const targetMenu = MENU_ITEMS.find(m => m.id === targetMenuId);
-                            if (targetMenu) setSelectedMenu(targetMenu);
-                            setIsTourOrchestrationOpen(false);
-                          }}
-                          className={cn(
-                            "py-1 px-1 text-[10px] rounded-lg font-black transition-all flex flex-col items-center justify-center gap-0.5 border text-center cursor-pointer",
-                            tourScenarioIdx === idx
-                              ? "bg-gradient-to-r from-amber-500 to-orange-500 text-bg border-transparent shadow shadow-orange-500/25"
-                              : "bg-surface border-border hover:bg-surface-hover text-text-secondary hover:text-text-primary"
-                          )}
-                          title={t(item.name)}
-                        >
-                          <span className="text-[12px]">{icons[idx]}</span>
-                          <span className="scale-[0.9] block leading-none">{labels[idx]}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-1.5 px-0.5 border-t border-amber-500/10 pt-1.5">
-                    <p className="text-[10px] text-text-secondary leading-tight">
-                      <span className="font-bold text-amber-400">{t('테마 개요:')}</span>{" "}
-                      {t(TOUR_SCENARIOS[tourScenarioIdx].description)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Progress Stepper pills */}
-                <div className="flex items-center justify-between gap-1.5 px-0.5">
-                  {currentSteps.map((step, idx) => (
-                    <button
-                      key={step.stepId}
-                      onClick={() => {
-                        setTourStep(idx);
-                        const targetMenu = MENU_ITEMS.find(m => m.id === step.targetMenuId);
-                        if (targetMenu) setSelectedMenu(targetMenu);
-                        if (idx !== 3) setIsTourOrchestrationOpen(false);
-                      }}
-                      className={cn(
-                        "flex-1 h-1.5 rounded-full transition-all cursor-pointer",
-                        idx <= tourStep 
-                          ? "bg-gradient-to-r from-amber-500 to-orange-500" 
-                          : "bg-surface-hover border border-border"
-                      )}
-                      title={`${idx + 1}단계로 이동`}
-                    />
-                  ))}
-                </div>
-
-                {/* Active Step Content */}
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span data-testid="tour-step-badge" className="text-[10px] bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-black tracking-tight">
-                      {t(currentStepData.badge)}
-                    </span>
-                    <span className="text-[9px] font-mono text-text-secondary">
-                      {tourStep + 1} / {currentSteps.length} {t('Steps')}
-                    </span>
-                  </div>
-
-                  <h4 className="text-sm font-black text-text-primary flex items-center gap-1.5">
-                    <BookOpen size={14} className="text-amber-500" />
-                    {t(currentStepData.title)}
-                  </h4>
-
-                  <p className="text-xs text-text-secondary leading-relaxed bg-bg/50 p-3 rounded-xl border border-border">
-                    {t(currentStepData.explanation)}
-                  </p>
-
-                  {/* Highlight Action Banner */}
-                  {(() => {
-                    const items = currentStepData.checklist || [];
-                    const key = `${tourScenarioIdx}_${tourStep}`;
-                    const allCleared = items.length > 0 && (tourChecklistState[key] || []).every(item => item === true);
-                    return allCleared ? (
-                      <motion.div 
-                        initial={{ scale: 0.95 }}
-                        animate={{ scale: 1 }}
-                        className="bg-emerald-500/15 border-2 border-emerald-500/40 rounded-xl p-3 text-xs leading-normal shadow-lg shadow-emerald-500/5"
-                      >
-                        <div className="font-bold text-emerald-400 mb-1 flex items-center gap-1.5 animate-pulse">
-                          {t('🎉 실습 미션 통과 완료!')}
-                        </div>
-                        <span className="text-text-primary font-medium">{t('축하합니다! 이 단계의 실습 미션과 모니터링 체크리스트가 성공적으로 검증되었습니다. 다음으로 전진하세요!')}</span>
-                      </motion.div>
-                    ) : (
-                      <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs leading-normal">
-                        <div className="font-bold text-amber-400 mb-1 flex items-center gap-1">
-                          {t('🎯 관람객 실습 미션')}
-                        </div>
-                        <span className="text-text-primary font-medium">{t(currentStepData.highlightAction)}</span>
-                      </div>
-                    );
-                  })()}
-
-                  {/* Checklist */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase text-text-secondary tracking-widest block">{t('실시간 모니터링 체크리스트')}</span>
-                      <button
-                        onClick={() => {
-                          const key = `${tourScenarioIdx}_${tourStep}`;
-                          setTourChecklistState(prev => ({
-                            ...prev,
-                            [key]: (currentStepData.checklist || []).map(() => true)
-                          }));
-                        }}
-                        className="text-[9px] text-amber-500 hover:text-amber-400 font-bold transition-all px-1.5 py-0.5"
-                      >
-                        {t('모두 완료')}
-                      </button>
-                    </div>
-                    <div className="space-y-1 bg-surface-hover/50 p-2 rounded-lg border border-border/50 text-[11px]">
-                      {(currentStepData.checklist || []).map((item, id) => {
-                        const key = `${tourScenarioIdx}_${tourStep}`;
-                        const isChecked = tourChecklistState[key]?.[id] || false;
-                        return (
-                          <button
-                            key={id}
-                            onClick={() => handleChecklistClick(tourStep, id)}
-                            className={cn(
-                              "w-full text-left flex items-start gap-2 py-1 px-1.5 rounded transition-all group cursor-pointer",
-                              isChecked ? "text-text-primary/70 bg-white/2" : "text-text-secondary hover:bg-white/5"
-                            )}
-                          >
-                            <div className={cn(
-                              "mt-0.5 w-3.5 h-3.5 rounded border flex items-center justify-center transition-all shrink-0",
-                              isChecked 
-                                ? "bg-emerald-500 border-emerald-500 text-bg" 
-                                : "border-text-secondary/40 group-hover:border-amber-500/50"
-                            )}>
-                              {isChecked && <Check size={10} strokeWidth={3} />}
-                            </div>
-                            <span className={isChecked ? "line-through opacity-70" : ""}>{t(item)}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Steppers */}
-                <div className="flex items-center gap-2 pt-2 border-t border-border/80">
-                  <button
-                    onClick={() => {
-                      const prevStep = Math.max(0, tourStep - 1);
-                      setTourStep(prevStep);
-                      const targetMenu = MENU_ITEMS.find(m => m.id === currentSteps[prevStep].targetMenuId);
-                      if (targetMenu) setSelectedMenu(targetMenu);
-                      setIsTourOrchestrationOpen(false);
-                    }}
-                    disabled={tourStep === 0}
-                    data-testid="tour-prev"
-                    className="flex-1 py-1.5 rounded-xl text-xs font-bold border border-border bg-surface hover:bg-surface-hover disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center justify-center gap-1 cursor-pointer font-sans"
-                  >
-                    {t('◀ 이전')}
-                  </button>
-
-                  {tourStep === 3 ? (
-                    <button
-                      onClick={() => {
-                        setIsTourOrchestrationOpen(true);
-                      }}
-                      className="flex-[1.5] py-2 px-3 bg-gradient-to-r from-red-500 to-amber-500 hover:from-red-600 hover:to-amber-600 text-bg text-xs font-black rounded-xl shadow-lg shadow-red-500/10 border border-red-400/20 attention-ring transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      {t('⚡ 라이브 토론 실행')}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        const targetMenu = MENU_ITEMS.find(m => m.id === currentStepData.targetMenuId);
-                        if (targetMenu) setSelectedMenu(targetMenu);
-                      }}
-                      className="flex-1 py-1.5 px-2 border border-amber-500/30 text-amber-400 bg-amber-500/5 hover:bg-amber-500/10 rounded-xl text-xs font-bold transition-all cursor-pointer text-center"
-                    >
-                      {t('화면 이동')}
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => {
-                      if (tourStep < currentSteps.length - 1) {
-                        const nextStep = tourStep + 1;
-                        setTourStep(nextStep);
-                        const targetMenu = MENU_ITEMS.find(m => m.id === currentSteps[nextStep].targetMenuId);
-                        if (targetMenu) setSelectedMenu(targetMenu);
-                        if (nextStep !== 3) setIsTourOrchestrationOpen(false);
-                      } else {
-                        setIsTourMode(false);
-                        setIsTourOrchestrationOpen(false);
-                      }
-                    }}
-                    data-testid="tour-next"
-                    className="flex-1 py-1.5 rounded-xl text-xs font-bold bg-accent hover:bg-accent-hover text-bg transition-all flex items-center justify-center gap-1 cursor-pointer"
-                  >
-                    {tourStep === currentSteps.length - 1 ? t('종료 [닫기]') : t('다음 ▶')}
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })()}
-        </AnimatePresence>
-
         <AiSettingsModal isOpen={isAiSettingsOpen} onClose={() => setIsAiSettingsOpen(false)} />
-
-        {/* Global Orchestration Center Modal for Tour Mode */}
-        <OrchestrationCenterModal 
-          isOpen={isTourOrchestrationOpen} 
-          onClose={() => setIsTourOrchestrationOpen(false)} 
-        />
-
-        {/* Expo Interactive Sidebar */}
-        {isExpoInteractiveMode && (
-          <Suspense fallback={null}>
-          <ExpoSidebar
-            scenarioIdx={tourScenarioIdx}
-            score={expoScore}
-            approvedCount={expoApprovedCount}
-            rejectedCount={expoRejectedCount}
-            eventsTriggered={expoEventsTriggered}
-            scoreHistory={expoScoreHistory}
-            onEventTriggered={(eventId) => {
-              setExpoEventsTriggered(prev => prev + 1);
-            }}
-            onScoreUpdate={(delta, label, isCorrect) => {
-              setExpoScore(prev => prev + delta);
-              if (isCorrect === true) {
-                setExpoApprovedCount(prev => prev + 1);
-              } else if (isCorrect === false) {
-                setExpoRejectedCount(prev => prev + 1);
-              }
-              setExpoScoreHistory(prev => [{
-                id: Math.random().toString(36).substr(2, 9),
-                label: label ?? '이벤트 대응',
-                type: isCorrect === true ? 'approved' : isCorrect === false ? 'rejected' : 'event',
-                points: delta,
-                timestamp: new Date()
-              }, ...prev]);
-            }}
-            onReset={handleExpoReset}
-            onNewScenario={handleExpoNewScenario}
-            onClose={() => {
-              setIsExpoInteractiveMode(false);
-              setIsTourMode(false);
-              setIsTourOrchestrationOpen(false);
-            }}
-          />
-          </Suspense>
-        )}
       </main>
     </div>
   );
@@ -1479,128 +665,37 @@ function HealthRow({ label, status, latency }: { label: string, status: 'online'
   );
 }
 
-function RULPredictionView({ 
-  isTourMode = false, 
-  tourScenarioIdx = 0 
-}: { 
-  isTourMode?: boolean; 
-  tourScenarioIdx?: number; 
-}) {
+function RULPredictionView() {
   const chart = chartPalette();
   const safeTimeout = useSafeTimeout();
   const [created, setCreated] = useState(false);
 
-  useEffect(() => {
-    // Auto check Step 2 checklist items when the view is mounted
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 1, checklistIdx: 0 } }));
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 1, checklistIdx: 1 } }));
-  }, []);
-
   const handleCreateOrder = () => {
     setCreated(true);
-    // Reinforce tour step checks on action
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 1, checklistIdx: 0 } }));
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 1, checklistIdx: 1 } }));
     safeTimeout(() => {
       setCreated(false);
     }, 3000);
   };
 
   const getScenarioData = () => {
-    if (!isTourMode) {
-      return {
-        unit: 'Days',
-        rul: 14,
-        confidence: '92.4%',
-        machinery: t('수축포장기-01'),
-        warning: 'Vibration patterns indicate bearing wear. Schedule inspection within the next 7 days to prevent unplanned downtime.',
-        chartData: [
-          { name: 'Day 1', health: 100, threshold: 20 },
-          { name: 'Day 5', health: 95, threshold: 20 },
-          { name: 'Day 10', health: 88, threshold: 20 },
-          { name: 'Day 15', health: 82, threshold: 20 },
-          { name: 'Day 20', health: 75, threshold: 20 },
-          { name: 'Day 25', health: 65, threshold: 20 },
-          { name: 'Day 30', health: 58, threshold: 20 },
-          { name: 'Day 35', health: 45, threshold: 20 },
-          { name: 'Day 40', health: 32, threshold: 20 },
-        ]
-      };
-    }
-
-    switch (tourScenarioIdx) {
-      case 1: // Scenario B
-        return {
-          unit: 'Hours',
-          rul: 42,
-          confidence: '98.1%',
-          machinery: t('가열 공조 모터-03'),
-          warning: t('공조 배기 제어 부하 및 가스 누출 인근 고열화 징후가 증폭되었습니다. 밸브 및 기기 마찰 축 손실을 사전에 차단하기 위한 정비 팀 급파 예약을 발행하세요.'),
-          chartData: [
-            { name: 'Hour 1', health: 100, threshold: 20 },
-            { name: 'Hour 8', health: 91, threshold: 20 },
-            { name: 'Hour 16', health: 83, threshold: 20 },
-            { name: 'Hour 24', health: 64, threshold: 20 },
-            { name: 'Hour 32', health: 48, threshold: 20 },
-            { name: 'Hour 40', health: 29, threshold: 20 },
-            { name: 'Hour 48', health: 18, threshold: 20 },
-          ]
-        };
-      case 2: // Scenario C
-        return {
-          unit: 'Hours',
-          rul: 29,
-          confidence: '96.5%',
-          machinery: t('칠러 냉각 펌프-01B'),
-          warning: t('계약 전력 피크 셰이빙 연동 백업 운전으로 기온/열부하가 급증하였습니다. 29시간 이내에 보완 임계 모터 검진 및 배기 펌프 보전을 실시간 접수하는 것을 강력 권장합니다.'),
-          chartData: [
-            { name: 'Hour 1', health: 100, threshold: 20 },
-            { name: 'Hour 8', health: 89, threshold: 20 },
-            { name: 'Hour 16', health: 77, threshold: 20 },
-            { name: 'Hour 24', health: 59, threshold: 20 },
-            { name: 'Hour 32', health: 41, threshold: 20 },
-            { name: 'Hour 40', health: 26, threshold: 20 },
-            { name: 'Hour 48', health: 15, threshold: 20 },
-          ]
-        };
-      case 3: // Scenario D
-        return {
-          unit: 'Hours',
-          rul: 53,
-          confidence: '97.8%',
-          machinery: t('패키징 주동 기어-02'),
-          warning: t('긴급 오더에 따른 120% 초속 가속 가동 충격으로 유성 기어 마찰 과열 진동이 임계치를 급박하게 침범하는 중입니다. 납량 완료 즉시 가동 정지를 통한 검수를 미리 신청해 두십시오.'),
-          chartData: [
-            { name: 'Hour 1', health: 100, threshold: 20 },
-            { name: 'Hour 8', health: 93, threshold: 20 },
-            { name: 'Hour 16', health: 85, threshold: 20 },
-            { name: 'Hour 24', health: 71, threshold: 20 },
-            { name: 'Hour 32', health: 52, threshold: 20 },
-            { name: 'Hour 40', health: 34, threshold: 20 },
-            { name: 'Hour 48', health: 19, threshold: 20 },
-          ]
-        };
-      case 0:
-      default:
-        return {
-          unit: 'Days',
-          rul: 14,
-          confidence: '92.4%',
-          machinery: t('수축포장기-01'),
-          warning: 'Vibration patterns indicate bearing wear. Schedule inspection within the next 7 days to prevent unplanned downtime.',
-          chartData: [
-            { name: 'Day 1', health: 100, threshold: 20 },
-            { name: 'Day 5', health: 95, threshold: 20 },
-            { name: 'Day 10', health: 88, threshold: 20 },
-            { name: 'Day 15', health: 82, threshold: 20 },
-            { name: 'Day 20', health: 75, threshold: 20 },
-            { name: 'Day 25', health: 65, threshold: 20 },
-            { name: 'Day 30', health: 58, threshold: 20 },
-            { name: 'Day 35', health: 45, threshold: 20 },
-            { name: 'Day 40', health: 32, threshold: 20 },
-          ]
-        };
-    }
+    return {
+      unit: 'Days',
+      rul: 14,
+      confidence: '92.4%',
+      machinery: t('수축포장기-01'),
+      warning: 'Vibration patterns indicate bearing wear. Schedule inspection within the next 7 days to prevent unplanned downtime.',
+      chartData: [
+        { name: 'Day 1', health: 100, threshold: 20 },
+        { name: 'Day 5', health: 95, threshold: 20 },
+        { name: 'Day 10', health: 88, threshold: 20 },
+        { name: 'Day 15', health: 82, threshold: 20 },
+        { name: 'Day 20', health: 75, threshold: 20 },
+        { name: 'Day 25', health: 65, threshold: 20 },
+        { name: 'Day 30', health: 58, threshold: 20 },
+        { name: 'Day 35', health: 45, threshold: 20 },
+        { name: 'Day 40', health: 32, threshold: 20 },
+      ]
+    };
   };
 
   const sData = getScenarioData();
@@ -1631,7 +726,7 @@ function RULPredictionView({
               <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
               <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
               <Tooltip 
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
+                contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
                 itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
               />
               <Line type="monotone" dataKey="health" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} />
@@ -2060,7 +1155,7 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
           <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
           <XAxis dataKey="name" stroke={chart.axis} fontSize={10} />
           <YAxis stroke={chart.axis} fontSize={10} domain={[0, 100]} />
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
+          <Tooltip contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }} itemStyle={{ color: chart.tooltipText }} />
           <Bar dataKey="value" radius={[4, 4, 0, 0]}>
             <Cell fill="#60a5fa" />
             <Cell fill="#a78bfa" />
@@ -2090,7 +1185,7 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
           <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
           <XAxis dataKey="time" stroke={chart.axis} fontSize={10} />
           <YAxis stroke={chart.axis} fontSize={10} />
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
+          <Tooltip contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }} itemStyle={{ color: chart.tooltipText }} />
           <Line type="monotone" dataKey="rate" stroke="#ef4444" strokeWidth={2} dot={{ r: 4, fill: '#ef4444' }} />
         </LineChart>
       )
@@ -2115,7 +1210,7 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
           <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
           <XAxis dataKey="time" stroke={chart.axis} fontSize={10} />
           <YAxis stroke={chart.axis} fontSize={10} />
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
+          <Tooltip contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }} itemStyle={{ color: chart.tooltipText }} />
           <Area type="monotone" dataKey="usage" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.2} />
         </AreaChart>
       )
@@ -2146,7 +1241,7 @@ function KpiDetailModal({ kpi, onClose }: { kpi: string, onClose: () => void }) 
             <Cell fill="#10b981" />
             <Cell fill="#3b82f6" />
           </Pie>
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
+          <Tooltip contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }} itemStyle={{ color: chart.tooltipText }} />
         </PieChart>
       )
     }
@@ -2228,7 +1323,8 @@ function DashboardView({
   isRecommending,
   aiError,
   handleApprove,
-  handleReject
+  handleReject,
+  onNavigate
 }: { 
   sensorData: SensorData[], 
   decisions: AgentDecision[], 
@@ -2236,23 +1332,22 @@ function DashboardView({
   isRecommending: boolean,
   aiError: string | null,
   handleApprove: (i: number) => void,
-  handleReject: (i: number) => void
+  handleReject: (i: number) => void,
+  onNavigate: (menuId: number, anchor?: string) => void
 }) {
   const live = useLiveValue();
   const chart = chartPalette();
   const plant = useTelemetry();
   const [activeKpi, setActiveKpi] = useState<string | null>(null);
+  const [sensorMetric, setSensorMetric] = useState<'temperature' | 'vibration'>('temperature');
+  const sensorColor = sensorMetric === 'temperature' ? '#10b981' : '#8b5cf6';
+  const tooltipStyle = { backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' };
 
   // Trend arrows compare against the start of the visible window, so they move
   // with the data instead of being decorative constants.
   const first = plant.history[0];
   const delta = (now: number, then: number | undefined, digits = 1) =>
     then === undefined ? '—' : `${now - then >= 0 ? '+' : ''}${(now - then).toFixed(digits)}`;
-
-  useEffect(() => {
-    // Auto check '최상단 KPI 카드 및 설비 가동 시간 차트 감상'
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 0, checklistIdx: 0 } }));
-  }, []);
 
   return (
     <>
@@ -2294,6 +1389,9 @@ function DashboardView({
         />
       </div>
 
+      {/* AI Orchestration: Supervisor → agents → ML/DL models */}
+      <OrchestrationPanel decisions={decisions} onNavigate={onNavigate} />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart */}
         <div className="lg:col-span-2 dashboard-card flex flex-col">
@@ -2303,8 +1401,19 @@ function DashboardView({
               <p className="text-xs text-text-secondary">{t('포장1라인 - 수축포장기-01')}</p>
             </div>
             <div className="flex gap-2">
-              <button className="px-3 py-1 rounded-md bg-surface-hover text-[10px] font-bold uppercase tracking-wider">{t('Vibration')}</button>
-              <button className="px-3 py-1 rounded-md bg-accent/20 text-accent text-[10px] font-bold uppercase tracking-wider">{t('Temperature')}</button>
+              {(['vibration', 'temperature'] as const).map(metric => (
+                <button
+                  key={metric}
+                  onClick={() => setSensorMetric(metric)}
+                  aria-pressed={sensorMetric === metric}
+                  className={cn(
+                    "px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors",
+                    sensorMetric === metric ? "bg-accent/20 text-accent" : "bg-surface-hover hover:text-text-primary"
+                  )}
+                >
+                  {metric === 'vibration' ? t('Vibration') : t('Temperature')}
+                </button>
+              ))}
             </div>
           </div>
           <div className="flex-1 h-[300px]">
@@ -2312,8 +1421,8 @@ function DashboardView({
               <AreaChart data={sensorData}>
                 <defs>
                   <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    <stop offset="5%" stopColor={sensorColor} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={sensorColor} stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
@@ -2332,13 +1441,14 @@ function DashboardView({
                   domain={['auto', 'auto']}
                 />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
+                  contentStyle={tooltipStyle}
                   itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Area 
                   type="monotone" 
-                  dataKey="temperature" 
-                  stroke="#10b981" 
+                  dataKey={sensorMetric}
+                  stroke={sensorColor}
+                  isAnimationActive={false}
                   fillOpacity={1} 
                   fill="url(#colorTemp)" 
                   strokeWidth={2}
@@ -2381,17 +1491,18 @@ function DashboardView({
           )}
           <div className="flex-1 space-y-4 overflow-y-auto custom-scrollbar pr-2">
             {decisions.map((decision, idx) => (
-              <div key={idx} className={cn(
+              <div key={`${decision.agent}-${decision.action}-${decision.timestamp}-${idx}`} className={cn(
                 "p-3 rounded-lg border transition-all",
                 decision.status === 'pending' ? "bg-surface-hover border-border" : 
-                decision.status === 'approved' ? "bg-accent/5 border-accent/20 opacity-60" : 
+                decision.status === 'approved' ? "bg-accent/5 border-accent/20 opacity-60" :
+                decision.status === 'logged' ? "bg-surface border-border opacity-60" :
                 "bg-danger/5 border-danger/20 opacity-60"
               )}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-bold text-accent uppercase tracking-wider">{decision.agent}</span>
                   <span className="text-[10px] text-text-secondary font-mono">{new Date(decision.timestamp).toLocaleTimeString()}</span>
                 </div>
-                <h4 className="text-sm font-bold mb-1">{decision.action.replace('_', ' ')}</h4>
+                <h4 className="text-sm font-bold mb-1">{decision.action.replace(/_/g, ' ')}</h4>
                 <p className="text-xs text-text-secondary leading-relaxed mb-3">
                   {t(decision.reasoning)}
                 </p>
@@ -2414,9 +1525,10 @@ function DashboardView({
                 {decision.status !== 'pending' && (
                   <div className={cn(
                     "text-[10px] font-bold uppercase flex items-center gap-1",
-                    decision.status === 'approved' ? "text-accent" : "text-danger"
+                    decision.status === 'approved' ? "text-accent" :
+                    decision.status === 'logged' ? "text-text-secondary" : "text-danger"
                   )}>
-                    {decision.status === 'approved' ? <CheckCircle2 size={12} /> : <X size={12} />}
+                    {decision.status === 'approved' ? <CheckCircle2 size={12} /> : decision.status === 'logged' ? <History size={12} /> : <X size={12} />}
                     {decision.status}
                   </div>
                 )}
@@ -2444,7 +1556,7 @@ function DashboardView({
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
+                  contentStyle={tooltipStyle}
                   itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
@@ -2873,13 +1985,7 @@ const FactoryUnit = ({
 
 
 
-function CoordinationVisualizer({
-  isTourMode = false,
-  tourScenarioIdx = 0
-}: {
-  isTourMode?: boolean;
-  tourScenarioIdx?: number;
-}) {
+function CoordinationVisualizer() {
   const safeTimeout = useSafeTimeout();
   const [step, setStep] = useState(0);
   const [events, setEvents] = useState<CoordinationEvent[]>([]);
@@ -2888,72 +1994,9 @@ function CoordinationVisualizer({
   const [simulationSpeed, setSimulationSpeed] = useState(2500); // 2.5sec default
   const [flashActive, setFlashActive] = useState(false);
 
-  // Map tourScenarioIdx to corresponding simulation scenario in Tour Mode
-  useEffect(() => {
-    if (isTourMode) {
-      const scenarioMapping: Record<number, number> = {
-        0: 0, // Scenario A -> 6대 에이전트 전사 최적화 조율 (idx 0)
-        1: 3, // Scenario B -> 가스 미세 누출 감지 대응 (idx 3)
-        2: 4, // Scenario C -> 피크 전력 긴급 부하 제약 (idx 4)
-        3: 1  // Scenario D -> B라인 생산 속도 최적화 충돌 (idx 1)
-      };
-      const activeIdx = scenarioMapping[tourScenarioIdx] !== undefined ? scenarioMapping[tourScenarioIdx] : 0;
-      setActiveScenario(activeIdx);
-      setEvents([]);
-      setStep(0);
-    }
-  }, [tourScenarioIdx, isTourMode]);
-
-  // Automated dispatch checklist logic based on live simulation activity
-  useEffect(() => {
-    if (!isTourMode) return;
-    
-    // Auto check if we are playing or interacting with steps (Skip / forward)
-    if (step > 0) {
-      if (tourScenarioIdx === 0) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 0, step: 3, checklistIdx: 2 } }));
-      } else if (tourScenarioIdx === 1) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 1, step: 3, checklistIdx: 1 } }));
-      } else if (tourScenarioIdx === 2) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 2, step: 3, checklistIdx: 1 } }));
-      } else if (tourScenarioIdx === 3) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 3, step: 3, checklistIdx: 1 } }));
-      }
-    }
-
-    const scenario = scenarios[activeScenario];
-    if (scenario && step >= scenario.timeline.length) {
-      // Reached the final agreement of the simulation
-      if (tourScenarioIdx === 0) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 0, step: 3, checklistIdx: 3 } }));
-      } else if (tourScenarioIdx === 1 && activeScenario === 3) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 1, step: 3, checklistIdx: 2 } }));
-      } else if (tourScenarioIdx === 2 && activeScenario === 4) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 2, step: 3, checklistIdx: 2 } }));
-      } else if (tourScenarioIdx === 3 && activeScenario === 1) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 3, step: 3, checklistIdx: 2 } }));
-      }
-    }
-  }, [step, activeScenario, tourScenarioIdx, isTourMode]);
-
-  useEffect(() => {
-    if (!isTourMode) return;
-    
-    // Automatically trigger selection checklist completions for the default loaded scenario
-    if (tourScenarioIdx === 0 && activeScenario === 0) {
-      window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 0, step: 3, checklistIdx: 0 } }));
-    } else if (tourScenarioIdx === 1 && activeScenario === 3) {
-      window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 1, step: 3, checklistIdx: 0 } }));
-    } else if (tourScenarioIdx === 2 && activeScenario === 4) {
-      window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 2, step: 3, checklistIdx: 0 } }));
-    } else if (tourScenarioIdx === 3 && activeScenario === 1) {
-      window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 3, step: 3, checklistIdx: 0 } }));
-    }
-  }, [activeScenario, tourScenarioIdx, isTourMode]);
-
   const scenarios = [
     {
-      title: t('🔥 [통합] 6대 에이전트 전사 최적화 조율'),
+      title: t('[통합] 6대 에이전트 전사 최적화 조율'),
       description: t('생산 극대화 목표 하에 안전, 예지보전, 품질, 에너지, 물류 에이전트 간의 동시 다자 협업 및 실시간 중재'),
       agents: [
         { id: 'prod', name: t('생산 최적화'), role: 'Production', color: 'text-blue-500', icon: <TrendingUp size={14} /> },
@@ -3005,7 +2048,7 @@ function CoordinationVisualizer({
       ]
     },
     {
-      title: t('🚨 [EXPO] 가스 미세 누출 감지 대응'),
+      title: t('가스 미세 누출 감지 대응'),
       description: t('가스 누출 위험 상황 발생 시 위험 무력화 및 조치 가이드'),
       agents: [
         { id: 'safety', name: t('안전 에이전트'), role: 'Safety', color: 'text-red-500', icon: <ShieldAlert size={14} /> },
@@ -3021,7 +2064,7 @@ function CoordinationVisualizer({
       ]
     },
     {
-      title: t('⚡ [EXPO] 피크 전력 긴급 부하 제약'),
+      title: t('피크 전력 긴급 부하 제약'),
       description: t('국가 전력망 주파수 급락 경보에 따른 신속 부하 셰딩'),
       agents: [
         { id: 'energy', name: t('에너지 에이전트'), role: 'Energy', color: 'text-orange-500', icon: <Zap size={14} /> },
@@ -3058,40 +2101,10 @@ function CoordinationVisualizer({
     }
   }, [step, activeScenario, isPlaying, simulationSpeed]);
 
-  useEffect(() => {
-    if (events.length > 0) {
-      // Auto check Step 4, item 3: 실시간 타임라인 오케스트레이션 Event Log 분석
-      window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 3, checklistIdx: 3 } }));
-    }
-  }, [events]);
-
   const reset = (idx: number) => {
     setActiveScenario(idx);
     setEvents([]);
     setStep(0);
-
-    if (!isTourMode) return;
-
-    // Dispatch selection checklist item checks depending on which scenario theme we are doing
-    if (tourScenarioIdx === 0) {
-      if (idx === 0) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 0, step: 3, checklistIdx: 0 } }));
-      } else if (idx === 3 || idx === 4) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 0, step: 3, checklistIdx: 1 } }));
-      }
-    } else if (tourScenarioIdx === 1) {
-      if (idx === 3) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 1, step: 3, checklistIdx: 0 } }));
-      }
-    } else if (tourScenarioIdx === 2) {
-      if (idx === 4) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 2, step: 3, checklistIdx: 0 } }));
-      }
-    } else if (tourScenarioIdx === 3) {
-      if (idx === 1) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: 3, step: 3, checklistIdx: 0 } }));
-      }
-    }
   };
 
   const triggerNextStep = () => {
@@ -3106,9 +2119,6 @@ function CoordinationVisualizer({
       setStep(s => s + 1);
       setFlashActive(true);
       safeTimeout(() => setFlashActive(false), 300);
-
-      // Auto check Skip/Reset control interaction
-      window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 3, checklistIdx: 2 } }));
     }
   };
 
@@ -3116,25 +2126,22 @@ function CoordinationVisualizer({
     if (step > 0) {
       setEvents(prev => prev.slice(0, -1));
       setStep(s => s - 1);
-
-      // Auto check Skip/Reset control interaction
-      window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 3, checklistIdx: 2 } }));
     }
   };
 
   return (
     <div className="space-y-6 relative">
-      {/* EXPO DEMO BAR */}
+      {/* Playback controls */}
       <div className="bg-gradient-to-r from-accent/20 via-transparent to-red-500/20 border border-accent/30 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 shadow-lg shadow-accent/5">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
           </span>
-          <span className="text-[10px] font-black uppercase tracking-wider text-accent">{t('LIVE DEMO MODE')}</span>
+          <span className="text-[10px] font-black uppercase tracking-wider text-accent">{t('실시간 조율 재생')}</span>
         </div>
         
-        {/* Playback Controls for Presenter */}
+        {/* Playback controls */}
         <div className="flex items-center gap-1 bg-surface border border-border p-1 rounded-lg">
           <button
             onClick={triggerPrevStep}
@@ -3207,7 +2214,7 @@ function CoordinationVisualizer({
                   "text-[8px] font-bold uppercase tracking-widest",
                   activeScenario === i ? "text-accent" : "text-text-secondary"
                 )}>
-                  {s.title.includes("[EXPO]") ? t('🔥 Live DEMO') : `Scenario 0${i + 1}`}
+                  {`Scenario 0${i + 1}`}
                 </span>
                 {activeScenario === i && <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />}
               </div>
@@ -3949,120 +2956,284 @@ function CoordinationVisualizer({
 }
 
 
-function OrchestrationCenterModal({ 
-  isOpen, 
-  onClose,
-  isTourMode = false,
-  tourScenarioIdx = 0
-}: { 
-  isOpen: boolean; 
-  onClose: () => void;
-  isTourMode?: boolean;
-  tourScenarioIdx?: number;
+/**
+ * The three-tier control structure the platform is built around:
+ * AI Supervisor (control tower) → domain AI agents → the ML/DL models each
+ * agent runs. `decisionAgent` matches `AgentDecision.agent`, `menuId` is the
+ * agent's first screen in the sidebar (null when it has none yet).
+ */
+const AGENT_HIERARCHY: {
+  key: string;
+  name: string;
+  role: string;
+  decisionAgent: string;
+  menuId: number | null;
+  excursion?: 'temperature' | 'vibration' | 'energy';
+  color: string;
+  icon: React.ReactNode;
+  models: { name: string; task: string }[];
+}[] = [
+  {
+    key: 'quality', name: 'AI 품질 에이전트', role: '비전 기반 결함 100% 전수 검출',
+    decisionAgent: 'Quality Agent', menuId: 1, excursion: 'temperature',
+    color: 'text-emerald-500', icon: <ShieldCheck size={16} />,
+    models: [{ name: 'Anomalib', task: '비지도 이상 탐지' }, { name: 'YOLOv8', task: '결함 객체 검출' }],
+  },
+  {
+    key: 'pm', name: 'AI 설비예지보전 에이전트', role: '진동·온도·토크 시계열 분석',
+    decisionAgent: 'PM Agent', menuId: 6, excursion: 'vibration',
+    color: 'text-purple-500', icon: <Wrench size={16} />,
+    models: [{ name: 'LSTM', task: '시계열 이상 예측' }, { name: 'RUL Regressor', task: '잔여수명·돌발 셧다운 예측' }],
+  },
+  {
+    key: 'safety', name: 'AI 안전 에이전트', role: '화재 징후·작업자 근접 24시간 감시',
+    decisionAgent: 'Safety Agent', menuId: 19,
+    color: 'text-red-500', icon: <ShieldAlert size={16} />,
+    models: [{ name: 'YOLOv8-Fire', task: '화재·연기 탐지' }, { name: 'Pose Estimation', task: '작업자-로봇 근접 감지' }],
+  },
+  {
+    key: 'production', name: 'AI 생산 최적화 에이전트', role: '택트타임·설비종합효율 실시간 추적',
+    decisionAgent: 'Production Agent', menuId: 11,
+    color: 'text-blue-500', icon: <TrendingUp size={16} />,
+    models: [{ name: 'XGBoost', task: 'OEE 손실 요인 분석' }, { name: 'Bottleneck Detector', task: '병목 구간 식별' }],
+  },
+  {
+    key: 'energy', name: 'AI 에너지 에이전트', role: '피크 부하·태양광 통합 분석',
+    decisionAgent: 'Energy Agent', menuId: 16, excursion: 'energy',
+    color: 'text-orange-500', icon: <Zap size={16} />,
+    models: [{ name: 'Prophet', task: '피크 부하 예측' }, { name: 'GRU', task: '태양광 발전량 예측' }],
+  },
+  {
+    key: 'logistics', name: 'AI 물류 에이전트', role: 'AMR 최적 경로·회피 시뮬레이션',
+    decisionAgent: 'Logistics Agent', menuId: null,
+    color: 'text-yellow-500', icon: <Truck size={16} />,
+    models: [{ name: 'RL Path Planner', task: 'AMR 최적 경로 탐색' }, { name: 'RTD / ACS', task: '배차·이송 명령 하달' }],
+  },
+];
+
+/**
+ * Supervisor → agents → models, with each agent's live state: responding when
+ * the plant excursion lands in its domain, waiting when it has proposals in
+ * the approval queue, otherwise monitoring.
+ */
+function SupervisorHierarchy({
+  decisions,
+  onNavigate,
+}: {
+  decisions: AgentDecision[];
+  onNavigate: (menuId: number, anchor?: string) => void;
 }) {
-  const [activeTab, setActiveTab] = useState<'visualization' | 'methodology'>('visualization');
-
-  if (!isOpen) return null;
-
-  const methodologyContent = t('\n# Hierarchical Message-Based Orchestration (HMBO) Framework\n\n## 1. 개요\nHMBO는 복잡한 제조 환경에서 다수의 특화 AI 에이전트들이 상호 협력하고 충돌을 해결하기 위한 계층적 의사결정 프레임워크입니다.\n\n## 2. 핵심 메커니즘\n*   **Proposal (제안)**: 각 도메인 에이전트(품질, 생산, 에너지 등)가 자신의 목표 최적화를 위한 액션을 제안합니다.\n*   **Critique (비판)**: 제안된 액션이 다른 도메인의 가드레일이나 목표를 침해할 경우, 해당 에이전트가 반대 의견과 근거를 제시합니다.\n*   **Info (정보 제공)**: 의사결정에 필요한 추가 데이터나 상황 정보를 공유합니다.\n*   **Agreement (합의)**: AI 슈퍼바이저가 모든 의견을 종합하고, 전사적 우선순위(예: 안전 > 품질 > 생산)에 따라 최종 결정을 내립니다.\n\n## 3. 의사결정 계층\n1.  **L1: Safety Layer**: 물리적 위험 및 법적 규제 준수 여부 판단\n2.  **L2: Policy Layer**: 전사 운영 정책(품질 우선, 비용 절감 등) 반영\n3.  **L3: Optimization Layer**: 도메인 간 트레이드오프 조율 및 최적값 도출\n\n## 4. 기대 효과\n*   **의사결정 투명성**: 모든 에이전트의 발언과 슈퍼바이저의 판단 근거가 로그로 남습니다.\n*   **유연한 정책 대응**: 전사 정책 변경 시 슈퍼바이저의 가드레일 설정만으로 전체 에이전트의 행동을 제어할 수 있습니다.\n*   **실시간 최적화**: 인간 관리자가 개입하기 어려운 초단위 공정 변화에 즉각 대응합니다.\n');
+  const plant = useTelemetry();
+  const live = useLiveValue();
+  const pendingTotal = decisions.filter(d => d.status === 'pending').length;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-bg/80 backdrop-blur-xl"
-    >
-      <div className="bg-surface border border-border w-full max-w-5xl h-full max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-        {/* Modal Header */}
-        <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-surface-hover/50">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent shadow-inner">
-              <GitBranch size={24} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-black tracking-tight text-text-primary">{t('AI 오케스트레이션 센터')}</h2>
-                <span className="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-[9px] font-bold border border-accent/20">v1.0.5-STABLE</span>
-              </div>
-              <p className="text-[10px] text-text-secondary mt-1 font-medium uppercase tracking-wider">{t('Hierarchical Message-Based Orchestration Framework (HMBO)')}</p>
-            </div>
+    <div className="space-y-4">
+      {/* L0: Supervisor */}
+      <div className="flex justify-center">
+        <div className="flex w-full max-w-xl items-center gap-4 rounded-2xl border-2 border-accent/40 bg-accent/5 p-4 shadow-lg shadow-accent/5">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent text-white shadow-lg shadow-accent/30">
+            <Network size={22} />
           </div>
-          <button 
-            onClick={onClose}
-            className="p-2 rounded-xl hover:bg-surface-hover text-text-secondary transition-all hover:text-text-primary border border-transparent hover:border-border"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        {/* Tabs Selection */}
-        <div className="px-8 pt-4 flex gap-6 border-b border-border bg-surface">
-          <button 
-            onClick={() => setActiveTab('visualization')}
-            className={cn(
-              "pb-4 text-xs font-bold uppercase tracking-widest transition-all relative",
-              activeTab === 'visualization' ? "text-accent" : "text-text-secondary hover:text-text-primary"
-            )}
-          >
-            {t('Visualization')}
-            {activeTab === 'visualization' && <motion.div layoutId="modal-tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-          </button>
-          <button 
-            onClick={() => setActiveTab('methodology')}
-            className={cn(
-              "pb-4 text-xs font-bold uppercase tracking-widest transition-all relative",
-              activeTab === 'methodology' ? "text-accent" : "text-text-secondary hover:text-text-primary"
-            )}
-          >
-            {t('Methodology')}
-            {activeTab === 'methodology' && <motion.div layoutId="modal-tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-          </button>
-        </div>
-
-        {/* Modal Content */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          <div className="max-w-5xl mx-auto">
-            {activeTab === 'visualization' ? (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-bold mb-2">{t('에이전트 간 의사결정 조율 시각화')}</h3>
-                  <p className="text-sm text-text-secondary">{t('Supervisor가 각 도메인 특화 에이전트들의 제안을 수집하고, 우선순위 및 가드레일에 따라 최종 합의를 도출하는 과정을 보여줍니다.')}</p>
-                </div>
-                <CoordinationVisualizer isTourMode={isTourMode} tourScenarioIdx={tourScenarioIdx} />
-              </div>
-            ) : (
-              <Suspense fallback={<ChunkFallback />}>
-                <MarkdownView>{methodologyContent}</MarkdownView>
-              </Suspense>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded bg-accent/15 px-1.5 py-0.5 font-mono text-[9px] font-bold text-accent">L0</span>
+              <h4 className="text-sm font-black">{t('AI 슈퍼바이저 에이전트')}</h4>
+              <span className="text-[10px] text-text-secondary">{t('핵심 관제탑 (Control Tower)')}</span>
+            </div>
+            <p className="mt-1 text-[11px] text-text-secondary">{t('통합 오케스트레이션 및 인간 중심 통제')}</p>
+          </div>
+          <div className="text-right">
+            <div className="text-lg font-black text-accent">{plant.activeAgents} / {AGENT_HIERARCHY.length}</div>
+            <div className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">{t('Active Agents')}</div>
+            {pendingTotal > 0 && (
+              <div className="mt-0.5 text-[10px] font-bold text-warning">{pendingTotal} {t('Action Required')}</div>
             )}
           </div>
-        </div>
-
-        {/* Modal Footer */}
-        <div className="px-8 py-4 border-t border-border bg-surface-hover/30 flex justify-end">
-          <button 
-            onClick={onClose}
-            className="px-6 py-2 bg-accent text-bg rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"
-          >
-            {t('확인 및 닫기')}
-          </button>
         </div>
       </div>
-    </motion.div>
+
+      {/* Connector */}
+      <div className="flex justify-center" aria-hidden>
+        <div className="h-4 w-px bg-accent/40" />
+      </div>
+
+      {/* L1: Agents, each with its L2 models */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {AGENT_HIERARCHY.map((agent, idx) => {
+          const pending = decisions.filter(d => d.agent === agent.decisionAgent && d.status === 'pending').length;
+          const responding = agent.excursion !== undefined && plant.excursion?.kind === agent.excursion;
+          const state = responding ? 'responding' : pending > 0 ? 'pending' : 'monitoring';
+          const clickable = agent.menuId !== null;
+          return (
+            <button
+              key={agent.key}
+              type="button"
+              disabled={!clickable}
+              onClick={() => agent.menuId !== null && onNavigate(agent.menuId)}
+              className={cn(
+                "rounded-xl border bg-surface-hover/40 p-3 text-left transition-all",
+                state === 'responding' ? "border-danger/50 shadow-lg shadow-danger/5" :
+                state === 'pending' ? "border-warning/40" : "border-border",
+                clickable ? "cursor-pointer hover:border-accent/50" : "cursor-default"
+              )}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className={cn("shrink-0", agent.color)}>{agent.icon}</span>
+                  <span className="rounded bg-surface px-1.5 py-0.5 font-mono text-[9px] font-bold text-text-secondary">L1</span>
+                  <span className="truncate text-xs font-bold">{t(agent.name)}</span>
+                </div>
+                <span className={cn(
+                  "shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold",
+                  state === 'responding' ? "bg-danger/15 text-danger" :
+                  state === 'pending' ? "bg-warning/15 text-warning" : "bg-accent/10 text-accent"
+                )}>
+                  {state === 'responding' ? t('대응 중') : state === 'pending' ? `${t('승인 대기')} ${pending}` : t('모니터링')}
+                </span>
+              </div>
+              <p className="mt-1.5 text-[10px] text-text-secondary">{t(agent.role)}</p>
+              <div className="mt-2 space-y-1 border-t border-border/60 pt-2">
+                {agent.models.map((model, mIdx) => (
+                  <div key={model.name} className="flex items-center justify-between gap-2 text-[10px]">
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <span className="rounded bg-surface px-1 font-mono text-[8px] font-bold text-text-secondary">L2</span>
+                      <Layers size={10} className="shrink-0 text-text-secondary" />
+                      <span className="truncate font-mono font-bold">{model.name}</span>
+                      <span className="truncate text-text-secondary">· {t(model.task)}</span>
+                    </div>
+                    <span className="shrink-0 font-mono text-text-secondary">{Math.round(live(40 + idx * 12 + mIdx * 25, 200 + idx * 10 + mIdx))}ms</span>
+                  </div>
+                ))}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The human-in-the-loop path every agent action takes before it reaches a
+ * machine: Supervisor decision → safety barrier → approval queue → one-click
+ * approval → PLC. Counts come from the live decision list.
+ */
+function SafetyWorkflow({ decisions }: { decisions: AgentDecision[] }) {
+  const pending = decisions.filter(d => d.status === 'pending').length;
+  const approved = decisions.filter(d => d.status === 'approved').length;
+  const blocked = decisions.filter(d => d.status === 'rejected').length;
+  const steps = [
+    { label: 'AI 슈퍼바이저 결정', icon: <Network size={14} />, value: decisions.length },
+    { label: '방어막 (Barrier)', icon: <Shield size={14} />, value: blocked, hint: '차단' },
+    { label: '승인 대기 큐', icon: <ClipboardList size={14} />, value: pending },
+    { label: '1-Click 승인', icon: <CheckCircle2 size={14} />, value: approved },
+    { label: '최종 설비 제어기 (PLC)', icon: <Server size={14} />, value: approved, hint: '전송' },
+  ];
+  return (
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+      {steps.map((s, i) => (
+        <div key={s.label} className="relative rounded-xl border border-border bg-surface-hover/40 p-3">
+          <div className="flex items-center gap-1.5 text-accent">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/15 font-mono text-[10px] font-bold">{i + 1}</span>
+            {s.icon}
+          </div>
+          <div className="mt-2 text-[10px] font-bold text-text-secondary">{t(s.label)}</div>
+          <div className="mt-0.5 text-lg font-black">
+            {s.value}
+            {s.hint && <span className="ml-1 text-[10px] font-bold text-text-secondary">{t(s.hint)}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const ORCHESTRATION_METHODOLOGY = '\n# Hierarchical Message-Based Orchestration (HMBO) Framework\n\n## 1. 개요\nHMBO는 복잡한 제조 환경에서 다수의 특화 AI 에이전트들이 상호 협력하고 충돌을 해결하기 위한 계층적 의사결정 프레임워크입니다.\n\n## 2. 핵심 메커니즘\n*   **Proposal (제안)**: 각 도메인 에이전트(품질, 생산, 에너지 등)가 자신의 목표 최적화를 위한 액션을 제안합니다.\n*   **Critique (비판)**: 제안된 액션이 다른 도메인의 가드레일이나 목표를 침해할 경우, 해당 에이전트가 반대 의견과 근거를 제시합니다.\n*   **Info (정보 제공)**: 의사결정에 필요한 추가 데이터나 상황 정보를 공유합니다.\n*   **Agreement (합의)**: AI 슈퍼바이저가 모든 의견을 종합하고, 전사적 우선순위(예: 안전 > 품질 > 생산)에 따라 최종 결정을 내립니다.\n\n## 3. 의사결정 계층\n1.  **L1: Safety Layer**: 물리적 위험 및 법적 규제 준수 여부 판단\n2.  **L2: Policy Layer**: 전사 운영 정책(품질 우선, 비용 절감 등) 반영\n3.  **L3: Optimization Layer**: 도메인 간 트레이드오프 조율 및 최적값 도출\n\n## 4. 기대 효과\n*   **의사결정 투명성**: 모든 에이전트의 발언과 슈퍼바이저의 판단 근거가 로그로 남습니다.\n*   **유연한 정책 대응**: 전사 정책 변경 시 슈퍼바이저의 가드레일 설정만으로 전체 에이전트의 행동을 제어할 수 있습니다.\n*   **실시간 최적화**: 인간 관리자가 개입하기 어려운 초단위 공정 변화에 즉각 대응합니다.\n';
+
+/**
+ * AI orchestration, shown inline on the integrated dashboard (it used to be a
+ * modal behind a button in the Supervisor Center): the control hierarchy, the
+ * approval workflow, the live agent-coordination replay and the methodology.
+ */
+function OrchestrationPanel({
+  decisions,
+  onNavigate,
+}: {
+  decisions: AgentDecision[];
+  onNavigate: (menuId: number, anchor?: string) => void;
+}) {
+  const [activeTab, setActiveTab] = useState<'hierarchy' | 'coordination' | 'methodology'>('hierarchy');
+  const tabs = [
+    { id: 'hierarchy' as const, label: t('관제 구조') },
+    { id: 'coordination' as const, label: t('에이전트 조율') },
+    { id: 'methodology' as const, label: t('Methodology') },
+  ];
+
+  return (
+    <section id={ORCHESTRATION_ANCHOR} className="dashboard-card scroll-mt-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
+            <GitBranch size={20} />
+          </div>
+          <div>
+            <h3 className="font-bold">{t('AI 오케스트레이션 센터')}</h3>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+              {t('Hierarchical Message-Based Orchestration Framework (HMBO)')}
+            </p>
+          </div>
+        </div>
+        <div role="tablist" className="flex gap-1 rounded-lg border border-border bg-surface p-1">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-[11px] font-bold transition-colors",
+                activeTab === tab.id ? "bg-accent/15 text-accent" : "text-text-secondary hover:text-text-primary"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="pt-5">
+        {activeTab === 'hierarchy' && (
+          <div className="space-y-6">
+            <SupervisorHierarchy decisions={decisions} onNavigate={onNavigate} />
+            <div>
+              <h4 className="mb-3 flex items-center gap-2 text-xs font-bold">
+                <ShieldCheck size={14} className="text-accent" />
+                {t('안전 워크플로우 (1-Click 승인)')}
+              </h4>
+              <SafetyWorkflow decisions={decisions} />
+            </div>
+          </div>
+        )}
+        {activeTab === 'coordination' && (
+          <div className="space-y-4">
+            <p className="text-sm text-text-secondary">{t('Supervisor가 각 도메인 특화 에이전트들의 제안을 수집하고, 우선순위 및 가드레일에 따라 최종 합의를 도출하는 과정을 보여줍니다.')}</p>
+            <CoordinationVisualizer />
+          </div>
+        )}
+        {activeTab === 'methodology' && (
+          <Suspense fallback={<ChunkFallback />}>
+            <MarkdownView>{t(ORCHESTRATION_METHODOLOGY)}</MarkdownView>
+          </Suspense>
+        )}
+      </div>
+    </section>
   );
 }
 
 
-function SupervisorCenterView({ 
-  isTourMode = false, 
-  tourScenarioIdx = 0 
-}: { 
-  isTourMode?: boolean; 
-  tourScenarioIdx?: number; 
-}) {
+function SupervisorCenterView({ onOpenOrchestration }: { onOpenOrchestration: () => void }) {
   const safeTimeout = useSafeTimeout();
-  const [isOrchestrationOpen, setIsOrchestrationOpen] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResult, setSimulationResult] = useState<{gain: string, risk: string} | null>(null);
   const [evidencePacks, setEvidencePacks] = useState<EvidencePack[]>([]);
@@ -4070,137 +3241,20 @@ function SupervisorCenterView({
 
   const [playbooks] = useState<Playbook[]>(MOCK_PLAYBOOKS);
 
-  useEffect(() => {
-    // When Supervisor center is viewed, complete Step 3 checklist items
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 2, checklistIdx: 0 } }));
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 2, checklistIdx: 1 } }));
-  }, []);
+  const activeGoal: Goal = MOCK_GOALS[0];
 
-  const getActiveGoal = (): Goal => {
-    if (!isTourMode) return MOCK_GOALS[0];
-    
-    switch (tourScenarioIdx) {
-      case 1: // Scenario B
-        return {
-          id: 'G_B',
-          title: t('돌발 감지 분격 및 L1 안전 차단 가드'),
-          status: "In Progress",
-          tasks: [
-            { agentId: 'Safety Agent', task: t('A-3 안전 환기댐퍼 100% 개방 조치 완료'), progress: 100 },
-            { agentId: 'PM Agent', task: t('가열 마찰 부하 예지 정비 팀 배치 워크오더 접수 완료'), progress: 100 },
-            { agentId: 'Production Agent', task: t('B라인 가속 일시 감속(85%) 및 가드 제어 모드 유지'), progress: 100 }
-          ]
-        };
-      case 2: // Scenario C
-        return {
-          id: 'G_C',
-          title: t('한낮 에너지 전력 피크 셰이빙 및 절전'),
-          status: "In Progress",
-          tasks: [
-            { agentId: 'Energy Agent', task: t('배기팬 충방전 제약 및 ESS 120kW 방전 모드 실행'), progress: 100 },
-            { agentId: 'PM Agent', task: t('칠러 냉각수 순측 유압 보강 예지 정비 접수'), progress: 100 },
-            { agentId: 'Production Agent', task: t('비핵심 조업 건조실 냉간 감속 세이빙 완료'), progress: 95 }
-          ]
-        };
-      case 3: // Scenario D
-        return {
-          id: 'G_D',
-          title: t('긴급 딜리버리 초속 가용 및 품질 보증 관리'),
-          status: "In Progress",
-          tasks: [
-            { agentId: 'Logistics Agent', task: t('패키징 1라인 120% 초속 가이 딜리버리 합의 완료'), progress: 100 },
-            { agentId: 'Quality Agent', task: t('밀착 진공 노즐 접착 기압 증합 보완 사수'), progress: 95 },
-            { agentId: 'PM Agent', task: t('초고부하 정성 유성 기어 부품 사후 예약 배치 완료'), progress: 100 }
-          ]
-        };
-      case 0:
-      default:
-        return {
-          id: 'G_A',
-          title: t('전사 가동 효율 OEE 극대화'),
-          status: "In Progress",
-          tasks: [
-            { agentId: 'Quality Agent', task: t('실시간 불량 7.3% 차단 최적 온도 173°C 조도 유지'), progress: 95 },
-            { agentId: 'PM Agent', task: t('수축포장기 예지보전 자동 급유 장치 기동 완료'), progress: 100 },
-            { agentId: 'Energy Agent', task: t('부하 완화 절전 정책 수립'), progress: 90 },
-            { agentId: 'Safety Agent', task: t('L1 Safety Layer 수칙 가드 가동'), progress: 100 }
-          ]
-        };
-    }
+  const conflictData = {
+    conflict: t('생산성 극대화(Tact 단축) vs 검사 정확도(속도 제한) 상충 발생.'),
+    resolution: t('Resolved: 품질 우선 정책 적용')
   };
-  
-  const activeGoal = getActiveGoal();
 
-  const getConflictResolverData = () => {
-    if (!isTourMode) {
-      return {
-        conflict: t('생산성 극대화(Tact 단축) vs 검사 정확도(속도 제한) 상충 발생.'),
-        resolution: t('Resolved: 품질 우선 정책 적용')
-      };
-    }
-    switch (tourScenarioIdx) {
-      case 1:
-        return {
-          conflict: t('C구역 가스 감지 환기팬 완전 가동 시 기기 압력 변화로 생산 정지 상충 발생.'),
-          resolution: t('Resolved: L1 Safety 우선 제어 및 부분 우회 이송')
-        };
-      case 2:
-        return {
-          conflict: t('한낮 피크 전력 칠러 감속 가이드 vs 출하량 미달 생산 가동 속도 유지 상충 발생.'),
-          resolution: t('Resolved: ESS 즉각 전원 방전 지원 및 비핵심 순차 제어 완충')
-        };
-      case 3:
-        return {
-          conflict: t('출량 초가속 120% 스루풋 vs 접합 정밀 노즐 온도 밀착 스크래치 결합 우려 상충 발생.'),
-          resolution: t('Resolved: 냉각수 밸브 2도 보정 및 진공 밀착 유압 상향')
-        };
-      case 0:
-      default:
-        return {
-          conflict: t('생산성 극대화(Tact 단축) vs 검사 정확도(속도 제한) 상충 발생.'),
-          resolution: t('Resolved: 품질 우선 정책 적용')
-        };
-    }
-  };
-  const conflictData = getConflictResolverData();
-
-  const getSimulationResult = () => {
-    if (!isTourMode) {
-      return {
-        gain: t('생산성 +5.2% 예상'),
-        risk: t('품질 리스크 -1.5% 감소')
-      };
-    }
-    switch (tourScenarioIdx) {
-      case 1:
-        return {
-          gain: t('가스 누출 농도 80% 가속 희석'),
-          risk: t('안전 폭발 가드레일 위험도 0.05% 격하')
-        };
-      case 2:
-        return {
-          gain: t('한전 긴급 수요 감전 250kW 즉시 감축 완수'),
-          risk: t('위약 가산 페널티 회피 성공 (예상 절감: 1,200만원)')
-        };
-      case 3:
-        return {
-          gain: t('납량 긴급 수송량 100% 한시 조기 수용'),
-          risk: t('진공 유압 증대로 표면 원형 성형 스크래치 불량률 0.0% 보증')
-        };
-      case 0:
-      default:
-        return {
-          gain: t('생산성 +5.2% 예상'),
-          risk: t('품질 리스크 -1.5% 감소')
-        };
-    }
-  };
+  const getSimulationResult = () => ({
+    gain: t('생산성 +5.2% 예상'),
+    risk: t('품질 리스크 -1.5% 감소')
+  });
 
   const handleSimulate = () => {
     setIsSimulating(true);
-    // Dispatches checks
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 2, checklistIdx: 0 } }));
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 2, checklistIdx: 1 } }));
     safeTimeout(() => {
       setIsSimulating(false);
       setSimulationResult(getSimulationResult());
@@ -4208,9 +3262,6 @@ function SupervisorCenterView({
   };
 
   const generateEvidencePack = () => {
-    // Dispatches checks
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 2, checklistIdx: 0 } }));
-    window.dispatchEvent(new CustomEvent('tour-action', { detail: { step: 2, checklistIdx: 1 } }));
     const newPack: EvidencePack = {
       id: `EP-${Date.now()}`,
       decisionId: 'D-1024',
@@ -4222,9 +3273,9 @@ function SupervisorCenterView({
         { sensorId: 'TEMP-01', value: 78.5 }
       ],
       policyApplied: 'Quality',
-      approver: 'oddeye2796@gmail.com'
+      approver: CURRENT_OPERATOR
     };
-    setEvidencePacks([newPack, ...evidencePacks]);
+    setEvidencePacks(prev => [newPack, ...prev]);
   };
 
   return (
@@ -4236,7 +3287,8 @@ function SupervisorCenterView({
         </div>
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setIsOrchestrationOpen(true)}
+            onClick={onOpenOrchestration}
+            title={t('통합 대시보드의 AI 오케스트레이션 패널로 이동')}
             className="flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent border border-accent/20 rounded-lg text-xs font-bold hover:bg-accent/20 transition-colors"
           >
             <GitBranch size={16} />
@@ -4266,10 +3318,7 @@ function SupervisorCenterView({
                 {t('Active Goal:')} {t(activeGoal.title)}
               </h3>
               <span className="px-2 py-1 rounded bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-widest">
-                {activeGoal.id === 'G_B' ? t('ACTIVE (EMERGENCY)') :
-                 activeGoal.id === 'G_C' ? t('ACTIVE (PEAK)') :
-                 activeGoal.id === 'G_D' ? t('ACTIVE (RUSH ORDER)') :
-                 activeGoal.status}
+                {activeGoal.status}
               </span>
             </div>
             
@@ -4508,12 +3557,6 @@ function SupervisorCenterView({
         </div>
       </div>
 
-      <OrchestrationCenterModal 
-        isOpen={isOrchestrationOpen} 
-        onClose={() => setIsOrchestrationOpen(false)} 
-        isTourMode={isTourMode}
-        tourScenarioIdx={tourScenarioIdx}
-      />
     </div>
   );
 }
@@ -6870,33 +5913,13 @@ function ChatbotViewer() {
   );
 }
 
-function ModuleDetailView({ 
-  item, 
-  sensorData,
-  isTourMode = false,
-  tourScenarioIdx = 0
-}: { 
-  item: MenuItem; 
-  sensorData: SensorData[]; 
-  isTourMode?: boolean;
-  tourScenarioIdx?: number;
-}) {
+function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: SensorData[] }) {
   const live = useLiveValue();
   const chart = chartPalette();
   const [logs, setLogs] = useState<{time: string, msg: string, type: 'info' | 'warn' | 'success'}[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [activeManagementSubDetail, setActiveManagementSubDetail] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isTourMode) {
-      const activeStep = TOUR_SCENARIOS[tourScenarioIdx]?.steps[1];
-      if (activeStep && activeStep.targetMenuId === item.id) {
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: tourScenarioIdx, step: 1, checklistIdx: 0 } }));
-        window.dispatchEvent(new CustomEvent('tour-action', { detail: { scenario: tourScenarioIdx, step: 1, checklistIdx: 1 } }));
-      }
-    }
-  }, [item.id, isTourMode, tourScenarioIdx]);
 
   useEffect(() => {
     // Generate initial logs

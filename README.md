@@ -11,12 +11,11 @@ View the app in AI Studio: https://ai.studio/apps/f34d3e64-5048-4605-b1f5-365a07
 
 ## Languages
 
-The interface, the demo content and the Supervisor AI's answers are available in
+The interface, the plant content and the Supervisor AI's answers are available in
 **Japanese (primary), English and Korean**.
 
 - Japanese is the default. A visitor whose browser prefers English or Korean gets
-  that language instead, and the globe control in the header (or the segmented
-  control on the expo landing screen) switches at any time.
+  that language instead, and the globe control in the header switches at any time.
 - The choice is stored in `localStorage` and restored on the next visit; it also
   drives `<html lang>` and the language the Gemini Supervisor replies in.
 
@@ -25,7 +24,7 @@ See [`tools/README.md`](tools/README.md) for how to add or change copy.
 ## Appearance
 
 Dark, light, or follow the device — the control sits beside the language switcher
-in the header and on the landing screen. The choice persists under `impix-theme`.
+in the header. The choice persists under `impix-theme`.
 Every surface is painted from the CSS custom properties in `src/index.css`, so a
 new component follows the theme with no extra work; chart chrome resolves through
 `chartPalette()` in `src/theme` because Recharts takes literal colour props.
