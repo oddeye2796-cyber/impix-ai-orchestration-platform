@@ -47,10 +47,6 @@
   "AI接続設定",
   "AI connection settings"
  ],
- "API 키": [
-  "APIキー",
-  "API key"
- ],
  "저장": [
   "保存",
   "Save"
@@ -66,10 +62,6 @@
  "Google AI Studio에서 키 발급받기": [
   "Google AI Studioでキーを取得する",
   "Get a key from Google AI Studio"
- ],
- "키를 등록하지 않으면 AI 기능은 시뮬레이션 응답으로 동작합니다. 아래에 Gemini API 키를 입력하면 실제 모델에 연결됩니다.": [
-  "キーを登録しない場合、AI機能はシミュレーション応答で動作します。下にGemini APIキーを入力すると実際のモデルに接続されます。",
-  "Without a key the AI surfaces run on simulated responses. Enter a Gemini API key below to connect to the real model."
  ],
  "키는 이 브라우저에만 저장되며 서버로 전송되지 않습니다. 공용 단말에서는 사용 후 삭제해 주세요.": [
   "キーはこのブラウザにのみ保存され、サーバーへは送信されません。共用端末では使用後に削除してください。",

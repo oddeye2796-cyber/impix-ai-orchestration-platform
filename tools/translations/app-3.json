@@ -11,21 +11,9 @@
   "Supervisorが各ドメイン特化エージェントの提案を集約し、優先順位とガードレールに従って最終合意を導き出す過程を示します。",
   "Shows the Supervisor collecting proposals from each domain agent and driving them to a final agreement under the priority order and guardrails."
  ],
- "🔥 [통합] 6대 에이전트 전사 최적화 조율": [
-  "🔥[統合]6エージェントによる全社最適化の調整",
-  "🔥 [Unified] Six-agent plant-wide optimization"
- ],
  "생산 극대화 목표 하에 안전, 예지보전, 품질, 에너지, 물류 에이전트 간의 동시 다자 협업 및 실시간 중재": [
   "生産最大化を目標に、安全・予知保全・品質・エネルギー・物流の各エージェントが同時に協働し、リアルタイムで調停を行います",
   "Safety, maintenance, quality, energy and logistics collaborating simultaneously — and arbitrated live — under a maximize-output goal"
- ],
- "🚨 [EXPO] 가스 미세 누출 감지 대응": [
-  "🚨[EXPO]微量ガス漏れ検知への対応",
-  "🚨 [EXPO] Trace gas-leak response"
- ],
- "⚡ [EXPO] 피크 전력 긴급 부하 제약": [
-  "⚡[EXPO]ピーク電力の緊急負荷制限",
-  "⚡ [EXPO] Emergency peak-load curtailment"
  ],
  "B라인 생산 속도 최적화 충돌": [
   "Bライン生産速度の最適化衝突",
@@ -91,25 +79,9 @@
   "Resolved: 品質優先ポリシーを適用",
   "Resolved: quality-first policy applied"
  ],
- "Resolved: L1 Safety 우선 제어 및 부분 우회 이송": [
-  "Resolved: L1 Safety優先制御と部分的な迂回搬送",
-  "Resolved: L1 safety precedence with partial detour transport"
- ],
- "Resolved: ESS 즉각 전원 방전 지원 및 비핵심 순차 제어 완충": [
-  "Resolved: ESSの即時放電支援と非重要設備の順次制御による緩衝",
-  "Resolved: immediate ESS discharge backed by staged non-critical curtailment"
- ],
- "Resolved: 냉각수 밸브 2도 보정 및 진공 밀착 유압 상향": [
-  "Resolved: 冷却水バルブの2度補正と真空密着油圧の引き上げ",
-  "Resolved: cooling-water valve trimmed 2° and vacuum-seal pressure raised"
- ],
  "C구역 CCTV에서 연기 감지. 즉시 가동 중단 및 소방 셔터 작동을 요청합니다.": [
   "C区域のCCTVで煙を検知しました。直ちに稼働停止と防火シャッターの作動を要請します。",
   "Smoke detected on Zone C CCTV. Requesting an immediate stop and fire-shutter activation."
- ],
- "C구역 가스 감지 환기팬 완전 가동 시 기기 압력 변화로 생산 정지 상충 발생.": [
-  "C区域のガス検知に伴い換気ファンを全開にすると、機器の圧力変化で生産停止と衝突します。",
-  "Running the exhaust fans flat out for the Zone C gas reading shifts equipment pressure and conflicts with keeping production up."
  ],
  "A-3 구역에서 메탄 가스 15ppm 감지. 환기 설비 풀 가동 및 국소 소화 제어가 시급합니다.": [
   "A-3区域でメタンガス15ppmを検知。換気設備の全開稼働と局所消火制御が急務です。",
@@ -131,61 +103,13 @@
   "DR(需要応答)の削減未達による大規模ペナルティ(約1,200万ウォン相当)と停電の連鎖を回避します。ESSを直ちに起動し、非重要な乾燥工程の冷間待機周期を後ろ倒しして調整します。",
   "Avoiding the large penalty for missing the demand-response cut (about ₩12M) and the knock-on outage. The ESS starts now and the non-critical drying process has its cold-hold cycle pushed back."
  ],
- "B라인 가속 일시 감속(85%) 및 가드 제어 모드 유지": [
-  "Bラインの加速を一時的に85%へ減速し、ガード制御モードを維持",
-  "Line B eased back to 85 % with guard-control mode held"
- ],
- "배기팬 충방전 제약 및 ESS 120kW 방전 모드 실행": [
-  "排気ファンの充放電制約とESS 120kW放電モードの実行",
-  "Exhaust-fan charge limits with the ESS in 120 kW discharge mode"
- ],
- "비핵심 조업 건조실 냉간 감속 세이빙 완료": [
-  "非重要工程の乾燥室を冷間減速し、省エネを完了",
-  "Non-critical drying room slowed to cold-hold; saving secured"
- ],
- "밀착 진공 노즐 접착 기압 증합 보완 사수": [
-  "密着真空ノズルの接着圧を補正して品質を死守",
-  "Vacuum-nozzle seal pressure trimmed to hold quality"
- ],
- "L1 Safety Layer 수칙 가드 가동": [
-  "L1 Safety Layerの規則ガードを起動",
-  "L1 Safety Layer rule guard engaged"
- ],
  "3개 에이전트 합의 완료 (신뢰도 98.2%)": [
   "3エージェントの合意が完了(信頼度98.2%)",
   "Three agents in agreement (98.2 % confidence)"
  ],
- "가스 누출 농도 80% 가속 희석": [
-  "ガス漏れ濃度を80%まで加速希釈",
-  "Leak concentration diluted 80 % faster"
- ],
- "A-3 안전 환기댐퍼 100% 개방 조치 완료": [
-  "A-3安全換気ダンパーの100%開放措置が完了",
-  "Zone A-3 safety damper opened to 100 %"
- ],
- "가열 마찰 부하 예지 정비 팀 배치 워크오더 접수 완료": [
-  "加熱摩擦負荷に対する予知保全チームの配置ワークオーダーを受理",
-  "Work order raised to dispatch the maintenance team for the friction-heat load"
- ],
- "납량 긴급 수송량 100% 한시 조기 수용": [
-  "緊急輸送量を100%、期限内に前倒しで受け入れ",
-  "Urgent shipment volume accepted in full and ahead of time"
- ],
  "국가 전력망 주파수 급락 경보에 따른 신속 부하 셰딩": [
   "国家電力網の周波数急低下警報に伴う迅速な負荷遮断",
   "Rapid load shedding on a national grid under-frequency alert"
- ],
- "돌발 감지 분격 및 L1 안전 차단 가드": [
-  "突発検知への即応とL1安全遮断ガード",
-  "Snap response to the detection plus the L1 safety cut-off guard"
- ],
- "긴급 딜리버리 초속 가용 및 품질 보증 관리": [
-  "緊急デリバリーの即応可用性と品質保証の管理",
-  "Rush-delivery readiness with quality assurance in hand"
- ],
- "부하 완화 절전 정책 수립": [
-  "負荷緩和のための省電力ポリシーを策定",
-  "Load-relief power-saving policy established"
  ],
  "가스 누출 위험 상황 발생 시 위험 무력화 및 조치 가이드": [
   "ガス漏れの危険発生時における危険の無力化と対応ガイド",
