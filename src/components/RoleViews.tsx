@@ -345,7 +345,7 @@ export function WorkerView({
               <button onClick={() => setZone(null)} className="text-[10px] font-bold text-accent hover:underline">{t('전체 보기')}</button>
             )}
           </div>
-          <div className="relative h-[420px] overflow-hidden rounded-xl border border-border bg-bg/50"
+          <div className="relative h-[460px] overflow-hidden rounded-xl border border-border bg-bg/50"
             style={{ backgroundImage: 'radial-gradient(color-mix(in srgb, var(--color-text-secondary) 20%, transparent) 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
             {ACTIVE_SITE.zones.map(z => {
               const here = incidents.filter(i => i.zoneId === z.id);
@@ -353,6 +353,32 @@ export function WorkerView({
               const waiting = here.filter(i => i.stage === 3);
               const state = live.length > 0 ? 'alert' : waiting.length > 0 ? 'waiting' : 'ok';
               const top = live[0] ?? waiting[0];
+              // The AIs watching this zone sit on it as icons; the one acting
+              // pulses and says what it is doing in a speech bubble.
+              const watchers = (Object.keys(ACTIVE_SITE.agentZone) as AgentKey[]).filter(k => ACTIVE_SITE.agentZone[k] === z.id);
+              if (top && !watchers.includes(top.agent)) watchers.push(top.agent);
+              const flat = z.h < 20;
+              const ai = (
+                <div className={cn("flex min-w-0 items-start gap-1.5", flat && "flex-1")}>
+                  {watchers.map(k => (
+                    <span
+                      key={k}
+                      title={t(AGENT_STYLE[k].name)}
+                      className={cn("relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 bg-surface shadow", top?.agent === k && "scale-110")}
+                      style={{ borderColor: AGENT_STYLE[k].hex, color: AGENT_STYLE[k].hex }}
+                    >
+                      {top?.agent === k && <span className="absolute inset-[-4px] animate-ping rounded-full border-2 opacity-50" style={{ borderColor: AGENT_STYLE[k].hex }} />}
+                      {AGENT_STYLE[k].icon}
+                    </span>
+                  ))}
+                  {top && (
+                    <span className="relative min-w-0 flex-1 rounded-lg border-2 bg-surface px-1.5 py-1 text-[9px] font-bold leading-snug text-text-primary shadow-lg" style={{ borderColor: AGENT_STYLE[top.agent].hex }}>
+                      <span className="absolute -left-[6px] top-2 h-2.5 w-2.5 rotate-45 border-b-2 border-l-2 bg-surface" style={{ borderColor: AGENT_STYLE[top.agent].hex }} />
+                      <span className="relative line-clamp-2">{t(top.action)}</span>
+                    </span>
+                  )}
+                </div>
+              );
               return (
                 <button
                   key={z.id}
@@ -361,17 +387,19 @@ export function WorkerView({
                   onClick={() => setZone(zone === z.id ? null : z.id)}
                   aria-pressed={zone === z.id}
                   className={cn(
-                    "absolute flex flex-col justify-between rounded-lg border-2 p-2 text-left transition-all",
+                    "absolute flex rounded-lg border-2 p-2 text-left transition-all",
+                    flat ? "flex-row items-center gap-3" : "flex-col justify-between gap-1.5",
                     state === 'alert' ? "border-danger bg-danger/10 shadow-[0_0_24px_rgba(239,68,68,0.35)]" :
                     state === 'waiting' ? "border-warning bg-warning/10" : "border-border bg-surface/70 hover:border-accent/50",
                     zone === z.id && "ring-2 ring-accent ring-offset-2 ring-offset-bg",
                   )}
                   style={{ left: `${z.x}%`, top: `${z.y}%`, width: `${z.w}%`, height: `${z.h}%` }}
                 >
-                  <div>
+                  <div className={cn(flat && "shrink-0")}>
                     <div className="text-[11px] font-black leading-tight">{t(z.name)}</div>
                     <div className="text-[9px] text-text-secondary">{t(z.equipment)}</div>
                   </div>
+                  {ai}
                   {top ? (
                     <div className={cn(
                       "flex items-start gap-1 rounded-md px-1.5 py-1 text-[10px] font-bold leading-snug",
@@ -401,7 +429,7 @@ export function WorkerView({
             {t('사건 트래커')}
             {zone && <span className="text-[11px] font-medium text-text-secondary">· {zoneName(zone)}</span>}
           </h3>
-          <div className="max-h-[470px] flex-1 space-y-2.5 overflow-y-auto pr-1 custom-scrollbar">
+          <div className="max-h-[510px] flex-1 space-y-2.5 overflow-y-auto pr-1 custom-scrollbar">
             {shown.length === 0 && (
               <div className="rounded-lg border border-dashed border-border py-8 text-center text-[11px] text-text-secondary">{t('이 구역에는 오늘 사건이 없어요')}</div>
             )}
