@@ -3469,6 +3469,7 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
+      "src/config/pharmaSite.ts",
       "src/config/siteProfile.ts",
       "src/services/demoResponses.ts",
       "src/services/telemetry.ts"
@@ -4088,6 +4089,7 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
+      "src/config/pharmaSite.ts",
       "src/config/siteProfile.ts"
     ]
   },
@@ -4492,6 +4494,20 @@
     ]
   },
   {
+    "key": "3D 배치도 불러오는 중…",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "3D 배치도를 그릴 수 없어 2D로 봐 주세요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "AI 대응 중",
     "lang": "ko",
     "files": [
@@ -4639,6 +4655,13 @@
     ]
   },
   {
+    "key": "드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "라인이 정상입니다. 이상이 생기면 배치도에 표시돼요.",
     "lang": "ko",
     "files": [
@@ -4668,6 +4691,13 @@
   },
   {
     "key": "반려",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "배치도 보기 방식",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5048,6 +5078,7 @@
     "key": "AI 슈퍼바이저 서버",
     "lang": "ko",
     "files": [
+      "src/config/pharmaSite.ts",
       "src/config/siteProfile.ts"
     ]
   },
@@ -5055,18 +5086,179 @@
     "key": "AMR 이송 라인",
     "lang": "ko",
     "files": [
+      "src/config/pharmaSite.ts",
       "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "AMR 이송 통로",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "AMR 충전 도크",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
     ]
   },
   {
     "key": "ESS 120kW · AMR 충전 도크",
     "lang": "ko",
     "files": [
+      "src/config/pharmaSite.ts",
       "src/config/siteProfile.ts"
     ]
   },
   {
-    "key": "PTP III 포장실 [2112/2118]",
+    "key": "관제실",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "라벨러",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "랙 · 출고 컨베이어",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "봉합기",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "세척기 No.11/12",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts",
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "세척실",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts",
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "유틸리티실",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "창고",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "카토너",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "케이스 포장기",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "팔레타이저",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장1라인",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts",
+      "src/config/siteProfile.ts",
+      "src/services/demoResponses.ts",
+      "src/services/telemetry.ts"
+    ]
+  },
+  {
+    "key": "포장기",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장기 · 카토너 · 팔레타이저",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장동",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 1",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 2",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 3",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 4",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 5",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "PTP III 포장실",
     "lang": "ko",
     "files": [
       "src/config/siteProfile.ts"
@@ -5080,20 +5272,6 @@
     ]
   },
   {
-    "key": "세척기 No.11/12",
-    "lang": "ko",
-    "files": [
-      "src/config/siteProfile.ts"
-    ]
-  },
-  {
-    "key": "세척실 [2102]",
-    "lang": "ko",
-    "files": [
-      "src/config/siteProfile.ts"
-    ]
-  },
-  {
     "key": "수축포장기-01 · 케이스패커-02",
     "lang": "ko",
     "files": [
@@ -5101,7 +5279,7 @@
     ]
   },
   {
-    "key": "이송 통로 [2111]",
+    "key": "이송 통로",
     "lang": "ko",
     "files": [
       "src/config/siteProfile.ts"
@@ -5122,23 +5300,7 @@
     ]
   },
   {
-    "key": "포장1라인",
-    "lang": "ko",
-    "files": [
-      "src/config/siteProfile.ts",
-      "src/services/demoResponses.ts",
-      "src/services/telemetry.ts"
-    ]
-  },
-  {
-    "key": "포장1라인 [2109]",
-    "lang": "ko",
-    "files": [
-      "src/config/siteProfile.ts"
-    ]
-  },
-  {
-    "key": "포장라인 보관실 [2129]",
+    "key": "포장라인 보관실",
     "lang": "ko",
     "files": [
       "src/config/siteProfile.ts"

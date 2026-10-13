@@ -1,0 +1,110 @@
+{
+ "3D 배치도 불러오는 중…": [
+  "3D配置図を読み込み中…",
+  "Loading 3D floor map…"
+ ],
+ "3D 배치도를 그릴 수 없어 2D로 봐 주세요": [
+  "3D配置図を表示できません。2Dでご覧ください",
+  "Can't draw the 3D map here, please switch to 2D"
+ ],
+ "드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동": [
+  "ドラッグ: 回転 · ホイール: 拡大 · 右ドラッグ: 移動",
+  "Drag: rotate · Wheel: zoom · Right-drag: pan"
+ ],
+ "배치도 보기 방식": [
+  "配置図の表示方式",
+  "Floor map view"
+ ],
+ "세척실": [
+  "洗浄室",
+  "Washing room"
+ ],
+ "관제실": [
+  "管制室",
+  "Control room"
+ ],
+ "유틸리티실": [
+  "ユーティリティ室",
+  "Utility room"
+ ],
+ "AMR 이송 통로": [
+  "AMR搬送通路",
+  "AMR aisle"
+ ],
+ "이송 통로": [
+  "搬送通路",
+  "Transport aisle"
+ ],
+ "PTP III 포장실": [
+  "PTP III 包装室",
+  "PTP III packaging room"
+ ],
+ "카토너": [
+  "カートナー",
+  "Cartoner"
+ ],
+ "AMR 충전 도크": [
+  "AMR充電ドック",
+  "AMR charging dock"
+ ],
+ "포장라인 보관실": [
+  "包装ライン保管室",
+  "Packaging line storage"
+ ],
+ "포장동": [
+  "包装棟",
+  "Packaging hall"
+ ],
+ "포장라인 1": [
+  "包装ライン 1",
+  "Packaging line 1"
+ ],
+ "포장라인 2": [
+  "包装ライン 2",
+  "Packaging line 2"
+ ],
+ "포장라인 3": [
+  "包装ライン 3",
+  "Packaging line 3"
+ ],
+ "포장라인 4": [
+  "包装ライン 4",
+  "Packaging line 4"
+ ],
+ "포장라인 5": [
+  "包装ライン 5",
+  "Packaging line 5"
+ ],
+ "포장기": [
+  "包装機",
+  "Packaging machine"
+ ],
+ "케이스 포장기": [
+  "ケース包装機",
+  "Case packer"
+ ],
+ "봉합기": [
+  "封緘機",
+  "Sealer"
+ ],
+ "라벨러": [
+  "ラベラー",
+  "Labeler"
+ ],
+ "팔레타이저": [
+  "パレタイザー",
+  "Palletizer"
+ ],
+ "포장기 · 카토너 · 팔레타이저": [
+  "包装機 · カートナー · パレタイザー",
+  "Packaging machine · Cartoner · Palletizer"
+ ],
+ "창고": [
+  "倉庫",
+  "Warehouse"
+ ],
+ "랙 · 출고 컨베이어": [
+  "ラック · 出庫コンベヤ",
+  "Racks · Outfeed conveyor"
+ ]
+}

@@ -51,6 +51,8 @@ if (expected) {
 // The integrated dashboard opens on the field view (floor map and incident
 // tracker); the engineer view carries the KPI cards and the AI orchestration
 // panel.
+// The 3D map loads in its own chunk, so wait for its zone tags to appear.
+await page.locator('[data-testid^="zone-"]').first().waitFor({ timeout: 20000 }).catch(() => {});
 const zones = await page.locator('[data-testid^="zone-"]').count();
 check('field view floor map rendered', zones > 0, `found ${zones} zones`);
 await page.getByTestId('role-manager').click();
