@@ -35,9 +35,6 @@ import {
   Layers,
   Box,
   Play,
-  Pause,
-  SkipForward,
-  SkipBack,
   Square,
   Settings2,
   Sliders,
@@ -155,7 +152,7 @@ import DemoModeBadge from './components/DemoModeBadge';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
 import { useLiveValue } from './hooks/useLiveValue';
-import { livingSeries } from './services/telemetry';
+import { livingSeries, type PlantState } from './services/telemetry';
 import { chartPalette, useTheme } from './theme';
 
 /** Placeholder shown while a lazily loaded chunk arrives. */
@@ -1589,422 +1586,27 @@ function DashboardView({
 
 
 
-const AgentAvatarIcon = ({ id, width = 48, height = 48, active = false }: { id: string, width?: number, height?: number, active?: boolean }) => {
-  const getAgentColors = (agentId: string) => {
-    switch (agentId) {
-      case 'prod': return { helmetColor: '#3b82f6', vestColor: '#3b82f6' };
-      case 'qual': return { helmetColor: '#10b981', vestColor: '#059669' };
-      case 'pm': return { helmetColor: '#8b5cf6', vestColor: '#7c3aed' };
-      case 'energy': return { helmetColor: '#f59e0b', vestColor: '#d97706' };
-      case 'safety': return { helmetColor: '#ef4444', vestColor: '#dc2626' };
-      case 'logistics': return { helmetColor: '#eab308', vestColor: '#ca8a04' };
-      default: return { helmetColor: '#06b6d4', vestColor: '#0891b2' };
-    }
-  };
-
-  const details = getAgentColors(id);
-  const isSupervisor = id === 'supervisor';
-
-  return (
-    <svg 
-      width={width} 
-      height={height} 
-      viewBox="0 0 100 100" 
-      className={cn(
-        "rounded-full transition-all duration-300 drop-shadow-md", 
-        active ? "scale-110 ring-4 ring-cyan-400 ring-offset-2 ring-offset-[#f1f5f9] drop-shadow-[0_0_12px_rgba(6,182,212,0.6)]" : "opacity-95 hover:opacity-100 hover:scale-105"
-      )}
-    >
-      <defs>
-        <linearGradient id={`grad-${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={isSupervisor ? '#00f0ff' : details.helmetColor} />
-          <stop offset="100%" stopColor="#334155" />
-        </linearGradient>
-        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.3"/>
-        </filter>
-      </defs>
-
-      {/* Outer Glow Ring for Speaking Agents */}
-      {active && (
-        <circle cx="50" cy="50" r="47" fill="none" stroke="#22d3ee" strokeWidth="2.5" className="animate-pulse" />
-      )}
-
-      {/* Profile Background circle */}
-      <circle cx="50" cy="50" r="43" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
-      
-      {isSupervisor ? (
-        // Holographic AI Supervisor
-        <g>
-          <circle cx="50" cy="50" r="28" fill="none" stroke="#22d3ee" strokeWidth="1" strokeDasharray="3 3" />
-          {/* Animated matrix particles */}
-          <circle cx="50" cy="50" r="38" fill="none" stroke="#0891b2" strokeWidth="0.8" opacity="0.3" />
-          <line x1="20" y1="50" x2="80" y2="50" stroke="#06b6d4" strokeWidth="0.5" opacity="0.2" />
-          <line x1="50" y1="20" x2="50" y2="80" stroke="#06b6d4" strokeWidth="0.5" opacity="0.2" />
-          
-          <path d="M 50 18 C 41 18 33 26 33 36 C 33 44 40 47 41 55 C 42 60 38 67 50 67 C 62 67 58 60 59 55 C 60 47 67 44 67 36 C 67 26 59 18 50 18 Z" fill="url(#grad-supervisor)" opacity="0.9" filter="url(#shadow)" />
-          <circle cx="50" cy="35" r="4" fill="#ffffff" className="animate-ping" style={{ animationDuration: '2s' }} />
-          <circle cx="50" cy="35" r="2.5" fill="#ffffff" />
-          <path d="M 32 78 C 44 71, 56 71, 68 78" fill="none" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" />
-        </g>
-      ) : (
-        // Human worker avatar with Safety Helmets and detailed features for "Real Worker Dialog"
-        <g>
-          {/* Shoulders / Uniform clothes */}
-          <path d="M 22 80 C 22 68, 30 62, 50 62 C 70 62, 78 68, 78 80 Z" fill={`url(#grad-${id})`} filter="url(#shadow)" />
-          <line x1="50" y1="62" x2="50" y2="80" stroke="#f1f5f9" strokeWidth="1.5" opacity="0.6" />
-          
-          {/* High-visibility safety vests with reflective stripes */}
-          <path d="M 32 62 L 36 80 M 68 62 L 64 80" fill="none" stroke="#22c55e" strokeWidth="3" opacity="0.8" />
-          <path d="M 32 62 L 36 80 M 68 62 L 64 80" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.9" />
-
-          {/* Portrait Head / Neck */}
-          <rect x="44" y="50" width="12" height="14" fill="#fbcfe8" opacity="0.1" /> {/* Neck base */}
-          <rect x="44" y="49" width="12" height="11" fill="#fed7aa" rx="1" />
-          <circle cx="50" cy="42" r="16" fill="#fde047" opacity="0.2" /> {/* Glow */}
-          <circle cx="50" cy="42" r="15.5" fill="#ffedd5" />
-
-          {/* Safety Hard-Hat Helmet with 3D cap brim */}
-          <path d="M 29 34 C 29 20, 71 20, 71 34 Z" fill={details.helmetColor} filter="url(#shadow)" />
-          <path d="M 24 34 Q 50 31 76 34" stroke={details.helmetColor} strokeWidth="3.5" strokeLinecap="round" />
-          <path d="M 26 34 L 74 34" stroke="#ffffff" strokeWidth="0.8" opacity="0.4" />
-          
-          {/* Helmet Ridge Crest */}
-          <rect x="46" y="21" width="8" height="10" fill={details.helmetColor} rx="1" stroke="#ffffff" strokeWidth="0.5" />
-          
-          {/* Helmet Crest/Logo Emblem (Green Cross for safety, lightning for energy, star/badge for lead) */}
-          <rect x="48" y="23" width="4" height="6" fill="#ffffff" rx="0.5" />
-          {id === 'safety' && (
-            <path d="M 50 24 L 50 28 M 48 26 L 52 26" stroke="#ef4444" strokeWidth="1" strokeLinecap="round" />
-          )}
-          {id === 'energy' && (
-            <polygon points="50,23 52,26 49,26 51,29" fill="#f59e0b" />
-          )}
-          {id === 'prod' && (
-            <circle cx="50" cy="26" r="1" fill="#3b82f6" />
-          )}
-          {id === 'qual' && (
-            <path d="M 49 26 L 51 26" stroke="#10b981" strokeWidth="1" />
-          )}
-
-          {/* Eyes & Eyebrows */}
-          <path d="M 40 37 Q 44 36 46 38" fill="none" stroke="#1e293b" strokeWidth="1.2" />
-          <path d="M 54 38 Q 56 36 60 37" fill="none" stroke="#1e293b" strokeWidth="1.2" />
-          <circle cx="43" cy="41" r="2.2" fill="#0f172a" />
-          <circle cx="57" cy="41" r="2.2" fill="#0f172a" />
-          
-          {/* Communication Headset / Boom Mic (Critical for intercom vibe) */}
-          <path d="M 66 43 C 66 48, 62 50, 53 49" fill="none" stroke="#475569" strokeWidth="1.8" strokeLinecap="round" />
-          <circle cx="52" cy="49" r="2" fill="#0f172a" />
-          <circle cx="65" cy="43" r="3.5" fill="#334155" />
-
-          {/* Facial expression - Professional communication smile! */}
-          <path d="M 46 48 Q 50 51 54 48" fill="none" stroke="#27272a" strokeWidth="1.6" strokeLinecap="round" />
-        </g>
-      )}
-    </svg>
-  );
-};
-
-const FactoryUnit = ({ 
-  id, 
-  title, 
-  subtitle, 
-  status, 
-  active = false, 
-  critic = false 
-}: { 
-  id: string; 
-  title: string; 
-  subtitle: string; 
-  status: string; 
-  active?: boolean; 
-  critic?: boolean;
-}) => {
-  // Ultra realistic industrial steel chassis colors matching the modern 21xx actual equipment view
-  let ledColor = "bg-slate-400";
-  let statusTextColor = "text-slate-400 opacity-90";
-  let panelBorder = "border-slate-800/80";
-
-  if (active) {
-    if (critic) {
-      panelBorder = "border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.3)]";
-      ledColor = "bg-rose-500 shadow-[0_0_8px_#f43f5e] animate-pulse";
-      statusTextColor = "text-rose-400 font-extrabold";
-    } else {
-      panelBorder = "border-[#0ea5e9] shadow-[0_0_15px_rgba(14,165,233,0.2)]";
-      ledColor = "bg-[#0ea5e9] shadow-[0_0_8px_#0ea5e9]";
-      statusTextColor = "text-sky-400 font-extrabold";
-    }
-  }
-
-  return (
-    <div 
-      className={cn(
-        "rounded-xl border flex flex-col justify-between w-[184px] h-[105px] select-none text-slate-100 transition-all duration-500",
-        "bg-gradient-to-br from-[#111827] via-[#0f172a] to-[#030712] shadow-xl",
-        panelBorder
-      )}
-      style={{
-        boxShadow: active 
-          ? (critic ? "0 8px 20px -4px rgba(244,63,94,0.25)" : "0 8px 20px -4px rgba(14,165,233,0.15)")
-          : "0 6px 12px -3px rgba(0,0,0,0.4)"
-      }}
-    >
-      {/* 3D Top-bevel industrial design bar */}
-      <div className="bg-slate-900 border-b border-slate-800 px-2 py-1 rounded-t-xl flex items-center justify-between text-[6px]">
-        <span className="font-mono uppercase tracking-widest text-[5.5px] text-slate-400 font-bold">{subtitle}</span>
-        <div className="flex items-center gap-1.5">
-          {/* Active 3D Beacon light */}
-          <span className={cn("w-1.5 h-1.5 rounded-full", ledColor)} />
-          <span className={cn("font-black tracking-wider text-[6.5px] uppercase", statusTextColor)}>{status}</span>
-        </div>
-      </div>
-
-      {/* Realistic mechanical/dashboard view inside */}
-      <div className="flex-1 p-1 px-1.5 flex items-center justify-between gap-2 bg-[#050913]/95">
-        {id === 'washing' && (
-          <div className="flex items-center gap-2 w-full">
-            {/* Custom SVG Drawing of Washing Nozzle spray chamber */}
-            <div className="relative shrink-0 w-11 h-11 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" className="text-sky-400">
-                {/* Chamber outer outline */}
-                <rect x="4" y="4" width="32" height="32" rx="3" stroke="#475569" strokeWidth="1" />
-                {/* Rotating wash drum inside */}
-                <motion.circle 
-                  cx="20" 
-                  cy="20" 
-                  r="11" 
-                  stroke="#38bdf8" 
-                  strokeWidth="1.5" 
-                  strokeDasharray="4 2"
-                  animate={{ rotate: active && !critic ? 360 : 0 }}
-                  transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                />
-                {/* Top/Bottom Spray jets */}
-                <path d="M12 9 L20 15 L28 9" stroke="#93c5fd" strokeWidth="1" strokeLinecap="round" opacity={active && !critic ? 0.9 : 0.2} />
-                <path d="M12 31 L20 25 L28 31" stroke="#93c5fd" strokeWidth="1" strokeLinecap="round" opacity={active && !critic ? 0.9 : 0.2} />
-                
-                {/* Water Mist droplets */}
-                {active && !critic && (
-                  <>
-                    <motion.circle cx="16" cy="16" r="1" fill="#60a5fa" animate={{ y: [0, 6, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} />
-                    <motion.circle cx="24" cy="24" r="1" fill="#60a5fa" animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 0.9, delay: 0.2 }} />
-                    <motion.circle cx="20" cy="18" r="0.8" fill="#e0f2fe" animate={{ x: [-3, 3, -3] }} transition={{ repeat: Infinity, duration: 1.2 }} />
-                  </>
-                )}
-                {critic && (
-                  <circle cx="20" cy="20" r="13" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2" className="animate-pulse" />
-                )}
-              </svg>
-              {critic && <div className="absolute inset-0 bg-red-600/15 animate-pulse" />}
-            </div>
-            
-            <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-[8.5px] font-black text-slate-200 uppercase tracking-tight truncate">WASHING [2102]</span>
-              <span className="text-[6.5px] text-cyan-400 font-bold font-mono leading-none mt-0.5 whitespace-nowrap">
-                {t('유압:')} {active && critic ? "⚠️ 1.2 bar" : "2.1 bar"}
-              </span>
-              <span className="text-[5.5px] text-slate-400 font-mono mt-0.5">{t('온도:')} {critic ? t('72.1°C (하한)') : "82.4°C"}</span>
-              <span className="text-[5.5px] text-slate-400 font-mono">{t('순환수량: 3.2 m³/h')}</span>
-            </div>
-          </div>
-        )}
-
-        {id === 'ptp' && (
-          <div className="flex flex-col w-full">
-            <div className="flex items-center justify-between pb-0.5 mb-1 border-b border-slate-900">
-              <span className="text-[8.5px] font-black text-slate-200 uppercase tracking-tight">PTP Sealer 1 [2112]</span>
-              <span className="text-[6px] text-emerald-400 font-mono font-bold">{active ? t('가속가동') : t('정상가동')}</span>
-            </div>
-            
-            <div className="flex items-center gap-1.5 w-full">
-              {/* Mold cavities & thermoformer graphic */}
-              <div className="relative shrink-0 w-8 h-8 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden">
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                  {/* Sealing Roller wheels */}
-                  <motion.circle 
-                    cx="8" 
-                    cy="14" 
-                    r="5" 
-                    stroke="#475569" 
-                    strokeWidth="1"
-                    animate={{ rotate: active ? 360 : 0 }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                  />
-                  <motion.circle 
-                    cx="20" 
-                    cy="14" 
-                    r="5" 
-                    stroke="#475569" 
-                    strokeWidth="1"
-                    animate={{ rotate: active ? -360 : 0 }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                  />
-                  <line x1="8" y1="14" x2="20" y2="14" stroke="#a7f3d0" strokeWidth="1" strokeDasharray="2 2" />
-                  {active && <rect x="11" y="11" width="6" height="6" fill="#10b981" opacity="0.3" className="animate-pulse" />}
-                </svg>
-              </div>
-
-              <div className="flex flex-col flex-1 min-w-0">
-                <div className="h-3.5 bg-slate-950 rounded border border-slate-900 flex items-center px-1 overflow-hidden relative">
-                  <div className="absolute inset-y-0 left-0 bg-[#10b981]/10 w-full" />
-                  <div className="flex gap-1 z-10 w-full justify-around">
-                    {[0, 1, 2, 3].map((n) => (
-                      <span 
-                        key={n} 
-                        className={cn(
-                          "w-1 h-1.5 rounded-sm bg-emerald-500 border border-emerald-600 transition-transform", 
-                          active ? "animate-bounce" : ""
-                        )} 
-                        style={{ animationDelay: `${n * 0.15}s`, animationDuration: '0.6s' }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div className="flex justify-between w-full text-[5.5px] text-slate-400 font-mono mt-0.5">
-                  <span>{t('온도: 185°C')}</span>
-                  <span>{t('속도:')} {active ? "85 c/m" : "62 c/m"}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {id === 'bottle' && (
-          <div className="flex items-center gap-2 w-full">
-            {/* Bottle filling machine diagram */}
-            <div className="relative shrink-0 w-11 h-11 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                {/* Rotary filling plate */}
-                <rect x="5" y="5" width="30" height="30" rx="4" stroke="#334155" strokeWidth="1" />
-                {/* Nozzle arm */}
-                <line x1="12" y1="8" x2="28" y2="8" stroke="#94a3b8" strokeWidth="2" />
-                <line x1="15" y1="8" x2="15" y2="16" stroke="#cbd5e1" strokeWidth="1.5" />
-                <line x1="25" y1="8" x2="25" y2="16" stroke="#cbd5e1" strokeWidth="1.5" />
-                
-                {/* Flowing liquid when active */}
-                {active && (
-                  <>
-                    <line x1="15" y1="16" x2="15" y2="28" stroke="#38bdf8" strokeWidth="1" strokeDasharray="3 2" />
-                    <line x1="25" y1="16" x2="25" y2="28" stroke="#38bdf8" strokeWidth="1" strokeDasharray="3 2" />
-                  </>
-                )}
-
-                {/* Vials being filled */}
-                <rect x="13" y="27" width="4" height="7" rx="0.5" fill="#e2e8f0" stroke="#475569" strokeWidth="0.5" />
-                <rect x="23" y="27" width="4" height="7" rx="0.5" fill="#e2e8f0" stroke="#475569" strokeWidth="0.5" />
-                {active && <rect x="14" y="29" width="2" height="4" fill="#10b981" opacity="0.75" />}
-                {active && <rect x="24" y="29" width="2" height="4" fill="#10b981" opacity="0.75" />}
-              </svg>
-            </div>
-
-            <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-[8.5px] font-black text-slate-200 uppercase tracking-tight">Bottle Filler II [2113]</span>
-              <span className="text-[6.5px] text-[#fbbf24] font-bold font-mono leading-none mt-0.5">
-                {t('속도:')} {active ? t('최적 가속 120%') : t('정상 대기 100%')}
-              </span>
-              <span className="text-[5.5px] text-slate-400 font-mono mt-0.5">{t('충전율: 50.0 ml')}</span>
-              <span className="text-[5.5px] text-slate-400 font-mono">{t('캡핑 수율: 99.8%')}</span>
-            </div>
-          </div>
-        )}
-
-        {id === 'ess' && (
-          <div className="flex items-center gap-2 w-full">
-            {/* Battery storage rack modules with live cell visualization */}
-            <div className="relative shrink-0 w-11 h-11 rounded-lg bg-slate-950 border border-slate-800 flex flex-col justify-around p-1 focus:outline-none">
-              <div className="flex items-center justify-between text-[4px] font-mono text-slate-500">
-                <span>ESS CELL</span>
-                <span className={cn(active ? "text-amber-400" : "text-emerald-400")}>{active ? "OUT" : "SOC"}</span>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <div className="h-1.5 bg-slate-900 rounded-sm relative overflow-hidden">
-                  <div className={cn("absolute inset-y-0 left-0 transition-all duration-500", active ? "bg-amber-400 w-[35%]" : "bg-emerald-500 w-[94%]")} />
-                </div>
-                <div className="h-1.5 bg-slate-900 rounded-sm relative overflow-hidden">
-                  <div className={cn("absolute inset-y-0 left-0 transition-all duration-500", active ? "bg-amber-500 w-[30%]" : "bg-emerald-500 w-[94%]")} />
-                </div>
-                <div className="h-1.5 bg-slate-900 rounded-sm relative overflow-hidden">
-                  <div className={cn("absolute inset-y-0 left-0 transition-all duration-500", active ? "bg-amber-600 w-[25%]" : "bg-emerald-600 w-[94%]")} />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-[8.5px] font-black text-slate-200 uppercase tracking-tight">ESS & AMR Bay [2129]</span>
-              <span className="text-[6.3px] text-amber-400 font-bold font-mono leading-none mt-0.5">
-                {active ? t('⚡ 부하 긴급방전') : t('대기 (SOC: 94%)')}
-              </span>
-              <span className="text-[5.5px] text-slate-400 font-mono mt-0.5">{t('연동 로봇: AMR #3 (활성)')}</span>
-              <span className="text-[5.5px] text-slate-400 font-mono">{t('피크 출력:')} {active ? t('120kW 급전') : t('0kW 대기')}</span>
-            </div>
-          </div>
-        )}
-
-        {id === 'control' && (
-          <div className="flex items-center gap-2 w-full">
-            {/* Integrated monitoring screen graphics */}
-            <div className="relative shrink-0 w-11 h-11 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                {/* Server matrix pattern or dual monitor mock */}
-                <rect x="4" y="8" width="14" height="11" rx="1" stroke="#475569" strokeWidth="1" />
-                <rect x="22" y="8" width="14" height="11" rx="1" stroke="#475569" strokeWidth="1" />
-                <line x1="11" y1="19" x2="11" y2="24" stroke="#475569" strokeWidth="1" />
-                <line x1="29" y1="19" x2="29" y2="24" stroke="#475569" strokeWidth="1" />
-                
-                {/* Glowing AI trace lines on monitor */}
-                <path d="M6 13 Q11 10 16 14" stroke="#06b6d4" strokeWidth="1.2" opacity="0.8" />
-                <path d="M24 14 Q29 16 34 11" stroke="#a7f3d0" strokeWidth="1.2" opacity="0.8" />
-
-                {/* Animated blinking diagnostic led beads */}
-                <circle cx="10" cy="30" r="1.5" fill="#22c55e" className="animate-pulse" />
-                <circle cx="20" cy="30" r="1.5" fill="#3b82f6" style={{ animationDelay: '0.4s' }} className="animate-pulse" />
-                <circle cx="30" cy="30" r="1.5" fill="#f59e0b" style={{ animationDelay: '0.8s' }} className="animate-ping" />
-              </svg>
-            </div>
-
-            <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-[8.5px] font-black text-slate-200 uppercase tracking-tight font-sans">{t('HQ Control Room')}</span>
-              <span className="text-[6.5px] text-cyan-400 font-bold font-mono leading-none mt-0.5">{t('중재 관제: Active')}</span>
-              <span className="text-[5.5px] text-slate-400 font-mono mt-0.5">{t('프로토콜: AI-S.2161')}</span>
-              <span className="text-[5.5px] text-slate-400 font-mono">{t('가상 조율: 5개 분과')}</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* 3D Bottom bezel identification */}
-      <div className="bg-slate-900 px-2 py-0.5 rounded-b-xl flex justify-between items-center text-[5.5px] border-t border-slate-800/65">
-        <span className="text-slate-500 font-mono uppercase tracking-wider font-semibold">{id}_MODULE</span>
-        <span className="text-slate-400 font-bold font-mono text-[6px]">ZONE.21{id === 'washing' ? '02' : id === 'ptp' ? '12' : id === 'bottle' ? '13' : id === 'ess' ? '29' : '61'}</span>
-      </div>
-    </div>
-  );
-};
-
-
-
+/**
+ * The supervisor working an agenda item with the agents it involves: each
+ * agent puts its position to the supervisor (proposal, objection, information)
+ * and the supervisor closes with a decision. It plays on its own and moves to
+ * the next item when one is settled.
+ */
 function CoordinationVisualizer() {
-  const safeTimeout = useSafeTimeout();
   const [step, setStep] = useState(0);
   const [events, setEvents] = useState<CoordinationEvent[]>([]);
   const [activeScenario, setActiveScenario] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [simulationSpeed, setSimulationSpeed] = useState(2500); // 2.5sec default
-  const [flashActive, setFlashActive] = useState(false);
-
   const scenarios = [
     {
       title: t('[통합] 6대 에이전트 전사 최적화 조율'),
       description: t('생산 극대화 목표 하에 안전, 예지보전, 품질, 에너지, 물류 에이전트 간의 동시 다자 협업 및 실시간 중재'),
       agents: [
-        { id: 'prod', name: t('생산 최적화'), role: 'Production', color: 'text-blue-500', icon: <TrendingUp size={14} /> },
-        { id: 'qual', name: t('품질 에이전트'), role: 'Quality', color: 'text-emerald-500', icon: <ShieldCheck size={14} /> },
-        { id: 'pm', name: t('설비예지보전'), role: 'Maintenance', color: 'text-purple-500', icon: <Wrench size={14} /> },
-        { id: 'energy', name: t('에너지 에이전트'), role: 'Energy', color: 'text-orange-500', icon: <Zap size={14} /> },
-        { id: 'safety', name: t('안전 에이전트'), role: 'Safety', color: 'text-red-500', icon: <ShieldAlert size={14} /> },
-        { id: 'logistics', name: t('물류 에이전트'), role: 'Logistics', color: 'text-yellow-500', icon: <Truck size={14} /> },
+        'prod',
+        'qual',
+        'pm',
+        'energy',
+        'safety',
+        'logistics',
       ],
       timeline: [
         { fromAgent: 'prod', toAgent: 'supervisor', type: 'proposal', content: t('신규 긴급 오더 대응을 위해 패키징 1라인 분당 가동 속도를 20% 초고속 모드로 상향 제안합니다.') },
@@ -2020,10 +1622,10 @@ function CoordinationVisualizer() {
       title: t('B라인 생산 속도 최적화 충돌'),
       description: t('생산량 증대 요청과 품질 저하 우려 간의 실시간 조율'),
       agents: [
-        { id: 'prod', name: t('생산 최적화'), role: 'Production', color: 'text-blue-500', icon: <TrendingUp size={14} /> },
-        { id: 'qual', name: t('품질 에이전트'), role: 'Quality', color: 'text-emerald-500', icon: <ShieldCheck size={14} /> },
-        { id: 'pm', name: t('설비예지보전'), role: 'Maintenance', color: 'text-purple-500', icon: <Wrench size={14} /> },
-        { id: 'energy', name: t('에너지 에이전트'), role: 'Energy', color: 'text-orange-500', icon: <Zap size={14} /> },
+        'prod',
+        'qual',
+        'pm',
+        'energy',
       ],
       timeline: [
         { fromAgent: 'prod', toAgent: 'supervisor', type: 'proposal', content: t('생산 목표 달성을 위해 B라인 속도를 15% 상향 제안합니다.') },
@@ -2037,9 +1639,9 @@ function CoordinationVisualizer() {
       title: t('C구역 화재 징후 감지 및 대응'),
       description: t('안전 최우선 원칙에 따른 생산 중단 및 소방 연동'),
       agents: [
-        { id: 'safety', name: t('안전 에이전트'), role: 'Safety', color: 'text-red-500', icon: <ShieldAlert size={14} /> },
-        { id: 'prod', name: t('생산 최적화'), role: 'Production', color: 'text-blue-500', icon: <TrendingUp size={14} /> },
-        { id: 'supervisor', name: t('슈퍼바이저'), role: 'Orchestrator', color: 'text-accent', icon: <Cpu size={14} /> },
+        'safety',
+        'prod',
+        'supervisor',
       ],
       timeline: [
         { fromAgent: 'safety', toAgent: 'supervisor', type: 'proposal', content: t('C구역 CCTV에서 연기 감지. 즉시 가동 중단 및 소방 셔터 작동을 요청합니다.') },
@@ -2051,10 +1653,10 @@ function CoordinationVisualizer() {
       title: t('가스 미세 누출 감지 대응'),
       description: t('가스 누출 위험 상황 발생 시 위험 무력화 및 조치 가이드'),
       agents: [
-        { id: 'safety', name: t('안전 에이전트'), role: 'Safety', color: 'text-red-500', icon: <ShieldAlert size={14} /> },
-        { id: 'pm', name: t('설비예지보전'), role: 'Maintenance', color: 'text-purple-500', icon: <Wrench size={14} /> },
-        { id: 'prod', name: t('생산 최적화'), role: 'Production', color: 'text-blue-500', icon: <TrendingUp size={14} /> },
-        { id: 'supervisor', name: t('슈퍼바이저'), role: 'Orchestrator', color: 'text-accent', icon: <Cpu size={14} /> },
+        'safety',
+        'pm',
+        'prod',
+        'supervisor',
       ],
       timeline: [
         { fromAgent: 'safety', toAgent: 'supervisor', type: 'proposal', content: t('A-3 구역에서 메탄 가스 15ppm 감지. 환기 설비 풀 가동 및 국소 소화 제어가 시급합니다.') },
@@ -2067,10 +1669,10 @@ function CoordinationVisualizer() {
       title: t('피크 전력 긴급 부하 제약'),
       description: t('국가 전력망 주파수 급락 경보에 따른 신속 부하 셰딩'),
       agents: [
-        { id: 'energy', name: t('에너지 에이전트'), role: 'Energy', color: 'text-orange-500', icon: <Zap size={14} /> },
-        { id: 'prod', name: t('생산 최적화'), role: 'Production', color: 'text-blue-500', icon: <TrendingUp size={14} /> },
-        { id: 'qual', name: t('품질 에이전트'), role: 'Quality', color: 'text-emerald-500', icon: <ShieldCheck size={14} /> },
-        { id: 'supervisor', name: t('슈퍼바이저'), role: 'Orchestrator', color: 'text-accent', icon: <Cpu size={14} /> },
+        'energy',
+        'prod',
+        'qual',
+        'supervisor',
       ],
       timeline: [
         { fromAgent: 'energy', toAgent: 'supervisor', type: 'proposal', content: t('한국전력 거래소 긴급 수요감축(DR) 지시 하달. 5분 이내 전력 사용량 250kW 감축 의무 발생.') },
@@ -2081,873 +1683,297 @@ function CoordinationVisualizer() {
     }
   ];
 
+  const scenario = scenarios[activeScenario];
+  const participants = scenario.agents.filter(id => id !== 'supervisor');
+  const lastEvent = events[events.length - 1];
+  const agreed = lastEvent?.type === 'agreement';
+
+  // Runs on its own: each agent speaks in turn, the supervisor closes with a
+  // decision, and after a pause the next agenda item starts.
   useEffect(() => {
-    if (!isPlaying) return;
-    const scenario = scenarios[activeScenario];
-    if (step < scenario.timeline.length) {
-      const timer = setTimeout(() => {
-        const nextIdx = step;
-        const newEvent = {
-          ...scenario.timeline[nextIdx],
-          id: Math.random().toString(36).substr(2, 9),
-          timestamp: new Date().toLocaleTimeString()
-        };
-        setEvents(prev => [...prev, newEvent as CoordinationEvent]);
-        setStep(s => s + 1);
-        setFlashActive(true);
-        safeTimeout(() => setFlashActive(false), 300);
-      }, simulationSpeed);
-      return () => clearTimeout(timer);
-    }
-  }, [step, activeScenario, isPlaying, simulationSpeed]);
-
-  const reset = (idx: number) => {
-    setActiveScenario(idx);
-    setEvents([]);
-    setStep(0);
-  };
-
-  const triggerNextStep = () => {
-    const scenario = scenarios[activeScenario];
-    if (step < scenario.timeline.length) {
-      const newEvent = {
-        ...scenario.timeline[step],
-        id: Math.random().toString(36).substr(2, 9),
-        timestamp: new Date().toLocaleTimeString()
-      };
-      setEvents(prev => [...prev, newEvent as CoordinationEvent]);
+    const done = step >= scenario.timeline.length;
+    const timer = setTimeout(() => {
+      if (done) {
+        setActiveScenario(s => (s + 1) % scenarios.length);
+        setEvents([]);
+        setStep(0);
+        return;
+      }
+      setEvents(prev => [...prev, { ...scenario.timeline[step], id: newId(), timestamp: new Date().toLocaleTimeString() } as CoordinationEvent]);
       setStep(s => s + 1);
-      setFlashActive(true);
-      safeTimeout(() => setFlashActive(false), 300);
-    }
-  };
+    }, done ? 7000 : step === 0 ? 1200 : 3200);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, activeScenario]);
 
-  const triggerPrevStep = () => {
-    if (step > 0) {
-      setEvents(prev => prev.slice(0, -1));
-      setStep(s => s - 1);
-    }
+  const logRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: 'smooth' });
+  }, [events.length]);
+
+  const stanceOf = (id: string): CoordinationEvent['type'] | 'waiting' => {
+    if (agreed) return 'agreement';
+    const said = [...events].reverse().find(e => e.fromAgent === id);
+    return said ? said.type : 'waiting';
   };
 
   return (
-    <div className="space-y-6 relative">
-      {/* Playback controls */}
-      <div className="bg-gradient-to-r from-accent/20 via-transparent to-red-500/20 border border-accent/30 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 shadow-lg shadow-accent/5">
-        <div className="flex items-center gap-2">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
-          </span>
-          <span className="text-[10px] font-black uppercase tracking-wider text-accent">{t('실시간 조율 재생')}</span>
-        </div>
-        
-        {/* Playback controls */}
-        <div className="flex items-center gap-1 bg-surface border border-border p-1 rounded-lg">
-          <button
-            onClick={triggerPrevStep}
-            disabled={step === 0}
-            className="p-1 px-1.5 rounded text-[10px] bg-bg/50 hover:bg-bg border border-border text-text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            title={t('이전 단계로')}
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        {/* Stage: supervisor in the middle, the six agents around it */}
+        <div className="overflow-x-auto rounded-2xl border border-border bg-bg/40 custom-scrollbar">
+          <div
+            className="relative h-[460px] min-w-[620px]"
+            style={{ backgroundImage: 'radial-gradient(color-mix(in srgb, var(--color-text-secondary) 22%, transparent) 1px, transparent 1px)', backgroundSize: '18px 18px' }}
           >
-            <SkipBack size={12} />
-          </button>
-          
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className={cn(
-              "p-1 px-2.5 rounded text-[10px] font-bold flex items-center gap-1 transition-colors",
-              isPlaying ? "bg-accent/20 text-accent hover:bg-accent/30" : "bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30"
-            )}
-          >
-            {isPlaying ? <Pause size={10} /> : <Play size={10} />}
-            {isPlaying ? t('자동 일시정지') : t('자동 재생')}
-          </button>
-
-          <button
-            onClick={triggerNextStep}
-            disabled={step >= scenarios[activeScenario].timeline.length}
-            className="p-1 px-1.5 rounded text-[10px] bg-bg/50 hover:bg-bg border border-border text-text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            title={t('다음 단계 강제 진행')}
-          >
-            <SkipForward size={12} />
-          </button>
-
-          <button
-            onClick={() => reset(activeScenario)}
-            className="p-1 px-2 rounded text-[10px] bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition-colors"
-          >
-            {t('↺ 처음부터')}
-          </button>
-        </div>
-
-        {/* Speed Adjustment */}
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] text-text-secondary font-mono">{t('자동 간격:')}</span>
-          <select
-            value={simulationSpeed}
-            onChange={(e) => setSimulationSpeed(Number(e.target.value))}
-            className="text-[10px] bg-surface-hover border border-border rounded px-1.5 py-0.5 text-text-primary focus:outline-none focus:border-accent"
-          >
-            <option value={1000}>{t('빠름 (1.0초)')}</option>
-            <option value={2500}>{t('보통 (2.5초)')}</option>
-            <option value={4500}>{t('느림 (4.5초)')}</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Scenario Selection */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        {scenarios.map((s, i) => (
-          <button
-            key={i}
-            onClick={() => reset(i)}
-            className={cn(
-              "p-2.5 rounded-xl border transition-all text-left group flex flex-col justify-between",
-              activeScenario === i 
-                ? "bg-accent/10 border-accent shadow-lg shadow-accent/5 scale-[1.02]" 
-                : "bg-surface border-border hover:border-accent/30"
-            )}
-          >
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className={cn(
-                  "text-[8px] font-bold uppercase tracking-widest",
-                  activeScenario === i ? "text-accent" : "text-text-secondary"
-                )}>
-                  {`Scenario 0${i + 1}`}
-                </span>
-                {activeScenario === i && <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />}
-              </div>
-              <h4 className="text-[11px] font-bold group-hover:text-accent transition-colors line-clamp-1">{s.title}</h4>
-            </div>
-            <p className="text-[9px] text-text-secondary mt-1 line-clamp-1">{s.description}</p>
-          </button>
-        ))}
-      </div>
-
-      {/* Visualizer Stage Container with scroll wrapper for mobile safety */}
-      <div className="overflow-x-auto rounded-2xl border border-slate-300/80 bg-[#f1f5f9] shadow-inner p-1.5">
-        <div className={cn(
-          "relative rounded-xl h-[560px] min-w-[800px] overflow-hidden transition-all duration-350 bg-slate-100",
-          "border border-slate-300/50"
-        )}>
-          {/* Elegantly styled Epoxy silver-grey 3D floor background gradient matching user's cleanroom view */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#ffffff] via-[#f1f5f9] to-[#e4e9f0] z-0" />
-          
-          {/* Subtle grid mesh overlays matching a real control blueprint */}
-          <div className="absolute inset-0 z-0 opacity-15 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#64748b 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
-
-          {/* BACKGROUND EQUIPMENT & BLUEPRINT CONVEYORS (설비 레이아웃 표현) */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-              {/* 알약 Blister 포켓 격자 텍스처 패턴 */}
-              <pattern id="blister-mesh" width="1.5" height="1.0" patternUnits="userSpaceOnUse">
-                <rect x="0.1" y="0.1" width="1.3" height="0.8" rx="0.2" fill="#e2e8f0" stroke="#cbd5e1" strokeWidth="0.08" />
-                <circle cx="0.75" cy="0.5" r="0.25" fill="#94a3b8" opacity="0.5" />
-              </pattern>
-              
-              {/* 정밀한 체인형 그리드 컨베이어 패턴 */}
-              <pattern id="chain-conveyor" width="2.0" height="0.8" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0.4" x2="2.0" y2="0.4" stroke="#94a3b8" strokeWidth="0.15" />
-                <rect x="0.2" y="0.1" width="0.7" height="0.6" rx="0.1" fill="#cbd5e1" stroke="#64748b" strokeWidth="0.08" />
-                <rect x="1.2" y="0.1" width="0.7" height="0.6" rx="0.1" fill="#cbd5e1" stroke="#64748b" strokeWidth="0.08" />
-              </pattern>
-
-              {/* 디테일 기어 그라디언트 */}
-              <radialGradient id="gear-grad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#f1f5f9" />
-                <stop offset="70%" stopColor="#cbd5e1" />
-                <stop offset="100%" stopColor="#64748b" />
-              </radialGradient>
-            </defs>
-
-            {/* Operator Zoom area (Top Left, 7% ~ 21%): lifter + storage framework */}
-            <g opacity="0.65" stroke="#475569" strokeWidth="0.15">
-              {/* Lifter-Carrier AMR Unit */}
-              <rect x="6.5" y="3.5" width="2.8" height="2.2" rx="0.3" fill="#e2e8f0" />
-              <rect x="7.0" y="4.2" width="1.8" height="0.8" fill="#f59e0b" opacity="0.85" /> {/* Safety Yellow battery packs */}
-              <circle cx="7.2" cy="5.8" r="0.3" fill="#1e293b" />
-              <circle cx="8.6" cy="5.8" r="0.3" fill="#1e293b" />
-              
-              {/* Metal framework rails */}
-              <line x1="12" y1="2" x2="12" y2="10" stroke="#94a3b8" strokeWidth="0.25" strokeDasharray="0.5 0.5" />
-              <line x1="14.5" y1="2" x2="14.5" y2="10" stroke="#94a3b8" strokeWidth="0.25" strokeDasharray="0.5 0.5" />
-              
-              {/* Stacked Roll Cages / Metal frames */}
-              <rect x="11.5" y="2.5" width="1.0" height="2.0" rx="0.1" fill="#f1f5f9" />
-              <rect x="11.5" y="5.0" width="1.0" height="2.0" rx="0.1" fill="#f1f5f9" />
-              <rect x="11.5" y="7.5" width="1.0" height="2.0" rx="0.1" fill="#f1f5f9" />
-
-              <rect x="14.0" y="2.5" width="1.0" height="2.0" rx="0.1" fill="#f1f5f9" />
-              <rect x="14.0" y="5.0" width="1.0" height="2.0" rx="0.1" fill="#f1f5f9" />
-              <rect x="14.0" y="7.5" width="1.0" height="2.0" rx="0.1" fill="#f1f5f9" />
-            </g>
-
-            {/* Washing [2102] Room: High-detail fluid spraying drums and conveyor chains */}
-            <g opacity="0.7">
-              {/* Main Machine Frame */}
-              <rect x="22" y="4" width="16" height="8" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.25" />
-              <rect x="23" y="5" width="14" height="6" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.15" />
-              
-              {/* Washing Tunnel Spiral Line */}
-              <path d="M 23.5 8 Q 25 5 26.5 8 T 29.5 8 T 32.5 8 T 35.5 8 T 37.5 8" fill="none" stroke="#38bdf8" strokeWidth="0.4" strokeDasharray="0.8 0.4" />
-              
-              {/* Rotary Washing Drum Spoke Gear (원형 세척 드럼 회전 기계) */}
-              <circle cx="33" cy="18" r="4.2" fill="url(#gear-grad)" stroke="#475569" strokeWidth="0.25" />
-              <circle cx="33" cy="18" r="3.0" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.15" />
-              
-              {/* Spray Nozzles */}
-              <line x1="30" y1="13.8" x2="33" y2="16" stroke="#0ea5e9" strokeWidth="0.2" strokeDasharray="0.3 0.3" />
-              <line x1="36" y1="13.8" x2="33" y2="16" stroke="#0ea5e9" strokeWidth="0.2" strokeDasharray="0.3 0.3" />
-              
-              {/* Rotary teeth detail */}
-              {Array.from({ length: 8 }).map((_, i) => {
-                const angle = (i * Math.PI) / 4;
-                const x1 = 33 + Math.cos(angle) * 3.8;
-                const y1 = 18 + Math.sin(angle) * 3.8;
-                const x2 = 33 + Math.cos(angle) * 4.6;
-                const y2 = 18 + Math.sin(angle) * 4.6;
+            <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+              {Object.entries(COORD_SLOTS).map(([id, p]) => {
+                const joined = participants.includes(id);
+                const speaking = !agreed && lastEvent?.fromAgent === id;
+                const stroke = speaking ? COORD_TYPE_STYLE[lastEvent.type].hex : agreed && joined ? 'var(--color-accent)' : coordAgent(id).hex;
                 return (
-                  <line key={`wash-tooth-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#334155" strokeWidth="0.35" />
-                );
-              })}
-              <circle cx="33" cy="18" r="1.2" fill="#64748b" />
-            </g>
-
-            {/* BOTTLE I [2113 / 2117] + IPC [2114] upper machinery line */}
-            <g opacity="0.65">
-              {/* Conveyor Tracks */}
-              <rect x="45" y="5" width="22" height="1.8" fill="url(#chain-conveyor)" stroke="#64748b" strokeWidth="0.15" />
-              <rect x="67" y="5" width="22" height="1.8" fill="url(#chain-conveyor)" stroke="#64748b" strokeWidth="0.15" />
-              
-              {/* Little bottles layout on conveyor */}
-              {Array.from({ length: 12 }).map((_, i) => (
-                <rect key={`bottle-conv-${i}`} x={46 + i * 3.5} y="5.3" width="0.7" height="1.1" rx="0.15" fill="#38bdf8" opacity="0.8" stroke="#0284c7" strokeWidth="0.08" />
-              ))}
-
-              {/* Rotary Starwheel / Bottle Filler Indexing table (보틀 충전 주입 휠) */}
-              <circle cx="70" cy="11.5" r="4.0" fill="url(#gear-grad)" stroke="#475569" strokeWidth="0.25" />
-              {Array.from({ length: 12 }).map((_, i) => {
-                const angle = (i * Math.PI) / 6;
-                const bx = 70 + Math.cos(angle) * 2.8;
-                const by = 11.5 + Math.sin(angle) * 2.8;
-                return (
-                  <circle key={`bottle-slot-${i}`} cx={bx} cy={by} r="0.5" fill="#38bdf8" stroke="#0284c7" strokeWidth="0.08" />
-                );
-              })}
-              <circle cx="70" cy="11.5" r="1.5" fill="#cbd5e1" stroke="#475569" strokeWidth="0.2" />
-
-              {/* Rotary Capping Station Unit */}
-              <circle cx="82" cy="11.5" r="3.2" fill="url(#gear-grad)" stroke="#475569" strokeWidth="0.2" />
-              <circle cx="82" cy="11.5" r="2.0" fill="#f8fafc" stroke="#94a3b8" strokeWidth="0.15" />
-              
-              {/* Control Desk Console Panel IPC 2114 */}
-              <rect x="49" y="8.2" width="4.5" height="2.5" rx="0.3" fill="#1e293b" stroke="#475569" strokeWidth="0.2" />
-              <rect x="49.5" y="8.5" width="3.5" height="1.6" fill="#0ea5e9" opacity="0.3" /> {/* Cyan monitor screen */}
-              <line x1="51.25" y1="10.7" x2="51.25" y2="12.0" stroke="#475569" strokeWidth="0.4" />
-              <line x1="50" y1="12.0" x2="52.5" y2="12.0" stroke="#475569" strokeWidth="0.4" />
-            </g>
-
-            {/* PTP III PACKAGING [2112/2118] Aluminum thermoforming sealer line */}
-            <g opacity="0.7">
-              {/* Thermoforming Station Heater block */}
-              <rect x="42" y="24" width="7" height="3" rx="0.2" fill="#f1f5f9" stroke="#64748b" strokeWidth="0.25" />
-              <rect x="43" y="24.5" width="5" height="2" fill="#ef4444" opacity="0.25" /> {/* Red hot heater mesh */}
-              <line x1="42.5" y1="25.5" x2="48.5" y2="25.5" stroke="#ef4444" strokeWidth="0.3" strokeDasharray="0.6 0.4" />
-              
-              {/* Thermoforming Pockets roller */}
-              <circle cx="51.5" cy="25.5" r="2.0" fill="url(#gear-grad)" stroke="#334155" strokeWidth="0.2" />
-              <circle cx="51.5" cy="25.5" r="1.3" fill="#cbd5e1" />
-
-              {/* Blister Mesh Web Strip spanning into Cartoner */}
-              <rect x="53.5" y="24.8" width="18" height="1.4" fill="url(#blister-mesh)" />
-              
-              {/* Dynamic packing boxes feed into 2118 Cartoner */}
-              <rect x="71.5" y="23.2" width="14" height="4.6" rx="0.3" fill="#f8fafc" stroke="#475569" strokeWidth="0.25" />
-              <rect x="72.5" y="24" width="12" height="3.0" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="0.15" />
-              <line x1="72.5" y1="25.5" x2="84.5" y2="25.5" stroke="#10b981" strokeWidth="0.3" strokeDasharray="1.5 1.0" />
-              
-              {/* Finished packs cartoning boxes conveyor */}
-              <rect x="85.5" y="24.2" width="10" height="2.6" fill="url(#chain-conveyor)" stroke="#64748b" strokeWidth="0.2" />
-              <rect x="87" y="24.6" width="1.6" height="1.8" fill="#d97706" rx="0.15" opacity="0.9" /> {/* Pack Box-1 */}
-              <rect x="91" y="24.6" width="1.6" height="1.8" fill="#d97706" rx="0.15" opacity="0.9" /> {/* Pack Box-2 */}
-            </g>
-
-            {/* Central safety yellow pathway boundaries (hazard warning zones) */}
-            <g>
-              <rect x="8" y="47" width="84" height="6" fill="#fef08a" fillOpacity="0.05" stroke="#ca8a04" strokeWidth="0.2" strokeDasharray="2 2" />
-              {/* Strips inside corridor 2111 */}
-              {Array.from({ length: 20 }).map((_, i) => (
-                <line key={`hazard-strip-${i}`} x1={10 + i * 4.2} y1="47.5" x2={12 + i * 4.2} y2="52.5" stroke="#f59e0b" strokeWidth="0.25" opacity="0.3" />
-              ))}
-            </g>
-
-            {/* PTP I PACKING [2109] & BOTTLE II [2108 / 2123] lower machinery layout */}
-            <g opacity="0.65">
-              {/* PTP I Form-Fill-Seal Heavy machine blocks */}
-              <rect x="36" y="65" width="10" height="5" rx="0.4" fill="#f1f5f9" stroke="#334155" strokeWidth="0.25" />
-              <rect x="38" y="66" width="6" height="3" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="0.15" />
-              {/* Pressure Pistons */}
-              <rect x="39" y="62" width="1.2" height="3" fill="#475569" />
-              <rect x="42.8" y="62" width="1.2" height="3" fill="#475569" />
-              
-              {/* Bottom Conveyor to storage */}
-              <rect x="46" y="66.5" width="22" height="1.8" fill="url(#chain-conveyor)" stroke="#64748b" strokeWidth="0.15" />
-              
-              {/* Blister card stack chute loader */}
-              <rect x="68" y="64" width="7" height="4.5" rx="0.2" fill="#f8fafc" stroke="#475569" strokeWidth="0.25" />
-              {Array.from({ length: 6 }).map((_, i) => (
-                <line key={`stack-chute-${i}`} x1="69" y1={64.8 + i * 0.6} x2="74" y2={64.8 + i * 0.6} stroke="#cbd5e1" strokeWidth="0.3" />
-              ))}
-
-              {/* Bottle II conveyor line curving down and right */}
-              <path d="M 52 83 H 84" fill="none" stroke="#64748b" strokeWidth="0.8" />
-              <path d="M 52 83 V 73" fill="none" stroke="#64748b" strokeWidth="0.8" />
-              <circle cx="52" cy="83" r="0.75" fill="#334155" />
-              <circle cx="84" cy="83" r="0.75" fill="#334155" />
-              
-              {/* Red articulated SCARA packaging robotic hand */}
-              <g stroke="#dc2626" strokeWidth="0.45" strokeLinecap="round" fill="none">
-                <line x1="58" y1="78" x2="61" y2="76" />
-                <line x1="61" y1="76" x2="63" y2="79" />
-                <circle cx="58" cy="78" r="0.4" fill="#334155" stroke="none" />
-                <circle cx="61" cy="76" r="0.4" fill="#334155" stroke="none" />
-                <circle cx="63" cy="79" r="0.2" fill="#ef4444" stroke="none animate-ping" />
-              </g>
-            </g>
-
-            {/* Control Room / PC Room detail desk (Bottom Left) */}
-            <g opacity="0.65">
-              {/* Console Desks with dual monitor workstations layout */}
-              <rect x="18" y="80" width="8" height="4.5" rx="0.3" fill="#cbd5e1" stroke="#475569" strokeWidth="0.25" />
-              
-              {/* LCD Screen-1 */}
-              <rect x="18.8" y="80.4" width="2.8" height="1.0" fill="#0f172a" stroke="#475569" strokeWidth="0.1" />
-              <rect x="19.0" y="80.6" width="2.4" height="0.6" fill="#10b981" opacity="0.8" /> {/* active screen 1 green */}
-
-              {/* LCD Screen-2 */}
-              <rect x="22.4" y="80.4" width="2.8" height="1.0" fill="#0f172a" stroke="#475569" strokeWidth="0.1" />
-              <rect x="22.6" y="80.6" width="2.4" height="0.6" fill="#0ea5e9" opacity="0.8" /> {/* active screen 2 cyan */}
-              
-              {/* Keyboards */}
-              <rect x="19.2" y="82.4" width="2.0" height="0.4" fill="#1e293b" />
-              <rect x="22.8" y="82.4" width="2.0" height="0.4" fill="#1e293b" />
-              
-              {/* Desk operator seats */}
-              <circle cx="20.2" cy="84.2" r="0.75" fill="#475569" />
-              <circle cx="23.8" cy="84.2" r="0.75" fill="#475569" />
-            </g>
-          </svg>
-
-          {/* Draw physical glass wall partitions, compartments, and columns to represent the actual rooms */}
-          <div className="absolute inset-0 z-0 pointer-events-none text-[6.5px] font-mono select-none">
-            {/* Visitor's Corridor Partition (Far Left) */}
-            <div className="absolute left-0 top-0 bottom-0 w-[5%] border-r-2 border-slate-300 bg-slate-200/40 backdrop-blur-[0.5px] flex items-center justify-center [writing-mode:vertical-lr] font-bold text-slate-400 tracking-wider">
-              VISITOR'S CORRIDOR [2161]
-            </div>
-
-            {/* Operator Zoom Left Area */}
-            <div className="absolute left-[5%] top-0 w-[16%] h-[28%] border-b border-r border-slate-300/80 bg-slate-100/50 p-1.5 text-slate-400 font-semibold">
-              {t('Operator Zoom')}
-            </div>
-
-            {/* Washing No.12 Room Partition */}
-            <div className="absolute left-[21%] top-0 w-[20%] h-[24%] border-b border-r border-[#cbd5e1] bg-[#f8fafc]/90 p-1.5 text-slate-400 font-semibold border-dashed">
-              WASHING [2102]
-              <div className="text-[5.5px] text-slate-400/80 mt-1">{t('유압식 순환 분무 세척 구역')}</div>
-            </div>
-
-            {/* PC Room & Central Control Room (Bottom Left) */}
-            <div className="absolute left-[5%] bottom-0 w-[24%] h-[24%] border-t border-r border-slate-300 bg-[#e9eff6] p-1.5 text-slate-500 font-semibold shadow-inner">
-              <span className="text-slate-600 font-bold">{t('Control Room & PC console')}</span>
-              <div className="flex gap-1 mt-1 opacity-75">
-                <div className="w-6 h-3.5 bg-slate-800 rounded-sm border border-slate-700 flex items-center justify-center text-[4px] text-cyan-300">PC-1</div>
-                <div className="w-6 h-3.5 bg-slate-800 rounded-sm border border-slate-700 flex items-center justify-center text-[4px] text-cyan-300">PC-2</div>
-              </div>
-            </div>
-
-            {/* Packaging Room III / PTP III / Bottle I Partition (Top Right) */}
-            <div className="absolute left-[41%] top-0 right-0 h-[38%] border-b border-slate-300 bg-slate-50/50 p-1.5 flex flex-col justify-between items-end text-slate-400 font-semibold">
-              <div className="text-right">
-                <div className="tracking-wide">PTP III PACKAGING [2112/2118]</div>
-                <div className="text-[5px] text-slate-400 font-semibold mt-0.5">BOTTLE I [2113/2117] / IPC [2114]</div>
-              </div>
-              <div className="w-20 h-1 bg-slate-300 rounded-full" />
-            </div>
-
-            {/* PTP I Packing / PTP Packaging (Bottom Center) */}
-            <div className="absolute left-[30%] bottom-0 w-[44%] h-[38%] border-t border-l border-r border-slate-300 bg-[#fbfcfd]/95 p-1.5 text-[#334155] font-extrabold">
-              PTP I PACKING [2109]
-              <div className="text-[5px] text-slate-400 font-medium mt-0.5">PTP PACKAGING [2122] & BOTTLE II [2123]</div>
-            </div>
-
-            {/* Packaging Line Storage (포장라인 보관실 - Bottom Right with 3D shelves) */}
-            <div className="absolute right-[1%] bottom-[1%] w-[23%] h-[30%] border border-slate-300/85 bg-[#f8fafc]/95 p-2 text-slate-500 font-bold rounded-lg flex flex-col justify-between shadow-sm">
-              <div className="flex justify-between items-center border-b pb-0.5 border-slate-200">
-                <span className="font-extrabold text-slate-700">{t('포장라인 보관실 [2129]')}</span>
-                <span className="text-[4.5px] bg-slate-200 px-1 py-0.2 rounded text-slate-400 font-mono">ZONE.2129</span>
-              </div>
-              {/* 3D Rack Shelf Visualizer */}
-              <div className="grid grid-cols-2 gap-1.5 h-10">
-                <div className="border-b-2 border-slate-400 bg-slate-100 min-h-[30px] flex items-end justify-around p-0.5">
-                  <span className="w-2.5 h-4.5 bg-amber-500/80 border border-amber-600 rounded-sm shadow-sm animate-pulse" />
-                  <span className="w-2 h-3 bg-blue-500/80 border border-blue-600 rounded-sm shadow-sm" />
-                </div>
-                <div className="border-b-2 border-slate-400 bg-slate-100 min-h-[30px] flex items-end justify-around p-0.5">
-                  <span className="w-2.5 h-3.5 bg-emerald-500/80 border border-emerald-600 rounded-sm shadow-sm" />
-                  <span className="w-2 h-5 bg-orange-500/80 border border-orange-600 rounded-sm shadow-sm" />
-                </div>
-              </div>
-            </div>
-
-            {/* Yellow Guide Lines for AMRs/AGVs (Safety guide roads) */}
-            {/* Center Runway lines */}
-            <div className="absolute top-[48%] left-[5%] right-[5%] h-5 bg-[#eab308]/5 border-t border-b border-[#eab308]/30 flex items-center justify-between px-4">
-              <span className="text-[5.5px] text-[#ca8a04] font-bold tracking-widest bg-white px-1.5 py-0.2 rounded border border-[#eab308]/20">CORRIDOR 2111 / MAL IN-OUT 2119</span>
-              <div className="flex gap-4 select-none pointer-events-none text-slate-400 text-[4.5px] font-mono">
-                <span>MAL IN [2119]</span>
-                <span>MAL OUT [2120]</span>
-              </div>
-            </div>
-            {/* Runway Hazard Strips */}
-            <div className="absolute top-[49.5%] left-[25%] right-[25%] h-1 border-t-2 border-dashed border-[#eab308] opacity-50" />
-            <div className="absolute top-[62%] left-[45%] w-0.5 h-16 border-l-2 border-dashed border-[#eab308] opacity-50" />
-          </div>
-
-          {/* Animated Background Flow Pipelines */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-40" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {/* Inter-machine flow pipes lines connecting parts */}
-            <path d="M 34 18 H 80" fill="none" stroke="#cbd5e1" strokeWidth="1.5" />
-            <path d="M 80 18 V 72" fill="none" stroke="#cbd5e1" strokeWidth="1.5" />
-            <path d="M 84 72 H 44" fill="none" stroke="#cbd5e1" strokeWidth="1.5" />
-            <path d="M 44 72 V 48" fill="none" stroke="#cbd5e1" strokeWidth="1" />
-            <path d="M 16 48 H 34" fill="none" stroke="#38bdf8" strokeWidth="0.8" strokeDasharray="2 2" />
-
-            {/* Moving material flow particles inside pipelines */}
-            <circle cx="50" cy="18" r="1.2" fill="#0ea5e9" className="animate-ping" style={{ animationDuration: '2.5s' }} />
-            <circle cx="80" cy="45" r="1.2" fill="#10b981" className="animate-ping" style={{ animationDuration: '3.5s' }} />
-          </svg>
-
-          {/* SVG Overlay for Realtime Laser Tracking Beams */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {/* Render active laser pointing curves from speaker agent to physical machinery */}
-            {(() => {
-              if (events.length === 0) return null;
-              const lastEv = events[events.length - 1];
-              const speakerId = lastEv.fromAgent;
-
-              // Grid Coordinates mapper
-              const getAgentGridCoord = (id: string) => {
-                switch (id) {
-                  case 'safety': return { x: 19, y: 15 };
-                  case 'pm': return { x: 36, y: 31 };
-                  case 'prod': return { x: 59, y: 31 };
-                  case 'qual': return { x: 84, y: 31 };
-                  case 'logistics': return { x: 57, y: 83 };
-                  case 'energy': return { x: 29, y: 83 };
-                  case 'supervisor': return { x: 14, y: 45 };
-                  default: return { x: 50, y: 50 };
-                }
-              };
-
-              const getMachineGridCoord = (machId: string) => {
-                switch (machId) {
-                  case 'washing': return { x: 33, y: 18 };
-                  case 'ptp': return { x: 79, y: 18 };
-                  case 'bottle': return { x: 83, y: 72 };
-                  case 'ess': return { x: 43, y: 72 };
-                  case 'control': return { x: 15, y: 48 };
-                  default: return { x: 50, y: 50 };
-                }
-              };
-
-              const getAgentHexColor = (id: string) => {
-                switch (id) {
-                  case 'supervisor': return '#06b6d4';
-                  case 'safety': return '#f43f5e';
-                  case 'pm': return '#8b5cf6';
-                  case 'prod': return '#3b82f6';
-                  case 'qual': return '#10b981';
-                  case 'energy': return '#f59e0b';
-                  case 'logistics': return '#eab308';
-                  default: return '#64748b';
-                }
-              };
-
-              const speakerCoord = getAgentGridCoord(speakerId);
-              
-              // Map speaker to target facility
-              let targetMachineId = 'control';
-              if (speakerId === 'safety') {
-                targetMachineId = 'washing';
-              } else if (speakerId === 'pm') {
-                targetMachineId = activeScenario === 0 ? 'ptp' : 'washing';
-              } else if (speakerId === 'prod') {
-                targetMachineId = activeScenario === 1 ? 'bottle' : 'ptp';
-              } else if (speakerId === 'qual') {
-                targetMachineId = activeScenario === 1 ? 'bottle' : 'ptp';
-              } else if (speakerId === 'energy') {
-                targetMachineId = 'ess';
-              } else if (speakerId === 'logistics') {
-                targetMachineId = 'ess';
-              } else if (speakerId === 'supervisor') {
-                // Holo sync - dispatch beams to ALL units (Extremely subtle, silent and non-painful)
-                return (
-                  <g>
-                    {['washing', 'ptp', 'bottle', 'ess', 'control'].map((mId) => {
-                      const mCoord = getMachineGridCoord(mId);
-                      const sD = `M ${speakerCoord.x} ${speakerCoord.y} Q ${(speakerCoord.x + mCoord.x)/2} ${(speakerCoord.y + mCoord.y)/2 - 8} ${mCoord.x} ${mCoord.y}`;
-                      return (
-                        <g key={mId}>
-                          <motion.path
-                            d={sD}
-                            fill="none"
-                            stroke="#06b6d4"
-                            strokeWidth="0.4"
-                            strokeDasharray="1 6"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ duration: 1.2 }}
-                            className="opacity-10 pointer-events-none"
-                          />
-                          <motion.path
-                            d={sD}
-                            fill="none"
-                            stroke="#ffffff"
-                            strokeWidth="0.4"
-                            strokeDasharray="2 40"
-                            animate={{ strokeDashoffset: [-120, 120] }}
-                            transition={{ duration: 7.0, repeat: Infinity, ease: 'linear' }}
-                            className="opacity-15 pointer-events-none"
-                          />
-                        </g>
-                      );
-                    })}
+                  <g key={id}>
+                    {(speaking || (agreed && joined)) && (
+                      <line x1={50} y1={50} x2={p.x} y2={p.y} stroke={stroke} strokeOpacity={0.2} strokeWidth={12} vectorEffect="non-scaling-stroke" />
+                    )}
+                    <line
+                      x1={50} y1={50} x2={p.x} y2={p.y}
+                      stroke={joined ? stroke : 'var(--color-text-secondary)'}
+                      strokeOpacity={joined ? (speaking || agreed ? 1 : 0.45) : 0.18}
+                      strokeWidth={speaking || (agreed && joined) ? 3 : 1.5}
+                      strokeDasharray={joined ? '6 8' : '2 6'}
+                      strokeLinecap="round"
+                      vectorEffect="non-scaling-stroke"
+                      className={speaking ? 'edge-flow-in' : agreed && joined ? 'edge-flow-out' : undefined}
+                    />
                   </g>
                 );
-              }
+              })}
+            </svg>
 
-              const machineCoord = getMachineGridCoord(targetMachineId);
-              const cx = (speakerCoord.x + machineCoord.x) / 2;
-              const cy = ((speakerCoord.y + machineCoord.y) / 2) - 10;
-              const pathD = `M ${speakerCoord.x} ${speakerCoord.y} Q ${cx} ${cy} ${machineCoord.x} ${machineCoord.y}`;
-              const hexColor = getAgentHexColor(speakerId);
+            {/* Message packets travelling along the links */}
+            <AnimatePresence>
+              {lastEvent && (agreed ? participants : [lastEvent.fromAgent]).map(id => {
+                const p = COORD_SLOTS[id];
+                if (!p) return null;
+                const from = agreed ? { x: 50, y: 50 } : p;
+                const to = agreed ? p : { x: 50, y: 50 };
+                const color = COORD_TYPE_STYLE[lastEvent.type].hex;
+                return (
+                  <motion.span
+                    key={`${lastEvent.id}-${id}`}
+                    className="pointer-events-none absolute z-10 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white"
+                    style={{ backgroundColor: color, boxShadow: `0 0 12px 3px ${color}` }}
+                    initial={{ left: `${from.x}%`, top: `${from.y}%`, opacity: 0, scale: 0.6 }}
+                    animate={{ left: `${to.x}%`, top: `${to.y}%`, opacity: [0, 1, 1, 0], scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.3, ease: 'easeInOut' }}
+                  />
+                );
+              })}
+            </AnimatePresence>
 
-              return (
-                <g>
-                  {/* Soft background halo - Extremely low visual weight to remove eye strain */}
-                  <motion.path
-                    d={pathD}
-                    fill="none"
-                    stroke={hexColor}
-                    strokeWidth="0.6"
-                    className="opacity-10 blur-[0.5px] pointer-events-none"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.8 }}
-                  />
-                  {/* Subtle communications curve */}
-                  <motion.path
-                    d={pathD}
-                    fill="none"
-                    stroke={hexColor}
-                    strokeWidth="0.4"
-                    className="opacity-15 pointer-events-none"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.8 }}
-                  />
-                  {/* Gentle, non-painful linear pacing beads representing communication packets */}
-                  <motion.path
-                    d={pathD}
-                    fill="none"
-                    stroke="#ffffff"
-                    strokeWidth="0.6"
-                    strokeLinecap="round"
-                    strokeDasharray="2 45"
-                    animate={{ strokeDashoffset: [-120, 120] }}
-                    transition={{ duration: 7.0, repeat: Infinity, ease: 'linear' }}
-                    className="opacity-30 pointer-events-none"
-                  />
-                  {/* Silent target reference point */}
-                  <circle cx={machineCoord.x} cy={machineCoord.y} r="1.5" fill="#ffffff" />
+            {/* Supervisor hub */}
+            <div className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
+              <div className="relative h-[124px] w-[124px]">
+                <svg className="absolute inset-0 -rotate-90" viewBox="0 0 124 124" aria-hidden>
+                  <circle cx={62} cy={62} r={58} fill="none" stroke="var(--color-border)" strokeWidth={4} />
                   <circle
-                    cx={machineCoord.x}
-                    cy={machineCoord.y}
-                    r="4.5"
-                    fill="none"
-                    stroke={hexColor}
-                    strokeWidth="0.5"
-                    className="opacity-20 pointer-events-none"
+                    cx={62} cy={62} r={58} fill="none" stroke="var(--color-accent)" strokeWidth={4} strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 58}
+                    strokeDashoffset={2 * Math.PI * 58 * (1 - step / scenario.timeline.length)}
+                    style={{ transition: 'stroke-dashoffset 0.8s ease' }}
                   />
-                </g>
+                </svg>
+                <div className={cn(
+                  "absolute inset-[10px] flex flex-col items-center justify-center rounded-full border-2 bg-surface text-center shadow-xl transition-colors",
+                  agreed ? "border-accent shadow-accent/30" : "border-accent/40 shadow-accent/10",
+                )}>
+                  {agreed && <span className="absolute inset-0 animate-ping rounded-full border-2 border-accent opacity-40" />}
+                  <Network size={24} className="text-accent" />
+                  <span className="mt-1 text-[11px] font-black leading-tight">{t('AI 슈퍼바이저')}</span>
+                  <span className={cn("text-[9px] font-bold", agreed ? "text-accent" : "text-text-secondary")}>
+                    {agreed ? t('합의 도출') : `${t('의견 수집')} ${new Set(events.map(e => e.fromAgent)).size}/${participants.length}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Agents */}
+            {Object.entries(COORD_SLOTS).map(([id, p]) => {
+              const agent = coordAgent(id);
+              const joined = participants.includes(id);
+              const speaking = !agreed && lastEvent?.fromAgent === id;
+              const stance = joined ? stanceOf(id) : null;
+              const stanceStyle = stance && stance !== 'waiting' ? COORD_TYPE_STYLE[stance] : null;
+              return (
+                <div
+                  key={id}
+                  className="absolute z-20 flex w-[130px] -translate-x-1/2 -translate-y-1/2 flex-col items-center transition-opacity duration-500"
+                  style={{ left: `${p.x}%`, top: `${p.y}%`, opacity: joined ? 1 : 0.3 }}
+                >
+                  <motion.div
+                    animate={{ scale: speaking ? 1.12 : 1 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+                    className="relative flex h-14 w-14 items-center justify-center rounded-full border-[3px] bg-surface shadow-lg [&>svg]:h-6 [&>svg]:w-6"
+                    style={{ borderColor: agent.hex, color: agent.hex, boxShadow: speaking ? `0 0 0 6px ${agent.hex}33, 0 10px 24px ${agent.hex}55` : undefined }}
+                  >
+                    {speaking && <span className="absolute inset-[-3px] animate-ping rounded-full border-2 opacity-60" style={{ borderColor: agent.hex }} />}
+                    {agent.icon}
+                  </motion.div>
+                  <span className="mt-1.5 rounded-md bg-surface/90 px-1.5 text-center text-[10px] font-black leading-tight">{t(agent.name)}</span>
+                  <span
+                    className={cn(
+                      "mt-1 rounded-full px-2 py-0.5 text-[9px] font-bold",
+                      !stanceStyle && "bg-surface-hover text-text-secondary",
+                      speaking && "animate-pulse",
+                    )}
+                    style={stanceStyle ? { backgroundColor: `${stanceStyle.hex}22`, color: stanceStyle.hex } : undefined}
+                  >
+                    {!joined ? t('미참여') : speaking ? `${t('발언 중')} · ${t(stanceStyle!.label)}` : stanceStyle ? t(stanceStyle.label) : t('대기')}
+                  </span>
+                </div>
               );
-            })()}
-          </svg>
+            })}
+          </div>
+        </div>
 
-          {/* Render Physical Facility Machines (The Digital Twin) */}
-          <div className="absolute inset-0 pointer-events-none z-10">
-            {/* Mach 1: Washing Hub (No.12 Gasket check area) */}
-            <div className="absolute" style={{ top: '8%', left: '26%' }}>
-              <FactoryUnit 
-                id="washing" 
-                title="Washing No.11/12" 
-                subtitle="WASHING UNIT"
-                status={activeScenario === 3 && step > 0 ? "LEAK WARN" : "STABLE"} 
-                active={events.some(e => e.fromAgent === 'safety' || (e.fromAgent === 'pm' && activeScenario === 3))}
-                critic={activeScenario === 3 && step > 0}
-              />
-            </div>
-
-            {/* Mach 2: PTP Packaging Area */}
-            <div className="absolute" style={{ top: '8%', left: '72%' }}>
-              <FactoryUnit 
-                id="ptp" 
-                title="PTP Sealer 1" 
-                subtitle="PTP PACKAGING"
-                status={activeScenario === 0 && step > 0 ? "SPEED UP" : "NORMAL"} 
-                active={events.some(e => (e.fromAgent === 'prod' && activeScenario !== 1) || e.fromAgent === 'qual')}
-                critic={false}
-              />
-            </div>
-
-            {/* Mach 3: Bottle II Filling Station */}
-            <div className="absolute" style={{ top: '63%', left: '76%' }}>
-              <FactoryUnit 
-                id="bottle" 
-                title="Bottle Filler II" 
-                subtitle="BOTTLE PACK"
-                status={activeScenario === 1 && step > 0 ? "FAST MODE" : "STABLE"} 
-                active={events.some(e => (e.fromAgent === 'prod' && activeScenario === 1) || (e.fromAgent === 'qual' && activeScenario === 1))}
-                critic={false}
-              />
-            </div>
-
-            {/* Mach 4: ESS Storage Hub & AMR Dock */}
-            <div className="absolute" style={{ top: '63%', left: '36%' }}>
-              <FactoryUnit 
-                id="ess" 
-                title="ESS 120kW Bank" 
-                subtitle="ENERGY / AMR"
-                status={activeScenario === 4 && step > 0 ? "DISCHARGING" : "ONLINE"} 
-                active={events.some(e => e.fromAgent === 'energy' || e.fromAgent === 'logistics')}
-                critic={false}
-              />
-            </div>
-
-            {/* Mach 5: Central AI Command Control Room Console */}
-            <div className="absolute" style={{ top: '38%', left: '10%' }}>
-              <FactoryUnit 
-                id="control" 
-                title={t('AI Supervisor Cores')} 
-                subtitle="CENTRAL HQ"
-                status="ONLINE" 
-                active={step === scenarios[activeScenario].timeline.length}
-                critic={false}
-              />
+        {/* Live transcript: what is on the table and who said what */}
+        <div className="flex flex-col gap-3">
+          <div className="rounded-xl border border-border bg-surface-hover/40 p-3">
+            <div className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">{t('현재 조율 안건')}</div>
+            <div className="mt-0.5 text-xs font-black leading-snug">{scenario.title}</div>
+            <div className="mt-2 flex gap-1">
+              {scenario.timeline.map((entry, i) => (
+                <span
+                  key={i}
+                  className="h-1.5 flex-1 rounded-full transition-colors duration-500"
+                  style={{ backgroundColor: i < step ? COORD_TYPE_STYLE[entry.type as CoordinationEvent['type']].hex : 'var(--color-border)' }}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Render All 6 Domain Agents + AI Supervisor (The Humans & Holograms) */}
-          <div className="absolute inset-0 z-20">
-            {(() => {
-              const ALL_AGENTS_LIST = [
-                { id: 'supervisor', name: t('종합 조율 AI'), role: 'AI Supervisor', pos: { top: '38%', left: '4%' }, align: 'right' },
-                { id: 'safety', name: t('예지 감독관'), role: 'HSE Safety', pos: { top: '8%', left: '10%' }, align: 'right' },
-                { id: 'pm', name: t('철수 기장'), role: 'Maintenance', pos: { top: '24%', left: '25%' }, align: 'right' },
-                { id: 'prod', name: t('민혁 리드'), role: 'Production', pos: { top: '24%', left: '50%' }, align: 'right' },
-                { id: 'qual', name: t('지수 연구원'), role: 'Quality Assur', pos: { top: '24%', left: '76%' }, align: 'left' },
-                { id: 'logistics', name: t('동현 팀장'), role: 'Logistics', pos: { top: '78%', left: '48%' }, align: 'left' },
-                { id: 'energy', name: t('선우 책임'), role: 'Energy Grid', pos: { top: '78%', left: '20%' }, align: 'right' }
-              ];
-
-              const lastEvent = events[events.length - 1];
-
-              return ALL_AGENTS_LIST.map((agent) => {
-                const getAgentDetails = (id: string) => {
-                  switch (id) {
-                    case 'prod': return { name: t('민혁 (생산 관리 리드)'), role: 'Production Lead', helmetColor: '#3b82f6', badge: t('생산가속') };
-                    case 'qual': return { name: t('지수 (품질 수석 연구원)'), role: 'Quality Specialist', helmetColor: '#10b981', badge: t('정밀검사') };
-                    case 'pm': return { name: t('철수 (예지정비 총괄 기장)'), role: 'Chief Mechanic', helmetColor: '#8b5cf6', badge: t('예후진단') };
-                    case 'energy': return { name: t('선우 (그리드 에너지 엔지니어)'), role: 'Energy Engineer', helmetColor: '#f59e0b', badge: t('피크감축') };
-                    case 'safety': return { name: t('예지 (안전환경 감독관)'), role: 'HSE Supervisor', helmetColor: '#ef4444', badge: t('위험감시') };
-                    case 'logistics': return { name: t('동현 (물류 이송 지휘관)'), role: 'Logistics Supervisor', helmetColor: '#eab308', badge: t('AMR우회') };
-                    default: return { name: t('종합 조율 AI (오케스트레이터)'), role: 'AI Orchestrator', helmetColor: '#00f0ff', badge: t('종합중재') };
-                  }
-                };
-
-                const details = getAgentDetails(agent.id);
-                const isSpeaking = lastEvent?.fromAgent === agent.id;
-                const isParticipant = scenarios[activeScenario].agents.some(a => a.id === agent.id) || agent.id === 'supervisor';
-
-                // Setup Bubble Float placements to be beautifully visible and centered
-                const bubbleStyle: React.CSSProperties = agent.align === 'right' 
-                  ? { left: '115%', top: '-25px' } 
-                  : { right: '115%', top: '-25px' };
-
-                const bubbleTailStyle: React.CSSProperties = agent.align === 'right'
-                  ? { left: '-5px', top: '24px', borderLeft: '1px solid currentColor', borderBottom: '1px solid currentColor', transform: 'rotate(45deg)' }
-                  : { right: '-5px', top: '24px', borderRight: '1px solid currentColor', borderTop: '1px solid currentColor', transform: 'rotate(45deg)' };
-
-                return (
-                  <div 
-                    key={agent.id}
-                    className="absolute transition-all duration-300"
-                    style={{ 
-                      top: agent.pos.top, 
-                      left: agent.pos.left,
-                      opacity: isParticipant ? 1 : 0.22,
-                      pointerEvents: isParticipant ? 'auto' : 'none'
-                    }}
-                  >
-                    <div className="flex flex-col items-center select-none relative">
-                      {/* Avatar with live Speaking visual effect */}
-                      <div className="relative cursor-pointer group">
-                        <AgentAvatarIcon id={agent.id} width={48} height={48} active={isSpeaking} />
-                        
-                        {/* Status Label Clip below Avatar */}
-                        {!isParticipant && (
-                          <div className="absolute top-0 right-0 bg-slate-350 border border-slate-400 rounded-full px-1 text-[5px] text-slate-500 font-bold uppercase shadow-sm">STBY</div>
-                        )}
-                        {isParticipant && !isSpeaking && (
-                          <div className="absolute top-0 right-0 bg-slate-800 border border-slate-650 rounded-full px-1.5 text-[6px] text-slate-200 font-bold shadow-sm">{details.badge}</div>
-                        )}
-                        {isSpeaking && (
-                          <div className="absolute -top-1 -right-2 bg-gradient-to-r from-[#0ea5e9] to-[#06b6d4] border border-white/40 rounded-full px-1.5 py-0.5 text-[6.5px] text-white font-black animate-bounce flex items-center gap-0.5 shadow-md">
-                            <span className="relative flex h-1.5 w-1.5">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
-                            </span>
-                            TALK
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Character Label Text card */}
-                      <div className="mt-1 bg-white/95 border border-slate-300/80 rounded-md px-1.5 py-0.5 text-center min-w-[76px] shadow-sm">
-                        <div className="text-[8px] font-black text-slate-800 whitespace-nowrap line-clamp-1">{agent.name}</div>
-                        <div className="text-[6px] text-slate-500 uppercase tracking-wider font-extrabold line-clamp-1">{agent.role}</div>
-                      </div>
-
-                      {/* Animated Speech Dialogue Ballons in glossy frosted-glass light theme */}
-                      <AnimatePresence>
-                        {isSpeaking && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.88, y: 8 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.88, y: 8 }}
-                            className={cn(
-                              "absolute p-3 rounded-2xl border shadow-2xl z-30 transition-all w-[240px] text-slate-800 bg-[#ffffff]",
-                              agent.id === 'supervisor' 
-                                ? "border-cyan-400 border-2 bg-gradient-to-br from-[#ffffff] to-[#e0f2fe] text-cyan-950 shadow-cyan-100" 
-                                : `border-slate-300 shadow-slate-200`
-                            )}
-                            style={{
-                              ...bubbleStyle,
-                              borderColor: agent.id === 'supervisor' ? '#22d3ee' : details.helmetColor
-                            }}
-                          >
-                            {/* Balloon tail pointer arrow */}
-                            <div 
-                              className="absolute w-2.5 h-2.5 bg-[#ffffff]"
-                              style={{
-                                ...bubbleTailStyle,
-                                backgroundColor: agent.id === 'supervisor' ? '#f0f9ff' : '#ffffff',
-                                borderColor: agent.id === 'supervisor' ? '#22d3ee' : details.helmetColor
-                              }}
-                            />
-                            
-                            <div className="flex items-center gap-2 mb-1 border-b pb-1 border-slate-200/80">
-                              <span 
-                                className="text-[7.5px] font-black uppercase px-2 py-0.5 rounded shadow-sm"
-                                style={{
-                                  backgroundColor: `${details.helmetColor}15`,
-                                  color: details.helmetColor
-                                }}
-                              >
-                                {lastEvent.type}
-                              </span>
-                              <span className="text-[7px] text-slate-400 font-mono">{lastEvent.timestamp}</span>
-                            </div>
-                            <p className="text-[10px] leading-relaxed font-bold text-slate-700">
-                              {lastEvent.content}
-                            </p>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+          <div className="relative min-h-[200px]">
+            <AnimatePresence mode="wait">
+              {lastEvent ? (
+                <motion.div
+                  key={lastEvent.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="h-full rounded-xl border-2 bg-surface p-3 shadow-lg"
+                  style={{ borderColor: coordAgent(lastEvent.fromAgent).hex }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full [&>svg]:h-4 [&>svg]:w-4"
+                      style={{ backgroundColor: `${coordAgent(lastEvent.fromAgent).hex}22`, color: coordAgent(lastEvent.fromAgent).hex }}
+                    >
+                      {coordAgent(lastEvent.fromAgent).icon}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[11px] font-black">{t(coordAgent(lastEvent.fromAgent).name)}</div>
+                      <div className="text-[9px] text-text-secondary">→ {lastEvent.toAgent === 'all' ? t('전체 에이전트') : t('AI 슈퍼바이저')}</div>
                     </div>
+                    <span
+                      className="rounded-full px-2 py-0.5 text-[9px] font-bold"
+                      style={{ backgroundColor: `${COORD_TYPE_STYLE[lastEvent.type].hex}22`, color: COORD_TYPE_STYLE[lastEvent.type].hex }}
+                    >
+                      {t(COORD_TYPE_STYLE[lastEvent.type].label)}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-[11px] leading-relaxed">{lastEvent.content}</p>
+                  {lastEvent.reasoning && (
+                    <div className="mt-2 rounded-lg border border-accent/20 bg-accent/5 p-2">
+                      <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-accent">
+                        <Target size={10} /> {t('Decision Basis')}
+                      </div>
+                      <p className="mt-0.5 text-[10px] text-text-secondary">{lastEvent.reasoning}</p>
+                    </div>
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="waiting"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex h-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border text-text-secondary"
+                >
+                  <Loader2 size={16} className="animate-spin" />
+                  <span className="text-[10px]">{t('Waiting for agent proposals...')}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="rounded-xl border border-border bg-surface-hover/40 p-3">
+            <div className="mb-2 text-[9px] font-bold uppercase tracking-wider text-text-secondary">{t('에이전트별 입장')}</div>
+            <div className="space-y-1.5">
+              {participants.map(id => {
+                const agent = coordAgent(id);
+                const stance = stanceOf(id);
+                const stanceStyle = stance === 'waiting' ? null : COORD_TYPE_STYLE[stance];
+                return (
+                  <div key={id} className="flex items-center gap-2 text-[10px]">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full [&>svg]:h-3 [&>svg]:w-3" style={{ backgroundColor: `${agent.hex}22`, color: agent.hex }}>{agent.icon}</span>
+                    <span className="min-w-0 flex-1 truncate font-bold">{t(agent.name)}</span>
+                    <span
+                      className={cn("rounded-full px-2 py-0.5 text-[9px] font-bold", !stanceStyle && "bg-surface text-text-secondary")}
+                      style={stanceStyle ? { backgroundColor: `${stanceStyle.hex}22`, color: stanceStyle.hex } : undefined}
+                    >
+                      {stanceStyle ? t(stanceStyle.label) : t('대기')}
+                    </span>
                   </div>
                 );
-              });
-            })()}
+              })}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Event Log Timeline */}
-      <div className="bg-surface border border-border rounded-2xl overflow-hidden flex flex-col h-[200px]">
-        <div className="px-4 py-2 border-b border-border bg-surface-hover/50 flex items-center justify-between">
+      <div className="flex h-[200px] flex-col overflow-hidden rounded-2xl border border-border bg-surface">
+        <div className="flex items-center justify-between border-b border-border bg-surface-hover/50 px-4 py-2">
           <div className="flex items-center gap-2">
             <History size={14} className="text-accent" />
             <span className="text-[10px] font-bold uppercase tracking-wider">{t('Orchestration Event Log')}</span>
           </div>
           <span className="text-[9px] text-text-secondary">{events.length} {t('events recorded')}</span>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-          {events.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-text-secondary gap-2 opacity-50">
-              <Loader2 size={16} className="animate-spin" />
-              <span className="text-[10px]">{t('Waiting for agent proposals...')}</span>
-            </div>
-          ) : (
-            events.map((event, idx) => {
-              const agent = scenarios[activeScenario].agents.find(a => a.id === event.fromAgent) || 
-                            (event.fromAgent === 'supervisor' ? { name: 'AI Supervisor', color: 'text-accent', icon: <Cpu size={12} /> } : null);
-              
-              return (
-                <motion.div 
-                  key={event.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex gap-3 group"
-                >
-                  <div className="flex flex-col items-center gap-1">
-                    <div className={cn(
-                      "w-6 h-6 rounded-lg flex items-center justify-center border border-border",
-                      event.fromAgent === 'supervisor' ? "bg-accent/10 border-accent/30" : "bg-bg"
-                    )}>
-                      {agent?.icon}
-                    </div>
-                    {idx !== events.length - 1 && <div className="w-px flex-1 bg-border" />}
+        <div ref={logRef} className="flex-1 space-y-3 overflow-y-auto p-4 custom-scrollbar">
+          {events.map((event, idx) => {
+            const agent = coordAgent(event.fromAgent);
+            const typeStyle = COORD_TYPE_STYLE[event.type];
+            return (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex gap-3"
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg border border-border bg-bg [&>svg]:h-3 [&>svg]:w-3" style={{ color: agent.hex }}>
+                    {agent.icon}
                   </div>
-                  <div className="flex-1 pb-2">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className={cn("text-[10px] font-bold", agent?.color)}>{agent?.name}</span>
-                        <span className={cn(
-                          "text-[8px] font-bold uppercase px-1 rounded",
-                          event.type === 'proposal' ? "text-blue-500 bg-blue-500/10" :
-                          event.type === 'critique' ? "text-red-500 bg-red-500/10" :
-                          event.type === 'agreement' ? "text-emerald-500 bg-emerald-500/10" :
-                          "text-text-secondary bg-surface-hover"
-                        )}>{event.type}</span>
-                      </div>
-                      <span className="text-[9px] font-mono text-text-secondary">{event.timestamp}</span>
+                  {idx !== events.length - 1 && <div className="w-px flex-1 bg-border" />}
+                </div>
+                <div className="flex-1 pb-2">
+                  <div className="mb-0.5 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold" style={{ color: agent.hex }}>{t(agent.name)}</span>
+                      <span className="rounded px-1 text-[8px] font-bold" style={{ backgroundColor: `${typeStyle.hex}1a`, color: typeStyle.hex }}>{t(typeStyle.label)}</span>
                     </div>
-                    <p className="text-[11px] text-text-primary leading-relaxed">{t(event.content)}</p>
-                    {event.reasoning && (
-                      <div className="mt-2 p-2 rounded-lg bg-accent/5 border border-accent/10">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Target size={10} className="text-accent" />
-                          <span className="text-[9px] font-bold text-accent uppercase tracking-wider">{t('Decision Basis')}</span>
-                        </div>
-                        <p className="text-[10px] text-text-secondary italic">{t(event.reasoning)}</p>
-                      </div>
-                    )}
+                    <span className="font-mono text-[9px] text-text-secondary">{event.timestamp}</span>
                   </div>
-                </motion.div>
-              );
-            })
+                  <p className="text-[11px] leading-relaxed text-text-primary">{event.content}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+          {events.length === 0 && (
+            <div className="flex h-full items-center justify-center text-[10px] text-text-secondary opacity-60">{t('Waiting for agent proposals...')}</div>
           )}
         </div>
       </div>
@@ -2955,66 +1981,248 @@ function CoordinationVisualizer() {
   );
 }
 
+/** Where each agent stands around the supervisor on the coordination stage, in %. */
+const COORD_SLOTS: Record<string, { x: number; y: number }> = {
+  prod: { x: 27, y: 17 },
+  qual: { x: 73, y: 17 },
+  pm: { x: 88, y: 50 },
+  energy: { x: 73, y: 82 },
+  safety: { x: 27, y: 82 },
+  logistics: { x: 12, y: 50 },
+};
+
+const COORD_TYPE_STYLE: Record<CoordinationEvent['type'], { label: string; hex: string }> = {
+  proposal: { label: '제안', hex: '#3b82f6' },
+  critique: { label: '반대', hex: '#ef4444' },
+  conflict: { label: '충돌', hex: '#ef4444' },
+  info: { label: '정보', hex: '#64748b' },
+  agreement: { label: '합의', hex: '#10b981' },
+};
+
+/** Name, color and icon for a coordination participant, shared with the hierarchy map. */
+function coordAgent(id: string): { name: string; hex: string; icon: React.ReactNode } {
+  if (id === 'supervisor') return { name: 'AI 슈퍼바이저', hex: '#10b981', icon: <Network size={14} /> };
+  const agent = AGENT_HIERARCHY.find(a => a.coordId === id);
+  return agent ?? { name: id, hex: '#64748b', icon: <Cpu size={14} /> };
+}
 
 /**
  * The three-tier control structure the platform is built around:
  * AI Supervisor (control tower) → domain AI agents → the ML/DL models each
  * agent runs. `decisionAgent` matches `AgentDecision.agent`, `menuId` is the
- * agent's first screen in the sidebar (null when it has none yet).
+ * agent's first screen in the sidebar (null when it has none yet). `coordId`
+ * is the id the coordination replay uses for the same agent.
+ *
+ * `tasks` is the work the agent rotates through, and `bottleneck` is the one
+ * way it gets stuck: what blocks it, which agent the supervisor pulls in to
+ * help, and what it tells that agent to do.
  */
+type AgentKey = 'quality' | 'pm' | 'safety' | 'production' | 'energy' | 'logistics';
+
 const AGENT_HIERARCHY: {
-  key: string;
+  key: AgentKey;
+  coordId: string;
   name: string;
   role: string;
   decisionAgent: string;
   menuId: number | null;
   excursion?: 'temperature' | 'vibration' | 'energy';
   color: string;
+  hex: string;
   icon: React.ReactNode;
   models: { name: string; task: string }[];
+  tasks: string[];
+  bottleneck: { title: string; helper: AgentKey; resolution: string };
 }[] = [
   {
-    key: 'quality', name: 'AI 품질 에이전트', role: '비전 기반 결함 100% 전수 검출',
+    key: 'quality', coordId: 'qual', name: 'AI 품질 에이전트', role: '비전 기반 결함 100% 전수 검출',
     decisionAgent: 'Quality Agent', menuId: 1, excursion: 'temperature',
-    color: 'text-emerald-500', icon: <ShieldCheck size={16} />,
+    color: 'text-emerald-500', hex: '#10b981', icon: <ShieldCheck size={16} />,
     models: [{ name: 'Anomalib', task: '비지도 이상 탐지' }, { name: 'YOLOv8', task: '결함 객체 검출' }],
+    tasks: ['포장1라인 실링 비전 전수검사', 'B라인 핀홀 결함 재학습 데이터 수집', '불량 유형별 원인 추적 리포트 생성', 'YOLOv8 결함 검출 임계값 보정'],
+    bottleneck: { title: '실링 온도 편차로 불량 판정 보류', helper: 'production', resolution: '생산 에이전트에 라인 속도 5% 감속 지시' },
   },
   {
-    key: 'pm', name: 'AI 설비예지보전 에이전트', role: '진동·온도·토크 시계열 분석',
+    key: 'pm', coordId: 'pm', name: 'AI 설비예지보전 에이전트', role: '진동·온도·토크 시계열 분석',
     decisionAgent: 'PM Agent', menuId: 6, excursion: 'vibration',
-    color: 'text-purple-500', icon: <Wrench size={16} />,
+    color: 'text-purple-500', hex: '#8b5cf6', icon: <Wrench size={16} />,
     models: [{ name: 'LSTM', task: '시계열 이상 예측' }, { name: 'RUL Regressor', task: '잔여수명·돌발 셧다운 예측' }],
+    tasks: ['수축포장기-01 진동 스펙트럼 분석', '메인 모터 베어링 잔여수명 예측', '정비 작업지시서 자동 발행', '감속기 토크 이상 패턴 학습'],
+    bottleneck: { title: '주축 진동 급상승으로 잔여수명 재산정 중', helper: 'production', resolution: '생산 에이전트에 정비 시간 확보용 일정 재배치 지시' },
   },
   {
-    key: 'safety', name: 'AI 안전 에이전트', role: '화재 징후·작업자 근접 24시간 감시',
+    key: 'safety', coordId: 'safety', name: 'AI 안전 에이전트', role: '화재 징후·작업자 근접 24시간 감시',
     decisionAgent: 'Safety Agent', menuId: 19,
-    color: 'text-red-500', icon: <ShieldAlert size={16} />,
+    color: 'text-red-500', hex: '#ef4444', icon: <ShieldAlert size={16} />,
     models: [{ name: 'YOLOv8-Fire', task: '화재·연기 탐지' }, { name: 'Pose Estimation', task: '작업자-로봇 근접 감지' }],
+    tasks: ['C구역 화재·연기 영상 감시', '협동로봇 근접 거리 실시간 감시', '작업자 보호구 착용 판별', '가스 센서 누출 패턴 점검'],
+    bottleneck: { title: '협동로봇 구역 작업자 근접 반복 감지', helper: 'logistics', resolution: '물류 에이전트에 AMR 우회 경로 지시' },
   },
   {
-    key: 'production', name: 'AI 생산 최적화 에이전트', role: '택트타임·설비종합효율 실시간 추적',
+    key: 'production', coordId: 'prod', name: 'AI 생산 최적화 에이전트', role: '택트타임·설비종합효율 실시간 추적',
     decisionAgent: 'Production Agent', menuId: 11,
-    color: 'text-blue-500', icon: <TrendingUp size={16} />,
+    color: 'text-blue-500', hex: '#3b82f6', icon: <TrendingUp size={16} />,
     models: [{ name: 'XGBoost', task: 'OEE 손실 요인 분석' }, { name: 'Bottleneck Detector', task: '병목 구간 식별' }],
+    tasks: ['포장1라인 택트타임 추적', 'OEE 손실 요인 분해 분석', '긴급 오더 생산 일정 재조정', '라인 밸런싱 시뮬레이션'],
+    bottleneck: { title: '후공정 자재 공급 지연으로 택트타임 초과', helper: 'logistics', resolution: '물류 에이전트에 자재 투입 간격 단축 지시' },
   },
   {
-    key: 'energy', name: 'AI 에너지 에이전트', role: '피크 부하·태양광 통합 분석',
+    key: 'energy', coordId: 'energy', name: 'AI 에너지 에이전트', role: '피크 부하·태양광 통합 분석',
     decisionAgent: 'Energy Agent', menuId: 16, excursion: 'energy',
-    color: 'text-orange-500', icon: <Zap size={16} />,
+    color: 'text-orange-500', hex: '#f97316', icon: <Zap size={16} />,
     models: [{ name: 'Prophet', task: '피크 부하 예측' }, { name: 'GRU', task: '태양광 발전량 예측' }],
+    tasks: ['15분 단위 피크 부하 예측', '태양광 발전량 예측 반영', 'ESS 충·방전 스케줄 최적화', '공조 설비 부하 이전 계획'],
+    bottleneck: { title: '계약 전력 92% 도달로 피크 초과 위험', helper: 'production', resolution: '생산 에이전트에 비핵심 설비 부하 이전 지시' },
   },
   {
-    key: 'logistics', name: 'AI 물류 에이전트', role: 'AMR 최적 경로·회피 시뮬레이션',
+    key: 'logistics', coordId: 'logistics', name: 'AI 물류 에이전트', role: 'AMR 최적 경로·회피 시뮬레이션',
     decisionAgent: 'Logistics Agent', menuId: null,
-    color: 'text-yellow-500', icon: <Truck size={16} />,
+    color: 'text-yellow-500', hex: '#eab308', icon: <Truck size={16} />,
     models: [{ name: 'RL Path Planner', task: 'AMR 최적 경로 탐색' }, { name: 'RTD / ACS', task: '배차·이송 명령 하달' }],
+    tasks: ['AMR 이송 경로 최적화', '완제품 출하 버퍼 슬롯 배정', '자재 투입 배차 명령 하달', 'AMR 충전 스케줄 조정'],
+    bottleneck: { title: 'AMR 2대 충전 대기로 이송 지연', helper: 'energy', resolution: '에너지 에이전트에 충전 우선순위 상향 지시' },
   },
 ];
 
+type TaskState = 'running' | 'pending' | 'bottleneck' | 'resolved';
+
+interface AgentTask {
+  id: string;
+  agent: AgentKey;
+  title: string;
+  state: TaskState;
+  /** 0–100 for running work; how far into the stall for a bottleneck. */
+  progress: number;
+  note?: string;
+  /** Seconds since a resolved task closed, for ordering and the "n ago" label. */
+  agoSec?: number;
+}
+
+/** Plant ticks are two seconds apart (see services/telemetry.ts). */
+const TICK_SEC = 2;
+/** A rotating bottleneck window: one agent stalls for the first part of it. */
+const STALL_WINDOW = 36;
+const STALL_TICKS = 14;
+
 /**
- * Supervisor → agents → models, with each agent's live state: responding when
- * the plant excursion lands in its domain, waiting when it has proposals in
- * the approval queue, otherwise monitoring.
+ * Turns the live plant state and the approval queue into what each agent is
+ * doing right now. Everything is a pure function of `tick`, so the board moves
+ * with the telemetry instead of with its own timers:
+ * - each agent works through its task list on its own cycle length;
+ * - an excursion in an agent's domain stalls it (the bottleneck), and every so
+ *   often one agent stalls on a dependency so the board always has one to show;
+ * - proposals in the approval queue are that agent's pending work.
+ */
+function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
+  const tick = plant.tick;
+  const stallSlot = Math.floor(tick / STALL_WINDOW);
+  const stallPhase = tick % STALL_WINDOW;
+  const rotatingStall = AGENT_HIERARCHY[stallSlot % AGENT_HIERARCHY.length].key;
+  const prevStall = AGENT_HIERARCHY[(stallSlot + AGENT_HIERARCHY.length - 1) % AGENT_HIERARCHY.length];
+
+  const tasks: AgentTask[] = [];
+  const resolvedToday: Record<string, number> = {};
+  const stalled = new Set<AgentKey>();
+
+  AGENT_HIERARCHY.forEach((agent, i) => {
+    const cycle = 12 + i * 2;
+    const t0 = tick + i * 5;
+    const round = Math.floor(t0 / cycle);
+    const phase = t0 % cycle;
+    resolvedToday[agent.key] = 18 + i * 3 + round;
+
+    const byExcursion = agent.excursion !== undefined && plant.excursion?.kind === agent.excursion;
+    const byRotation = !plant.excursion && agent.key === rotatingStall && stallPhase < STALL_TICKS;
+    if (byExcursion || byRotation) {
+      stalled.add(agent.key);
+      tasks.push({
+        id: `${agent.key}-stall`,
+        agent: agent.key,
+        title: agent.bottleneck.title,
+        state: 'bottleneck',
+        progress: byExcursion
+          ? 100 - Math.min(100, (plant.excursion!.remaining / 16) * 100)
+          : (stallPhase / STALL_TICKS) * 100,
+        note: agent.bottleneck.resolution,
+      });
+    } else {
+      tasks.push({
+        id: `${agent.key}-run-${round}`,
+        agent: agent.key,
+        title: agent.tasks[round % agent.tasks.length],
+        state: 'running',
+        progress: Math.round((phase / cycle) * 100),
+      });
+    }
+
+    for (let k = 1; k <= 2; k++) {
+      tasks.push({
+        id: `${agent.key}-done-${round - k}`,
+        agent: agent.key,
+        title: agent.tasks[(((round - k) % agent.tasks.length) + agent.tasks.length) % agent.tasks.length],
+        state: 'resolved',
+        progress: 100,
+        agoSec: (phase + (k - 1) * cycle) * TICK_SEC + 1,
+      });
+    }
+
+    decisions
+      .filter(d => d.agent === agent.decisionAgent && d.status === 'pending')
+      .forEach((d, j) => tasks.push({
+        id: `${agent.key}-pending-${j}`,
+        agent: agent.key,
+        title: `${d.target_equipment} · ${d.action.replace(/_/g, ' ')}`,
+        state: 'pending',
+        progress: 100,
+        note: String(d.recommended_value),
+      }));
+  });
+
+  // The stall that just cleared shows up as resolved work, so the board shows
+  // the supervisor closing bottlenecks, not only opening them.
+  if (!plant.excursion && stallPhase >= STALL_TICKS && stallPhase < STALL_TICKS + 10) {
+    tasks.push({
+      id: `${prevStall.key}-stall-cleared-${stallSlot}`,
+      agent: prevStall.key,
+      title: prevStall.bottleneck.title,
+      state: 'resolved',
+      progress: 100,
+      note: prevStall.bottleneck.resolution,
+      agoSec: (stallPhase - STALL_TICKS) * TICK_SEC + 1,
+    });
+  }
+
+  const helpers = new Set<AgentKey>(
+    AGENT_HIERARCHY.filter(a => stalled.has(a.key)).map(a => a.bottleneck.helper),
+  );
+  const status = (key: AgentKey): TaskState => {
+    if (stalled.has(key)) return 'bottleneck';
+    if (tasks.some(task => task.agent === key && task.state === 'pending')) return 'pending';
+    return 'running';
+  };
+  return { tasks, resolvedToday, stalled, helpers, status };
+}
+
+const TASK_STATE_STYLE: Record<TaskState, { label: string; text: string; bg: string; bar: string; stroke: string }> = {
+  running: { label: '진행 중', text: 'text-accent', bg: 'bg-accent/10', bar: 'bg-accent', stroke: 'var(--color-accent)' },
+  pending: { label: '승인 대기', text: 'text-warning', bg: 'bg-warning/15', bar: 'bg-warning', stroke: 'var(--color-warning)' },
+  bottleneck: { label: '병목', text: 'text-danger', bg: 'bg-danger/15', bar: 'bg-danger', stroke: 'var(--color-danger)' },
+  resolved: { label: '해결됨', text: 'text-text-secondary', bg: 'bg-surface', bar: 'bg-text-secondary', stroke: 'var(--color-text-secondary)' },
+};
+
+/** Where each agent sits on the relationship map, in % of the map box. */
+const HUB_POS = { x: 50, y: 50 };
+const agentMapPos = (idx: number) => ({ x: idx < 3 ? 16 : 84, y: [18, 50, 82][idx % 3] });
+
+const formatAgo = (sec: number) => sec < 60 ? `${sec}${t('초 전')}` : `${Math.floor(sec / 60)}${t('분 전')}`;
+
+/**
+ * Supervisor → agents → models as a live relationship map. Each line is the
+ * supervisor's link to one agent and is colored by what is happening on it:
+ * green for an instruction it is carrying out, amber for a proposal waiting
+ * on approval, red for a bottleneck escalated to the supervisor, and a dashed
+ * line to the agent the supervisor pulled in to clear it. Below, the same work
+ * as a board: running, awaiting approval, bottleneck, resolved.
  */
 function SupervisorHierarchy({
   decisions,
@@ -3025,88 +2233,282 @@ function SupervisorHierarchy({
 }) {
   const plant = useTelemetry();
   const live = useLiveValue();
-  const pendingTotal = decisions.filter(d => d.status === 'pending').length;
+  const [selected, setSelected] = useState<AgentKey | null>(null);
+  const work = deriveAgentWork(plant, decisions);
+  const count = (state: TaskState) => work.tasks.filter(task => task.state === state).length;
+  const resolvedTotal = Object.values(work.resolvedToday).reduce((a, b) => a + b, 0);
+  const stalledAgents = AGENT_HIERARCHY.filter(a => work.stalled.has(a.key));
+  const selectedAgent = AGENT_HIERARCHY.find(a => a.key === selected) ?? null;
+
+  const columns: TaskState[] = ['running', 'pending', 'bottleneck', 'resolved'];
+  const boardTasks = work.tasks.filter(task => !selected || task.agent === selected);
 
   return (
     <div className="space-y-4">
-      {/* L0: Supervisor */}
-      <div className="flex justify-center">
-        <div className="flex w-full max-w-xl items-center gap-4 rounded-2xl border-2 border-accent/40 bg-accent/5 p-4 shadow-lg shadow-accent/5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent text-white shadow-lg shadow-accent/30">
-            <Network size={22} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded bg-accent/15 px-1.5 py-0.5 font-mono text-[9px] font-bold text-accent">L0</span>
-              <h4 className="text-sm font-black">{t('AI 슈퍼바이저 에이전트')}</h4>
-              <span className="text-[10px] text-text-secondary">{t('핵심 관제탑 (Control Tower)')}</span>
+      {/* Relationship map */}
+      <div className="overflow-x-auto rounded-2xl border border-border bg-bg/40 custom-scrollbar">
+        <div
+          className="relative h-[520px] min-w-[860px]"
+          style={{ backgroundImage: 'radial-gradient(color-mix(in srgb, var(--color-text-secondary) 22%, transparent) 1px, transparent 1px)', backgroundSize: '18px 18px' }}
+        >
+          <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+            {AGENT_HIERARCHY.map((agent, idx) => {
+              const p = agentMapPos(idx);
+              const state = work.status(agent.key);
+              const helping = work.helpers.has(agent.key);
+              const cx = p.x < 50 ? 36 : 64;
+              const d = `M ${HUB_POS.x} ${HUB_POS.y} C ${cx} ${HUB_POS.y}, ${p.x < 50 ? 30 : 70} ${p.y}, ${p.x} ${p.y}`;
+              const style = TASK_STATE_STYLE[state];
+              const dimmed = selected !== null && selected !== agent.key;
+              return (
+                <g key={agent.key} opacity={dimmed ? 0.25 : 1}>
+                  <path d={d} fill="none" stroke={style.stroke} strokeOpacity={0.18} strokeWidth={10} vectorEffect="non-scaling-stroke" />
+                  <path
+                    d={d}
+                    fill="none"
+                    stroke={helping && state === 'running' ? agent.hex : style.stroke}
+                    strokeWidth={state === 'bottleneck' ? 3 : 2}
+                    strokeDasharray={helping ? '2 6' : '6 8'}
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                    className={state === 'bottleneck' || state === 'pending' ? 'edge-flow-in' : 'edge-flow-out'}
+                  />
+                </g>
+              );
+            })}
+          </svg>
+
+          {/* Edge labels: what travels on each link */}
+          {AGENT_HIERARCHY.map((agent, idx) => {
+            const p = agentMapPos(idx);
+            const state = work.status(agent.key);
+            const helping = work.helpers.has(agent.key) && state === 'running';
+            const label = state === 'bottleneck' ? t('에스컬레이션') : state === 'pending' ? t('승인 요청') : helping ? t('지원 지시') : t('작업 지시');
+            const style = TASK_STATE_STYLE[state];
+            if (selected !== null && selected !== agent.key) return null;
+            return (
+              <span
+                key={agent.key}
+                className={cn(
+                  "absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border bg-surface px-2 py-0.5 text-[9px] font-bold shadow-sm",
+                  helping ? "border-border" : "border-transparent",
+                  style.text,
+                )}
+                style={{ left: `${p.x < 50 ? 33 : 67}%`, top: `${25 + p.y / 2}%`, color: helping ? agent.hex : undefined }}
+              >
+                {state === 'bottleneck' ? '▲ ' : state === 'pending' ? '▲ ' : '▼ '}{label}
+              </span>
+            );
+          })}
+
+          {/* L0: Supervisor hub */}
+          <div
+            className="absolute w-[24%] -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-accent/50 bg-surface p-3 shadow-xl shadow-accent/10"
+            style={{ left: `${HUB_POS.x}%`, top: `${HUB_POS.y}%` }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-white shadow-lg shadow-accent/30">
+                <Network size={20} />
+                <span className="absolute -right-1 -top-1 flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-surface bg-accent" />
+                </span>
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="rounded bg-accent/15 px-1 font-mono text-[9px] font-bold text-accent">L0</span>
+                  <span className="truncate text-[10px] font-bold text-text-secondary">{t('핵심 관제탑 (Control Tower)')}</span>
+                </div>
+                <h4 className="truncate text-sm font-black">{t('AI 슈퍼바이저 에이전트')}</h4>
+              </div>
             </div>
-            <p className="mt-1 text-[11px] text-text-secondary">{t('통합 오케스트레이션 및 인간 중심 통제')}</p>
+            <div className="mt-3 grid grid-cols-4 gap-1 text-center">
+              {[
+                { state: 'running' as const, value: count('running') },
+                { state: 'pending' as const, value: count('pending') },
+                { state: 'bottleneck' as const, value: count('bottleneck') },
+                { state: 'resolved' as const, value: resolvedTotal },
+              ].map(item => (
+                <div key={item.state} className={cn("rounded-lg py-1", TASK_STATE_STYLE[item.state].bg)}>
+                  <div className={cn("text-base font-black leading-tight", TASK_STATE_STYLE[item.state].text)}>{item.value}</div>
+                  <div className="text-[8px] font-bold text-text-secondary">{t(TASK_STATE_STYLE[item.state].label)}</div>
+                </div>
+              ))}
+            </div>
+            <div className={cn(
+              "mt-2 rounded-lg border px-2 py-1.5 text-[10px] leading-snug",
+              stalledAgents.length > 0 ? "border-danger/30 bg-danger/5" : "border-accent/20 bg-accent/5",
+            )}>
+              {stalledAgents.length > 0 ? (
+                stalledAgents.map(a => (
+                  <div key={a.key}>
+                    <span className="font-bold text-danger">{t('병목 조율')}</span>
+                    <span className="text-text-secondary"> · {t(a.bottleneck.resolution)}</span>
+                  </div>
+                ))
+              ) : (
+                <span className="font-bold text-accent">{t('전 에이전트 정상 작업 중')} · {t('승인 대기')} {count('pending')}</span>
+              )}
+            </div>
           </div>
-          <div className="text-right">
-            <div className="text-lg font-black text-accent">{plant.activeAgents} / {AGENT_HIERARCHY.length}</div>
-            <div className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">{t('Active Agents')}</div>
-            {pendingTotal > 0 && (
-              <div className="mt-0.5 text-[10px] font-bold text-warning">{pendingTotal} {t('Action Required')}</div>
-            )}
+
+          {/* L1: Agents */}
+          {AGENT_HIERARCHY.map((agent, idx) => {
+            const p = agentMapPos(idx);
+            const state = work.status(agent.key);
+            const style = TASK_STATE_STYLE[state];
+            const current = work.tasks.find(task => task.agent === agent.key && (task.state === 'bottleneck' || task.state === 'running'))!;
+            const pending = work.tasks.filter(task => task.agent === agent.key && task.state === 'pending').length;
+            const helping = work.helpers.has(agent.key);
+            const isSelected = selected === agent.key;
+            return (
+              <button
+                key={agent.key}
+                type="button"
+                onClick={() => setSelected(isSelected ? null : agent.key)}
+                aria-pressed={isSelected}
+                className={cn(
+                  "absolute w-[25%] -translate-x-1/2 -translate-y-1/2 rounded-xl border-2 bg-surface p-2.5 text-left shadow-lg transition-all hover:shadow-xl",
+                  state === 'bottleneck' ? "border-danger/70 shadow-danger/10" : state === 'pending' ? "border-warning/60" : "border-border",
+                  isSelected && "ring-2 ring-accent ring-offset-2 ring-offset-bg",
+                  selected !== null && !isSelected && "opacity-50",
+                )}
+                style={{ left: `${p.x}%`, top: `${p.y}%`, borderLeftColor: agent.hex, borderLeftWidth: 4 }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: `${agent.hex}22`, color: agent.hex }}>{agent.icon}</span>
+                    <span className="line-clamp-2 text-[11px] font-black leading-tight">{t(agent.name)}</span>
+                  </div>
+                  <span className={cn("flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold", style.bg, style.text)}>
+                    {state === 'bottleneck' && <AlertTriangle size={9} />}
+                    {state === 'pending' ? `${t('승인 대기')} ${pending}` : t(style.label)}
+                  </span>
+                </div>
+                <div className="mt-1.5 flex items-start gap-1 text-[10px] font-bold leading-snug">
+                  <span className={cn("mt-1 h-1.5 w-1.5 shrink-0 rounded-full", state === 'bottleneck' ? "animate-pulse bg-danger" : "bg-accent")} />
+                  <span className="line-clamp-2">{t(current.title)}</span>
+                </div>
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-hover">
+                  <div
+                    className={cn("h-full rounded-full transition-all duration-700", state === 'bottleneck' ? "animate-pulse bg-danger" : "bg-accent")}
+                    style={{ width: `${Math.max(6, current.progress)}%` }}
+                  />
+                </div>
+                <div className="mt-1.5 flex items-center justify-between gap-2 text-[9px] text-text-secondary">
+                  <span className="truncate font-mono">{agent.models.map(m => m.name).join(' · ')}</span>
+                  <span className="shrink-0">
+                    {helping && <span className="mr-1.5 font-bold" style={{ color: agent.hex }}>{t('지원 중')}</span>}
+                    <CheckCircle2 size={9} className="mr-0.5 inline" />{work.resolvedToday[agent.key]}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+
+          {/* Legend */}
+          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full border border-border bg-surface/90 px-3 py-1 text-[9px] font-bold text-text-secondary">
+            <span className="flex items-center gap-1"><span className="h-0.5 w-4 rounded bg-accent" />{t('작업 지시')}</span>
+            <span className="flex items-center gap-1"><span className="h-0.5 w-4 rounded bg-warning" />{t('승인 요청')}</span>
+            <span className="flex items-center gap-1"><span className="h-0.5 w-4 rounded bg-danger" />{t('병목 에스컬레이션')}</span>
+            <span className="flex items-center gap-1"><span className="h-0 w-4 border-t-2 border-dotted border-text-secondary" />{t('지원 지시')}</span>
           </div>
         </div>
       </div>
 
-      {/* Connector */}
-      <div className="flex justify-center" aria-hidden>
-        <div className="h-4 w-px bg-accent/40" />
-      </div>
-
-      {/* L1: Agents, each with its L2 models */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {AGENT_HIERARCHY.map((agent, idx) => {
-          const pending = decisions.filter(d => d.agent === agent.decisionAgent && d.status === 'pending').length;
-          const responding = agent.excursion !== undefined && plant.excursion?.kind === agent.excursion;
-          const state = responding ? 'responding' : pending > 0 ? 'pending' : 'monitoring';
-          const clickable = agent.menuId !== null;
-          return (
+      {/* Selected agent: its models and its screen */}
+      {selectedAgent && (
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface-hover/40 p-3">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: `${selectedAgent.hex}22`, color: selectedAgent.hex }}>{selectedAgent.icon}</span>
+          <div className="min-w-[180px] flex-1">
+            <div className="text-xs font-black">{t(selectedAgent.name)}</div>
+            <div className="text-[10px] text-text-secondary">{t(selectedAgent.role)}</div>
+          </div>
+          {selectedAgent.models.map((model, mIdx) => {
+            const idx = AGENT_HIERARCHY.indexOf(selectedAgent);
+            return (
+              <div key={model.name} className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2 py-1 text-[10px]">
+                <span className="rounded bg-surface-hover px-1 font-mono text-[8px] font-bold text-text-secondary">L2</span>
+                <span className="font-mono font-bold">{model.name}</span>
+                <span className="text-text-secondary">{t(model.task)}</span>
+                <span className="font-mono text-text-secondary">{Math.round(live(40 + idx * 12 + mIdx * 25, 200 + idx * 10 + mIdx))}ms</span>
+              </div>
+            );
+          })}
+          {selectedAgent.menuId !== null && (
             <button
-              key={agent.key}
               type="button"
-              disabled={!clickable}
-              onClick={() => agent.menuId !== null && onNavigate(agent.menuId)}
-              className={cn(
-                "rounded-xl border bg-surface-hover/40 p-3 text-left transition-all",
-                state === 'responding' ? "border-danger/50 shadow-lg shadow-danger/5" :
-                state === 'pending' ? "border-warning/40" : "border-border",
-                clickable ? "cursor-pointer hover:border-accent/50" : "cursor-default"
-              )}
+              onClick={() => onNavigate(selectedAgent.menuId!)}
+              className="flex items-center gap-1 rounded-lg bg-accent/10 px-2.5 py-1.5 text-[10px] font-bold text-accent hover:bg-accent/20"
             >
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className={cn("shrink-0", agent.color)}>{agent.icon}</span>
-                  <span className="rounded bg-surface px-1.5 py-0.5 font-mono text-[9px] font-bold text-text-secondary">L1</span>
-                  <span className="truncate text-xs font-bold">{t(agent.name)}</span>
-                </div>
-                <span className={cn(
-                  "shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold",
-                  state === 'responding' ? "bg-danger/15 text-danger" :
-                  state === 'pending' ? "bg-warning/15 text-warning" : "bg-accent/10 text-accent"
-                )}>
-                  {state === 'responding' ? t('대응 중') : state === 'pending' ? `${t('승인 대기')} ${pending}` : t('모니터링')}
-                </span>
-              </div>
-              <p className="mt-1.5 text-[10px] text-text-secondary">{t(agent.role)}</p>
-              <div className="mt-2 space-y-1 border-t border-border/60 pt-2">
-                {agent.models.map((model, mIdx) => (
-                  <div key={model.name} className="flex items-center justify-between gap-2 text-[10px]">
-                    <div className="flex min-w-0 items-center gap-1.5">
-                      <span className="rounded bg-surface px-1 font-mono text-[8px] font-bold text-text-secondary">L2</span>
-                      <Layers size={10} className="shrink-0 text-text-secondary" />
-                      <span className="truncate font-mono font-bold">{model.name}</span>
-                      <span className="truncate text-text-secondary">· {t(model.task)}</span>
-                    </div>
-                    <span className="shrink-0 font-mono text-text-secondary">{Math.round(live(40 + idx * 12 + mIdx * 25, 200 + idx * 10 + mIdx))}ms</span>
-                  </div>
-                ))}
-              </div>
+              {t('에이전트 화면')} <ArrowRight size={11} />
             </button>
+          )}
+        </div>
+      )}
+
+      {/* Task board */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {columns.map(column => {
+          const style = TASK_STATE_STYLE[column];
+          const items = boardTasks
+            .filter(task => task.state === column)
+            .sort((a, b) => (a.agoSec ?? 0) - (b.agoSec ?? 0))
+            .slice(0, column === 'resolved' ? 6 : 8);
+          return (
+            <div key={column} className="rounded-xl border border-border bg-surface-hover/30 p-2.5">
+              <div className="mb-2 flex items-center justify-between">
+                <span className={cn("flex items-center gap-1.5 text-[11px] font-black", style.text)}>
+                  <span className={cn("h-2 w-2 rounded-full", style.bar)} />
+                  {t(style.label)}
+                </span>
+                <span className="font-mono text-[10px] text-text-secondary">{boardTasks.filter(task => task.state === column).length}</span>
+              </div>
+              <div className="space-y-1.5">
+                {items.length === 0 && (
+                  <div className="rounded-lg border border-dashed border-border py-3 text-center text-[10px] text-text-secondary">{t('없음')}</div>
+                )}
+                {items.map(task => {
+                  const agent = AGENT_HIERARCHY.find(a => a.key === task.agent)!;
+                  return (
+                    <motion.div
+                      layout
+                      key={task.id}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={cn(
+                        "rounded-lg border bg-surface p-2",
+                        column === 'bottleneck' ? "border-danger/40" : "border-border",
+                        column === 'resolved' && "opacity-75",
+                      )}
+                      style={{ borderLeftColor: agent.hex, borderLeftWidth: 3 }}
+                    >
+                      <div className="flex items-center justify-between gap-2 text-[9px]">
+                        <span className="flex items-center gap-1 font-bold" style={{ color: agent.hex }}>
+                          {agent.icon && <span className="[&>svg]:h-2.5 [&>svg]:w-2.5">{agent.icon}</span>}
+                          {t(agent.name)}
+                        </span>
+                        {task.agoSec !== undefined && <span className="font-mono text-text-secondary">{formatAgo(task.agoSec)}</span>}
+                      </div>
+                      <div className={cn("mt-0.5 text-[10px] font-bold leading-snug", column === 'resolved' && "line-through decoration-text-secondary/40")}>{t(task.title)}</div>
+                      {column === 'running' && (
+                        <div className="mt-1 flex items-center gap-1.5">
+                          <div className="h-1 flex-1 overflow-hidden rounded-full bg-surface-hover">
+                            <div className="h-full rounded-full bg-accent transition-all duration-700" style={{ width: `${task.progress}%` }} />
+                          </div>
+                          <span className="font-mono text-[9px] text-text-secondary">{task.progress}%</span>
+                        </div>
+                      )}
+                      {task.note && column !== 'running' && (
+                        <div className={cn("mt-1 text-[9px] leading-snug", column === 'bottleneck' ? "text-danger" : "text-text-secondary")}>
+                          {column === 'pending' ? `${t('권고값')} ${task.note}` : `↳ ${t('슈퍼바이저')}: ${t(task.note)}`}
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </div>
