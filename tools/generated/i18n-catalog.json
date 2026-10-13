@@ -175,6 +175,13 @@
     ]
   },
   {
+    "key": "3축 진동",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "45 Active Entity Types",
     "lang": "en",
     "files": [
@@ -3034,6 +3041,13 @@
     ]
   },
   {
+    "key": "근거 데이터",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "기타",
     "lang": "ko",
     "files": [
@@ -3099,6 +3113,13 @@
   },
   {
     "key": "라인 밸런싱 시뮬레이션",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "라인 전류",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3448,6 +3469,7 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
+      "src/config/siteProfile.ts",
       "src/services/demoResponses.ts",
       "src/services/telemetry.ts"
     ]
@@ -3470,7 +3492,8 @@
     "key": "승인 대기",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
     ]
   },
   {
@@ -3526,6 +3549,13 @@
   },
   {
     "key": "신규 긴급 오더 대응을 위해 패키징 1라인 분당 가동 속도를 20% 초고속 모드로 상향 제안합니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "실링 온도",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3745,7 +3775,21 @@
     ]
   },
   {
+    "key": "이 에이전트는 센서 시계열 대신 영상·위치 데이터로 판단합니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "이 추천을 거부하는 이유를 남겨주세요 (선택)",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "임계치",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3991,6 +4035,13 @@
     ]
   },
   {
+    "key": "최근 {n}개 측정값",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "최근 발생한 안전 경보 이력 조회",
     "lang": "ko",
     "files": [
@@ -4036,7 +4087,8 @@
     "key": "케이스패커-02",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/config/siteProfile.ts"
     ]
   },
   {
@@ -4402,6 +4454,694 @@
     "lang": "ko",
     "files": [
       "src/components/ErrorBoundary.tsx"
+    ]
+  },
+  {
+    "key": "{effect}하면 {hours} 정지를 막고 약 {krw}을 아낄 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "{effect}하면 약 {krw}을 아낄 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "{effect}해서 {hours} 정지를 막고 약 {krw}을 아꼈어요.",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "{effect}해서 안전사고를 예방했어요.",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "{effect}해서 약 {krw}을 아꼈어요.",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AI 대응 중",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AI 대응 중 {n}건",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AI 조치",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AI 조치 제안",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AMR 2대 충전 대기로 자재 공급 지연",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "ESS 120kW 방전, 공조 부하 이전",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "PTP 실러 1 필름 장력 이상",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "감속 운전 유지, 다음 정지 때 베어링 점검",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "감지",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "결재가 필요한 AI 제안",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "결재할 건이 없어요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "공장 배치도",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "공장장·경영진",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "공조·컴프레서 부하 이전 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "교체 베어링 재고 확인, 정비 일정 확정",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "구역 출입 통제, 청소 작업 지시 완료",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "근거 보기",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "급유기 오일 잔량 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "내가 할 일",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "다음 계획 정지 때 베어링 교체",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "다음 정지 때 베어링 점검 예약",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "라인이 정상입니다. 이상이 생기면 배치도에 표시돼요.",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "모터 베어링 소음·발열 점검",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "모터 소음·발열 육안 점검",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "물류 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "반려",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "베어링 마모 진행",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "베어링 진동 임계치 초과",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "보는 사람",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "분석",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "불량률 상승 조짐",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "비핵심 부하 분산",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "비핵심 설비 대기 모드 전환 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "사건 트래커",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "생산 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "설비·IT 엔지니어",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "세척실 바닥 누수로 미끄럼 위험",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "수축포장기-01 메인 모터 진동 급상승",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "수축포장기-01 실링 온도 상승",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "슈퍼바이저 → 에이전트 → ML/DL 근거",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "승인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "승인 시 {krw} 추가 절감",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "승인 후 첫 10개 제품 실링 상태 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "시간",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "실링 온도 2°C 하향, 라인 속도 5% 감속",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "실링 온도를 {value}로 조정",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "실링부 열판 상태 육안 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "안전 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "야간 정지 시간에 감속기 점검 완료",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "어디서, 뭐가, 내가 할 일",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "에너지 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "예지보전 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "오늘 AI가 막은 정지 시간",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "오늘 AI가 만든 결과 요약",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "오늘 AI가 해결한 일",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "오늘 절감 비용 (추정)",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "이 구역에는 오늘 사건이 없어요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "이상 발생",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "자동 급유 선행 가동",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "장력 자동 보정, 정지 없이 생산 유지",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "전 라인 정상",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "전체 보기",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "정상",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "정지 1시간당 {cost} 기준",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "제안 내용 확인 후 승인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "조치 제안",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "지금 내가 할 일 {n}건",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "지금 할 일이 없어요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "진동 상승 추세",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "충전 순서 재배치, 공급 간격 단축",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "케이스패커-02 감속기 토크 이상",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "품질 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "피크 전력 계약치 92% 도달",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "피크 전력 접근",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "해결",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "해결 {n}건 기준",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "현장",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "현장 작업자·반장",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "현재 설비종합효율",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AI 슈퍼바이저 서버",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "AMR 이송 라인",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "ESS 120kW · AMR 충전 도크",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "PTP III 포장실 [2112/2118]",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "PTP 실러 1 · 카토너",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "세척기 No.11/12",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "세척실 [2102]",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "수축포장기-01 · 케이스패커-02",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "이송 통로 [2111]",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "전시 데모 공장",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "중앙 관제실",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "포장1라인",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts",
+      "src/services/demoResponses.ts",
+      "src/services/telemetry.ts"
+    ]
+  },
+  {
+    "key": "포장1라인 [2109]",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "포장라인 보관실 [2129]",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
     ]
   },
   {
@@ -6012,14 +6752,6 @@
     "lang": "ko",
     "files": [
       "src/services/demoResponses.ts"
-    ]
-  },
-  {
-    "key": "포장1라인",
-    "lang": "ko",
-    "files": [
-      "src/services/demoResponses.ts",
-      "src/services/telemetry.ts"
     ]
   },
   {
