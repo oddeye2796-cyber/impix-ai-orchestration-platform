@@ -1,0 +1,262 @@
+{
+ "15분 단위 피크 부하 예측": [
+  "15分単位のピーク負荷予測",
+  "15-minute peak load forecast"
+ ],
+ "AI 슈퍼바이저": [
+  "AIスーパーバイザー",
+  "AI Supervisor"
+ ],
+ "AMR 2대 충전 대기로 이송 지연": [
+  "AMR 2台の充電待ちで搬送遅延",
+  "Transport delayed: two AMRs waiting to charge"
+ ],
+ "AMR 이송 경로 최적화": [
+  "AMR搬送経路の最適化",
+  "Optimizing AMR transport routes"
+ ],
+ "AMR 충전 스케줄 조정": [
+  "AMR充電スケジュール調整",
+  "Adjusting AMR charging schedule"
+ ],
+ "B라인 핀홀 결함 재학습 데이터 수집": [
+  "Bライン ピンホール欠陥の再学習データ収集",
+  "Collecting retraining data for Line B pinhole defects"
+ ],
+ "C구역 화재·연기 영상 감시": [
+  "C区域の火災・煙映像監視",
+  "Watching Zone C video for fire and smoke"
+ ],
+ "ESS 충·방전 스케줄 최적화": [
+  "ESS充放電スケジュール最適化",
+  "Optimizing ESS charge/discharge schedule"
+ ],
+ "OEE 손실 요인 분해 분석": [
+  "OEEロス要因の分解分析",
+  "Breaking down OEE loss factors"
+ ],
+ "YOLOv8 결함 검출 임계값 보정": [
+  "YOLOv8欠陥検出しきい値の補正",
+  "Calibrating YOLOv8 defect thresholds"
+ ],
+ "가스 센서 누출 패턴 점검": [
+  "ガスセンサー漏洩パターン点検",
+  "Checking gas sensors for leak patterns"
+ ],
+ "감속기 토크 이상 패턴 학습": [
+  "減速機トルク異常パターン学習",
+  "Learning gearbox torque anomaly patterns"
+ ],
+ "계약 전력 92% 도달로 피크 초과 위험": [
+  "契約電力92%到達でピーク超過の恐れ",
+  "At 92% of contracted power: peak overrun risk"
+ ],
+ "공조 설비 부하 이전 계획": [
+  "空調設備の負荷シフト計画",
+  "Planning HVAC load shifting"
+ ],
+ "권고값": [
+  "推奨値",
+  "Recommended"
+ ],
+ "긴급 오더 생산 일정 재조정": [
+  "緊急オーダーの生産日程再調整",
+  "Rescheduling production for a rush order"
+ ],
+ "라인 밸런싱 시뮬레이션": [
+  "ラインバランシングシミュレーション",
+  "Line balancing simulation"
+ ],
+ "메인 모터 베어링 잔여수명 예측": [
+  "メインモーター軸受の残存寿命予測",
+  "Predicting main motor bearing remaining life"
+ ],
+ "물류 에이전트에 AMR 우회 경로 지시": [
+  "物流エージェントにAMR迂回経路を指示",
+  "Tell the Logistics Agent to reroute AMRs"
+ ],
+ "물류 에이전트에 자재 투입 간격 단축 지시": [
+  "物流エージェントに資材投入間隔の短縮を指示",
+  "Tell the Logistics Agent to shorten material feed intervals"
+ ],
+ "미참여": [
+  "不参加",
+  "Not involved"
+ ],
+ "반대": [
+  "反対",
+  "Objection"
+ ],
+ "발언 중": [
+  "発言中",
+  "Speaking"
+ ],
+ "병목 에스컬레이션": [
+  "ボトルネックのエスカレーション",
+  "Bottleneck escalation"
+ ],
+ "병목 조율": [
+  "ボトルネック調整",
+  "Resolving bottleneck"
+ ],
+ "병목": [
+  "ボトルネック",
+  "Bottleneck"
+ ],
+ "분 전": [
+  "分前",
+  "m ago"
+ ],
+ "불량 유형별 원인 추적 리포트 생성": [
+  "不良タイプ別の原因追跡レポート作成",
+  "Building root-cause report by defect type"
+ ],
+ "생산 에이전트에 라인 속도 5% 감속 지시": [
+  "生産エージェントにライン速度5%減速を指示",
+  "Tell the Production Agent to slow the line by 5%"
+ ],
+ "생산 에이전트에 비핵심 설비 부하 이전 지시": [
+  "生産エージェントに非中核設備の負荷シフトを指示",
+  "Tell the Production Agent to shift non-critical loads"
+ ],
+ "생산 에이전트에 정비 시간 확보용 일정 재배치 지시": [
+  "生産エージェントに保全時間確保のための日程再配置を指示",
+  "Tell the Production Agent to reschedule for a maintenance window"
+ ],
+ "수축포장기-01 진동 스펙트럼 분석": [
+  "収縮包装機-01の振動スペクトル分析",
+  "Analyzing Shrink Wrapper-01 vibration spectrum"
+ ],
+ "승인 요청": [
+  "承認依頼",
+  "Approval request"
+ ],
+ "실링 온도 편차로 불량 판정 보류": [
+  "シール温度の偏差で不良判定を保留",
+  "Defect calls on hold: sealing temperature drift"
+ ],
+ "없음": [
+  "なし",
+  "None"
+ ],
+ "에너지 에이전트에 충전 우선순위 상향 지시": [
+  "エネルギーエージェントに充電優先度の引き上げを指示",
+  "Tell the Energy Agent to raise charging priority"
+ ],
+ "에스컬레이션": [
+  "エスカレーション",
+  "Escalation"
+ ],
+ "에이전트 화면": [
+  "エージェント画面",
+  "Agent screen"
+ ],
+ "완제품 출하 버퍼 슬롯 배정": [
+  "完成品出荷バッファスロットの割当",
+  "Assigning finished-goods buffer slots"
+ ],
+ "의견 수집": [
+  "意見収集",
+  "Collecting input"
+ ],
+ "자재 투입 배차 명령 하달": [
+  "資材投入の配車指令を発行",
+  "Dispatching material feed orders"
+ ],
+ "작업 지시": [
+  "作業指示",
+  "Work order"
+ ],
+ "작업자 보호구 착용 판별": [
+  "作業者の保護具着用判定",
+  "Checking worker PPE"
+ ],
+ "전 에이전트 정상 작업 중": [
+  "全エージェント正常稼働中",
+  "All agents working normally"
+ ],
+ "전체 에이전트": [
+  "全エージェント",
+  "All agents"
+ ],
+ "정보": [
+  "情報",
+  "Info"
+ ],
+ "정비 작업지시서 자동 발행": [
+  "保全作業指示書の自動発行",
+  "Issuing maintenance work orders"
+ ],
+ "제안": [
+  "提案",
+  "Proposal"
+ ],
+ "주축 진동 급상승으로 잔여수명 재산정 중": [
+  "主軸振動の急上昇で残存寿命を再算定中",
+  "Recalculating remaining life after a spindle vibration spike"
+ ],
+ "지원 중": [
+  "支援中",
+  "Assisting"
+ ],
+ "지원 지시": [
+  "支援指示",
+  "Support order"
+ ],
+ "진행 중": [
+  "進行中",
+  "In progress"
+ ],
+ "초 전": [
+  "秒前",
+  "s ago"
+ ],
+ "충돌": [
+  "衝突",
+  "Conflict"
+ ],
+ "태양광 발전량 예측 반영": [
+  "太陽光発電量予測の反映",
+  "Applying solar generation forecast"
+ ],
+ "포장1라인 실링 비전 전수검사": [
+  "包装1ライン シールのビジョン全数検査",
+  "Full vision inspection of Packaging Line 1 seals"
+ ],
+ "포장1라인 택트타임 추적": [
+  "包装1ラインのタクトタイム追跡",
+  "Tracking Packaging Line 1 takt time"
+ ],
+ "합의 도출": [
+  "合意形成",
+  "Consensus reached"
+ ],
+ "합의": [
+  "合意",
+  "Agreed"
+ ],
+ "해결됨": [
+  "解決済み",
+  "Resolved"
+ ],
+ "현재 조율 안건": [
+  "現在の調整議題",
+  "Current agenda"
+ ],
+ "협동로봇 구역 작업자 근접 반복 감지": [
+  "協働ロボット区域で作業者の接近を繰り返し検知",
+  "Workers repeatedly too close in the cobot zone"
+ ],
+ "협동로봇 근접 거리 실시간 감시": [
+  "協働ロボット接近距離のリアルタイム監視",
+  "Watching cobot proximity in real time"
+ ],
+ "후공정 자재 공급 지연으로 택트타임 초과": [
+  "後工程の資材供給遅延でタクトタイム超過",
+  "Takt time exceeded: downstream material supply delayed"
+ ],
+ "에이전트별 입장": [
+  "エージェント別の立場",
+  "Where each agent stands"
+ ]
+}

@@ -28,13 +28,6 @@
     ]
   },
   {
-    "key": "↺ 처음부터",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "+ Add Condition",
     "lang": "en",
     "files": [
@@ -56,22 +49,8 @@
     ]
   },
   {
-    "key": "⚡ 부하 긴급방전",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "03 AMRs",
     "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "0kW 대기",
-    "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
@@ -105,13 +84,6 @@
     ]
   },
   {
-    "key": "120kW 급전",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "15 Minutes",
     "lang": "en",
     "files": [
@@ -120,6 +92,13 @@
   },
   {
     "key": "15건",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "15분 단위 피크 부하 예측",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -218,13 +197,6 @@
   },
   {
     "key": "5월",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "72.1°C (하한)",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -504,13 +476,6 @@
     ]
   },
   {
-    "key": "AI Supervisor Cores",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "AI 물류 에이전트",
     "lang": "ko",
     "files": [
@@ -531,6 +496,13 @@
     "files": [
       "src/App.tsx",
       "src/constants.ts"
+    ]
+  },
+  {
+    "key": "AI 슈퍼바이저",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
     ]
   },
   {
@@ -609,6 +581,20 @@
     ]
   },
   {
+    "key": "AMR 2대 충전 대기로 이송 지연",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "AMR 이송 경로 최적화",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "AMR 최적 경로 탐색",
     "lang": "ko",
     "files": [
@@ -623,7 +609,7 @@
     ]
   },
   {
-    "key": "AMR우회",
+    "key": "AMR 충전 스케줄 조정",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -840,6 +826,13 @@
     ]
   },
   {
+    "key": "B라인 핀홀 결함 재학습 데이터 수집",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "Calculation Window (Min)",
     "lang": "en",
     "files": [
@@ -931,13 +924,6 @@
     ]
   },
   {
-    "key": "Control Room & PC console",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Create Entity",
     "lang": "en",
     "files": [
@@ -995,6 +981,13 @@
   },
   {
     "key": "C구역 화재 징후 감지 및 대응",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "C구역 화재·연기 영상 감시",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -1185,6 +1178,13 @@
   {
     "key": "Equipment",
     "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "ESS 충·방전 스케줄 최적화",
+    "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
@@ -1387,13 +1387,6 @@
   },
   {
     "key": "History of AI adjustments and manual overrides",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "HQ Control Room",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -1827,6 +1820,13 @@
     ]
   },
   {
+    "key": "OEE 손실 요인 분해 분석",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "OK Count",
     "lang": "en",
     "files": [
@@ -1863,13 +1863,6 @@
   },
   {
     "key": "Operator Note:",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Operator Zoom",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2863,25 +2856,18 @@
     ]
   },
   {
+    "key": "YOLOv8 결함 검출 임계값 보정",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "가동률",
     "lang": "ko",
     "files": [
       "src/App.tsx",
       "src/services/demoResponses.ts"
-    ]
-  },
-  {
-    "key": "가상 조율: 5개 분과",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "가속가동",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
     ]
   },
   {
@@ -2899,7 +2885,21 @@
     ]
   },
   {
+    "key": "가스 센서 누출 패턴 점검",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "가열 유지가 필수적이며 하강 온도가 15도 이상 떨어지지 않아야 품질 파라미터를 유지할 수 있습니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "감속기 토크 이상 패턴 학습",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -2934,6 +2934,13 @@
     ]
   },
   {
+    "key": "계약 전력 92% 도달로 피크 초과 위험",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "고급 파라미터가 저장되었습니다.",
     "lang": "ko",
     "files": [
@@ -2956,6 +2963,13 @@
   },
   {
     "key": "공장에 대해 무엇이든 물어보세요...",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "공조 설비 부하 이전 계획",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -2999,6 +3013,13 @@
     ]
   },
   {
+    "key": "권고값",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "규정 파라미터: 과마모 구역 마찰열 증가로 주변 분위기 온도가 1급 가이드 한계를 근접하는 예방 안전 가드레일을 침범합니다.",
     "lang": "ko",
     "files": [
@@ -3027,14 +3048,7 @@
     ]
   },
   {
-    "key": "느림 (4.5초)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "다음 단계 강제 진행",
+    "key": "긴급 오더 생산 일정 재조정",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3042,13 +3056,6 @@
   },
   {
     "key": "대기",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "대기 (SOC: 94%)",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3077,20 +3084,6 @@
     ]
   },
   {
-    "key": "동현 (물류 이송 지휘관)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "동현 팀장",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "디지털 트윈 환경에서 리스크 검증 중...",
     "lang": "ko",
     "files": [
@@ -3099,6 +3092,13 @@
   },
   {
     "key": "라벨누락",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "라인 밸런싱 시뮬레이션",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3126,7 +3126,7 @@
     ]
   },
   {
-    "key": "모니터링",
+    "key": "메인 모터 베어링 잔여수명 예측",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3140,7 +3140,14 @@
     ]
   },
   {
-    "key": "물류 에이전트",
+    "key": "물류 에이전트에 AMR 우회 경로 지시",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "물류 에이전트에 자재 투입 간격 단축 지시",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3154,14 +3161,14 @@
     ]
   },
   {
-    "key": "민혁 (생산 관리 리드)",
+    "key": "미참여",
     "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
   },
   {
-    "key": "민혁 리드",
+    "key": "반대",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3176,6 +3183,13 @@
   },
   {
     "key": "반대합니다. 현재 온도 조건에서 속도 상향 시 핀홀 불량률이 4.2%까지 상승할 것으로 예측됩니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "발언 중",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3210,7 +3224,28 @@
     ]
   },
   {
+    "key": "병목",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "병목 구간 식별",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "병목 에스컬레이션",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "병목 조율",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3224,7 +3259,7 @@
     ]
   },
   {
-    "key": "보통 (2.5초)",
+    "key": "분 전",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3239,6 +3274,13 @@
   },
   {
     "key": "분석 요청",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "불량 유형별 원인 추적 리포트 생성",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3281,13 +3323,6 @@
     ]
   },
   {
-    "key": "빠름 (1.0초)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "생산 극대화 목표 하에 안전, 예지보전, 품질, 에너지, 물류 에이전트 간의 동시 다자 협업 및 실시간 중재",
     "lang": "ko",
     "files": [
@@ -3302,21 +3337,28 @@
     ]
   },
   {
+    "key": "생산 에이전트에 라인 속도 5% 감속 지시",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "생산 에이전트에 비핵심 설비 부하 이전 지시",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "생산 에이전트에 정비 시간 확보용 일정 재배치 지시",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "생산 정지 시 납기 지연 발생. 밸브 No.12의 메인 라인을 우회로로 전환 요청합니다.",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "생산 최적화",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "생산가속",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3351,20 +3393,6 @@
     ]
   },
   {
-    "key": "선우 (그리드 에너지 엔지니어)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "선우 책임",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "설비",
     "lang": "ko",
     "files": [
@@ -3385,13 +3413,6 @@
     "files": [
       "src/App.tsx",
       "src/constants.ts"
-    ]
-  },
-  {
-    "key": "설비예지보전",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
     ]
   },
   {
@@ -3416,13 +3437,6 @@
     ]
   },
   {
-    "key": "속도:",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "속성",
     "lang": "ko",
     "files": [
@@ -3439,7 +3453,7 @@
     ]
   },
   {
-    "key": "순환수량: 3.2 m³/h",
+    "key": "수축포장기-01 진동 스펙트럼 분석",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3465,6 +3479,13 @@
     "files": [
       "src/App.tsx",
       "src/constants.ts"
+    ]
+  },
+  {
+    "key": "승인 요청",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
     ]
   },
   {
@@ -3511,14 +3532,14 @@
     ]
   },
   {
-    "key": "실시간 비전 검사 데이터를 기반으로 산출된 불량률 상세 분석입니다.",
+    "key": "실링 온도 편차로 불량 판정 보류",
     "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
   },
   {
-    "key": "실시간 조율 재생",
+    "key": "실시간 비전 검사 데이터를 기반으로 산출된 불량률 상세 분석입니다.",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3575,13 +3596,6 @@
     ]
   },
   {
-    "key": "안전 에이전트",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "안전 우선 원칙 적용. 즉시 가동 중단 명령 하달. 소방 연동 시스템 가동. 손실보다 인명 및 설비 보호가 최우선입니다.",
     "lang": "ko",
     "files": [
@@ -3617,6 +3631,13 @@
     ]
   },
   {
+    "key": "없음",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "에너지",
     "lang": "ko",
     "files": [
@@ -3625,7 +3646,7 @@
     ]
   },
   {
-    "key": "에너지 에이전트",
+    "key": "에너지 에이전트에 충전 우선순위 상향 지시",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3639,6 +3660,13 @@
     ]
   },
   {
+    "key": "에스컬레이션",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "에이전트 조율",
     "lang": "ko",
     "files": [
@@ -3646,35 +3674,21 @@
     ]
   },
   {
+    "key": "에이전트 화면",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "에이전트별 입장",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "엔티티",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "연동 로봇: AMR #3 (활성)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "예지 (안전환경 감독관)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "예지 감독관",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "예후진단",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3703,21 +3717,14 @@
     ]
   },
   {
-    "key": "온도:",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "온도: 185°C",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "완료",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "완제품 출하 버퍼 슬롯 배정",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3731,21 +3738,7 @@
     ]
   },
   {
-    "key": "위험감시",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "유압:",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "유압식 순환 분무 세척 구역",
+    "key": "의견 수집",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3759,35 +3752,28 @@
     ]
   },
   {
-    "key": "이전 단계로",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "자동 간격:",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "자동 일시정지",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "자동 재생",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "자동 제어",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "자재 투입 배차 명령 하달",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "작업 지시",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "작업자 보호구 착용 판별",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3815,6 +3801,13 @@
     ]
   },
   {
+    "key": "전 에이전트 정상 작업 중",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "전류",
     "lang": "ko",
     "files": [
@@ -3829,21 +3822,21 @@
     ]
   },
   {
-    "key": "정밀검사",
+    "key": "전체 에이전트",
     "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
   },
   {
-    "key": "정상 대기 100%",
+    "key": "정보",
     "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
   },
   {
-    "key": "정상가동",
+    "key": "정비 작업지시서 자동 발행",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3857,21 +3850,14 @@
     ]
   },
   {
-    "key": "종합 조율 AI",
+    "key": "제안",
     "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
   },
   {
-    "key": "종합 조율 AI (오케스트레이터)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "종합중재",
+    "key": "주축 진동 급상승으로 잔여수명 재산정 중",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3899,27 +3885,6 @@
     ]
   },
   {
-    "key": "중재 관제: Active",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "지수 (품질 수석 연구원)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "지수 연구원",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "지식 검색",
     "lang": "ko",
     "files": [
@@ -3928,6 +3893,20 @@
   },
   {
     "key": "지연",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "지원 중",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "지원 지시",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3977,6 +3956,13 @@
     ]
   },
   {
+    "key": "진행 중",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "질의 응답",
     "lang": "ko",
     "files": [
@@ -3998,14 +3984,7 @@
     ]
   },
   {
-    "key": "철수 (예지정비 총괄 기장)",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "철수 기장",
+    "key": "초 전",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4013,13 +3992,6 @@
   },
   {
     "key": "최근 발생한 안전 경보 이력 조회",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "최적 가속 120%",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4047,14 +4019,7 @@
     ]
   },
   {
-    "key": "충전율: 50.0 ml",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "캡핑 수율: 99.8%",
+    "key": "충돌",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4082,6 +4047,13 @@
     ]
   },
   {
+    "key": "태양광 발전량 예측 반영",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "택트타임·설비종합효율 실시간 추적",
     "lang": "ko",
     "files": [
@@ -4090,13 +4062,6 @@
   },
   {
     "key": "통합 대시보드의 AI 오케스트레이션 패널로 이동",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "통합 오케스트레이션 및 인간 중심 통제",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4117,7 +4082,14 @@
     ]
   },
   {
-    "key": "포장라인 보관실 [2129]",
+    "key": "포장1라인 실링 비전 전수검사",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "포장1라인 택트타임 추적",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4145,13 +4117,6 @@
     ]
   },
   {
-    "key": "품질 에이전트",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "품질 최우선 경영 가이드와 미세 이상 안전 가드레일을 100% 수호한 채, 물류 지능 조율 및 ESS 연동 복합 의사결정으로 단 한 번의 정지 없이 납품 목표를 실현함.",
     "lang": "ko",
     "files": [
@@ -4164,13 +4129,6 @@
     "files": [
       "src/App.tsx",
       "src/constants.ts"
-    ]
-  },
-  {
-    "key": "프로토콜: AI-S.2161",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
     ]
   },
   {
@@ -4202,21 +4160,28 @@
     ]
   },
   {
-    "key": "피크 출력:",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "피크감축",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "한국전력 거래소 긴급 수요감축(DR) 지시 하달. 5분 이내 전력 사용량 250kW 감축 의무 발생.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "합의",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "합의 도출",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "해결됨",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4265,6 +4230,27 @@
     ]
   },
   {
+    "key": "현재 조율 안건",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "협동로봇 구역 작업자 근접 반복 감지",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "협동로봇 근접 거리 실시간 감시",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "화재 징후·작업자 근접 24시간 감시",
     "lang": "ko",
     "files": [
@@ -4280,6 +4266,13 @@
   },
   {
     "key": "확인",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "후공정 자재 공급 지연으로 택트타임 초과",
     "lang": "ko",
     "files": [
       "src/App.tsx"

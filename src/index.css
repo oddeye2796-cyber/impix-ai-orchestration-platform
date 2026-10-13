@@ -74,6 +74,16 @@
     .attention-ring::after { animation: none; }
   }
 
+  /* Dashes travelling along a relationship-map link: out from the supervisor, or in toward it. */
+  .edge-flow-out { animation: edge-flow 2.4s linear infinite; }
+  .edge-flow-in { animation: edge-flow 2.4s linear infinite reverse; }
+  @keyframes edge-flow {
+    to { stroke-dashoffset: -56; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .edge-flow-out, .edge-flow-in { animation: none; }
+  }
+
   .dashboard-card {
     @apply bg-surface border border-border rounded-xl p-4 shadow-lg;
   }
