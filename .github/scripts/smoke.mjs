@@ -48,15 +48,24 @@ if (expected) {
   check('serving the deployed commit', stamp === expected, `expected ${expected.slice(0, 7)}, got ${String(stamp).slice(0, 7)}`);
 }
 
-check('no page errors', pageErrors.length === 0, pageErrors.slice(0, 3).join(' | '));
-check('no broken assets', brokenAssets.length === 0, brokenAssets.slice(0, 3).join(' | '));
-
-// The integrated dashboard is the first screen: its KPI cards and the AI
-// orchestration panel must both be on it.
+// The integrated dashboard opens on the field view (floor map and incident
+// tracker); the engineer view carries the KPI cards and the AI orchestration
+// panel.
+const zones = await page.locator('[data-testid^="zone-"]').count();
+check('field view floor map rendered', zones > 0, `found ${zones} zones`);
+await page.getByTestId('role-manager').click();
+await page.waitForTimeout(500);
+const results = await page.getByTestId('result-card').count();
+check('manager results summary rendered', results > 0, `found ${results}`);
+await page.getByTestId('role-engineer').click();
+await page.waitForTimeout(1000);
 const kpis = await page.getByTestId('kpi-card').count();
 check('dashboard KPIs rendered', kpis > 0, `found ${kpis}`);
 const orchestration = await page.locator('#orchestration-panel').count();
 check('orchestration panel on dashboard', orchestration === 1);
+
+check('no page errors', pageErrors.length === 0, pageErrors.slice(0, 3).join(' | '));
+check('no broken assets', brokenAssets.length === 0, brokenAssets.slice(0, 3).join(' | '));
 
 await browser.close();
 

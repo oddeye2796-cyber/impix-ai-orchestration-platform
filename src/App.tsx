@@ -149,6 +149,7 @@ import { useToast } from './components/Toast';
 // orchestration methodology tab.
 const MarkdownView = lazy(() => import('./components/MarkdownView'));
 import DemoModeBadge from './components/DemoModeBadge';
+import { ManagerView, RoleSwitcher, WorkerView, useIncidents, useViewerRole, type ViewerRole } from './components/RoleViews';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
 import { useLiveValue } from './hooks/useLiveValue';
@@ -222,12 +223,16 @@ export default function App() {
   const [aiError, setAiError] = useState<string | null>(null);
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
+  const [viewerRole, setViewerRole] = useViewerRole();
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   /** Switch view, optionally scrolling to an anchor once the new view has rendered. */
   const navigateTo = (menuId: number, anchor?: string) => {
     const target = MENU_ITEMS.find(m => m.id === menuId);
     if (target) setSelectedMenu(target);
+    // The orchestration panel is the engineer's drill-down, so going there
+    // switches the dashboard to the engineer view.
+    if (anchor === ORCHESTRATION_ANCHOR) setViewerRole('engineer');
     setScrollTarget(anchor ?? null);
   };
 
@@ -362,6 +367,8 @@ export default function App() {
             handleApprove={handleApprove}
             handleReject={handleReject}
             onNavigate={navigateTo}
+            role={viewerRole}
+            onRoleChange={setViewerRole}
           />
         );
       case 8: // RUL 잔여수명 예측
@@ -1321,7 +1328,9 @@ function DashboardView({
   aiError,
   handleApprove,
   handleReject,
-  onNavigate
+  onNavigate,
+  role,
+  onRoleChange,
 }: { 
   sensorData: SensorData[], 
   decisions: AgentDecision[], 
@@ -1330,7 +1339,9 @@ function DashboardView({
   aiError: string | null,
   handleApprove: (i: number) => void,
   handleReject: (i: number) => void,
-  onNavigate: (menuId: number, anchor?: string) => void
+  onNavigate: (menuId: number, anchor?: string) => void,
+  role: ViewerRole,
+  onRoleChange: (role: ViewerRole) => void,
 }) {
   const live = useLiveValue();
   const chart = chartPalette();
@@ -1345,9 +1356,27 @@ function DashboardView({
   const first = plant.history[0];
   const delta = (now: number, then: number | undefined, digits = 1) =>
     then === undefined ? '—' : `${now - then >= 0 ? '+' : ''}${(now - then).toFixed(digits)}`;
+  const incidents = useIncidents(plant, decisions);
+  const showEvidence = () => onNavigate(DASHBOARD_MENU_ID, ORCHESTRATION_ANCHOR);
+
+  // Field staff and managers get their own screens; the full dashboard below,
+  // with the supervisor → agent → model hierarchy, is the engineer's view.
+  if (role !== 'engineer') {
+    return (
+      <>
+        <RoleSwitcher role={role} onChange={onRoleChange} />
+        {role === 'worker' ? (
+          <WorkerView incidents={incidents} onApprove={handleApprove} onReject={handleReject} onEvidence={showEvidence} />
+        ) : (
+          <ManagerView plant={plant} incidents={incidents} onApprove={handleApprove} onReject={handleReject} onEvidence={showEvidence} />
+        )}
+      </>
+    );
+  }
 
   return (
     <>
+      <RoleSwitcher role={role} onChange={onRoleChange} />
       <AnimatePresence>
         {activeKpi && (
           <KpiDetailModal kpi={activeKpi} onClose={() => setActiveKpi(null)} />
@@ -2084,6 +2113,35 @@ const AGENT_HIERARCHY: {
   },
 ];
 
+/** The sensor series behind each agent's calls, shown when an engineer drills in. */
+const AGENT_EVIDENCE: Record<AgentKey, { field: 'temperature' | 'vibration' | 'current_amp' | 'defect_rate'; label: string; unit: string; limit: number; digits: number }[]> = {
+  quality: [
+    { field: 'temperature', label: '실링 온도', unit: '°C', limit: 180, digits: 1 },
+    { field: 'defect_rate', label: '불량률', unit: '%', limit: 3, digits: 2 },
+  ],
+  pm: [{ field: 'vibration', label: '3축 진동', unit: 'mm/s', limit: 4.1, digits: 2 }],
+  safety: [],
+  production: [{ field: 'defect_rate', label: '불량률', unit: '%', limit: 3, digits: 2 }],
+  energy: [{ field: 'current_amp', label: '라인 전류', unit: 'A', limit: 14, digits: 1 }],
+  logistics: [],
+};
+
+/** A small trend line with its alarm threshold, for the evidence row. */
+function Sparkline({ values, limit, color }: { values: number[]; limit: number; color: string }) {
+  if (values.length < 2) return <div className="h-10 flex-1" />;
+  const lo = Math.min(...values, limit);
+  const hi = Math.max(...values, limit);
+  const span = hi - lo || 1;
+  const y = (v: number) => 38 - ((v - lo) / span) * 34;
+  const points = values.map((v, i) => `${(i / (values.length - 1)) * 100},${y(v)}`).join(' ');
+  return (
+    <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="h-10 min-w-0 flex-1" aria-hidden>
+      <line x1={0} x2={100} y1={y(limit)} y2={y(limit)} stroke="var(--color-danger)" strokeDasharray="3 3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <polyline points={points} fill="none" stroke={color} strokeWidth={2} vectorEffect="non-scaling-stroke" />
+    </svg>
+  );
+}
+
 type TaskState = 'running' | 'pending' | 'bottleneck' | 'resolved';
 
 interface AgentTask {
@@ -2444,6 +2502,27 @@ function SupervisorHierarchy({
               {t('에이전트 화면')} <ArrowRight size={11} />
             </button>
           )}
+          <div className="grid basis-full grid-cols-1 gap-2 border-t border-border/60 pt-3 sm:grid-cols-2">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-text-secondary sm:col-span-2">{t('근거 데이터')} · {t('최근 {n}개 측정값', { n: plant.history.length })}</div>
+            {AGENT_EVIDENCE[selectedAgent.key].length === 0 && (
+              <div className="text-[11px] text-text-secondary sm:col-span-2">{t('이 에이전트는 센서 시계열 대신 영상·위치 데이터로 판단합니다.')}</div>
+            )}
+            {AGENT_EVIDENCE[selectedAgent.key].map(ev => {
+              const values = plant.history.map(h => h[ev.field]);
+              const now = values[values.length - 1] ?? 0;
+              const over = now > ev.limit;
+              return (
+                <div key={ev.field} className="flex items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2">
+                  <div className="w-28 shrink-0">
+                    <div className="text-[10px] text-text-secondary">{t(ev.label)}</div>
+                    <div className={cn("font-mono text-sm font-black", over ? "text-danger" : "text-text-primary")}>{now.toFixed(ev.digits)}{ev.unit}</div>
+                    <div className="text-[9px] text-text-secondary">{t('임계치')} {ev.limit}{ev.unit}</div>
+                  </div>
+                  <Sparkline values={values} limit={ev.limit} color={selectedAgent.hex} />
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
