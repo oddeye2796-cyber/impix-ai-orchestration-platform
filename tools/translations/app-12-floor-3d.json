@@ -15,10 +15,6 @@
   "配置図の表示方式",
   "Floor map view"
  ],
- "제약 포장동": [
-  "製薬包装棟",
-  "Pharma packaging hall"
- ],
  "세척실": [
   "洗浄室",
   "Washing room"
@@ -31,10 +27,6 @@
   "ユーティリティ室",
   "Utility room"
  ],
- "자동창고": [
-  "自動倉庫",
-  "Automated warehouse"
- ],
  "AMR 이송 통로": [
   "AMR搬送通路",
   "AMR aisle"
@@ -43,69 +35,13 @@
   "搬送通路",
   "Transport aisle"
  ],
- "PTP 1라인": [
-  "PTP 1ライン",
-  "PTP line 1"
- ],
- "PTP 2라인": [
-  "PTP 2ライン",
-  "PTP line 2"
- ],
- "PTP 3라인": [
-  "PTP 3ライン",
-  "PTP line 3"
- ],
  "PTP III 포장실": [
   "PTP III 包装室",
   "PTP III packaging room"
  ],
- "병 포장 1라인": [
-  "ボトル包装 1ライン",
-  "Bottle line 1"
- ],
- "병 포장 2라인": [
-  "ボトル包装 2ライン",
-  "Bottle line 2"
- ],
- "PTP 포장기": [
-  "PTP包装機",
-  "PTP blister machine"
- ],
- "PTP 포장기 · 카토너": [
-  "PTP包装機 · カートナー",
-  "PTP blister machine · Cartoner"
- ],
  "카토너": [
   "カートナー",
   "Cartoner"
- ],
- "자동 케이스 포장기": [
-  "自動ケース包装機",
-  "Automatic case packer"
- ],
- "상부 봉합기": [
-  "上部封緘機",
-  "Top sealer"
- ],
- "라벨 부착기": [
-  "ラベル貼付機",
-  "Labeler"
- ],
- "로봇 팔레타이저": [
-  "ロボットパレタイザー",
-  "Robot palletizer"
- ],
- "병 충전·캡핑기": [
-  "ボトル充填・キャッピング機",
-  "Bottle filler & capper"
- ],
- "병 충전·캡핑기 · 팔레타이저": [
-  "ボトル充填・キャッピング機 · パレタイザー",
-  "Bottle filler & capper · Palletizer"
- ],
- "스태커 크레인 · 출고 컨베이어": [
-  "スタッカークレーン · 出庫コンベヤ",
-  "Stacker cranes · Outfeed conveyor"
  ],
  "AMR 충전 도크": [
   "AMR充電ドック",
@@ -114,5 +50,61 @@
  "포장라인 보관실": [
   "包装ライン保管室",
   "Packaging line storage"
+ ],
+ "포장동": [
+  "包装棟",
+  "Packaging hall"
+ ],
+ "포장라인 1": [
+  "包装ライン 1",
+  "Packaging line 1"
+ ],
+ "포장라인 2": [
+  "包装ライン 2",
+  "Packaging line 2"
+ ],
+ "포장라인 3": [
+  "包装ライン 3",
+  "Packaging line 3"
+ ],
+ "포장라인 4": [
+  "包装ライン 4",
+  "Packaging line 4"
+ ],
+ "포장라인 5": [
+  "包装ライン 5",
+  "Packaging line 5"
+ ],
+ "포장기": [
+  "包装機",
+  "Packaging machine"
+ ],
+ "케이스 포장기": [
+  "ケース包装機",
+  "Case packer"
+ ],
+ "봉합기": [
+  "封緘機",
+  "Sealer"
+ ],
+ "라벨러": [
+  "ラベラー",
+  "Labeler"
+ ],
+ "팔레타이저": [
+  "パレタイザー",
+  "Palletizer"
+ ],
+ "포장기 · 카토너 · 팔레타이저": [
+  "包装機 · カートナー · パレタイザー",
+  "Packaging machine · Cartoner · Palletizer"
+ ],
+ "창고": [
+  "倉庫",
+  "Warehouse"
+ ],
+ "랙 · 출고 컨베이어": [
+  "ラック · 出庫コンベヤ",
+  "Racks · Outfeed conveyor"
  ]
 }

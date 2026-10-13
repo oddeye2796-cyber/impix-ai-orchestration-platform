@@ -5113,41 +5113,6 @@
     ]
   },
   {
-    "key": "PTP 1라인",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "PTP 2라인",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "PTP 3라인",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "PTP 포장기",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "PTP 포장기 · 카토너",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
     "key": "관제실",
     "lang": "ko",
     "files": [
@@ -5155,49 +5120,21 @@
     ]
   },
   {
-    "key": "라벨 부착기",
+    "key": "라벨러",
     "lang": "ko",
     "files": [
       "src/config/pharmaSite.ts"
     ]
   },
   {
-    "key": "로봇 팔레타이저",
+    "key": "랙 · 출고 컨베이어",
     "lang": "ko",
     "files": [
       "src/config/pharmaSite.ts"
     ]
   },
   {
-    "key": "병 충전·캡핑기",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "병 충전·캡핑기 · 팔레타이저",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "병 포장 1라인",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "병 포장 2라인",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "상부 봉합기",
+    "key": "봉합기",
     "lang": "ko",
     "files": [
       "src/config/pharmaSite.ts"
@@ -5220,21 +5157,6 @@
     ]
   },
   {
-    "key": "수축포장기-01 · 케이스패커-02",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts",
-      "src/config/siteProfile.ts"
-    ]
-  },
-  {
-    "key": "스태커 크레인 · 출고 컨베이어",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
     "key": "유틸리티실",
     "lang": "ko",
     "files": [
@@ -5242,21 +5164,7 @@
     ]
   },
   {
-    "key": "자동 케이스 포장기",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "자동창고",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "제약 포장동",
+    "key": "창고",
     "lang": "ko",
     "files": [
       "src/config/pharmaSite.ts"
@@ -5264,6 +5172,20 @@
   },
   {
     "key": "카토너",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "케이스 포장기",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "팔레타이저",
     "lang": "ko",
     "files": [
       "src/config/pharmaSite.ts"
@@ -5280,6 +5202,62 @@
     ]
   },
   {
+    "key": "포장기",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장기 · 카토너 · 팔레타이저",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장동",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 1",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 2",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 3",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 4",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
+    "key": "포장라인 5",
+    "lang": "ko",
+    "files": [
+      "src/config/pharmaSite.ts"
+    ]
+  },
+  {
     "key": "PTP III 포장실",
     "lang": "ko",
     "files": [
@@ -5288,6 +5266,13 @@
   },
   {
     "key": "PTP 실러 1 · 카토너",
+    "lang": "ko",
+    "files": [
+      "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "수축포장기-01 · 케이스패커-02",
     "lang": "ko",
     "files": [
       "src/config/siteProfile.ts"
