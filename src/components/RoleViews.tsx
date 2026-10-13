@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
@@ -30,6 +30,7 @@ import { t, useI18n } from '../i18n';
 import type { AgentDecision } from '../types';
 import type { PlantState } from '../services/telemetry';
 import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
+import ErrorBoundary from './ErrorBoundary';
 
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
@@ -293,6 +294,119 @@ function StageTracker({ stage }: { stage: Incident['stage'] }) {
   );
 }
 
+/* --------------------------------------------------------- floor map bits */
+
+const FloorMap3D = lazy(() => import('./FloorMap3D'));
+
+/** Whether this browser can draw the 3D map at all; without WebGL the 2D map is used. */
+function hasWebGL(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'));
+  } catch {
+    return false;
+  }
+}
+
+interface ZoneInfo {
+  state: 'alert' | 'waiting' | 'ok';
+  /** The incident the zone shows: a live one first, else one waiting on approval. */
+  top: Incident | undefined;
+  /** The AIs watching the zone, plus whichever is acting on it. */
+  watchers: AgentKey[];
+}
+
+function zoneStatus(zoneId: string, incidents: Incident[]): ZoneInfo {
+  const here = incidents.filter(i => i.zoneId === zoneId);
+  const live = here.filter(i => i.stage < 3);
+  const waiting = here.filter(i => i.stage === 3);
+  const top = live[0] ?? waiting[0];
+  const watchers = (Object.keys(ACTIVE_SITE.agentZone) as AgentKey[]).filter(k => ACTIVE_SITE.agentZone[k] === zoneId);
+  if (top && !watchers.includes(top.agent)) watchers.push(top.agent);
+  return { state: live.length > 0 ? 'alert' : waiting.length > 0 ? 'waiting' : 'ok', top, watchers };
+}
+
+/** The AIs on a zone as icons; the one acting pulses and says what it is doing in a speech bubble. */
+function ZoneAis({ watchers, top, className }: { watchers: AgentKey[]; top: Incident | undefined; className?: string }) {
+  return (
+    <div className={cn("flex min-w-0 items-start gap-1.5", className)}>
+      {watchers.map(k => (
+        <span
+          key={k}
+          title={t(AGENT_STYLE[k].name)}
+          className={cn("relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 bg-surface shadow", top?.agent === k && "scale-110")}
+          style={{ borderColor: AGENT_STYLE[k].hex, color: AGENT_STYLE[k].hex }}
+        >
+          {top?.agent === k && <span className="absolute inset-[-4px] animate-ping rounded-full border-2 opacity-50" style={{ borderColor: AGENT_STYLE[k].hex }} />}
+          {AGENT_STYLE[k].icon}
+        </span>
+      ))}
+      {top && (
+        <span className="relative min-w-0 flex-1 rounded-lg border-2 bg-surface px-1.5 py-1 text-[9px] font-bold leading-snug text-text-primary shadow-lg" style={{ borderColor: AGENT_STYLE[top.agent].hex }}>
+          <span className="absolute -left-[6px] top-2 h-2.5 w-2.5 rotate-45 border-b-2 border-l-2 bg-surface" style={{ borderColor: AGENT_STYLE[top.agent].hex }} />
+          <span className="relative line-clamp-2">{t(top.action)}</span>
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ZoneStatus({ state, top }: { state: ZoneInfo['state']; top: Incident | undefined }) {
+  if (!top) return <div className="flex items-center gap-1 text-[9px] font-bold text-accent"><CheckCircle2 size={10} />{t('정상')}</div>;
+  return (
+    <div className={cn(
+      "flex items-start gap-1 rounded-md px-1.5 py-1 text-[10px] font-bold leading-snug",
+      state === 'alert' ? "bg-danger text-white" : "bg-warning text-white",
+    )}>
+      {state === 'alert' ? <AlertTriangle size={11} className="mt-0.5 shrink-0 animate-pulse" /> : <Clock size={11} className="mt-0.5 shrink-0" />}
+      <span className="line-clamp-2">{t(top.title)}</span>
+    </div>
+  );
+}
+
+/**
+ * A zone's label floating over the 3D map. A quiet zone is a small name tag
+ * with its AIs; a zone with something going on opens into a card with the
+ * speech bubble and what happened.
+ */
+function ZoneBadge3D({ zoneId, info, selected, onClick }: { zoneId: string; info: ZoneInfo; selected: boolean; onClick: () => void }) {
+  const zone = ACTIVE_SITE.zones.find(z => z.id === zoneId);
+  const { state, top, watchers } = info;
+  return (
+    <button
+      type="button"
+      data-testid={`zone-${zoneId}`}
+      onClick={onClick}
+      aria-pressed={selected}
+      className={cn(
+        "select-none rounded-lg border-2 text-left shadow-lg backdrop-blur transition-all",
+        top ? "flex w-[180px] flex-col gap-1 p-1.5" : "flex items-center gap-1.5 whitespace-nowrap px-2 py-1",
+        state === 'alert' ? "border-danger bg-surface/95 shadow-[0_0_24px_rgba(239,68,68,0.45)]" :
+        state === 'waiting' ? "border-warning bg-surface/95" : "border-border bg-surface/85 hover:border-accent/60",
+        selected && "ring-2 ring-accent ring-offset-1 ring-offset-bg",
+      )}
+    >
+      {top ? (
+        <>
+          <div className="text-[11px] font-black leading-tight">{t(zone?.name ?? zoneId)}</div>
+          <ZoneAis watchers={watchers} top={top} />
+          <ZoneStatus state={state} top={top} />
+        </>
+      ) : (
+        <>
+          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+          <span className="text-[10px] font-black">{t(zone?.name ?? zoneId)}</span>
+          {watchers.map(k => (
+            <span key={k} title={t(AGENT_STYLE[k].name)} className="flex h-4 w-4 items-center justify-center rounded-full border" style={{ borderColor: AGENT_STYLE[k].hex, color: AGENT_STYLE[k].hex }}>
+              {AGENT_STYLE[k].icon}
+            </span>
+          ))}
+        </>
+      )}
+    </button>
+  );
+}
+
 /* ------------------------------------------------------------ worker view */
 
 /**
@@ -312,6 +426,11 @@ export function WorkerView({
   onEvidence: () => void;
 }) {
   const [zone, setZone] = useState<string | null>(null);
+  const toggleZone = (id: string) => setZone(current => (current === id ? null : id));
+  const [can3D] = useState(() => Boolean(ACTIVE_SITE.floor) && hasWebGL());
+  const [mapMode, setMapMode] = useState<'3d' | '2d'>('3d');
+  const use3D = can3D && mapMode === '3d';
+  const zoneInfo = (id: string) => zoneStatus(id, incidents);
   const open = incidents.filter(i => i.stage < 4);
   const myTasks = open.filter(i => i.task);
   const shown = incidents.filter(i => !zone || i.zoneId === zone);
@@ -341,50 +460,55 @@ export function WorkerView({
         <div className="dashboard-card">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-sm font-bold"><MapPin size={16} className="text-accent" />{t('공장 배치도')}</h3>
-            {zone && (
-              <button onClick={() => setZone(null)} className="text-[10px] font-bold text-accent hover:underline">{t('전체 보기')}</button>
-            )}
+            <div className="flex items-center gap-2">
+              {zone && (
+                <button onClick={() => setZone(null)} className="text-[10px] font-bold text-accent hover:underline">{t('전체 보기')}</button>
+              )}
+              {can3D && (
+                <div className="flex rounded-md border border-border p-0.5 text-[10px] font-bold" role="group" aria-label={t('배치도 보기 방식')}>
+                  {(['3d', '2d'] as const).map(mode => (
+                    <button
+                      key={mode}
+                      type="button"
+                      data-testid={`map-mode-${mode}`}
+                      aria-pressed={mapMode === mode}
+                      onClick={() => setMapMode(mode)}
+                      className={cn("rounded px-2 py-0.5", mapMode === mode ? "bg-accent text-white" : "text-text-secondary hover:text-text-primary")}
+                    >{mode.toUpperCase()}</button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
+          {use3D ? (
+            <div className="relative h-[460px] overflow-hidden rounded-xl border border-border" data-testid="floor-3d">
+              <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-[11px] text-text-secondary">{t('3D 배치도를 그릴 수 없어 2D로 봐 주세요')}</div>}>
+                <Suspense fallback={<div className="flex h-full items-center justify-center text-[11px] text-text-secondary">{t('3D 배치도 불러오는 중…')}</div>}>
+                  <FloorMap3D
+                    floor={ACTIVE_SITE.floor!}
+                    zoneState={Object.fromEntries(ACTIVE_SITE.zones.map(z => [z.id, zoneInfo(z.id).state]))}
+                    selected={zone}
+                    onSelect={toggleZone}
+                    renderBadge={zoneId => <ZoneBadge3D zoneId={zoneId} info={zoneInfo(zoneId)} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />}
+                  />
+                </Suspense>
+              </ErrorBoundary>
+              <div className="pointer-events-none absolute bottom-2 left-2 text-[9px] text-text-secondary">
+                <span className="rounded bg-surface/80 px-1.5 py-0.5">{t('드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동')}</span>
+              </div>
+            </div>
+          ) : (
           <div className="relative h-[460px] overflow-hidden rounded-xl border border-border bg-bg/50"
             style={{ backgroundImage: 'radial-gradient(color-mix(in srgb, var(--color-text-secondary) 20%, transparent) 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
             {ACTIVE_SITE.zones.map(z => {
-              const here = incidents.filter(i => i.zoneId === z.id);
-              const live = here.filter(i => i.stage < 3);
-              const waiting = here.filter(i => i.stage === 3);
-              const state = live.length > 0 ? 'alert' : waiting.length > 0 ? 'waiting' : 'ok';
-              const top = live[0] ?? waiting[0];
-              // The AIs watching this zone sit on it as icons; the one acting
-              // pulses and says what it is doing in a speech bubble.
-              const watchers = (Object.keys(ACTIVE_SITE.agentZone) as AgentKey[]).filter(k => ACTIVE_SITE.agentZone[k] === z.id);
-              if (top && !watchers.includes(top.agent)) watchers.push(top.agent);
+              const { state, top, watchers } = zoneInfo(z.id);
               const flat = z.h < 20;
-              const ai = (
-                <div className={cn("flex min-w-0 items-start gap-1.5", flat && "flex-1")}>
-                  {watchers.map(k => (
-                    <span
-                      key={k}
-                      title={t(AGENT_STYLE[k].name)}
-                      className={cn("relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 bg-surface shadow", top?.agent === k && "scale-110")}
-                      style={{ borderColor: AGENT_STYLE[k].hex, color: AGENT_STYLE[k].hex }}
-                    >
-                      {top?.agent === k && <span className="absolute inset-[-4px] animate-ping rounded-full border-2 opacity-50" style={{ borderColor: AGENT_STYLE[k].hex }} />}
-                      {AGENT_STYLE[k].icon}
-                    </span>
-                  ))}
-                  {top && (
-                    <span className="relative min-w-0 flex-1 rounded-lg border-2 bg-surface px-1.5 py-1 text-[9px] font-bold leading-snug text-text-primary shadow-lg" style={{ borderColor: AGENT_STYLE[top.agent].hex }}>
-                      <span className="absolute -left-[6px] top-2 h-2.5 w-2.5 rotate-45 border-b-2 border-l-2 bg-surface" style={{ borderColor: AGENT_STYLE[top.agent].hex }} />
-                      <span className="relative line-clamp-2">{t(top.action)}</span>
-                    </span>
-                  )}
-                </div>
-              );
               return (
                 <button
                   key={z.id}
                   type="button"
                   data-testid={`zone-${z.id}`}
-                  onClick={() => setZone(zone === z.id ? null : z.id)}
+                  onClick={() => toggleZone(z.id)}
                   aria-pressed={zone === z.id}
                   className={cn(
                     "absolute flex rounded-lg border-2 p-2 text-left transition-all",
@@ -399,22 +523,13 @@ export function WorkerView({
                     <div className="text-[11px] font-black leading-tight">{t(z.name)}</div>
                     <div className="text-[9px] text-text-secondary">{t(z.equipment)}</div>
                   </div>
-                  {ai}
-                  {top ? (
-                    <div className={cn(
-                      "flex items-start gap-1 rounded-md px-1.5 py-1 text-[10px] font-bold leading-snug",
-                      state === 'alert' ? "bg-danger text-white" : "bg-warning text-white",
-                    )}>
-                      {state === 'alert' ? <AlertTriangle size={11} className="mt-0.5 shrink-0 animate-pulse" /> : <Clock size={11} className="mt-0.5 shrink-0" />}
-                      <span className="line-clamp-2">{t(top.title)}</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 text-[9px] font-bold text-accent"><CheckCircle2 size={10} />{t('정상')}</div>
-                  )}
+                  <ZoneAis watchers={watchers} top={top} className={cn(flat && "flex-1")} />
+                  <ZoneStatus state={state} top={top} />
                 </button>
               );
             })}
           </div>
+          )}
           <div className="mt-2 flex flex-wrap gap-3 text-[10px] font-bold text-text-secondary">
             <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-danger" />{t('이상 발생')}</span>
             <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-warning" />{t('승인 대기')}</span>

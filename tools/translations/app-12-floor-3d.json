@@ -1,0 +1,118 @@
+{
+ "3D 배치도 불러오는 중…": [
+  "3D配置図を読み込み中…",
+  "Loading 3D floor map…"
+ ],
+ "3D 배치도를 그릴 수 없어 2D로 봐 주세요": [
+  "3D配置図を表示できません。2Dでご覧ください",
+  "Can't draw the 3D map here, please switch to 2D"
+ ],
+ "드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동": [
+  "ドラッグ: 回転 · ホイール: 拡大 · 右ドラッグ: 移動",
+  "Drag: rotate · Wheel: zoom · Right-drag: pan"
+ ],
+ "배치도 보기 방식": [
+  "配置図の表示方式",
+  "Floor map view"
+ ],
+ "제약 포장동": [
+  "製薬包装棟",
+  "Pharma packaging hall"
+ ],
+ "세척실": [
+  "洗浄室",
+  "Washing room"
+ ],
+ "관제실": [
+  "管制室",
+  "Control room"
+ ],
+ "유틸리티실": [
+  "ユーティリティ室",
+  "Utility room"
+ ],
+ "자동창고": [
+  "自動倉庫",
+  "Automated warehouse"
+ ],
+ "AMR 이송 통로": [
+  "AMR搬送通路",
+  "AMR aisle"
+ ],
+ "이송 통로": [
+  "搬送通路",
+  "Transport aisle"
+ ],
+ "PTP 1라인": [
+  "PTP 1ライン",
+  "PTP line 1"
+ ],
+ "PTP 2라인": [
+  "PTP 2ライン",
+  "PTP line 2"
+ ],
+ "PTP 3라인": [
+  "PTP 3ライン",
+  "PTP line 3"
+ ],
+ "PTP III 포장실": [
+  "PTP III 包装室",
+  "PTP III packaging room"
+ ],
+ "병 포장 1라인": [
+  "ボトル包装 1ライン",
+  "Bottle line 1"
+ ],
+ "병 포장 2라인": [
+  "ボトル包装 2ライン",
+  "Bottle line 2"
+ ],
+ "PTP 포장기": [
+  "PTP包装機",
+  "PTP blister machine"
+ ],
+ "PTP 포장기 · 카토너": [
+  "PTP包装機 · カートナー",
+  "PTP blister machine · Cartoner"
+ ],
+ "카토너": [
+  "カートナー",
+  "Cartoner"
+ ],
+ "자동 케이스 포장기": [
+  "自動ケース包装機",
+  "Automatic case packer"
+ ],
+ "상부 봉합기": [
+  "上部封緘機",
+  "Top sealer"
+ ],
+ "라벨 부착기": [
+  "ラベル貼付機",
+  "Labeler"
+ ],
+ "로봇 팔레타이저": [
+  "ロボットパレタイザー",
+  "Robot palletizer"
+ ],
+ "병 충전·캡핑기": [
+  "ボトル充填・キャッピング機",
+  "Bottle filler & capper"
+ ],
+ "병 충전·캡핑기 · 팔레타이저": [
+  "ボトル充填・キャッピング機 · パレタイザー",
+  "Bottle filler & capper · Palletizer"
+ ],
+ "스태커 크레인 · 출고 컨베이어": [
+  "スタッカークレーン · 出庫コンベヤ",
+  "Stacker cranes · Outfeed conveyor"
+ ],
+ "AMR 충전 도크": [
+  "AMR充電ドック",
+  "AMR charging dock"
+ ],
+ "포장라인 보관실": [
+  "包装ライン保管室",
+  "Packaging line storage"
+ ]
+}

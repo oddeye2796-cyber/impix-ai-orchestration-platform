@@ -10,6 +10,8 @@ import { t } from '../i18n';
 
 interface Props {
   children: React.ReactNode;
+  /** Shown in place of the full-screen recovery page, for a boundary around one panel. */
+  fallback?: React.ReactNode;
 }
 
 interface State {
@@ -41,6 +43,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
   render() {
     const { error } = this.state;
     if (!error) return this.props.children;
+    if (this.props.fallback !== undefined) return this.props.fallback;
 
     return (
       <div
