@@ -114,7 +114,8 @@ import {
   Scatter,
   ZAxis,
   ComposedChart,
-  Legend
+  Legend,
+  ReferenceLine
 } from 'recharts';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -158,7 +159,7 @@ import { AppliedTuningCard, ScreenGuide, TuningModal, menuSummary, useModuleTuni
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
 import { useLiveValue } from './hooks/useLiveValue';
-import { livingSeries, type Excursion, type PlantState } from './services/telemetry';
+import { livingSeries, TICK_MS, type Excursion, type PlantState } from './services/telemetry';
 import { chartPalette, useTheme } from './theme';
 
 /** Placeholder shown while a lazily loaded chunk arrives. */
@@ -172,6 +173,17 @@ function ChunkFallback() {
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+/**
+ * Readings arrive every couple of seconds but carry an HH:mm stamp, so a time
+ * axis keyed on it repeats the same minute on every tick. Label each reading by
+ * its age instead ("-40s" … "지금").
+ */
+function withAgoLabels<T>(history: T[]): (T & { ago: string })[] {
+  const step = TICK_MS / 1000;
+  const last = history.length - 1;
+  return history.map((d, i) => ({ ...d, ago: i === last ? t('지금') : `-${(last - i) * step}s` }));
 }
 
 const INITIAL_DECISIONS: AgentDecision[] = [
@@ -831,6 +843,7 @@ function RULPredictionView() {
       confidence: '92.4%',
       machinery: t('수축포장기-01'),
       warning: 'Vibration patterns indicate bearing wear. Schedule inspection within the next 7 days to prevent unplanned downtime.',
+      // Health index (%) over the bearing's run so far; below `threshold` it needs maintenance.
       chartData: [
         { name: 'Day 1', health: 100, threshold: 20 },
         { name: 'Day 5', health: 95, threshold: 20 },
@@ -867,17 +880,18 @@ function RULPredictionView() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 dashboard-card h-[400px]">
           <h3 className="font-bold mb-6">{t('Health Degradation Curve')}</h3>
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="85%">
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
               <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-              <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+              <YAxis unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
               <Tooltip 
                 contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
                 itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
               />
-              <Line type="monotone" dataKey="health" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} />
-              <Line type="monotone" dataKey="threshold" stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} dot={false} />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: '10px' }} />
+              <ReferenceLine y={data[0].threshold} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} label={{ value: t('정비 기준선 {n}%', { n: data[0].threshold }), position: 'insideBottomLeft', fontSize: 10, fill: '#ef4444' }} />
+              <Line type="monotone" dataKey="health" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} name={t('건강 지수 (%)')} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -1611,7 +1625,7 @@ function DashboardView({
           </div>
           <div className="flex-1 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={sensorData}>
+              <AreaChart data={withAgoLabels(sensorData)}>
                 <defs>
                   <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={sensorColor} stopOpacity={0.3}/>
@@ -1620,11 +1634,12 @@ function DashboardView({
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis 
-                  dataKey="timestamp" 
+                  dataKey="ago" 
                   stroke={chart.axis} 
                   fontSize={10} 
                   tickLine={false} 
                   axisLine={false} 
+                  minTickGap={16}
                 />
                 <YAxis 
                   stroke={chart.axis} 
@@ -1632,6 +1647,8 @@ function DashboardView({
                   tickLine={false} 
                   axisLine={false} 
                   domain={['auto', 'auto']}
+                  tickFormatter={(v: number) => `${v.toFixed(1)}${sensorMetric === 'vibration' ? ' mm/s' : '°C'}`}
+                  width={64}
                 />
                 <Tooltip 
                   contentStyle={tooltipStyle}
@@ -1640,6 +1657,7 @@ function DashboardView({
                 <Area 
                   type="monotone" 
                   dataKey={sensorMetric}
+                  name={sensorMetric === 'vibration' ? t('진동 (mm/s)') : t('온도 (°C)')}
                   stroke={sensorColor}
                   isAnimationActive={false}
                   fillOpacity={1} 
@@ -1735,7 +1753,7 @@ function DashboardView({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Defect Rate Analysis */}
         <div className="dashboard-card">
-          <h3 className="font-bold mb-6">{t('Defect Rate by Category')}</h3>
+          <h3 className="font-bold mb-6">{t('유형별 불량 건수 (오늘)')}</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={[
@@ -1744,15 +1762,15 @@ function DashboardView({
                 { name: t('변색'), value: live(15, 18) },
                 { name: t('라벨누락'), value: live(5, 19) },
                 { name: t('기타'), value: live(3, 20) },
-              ]}>
+              ].map(d => ({ ...d, value: Math.round(d.value) }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
                   contentStyle={tooltipStyle}
                   itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="value" name={t('불량 건수')} radius={[4, 4, 0, 0]}>
                   {[0, 1, 2, 3, 4].map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'][index]} />
                   ))}
@@ -3983,11 +4001,11 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 <h4 className="text-xs font-bold uppercase tracking-widest text-text-secondary">{t('Infrastructure Load (24h)')}</h4>
                 <div className="flex gap-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-accent" />
+                    <div className="w-2 h-2 rounded-full bg-purple-500" />
                     <span className="text-[10px] text-text-secondary">CPU</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-purple-500" />
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
                     <span className="text-[10px] text-text-secondary">MEM</span>
                   </div>
                 </div>
@@ -5404,6 +5422,32 @@ function MiniSwitch({ on, label, onChange }: { on: boolean; label: string; onCha
   );
 }
 
+/** What the live chart on each module page shows, in the words of the person using it. */
+const MODULE_CHARTS: Record<number, { title: string; caption: string }> = {
+  1: { title: '불량률 추이 (최근 40초)', caption: '2초마다 들어오는 검사 결과로 계산한 불량률이에요. 3%를 넘으면 주의, 5%를 넘으면 경보예요.' },
+  3: { title: '불량 유형 파레토', caption: '많은 유형부터 정렬했어요. 꺾은선은 누적 비율로, 80% 선 안의 유형부터 잡으면 효과가 커요.' },
+  4: { title: '실링 온도별 불량률', caption: '점 하나가 온도 구간 하나예요. 173°C 근처에서 불량률이 가장 낮아요.' },
+  5: { title: '배치별 수율', caption: '목표 수율 95%보다 낮은 배치는 빨간색으로 표시해 다시 확인하게 해요.' },
+  6: { title: '설비별 건강 점수', caption: '진동·온도·전류를 종합한 100점 만점 점수예요. 70점 미만은 주의, 50점 미만은 위험이에요.' },
+  7: { title: '진동·온도 추세 (최근 40초)', caption: '진동은 왼쪽 축(mm/s), 온도는 오른쪽 축(°C)이에요. 빨간 점선이 진동 경고 기준선이에요.' },
+  10: { title: '월별 MTBF·MTTR', caption: 'MTBF(고장 간격)는 길수록, MTTR(수리 시간)은 짧을수록 좋아요.' },
+  11: { title: '라인별 가동·대기·정지 비율 (오늘)', caption: '오늘 근무 시간을 100%로 놓고 상태별 비율을 나눴어요.' },
+  12: { title: 'OEE와 구성 요소', caption: 'OEE = 가용률 × 성능 × 양품률이에요. 빨간 점선이 OEE 목표 85%예요.' },
+  13: { title: '공정별 실제 vs 목표 택트타임', caption: '목표보다 오래 걸리는 공정(빨간색)이 라인 전체를 늦추는 병목이에요.' },
+  14: { title: '배치 B-2405 공정 이력', caption: '원자재 입고부터 포장까지 각 공정에 들어간 시점과 머문 시간이에요. 문제가 생기면 이 경로를 거꾸로 따라가요.' },
+  15: { title: '요일별 계획 대비 실적', caption: '계획과 실적을 나란히 비교해요. 차이가 큰 날부터 원인을 확인하세요.' },
+  16: { title: '설비별 전력 사용량 (지금)', caption: '가동 중 전력과 멈춘 채 쓰는 대기 전력을 나눠 보여줘요.' },
+  17: { title: '시간대별 전기요금 (오늘)', caption: '시간대별 요금을 적용한 오늘 전기요금이에요. 낮 시간대가 가장 비싸요.' },
+  18: { title: '시간대별 부하와 계약 전력', caption: '빨간 점선이 계약 전력 1,000kW예요. 이 선을 넘는 시간대(빨간 점)에 초과 요금이 붙어요.' },
+  32: { title: '원인별 비상 정지 횟수 (이번 달)', caption: '어떤 위험 신호로 공정을 멈췄는지 원인별로 세었어요.' },
+  24: { title: '위험도별 AI 제안 처리', caption: '위험도가 높은 제안은 사람의 승인을 기다리고, 낮은 제안은 자동 승인 범위 안에서 바로 실행돼요.' },
+  26: { title: '지식 지도 구성', caption: '공장 지식 지도에 등록된 엔티티·관계·속성·규칙 수예요.' },
+  27: { title: '모델별 정확도·F1 점수', caption: '새 버전을 배포하기 전에 모델 성능을 비교해요 (1.0 = 100%).' },
+  28: { title: '역할별 사용자 수', caption: '역할마다 볼 수 있는 화면과 승인할 수 있는 조치가 달라요.' },
+  29: { title: '서버 자원과 데이터 지연 (최근 1시간)', caption: 'CPU·GPU 사용률(왼쪽 축)과 Kafka 데이터 지연(오른쪽 축)이에요. 사용률이 85%를 넘으면 경고해요.' },
+  30: { title: '채널별 알림 발송 건수 (이번 달)', caption: '어떤 채널로 알림이 얼마나 나갔는지 보여줘요.' },
+};
+
 function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: SensorData[] }) {
   const live = useLiveValue();
   const chart = chartPalette();
@@ -5459,6 +5503,13 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
   }, [item]);
 
   const renderCategorySpecificChart = () => {
+    const tip = {
+      contentStyle: { backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' },
+      itemStyle: { color: chart.tooltipText, fontSize: '12px' },
+      labelStyle: { color: chart.tooltipText, fontSize: '11px' },
+    };
+    const legendProps = { iconType: 'circle' as const, wrapperStyle: { fontSize: '10px' } };
+    const trend = withAgoLabels(sensorData);
     const chartColors = {
       'AI 품질 에이전트': ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'],
       'AI 설비예지보전 에이전트': ['#3b82f6', '#10b981'],
@@ -5473,10 +5524,10 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           case 26: // 온톨로지 관리
             return (
               <BarChart data={[
-                { name: t('엔티티'), value: live(45, 33) },
-                { name: t('관계'), value: live(128, 34) },
-                { name: t('속성'), value: live(312, 35) },
-                { name: t('규칙'), value: live(84, 36) },
+                { name: t('엔티티'), value: Math.round(live(45, 33)) },
+                { name: t('관계'), value: Math.round(live(128, 34)) },
+                { name: t('속성'), value: Math.round(live(312, 35)) },
+                { name: t('규칙'), value: Math.round(live(84, 36)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -5485,24 +5536,22 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
                   itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
-                <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="#8b5cf6" name={t('등록 수')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
           case 27: // 모델 레지스트리
             return (
               <BarChart data={[
-                { name: 'Anomalib', acc: live(0.94, 37), f1: live(0.92, 38) },
-                { name: 'YOLOv8', acc: live(0.88, 39), f1: live(0.85, 40) },
-                { name: 'ResNet', acc: live(0.91, 41), f1: live(0.89, 42) },
-                { name: 'ViT', acc: live(0.96, 43), f1: live(0.95, 44) },
+                { name: 'Anomalib', acc: Math.min(1, live(0.94, 37)), f1: Math.min(1, live(0.92, 38)) },
+                { name: 'YOLOv8', acc: Math.min(1, live(0.88, 39)), f1: Math.min(1, live(0.85, 40)) },
+                { name: 'ResNet', acc: Math.min(1, live(0.91, 41)), f1: Math.min(1, live(0.89, 42)) },
+                { name: 'ViT', acc: Math.min(1, live(0.96, 43)), f1: Math.min(1, live(0.95, 44)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
+                <YAxis domain={[0, 1]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
                 <Bar dataKey="acc" fill="#3b82f6" name="Accuracy" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="f1" fill="#10b981" name="F1 Score" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -5512,10 +5561,10 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               <PieChart>
                 <Pie
                   data={[
-                    { name: t('관리자'), value: live(5, 45) },
-                    { name: t('오퍼레이터'), value: live(24, 46) },
-                    { name: t('설비엔지니어'), value: live(12, 47) },
-                    { name: t('품질관리자'), value: live(8, 48) },
+                    { name: t('관리자'), value: Math.round(live(5, 45)) },
+                    { name: t('오퍼레이터'), value: Math.round(live(24, 46)) },
+                    { name: t('설비엔지니어'), value: Math.round(live(12, 47)) },
+                    { name: t('품질관리자'), value: Math.round(live(8, 48)) },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -5528,38 +5577,39 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                     <Cell key={`cell-${index}`} fill={color} />
                   ))}
                 </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
               </PieChart>
             );
-          case 29: // 시스템 모니터링
+          case 29: { // 시스템 모니터링
+            const load = Array.from({ length: 12 }, (_, i) => ({
+              ago: i === 11 ? t('지금') : `-${(11 - i) * 5}m`,
+              cpu: live(48 + (i % 4) * 5, 300 + i),
+              gpu: live(66 + (i % 3) * 6, 320 + i),
+              lag: live(18 + (i % 5) * 3, 340 + i),
+            }));
             return (
-              <AreaChart data={sensorData}>
-                <defs>
-                  <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
+              <LineChart data={load} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="vibration" stroke="#3b82f6" fillOpacity={1} fill="url(#colorCpu)" name="CPU Usage (%)" />
-              </AreaChart>
+                <XAxis dataKey="ago" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="pct" unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="ms" orientation="right" unit="ms" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <ReferenceLine yAxisId="pct" y={85} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('경고 85%'), position: 'insideTopLeft', fontSize: 10, fill: '#ef4444' }} />
+                <Line yAxisId="pct" type="monotone" dataKey="cpu" stroke="#3b82f6" strokeWidth={2} dot={false} name={t('CPU 사용률 (%)')} />
+                <Line yAxisId="pct" type="monotone" dataKey="gpu" stroke="#8b5cf6" strokeWidth={2} dot={false} name={t('GPU 사용률 (%)')} />
+                <Line yAxisId="ms" type="monotone" dataKey="lag" stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 3" dot={false} name={t('Kafka 데이터 지연 (ms)')} />
+              </LineChart>
             );
+          }
           case 30: // 알림 설정
             return (
               <BarChart data={[
-                { name: t('SMS'), value: live(142, 49) },
-                { name: t('Email'), value: live(856, 50) },
-                { name: t('Push'), value: live(2431, 51) },
-                { name: t('Siren'), value: live(12, 52) },
+                { name: t('SMS'), value: Math.round(live(142, 49)) },
+                { name: t('Email'), value: Math.round(live(856, 50)) },
+                { name: t('Push'), value: Math.round(live(2431, 51)) },
+                { name: t('Siren'), value: Math.round(live(12, 52)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -5568,7 +5618,7 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
                   itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
-                <Bar dataKey="value" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="#f59e0b" name={t('발송 건수')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
           default:
@@ -5643,22 +5693,17 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           case 24: // 승인 대기 큐
             return (
               <BarChart data={[
-                { status: 'Pending', count: live(5, 66) },
-                { status: 'Approved', count: live(42, 67) },
-                { status: 'Rejected', count: live(3, 68) },
+                { risk: t('높음'), human: Math.round(live(5, 66)), auto: 0 },
+                { risk: t('중간'), human: Math.round(live(4, 67)), auto: Math.round(live(9, 68)) },
+                { risk: t('낮음'), human: 0, auto: Math.round(live(31, 69)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="status" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="count">
-                  {['#f59e0b', '#10b981', '#ef4444'].map((color, index) => (
-                    <Cell key={`cell-${index}`} fill={color} />
-                  ))}
-                </Bar>
+                <XAxis dataKey="risk" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="human" stackId="q" fill="#f59e0b" name={t('사람 승인 대기 (건)')} />
+                <Bar dataKey="auto" stackId="q" fill="#10b981" name={t('자동 승인 (건)')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
           case 31: // 슈퍼바이저 센터
@@ -5703,7 +5748,7 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         switch (item.id) {
           case 1: // 실시간 불량률 현황
             return (
-              <AreaChart data={sensorData}>
+              <AreaChart data={trend} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorDefect" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
@@ -5711,13 +5756,13 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="defect_rate" stroke="#ef4444" fillOpacity={1} fill="url(#colorDefect)" name="Defect Rate (%)" />
+                <XAxis dataKey="ago" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} minTickGap={16} />
+                <YAxis unit="%" domain={[0, (max: number) => Math.max(6, Math.ceil(max))]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} formatter={(v) => `${Number(v).toFixed(2)}%`} />
+                <Legend {...legendProps} />
+                <ReferenceLine y={3} stroke="#f59e0b" strokeDasharray="4 4" label={{ value: t('주의 3%'), position: 'insideTopLeft', fontSize: 10, fill: '#f59e0b' }} />
+                <ReferenceLine y={5} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('경보 5%'), position: 'insideTopLeft', fontSize: 10, fill: '#ef4444' }} />
+                <Area type="monotone" dataKey="defect_rate" stroke="#ef4444" fillOpacity={1} fill="url(#colorDefect)" isAnimationActive={false} name={t('불량률 (%)')} />
               </AreaChart>
             );
           case 2: // 비전검사 결과 뷰어
@@ -5743,73 +5788,81 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 </Bar>
               </BarChart>
             );
-          case 3: // 불량 유형 분석
+          case 3: { // 불량 유형 분석
+            // Pareto: the biggest defect types first, with the cumulative share.
+            const counts = [
+              { name: t('찢김'), count: Math.round(live(35, 83)) },
+              { name: t('기포'), count: Math.round(live(25, 84)) },
+              { name: t('변색'), count: Math.round(live(20, 85)) },
+              { name: t('라벨누락'), count: Math.round(live(15, 86)) },
+            ].sort((a, b) => b.count - a.count);
+            counts.push({ name: t('기타'), count: Math.round(live(5, 87)) });
+            const total = counts.reduce((sum, r) => sum + r.count, 0) || 1;
+            let running = 0;
+            const pareto = counts.map(r => {
+              running += r.count;
+              return { ...r, cum: Number(((running / total) * 100).toFixed(1)) };
+            });
             return (
-              <PieChart>
-                <Pie
-                  data={[
-                    { name: t('찢김'), value: live(35, 83) },
-                    { name: t('기포'), value: live(25, 84) },
-                    { name: t('변색'), value: live(20, 85) },
-                    { name: t('라벨누락'), value: live(15, 86) },
-                    { name: t('기타'), value: live(5, 87) },
-                  ]}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6'].map((color, index) => (
-                    <Cell key={`cell-${index}`} fill={color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '10px' }} />
-              </PieChart>
+              <ComposedChart data={pareto} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="count" allowDecimals={false} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="cum" orientation="right" unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <ReferenceLine yAxisId="cum" y={80} stroke={chart.axis} strokeDasharray="4 4" label={{ value: '80%', position: 'insideTopRight', fontSize: 10, fill: chart.axis }} />
+                <Bar yAxisId="count" dataKey="count" fill="#ef4444" name={t('불량 건수 (오늘)')} radius={[4, 4, 0, 0]} />
+                <Line yAxisId="cum" type="monotone" dataKey="cum" stroke="#3b82f6" strokeWidth={2} name={t('누적 비율 (%)')} />
+              </ComposedChart>
             );
+          }
           case 4: // 온도-불량 상관분석
             return (
-              <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <ScatterChart margin={{ top: 20, right: 20, bottom: 10, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-                <XAxis type="number" dataKey="temp" name="Temperature" unit="°C" stroke={chart.axis} fontSize={10} />
-                <YAxis type="number" dataKey="defect" name="Defect Rate" unit="%" stroke={chart.axis} fontSize={10} />
-                <ZAxis type="number" range={[50, 400]} />
-                <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                <Scatter name="Temp vs Defect" data={[
-                  { temp: live(160, 88), defect: live(8.2, 89) },
-                  { temp: live(165, 90), defect: live(4.5, 91) },
-                  { temp: live(170, 92), defect: live(2.1, 93) },
-                  { temp: live(175, 94), defect: live(1.8, 95) },
-                  { temp: live(180, 96), defect: live(2.5, 97) },
-                  { temp: live(185, 98), defect: live(5.4, 99) },
-                  { temp: live(190, 100), defect: live(9.1, 101) },
-                ]} fill="#8b5cf6" />
+                <XAxis type="number" dataKey="temp" name={t('실링 온도')} unit="°C" domain={[155, 195]} stroke={chart.axis} fontSize={10} />
+                <YAxis type="number" dataKey="defect" name={t('불량률')} unit="%" stroke={chart.axis} fontSize={10} />
+                <ZAxis type="number" range={[80, 80]} />
+                <Tooltip {...tip} cursor={{ strokeDasharray: '3 3' }} />
+                <Legend {...legendProps} />
+                <ReferenceLine x={173} stroke="#10b981" strokeDasharray="4 4" label={{ value: t('최적 173°C'), position: 'insideTop', fontSize: 10, fill: '#10b981' }} />
+                {/* Temperature bands are fixed; only the measured defect rate moves. */}
+                <Scatter name={t('온도 구간별 불량률')} data={[
+                  { temp: 160, defect: live(8.2, 89) },
+                  { temp: 165, defect: live(4.5, 91) },
+                  { temp: 170, defect: live(2.1, 93) },
+                  { temp: 173, defect: live(1.4, 94) },
+                  { temp: 175, defect: live(1.8, 95) },
+                  { temp: 180, defect: live(2.9, 97) },
+                  { temp: 185, defect: live(5.4, 99) },
+                  { temp: 190, defect: live(9.1, 101) },
+                ]} fill="#8b5cf6" line={{ stroke: '#8b5cf6', strokeOpacity: 0.4 }} />
               </ScatterChart>
             );
-          case 5: // 품질 이력 검색
+          case 5: { // 품질 이력 검색
+            const batches = [
+              { batch: 'B001', yield: live(98.2, 102) },
+              { batch: 'B002', yield: live(94.5, 103) },
+              { batch: 'B003', yield: live(99.1, 104) },
+              { batch: 'B004', yield: live(88.4, 105) },
+              { batch: 'B005', yield: live(97.8, 106) },
+            ].map(b => ({ ...b, yield: Math.min(100, b.yield) }));
             return (
-              <BarChart data={[
-                { batch: 'B001', yield: live(98.2, 102) },
-                { batch: 'B002', yield: live(94.5, 103) },
-                { batch: 'B003', yield: live(99.1, 104) },
-                { batch: 'B004', yield: live(88.4, 105) },
-                { batch: 'B005', yield: live(97.8, 106) },
-              ]}>
+              <BarChart data={batches}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="batch" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis domain={[80, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="yield" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <YAxis unit="%" domain={[80, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Bar dataKey="yield" name={t('수율 (%)')} radius={[4, 4, 0, 0]}>
+                  {batches.map(b => (
+                    <Cell key={b.batch} fill={b.yield < 95 ? '#ef4444' : '#10b981'} />
+                  ))}
+                </Bar>
+                <ReferenceLine y={95} stroke="#f59e0b" strokeDasharray="4 4" strokeWidth={2} label={{ value: t('목표 수율 95%'), position: 'insideTopRight', fontSize: 10, fill: '#f59e0b' }} />
               </BarChart>
             );
+          }
           default:
             return (
               <BarChart data={[
@@ -5836,37 +5889,42 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         }
       case 'AI 설비예지보전 에이전트':
         switch (item.id) {
-          case 6: // 설비 상태 종합
+          case 6: { // 설비 상태 종합
+            const health = [
+              { name: t('수축포장기-01'), score: live(72, 112) },
+              { name: t('케이스패커-02'), score: live(58, 113) },
+              { name: t('컨베이어-04'), score: live(88, 114) },
+              { name: t('로봇팔-02'), score: live(91, 115) },
+              { name: t('모터-08'), score: live(46, 116) },
+            ];
             return (
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
-                { subject: t('진동'), A: live(120, 112), fullMark: 150 },
-                { subject: t('온도'), A: live(98, 113), fullMark: 150 },
-                { subject: t('전류'), A: live(86, 114), fullMark: 150 },
-                { subject: t('압력'), A: live(99, 115), fullMark: 150 },
-                { subject: t('소음'), A: live(85, 116), fullMark: 150 },
-              ]}>
-                <PolarGrid stroke={chart.grid} />
-                <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
-                <PolarRadiusAxis angle={30} domain={[0, 150]} stroke={chart.axis} fontSize={8} />
-                <Radar name="Maintenance Health" dataKey="A" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-              </RadarChart>
+              <BarChart layout="vertical" data={health} margin={{ top: 16, right: 16, left: 8, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} horizontal={false} />
+                <XAxis type="number" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis dataKey="name" type="category" width={92} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <ReferenceLine x={70} stroke="#f59e0b" strokeDasharray="4 4" label={{ value: t('주의 70'), position: 'top', fontSize: 10, fill: '#f59e0b' }} />
+                <ReferenceLine x={50} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('위험 50'), position: 'top', fontSize: 10, fill: '#ef4444' }} />
+                <Bar dataKey="score" name={t('건강 점수 (100점 만점)')} radius={[0, 4, 4, 0]}>
+                  {health.map(h => (
+                    <Cell key={h.name} fill={h.score < 50 ? '#ef4444' : h.score < 70 ? '#f59e0b' : '#10b981'} />
+                  ))}
+                </Bar>
+              </BarChart>
             );
+          }
           case 7: // 진동/온도 추세
             return (
-              <LineChart data={sensorData}>
+              <LineChart data={trend} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Line type="monotone" dataKey="vibration" stroke="#3b82f6" strokeWidth={2} dot={false} name="Vibration (mm/s)" />
-                <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name="Temp (°C)" />
+                <XAxis dataKey="ago" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} minTickGap={16} />
+                <YAxis yAxisId="vib" domain={[2, 6]} ticks={[2, 3, 4, 5, 6]} stroke="#3b82f6" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="temp" orientation="right" domain={[160, 190]} ticks={[160, 170, 180, 190]} stroke="#10b981" fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} formatter={(v) => Number(v).toFixed(2)} />
+                <Legend {...legendProps} />
+                <ReferenceLine yAxisId="vib" y={4.6} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('진동 경고 4.6 mm/s'), position: 'insideTopLeft', fontSize: 10, fill: '#ef4444' }} />
+                <Line yAxisId="vib" type="monotone" dataKey="vibration" stroke="#3b82f6" strokeWidth={2} dot={false} isAnimationActive={false} name={t('진동 (mm/s)')} />
+                <Line yAxisId="temp" type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} isAnimationActive={false} name={t('온도 (°C)')} />
               </LineChart>
             );
           case 8: // RUL 잔여수명 예측
@@ -5929,12 +5987,10 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="month" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis yAxisId="left" stroke="#3b82f6" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis yAxisId="right" orientation="right" stroke="#ef4444" fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
+                <YAxis yAxisId="left" unit="h" stroke="#3b82f6" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="right" unit="h" orientation="right" stroke="#ef4444" fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
                 <Bar yAxisId="left" dataKey="mtbf" fill="#3b82f6" name="MTBF (h)" radius={[4, 4, 0, 0]} />
                 <Line yAxisId="right" type="monotone" dataKey="mttr" stroke="#ef4444" name="MTTR (h)" strokeWidth={2} />
               </ComposedChart>
@@ -5956,25 +6012,28 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         }
       case 'AI 에너지 에이전트':
         switch (item.id) {
-          case 16: // 전력 사용 현황
+          case 16: { // 전력 사용 현황
+            // kW from the shrink wrapper's live current: P = √3 × 380 V × I × PF 0.9.
+            const amps = sensorData[sensorData.length - 1]?.current_amp ?? 12.6;
+            const wrapperKw = Number((1.732 * 0.38 * amps * 0.9).toFixed(1));
             return (
-              <AreaChart data={sensorData}>
-                <defs>
-                  <linearGradient id="colorEnergy" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
+              <BarChart data={[
+                { name: t('수축포장기-01'), run: wrapperKw, idle: live(0.6, 340) },
+                { name: t('케이스패커-02'), run: live(5.2, 341), idle: live(1.9, 342) },
+                { name: t('컨베이어-04'), run: live(3.1, 343), idle: live(0.2, 344) },
+                { name: t('로봇팔-02'), run: live(2.4, 345), idle: live(0.3, 346) },
+                { name: t('모터-08'), run: live(4.6, 347), idle: live(0.4, 348) },
+              ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="current_amp" stroke="#f59e0b" fillOpacity={1} fill="url(#colorEnergy)" name="Energy Load (A)" />
-              </AreaChart>
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis unit=" kW" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="run" stackId="kw" fill="#f59e0b" name={t('가동 중 전력 (kW)')} />
+                <Bar dataKey="idle" stackId="kw" fill="#ef4444" name={t('대기 전력 (kW)')} radius={[4, 4, 0, 0]} />
+              </BarChart>
             );
+          }
           case 17: // 에너지 비용 분석
             return (
               <BarChart data={[
@@ -5985,35 +6044,36 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="cost" name="Cost (KRW)" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <YAxis tickFormatter={(v: number) => `₩${v.toLocaleString()}`} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} formatter={(v) => `₩${Number(v).toLocaleString()}`} />
+                <Bar dataKey="cost" name={t('전기요금 (원)')} fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
             );
-          case 18: // 피크 부하 관리
+          case 18: { // 피크 부하 관리
+            const limit = 1000;
+            const peak = [
+              { time: '10:00', load: live(850, 142) },
+              { time: '11:00', load: live(920, 144) },
+              { time: '12:00', load: live(980, 146) },
+              { time: '13:00', load: live(1050, 148) },
+              { time: '14:00', load: live(940, 150) },
+              { time: '15:00', load: live(880, 152) },
+            ];
             return (
-              <LineChart data={[
-                { time: '10:00', load: live(850, 142), limit: live(1000, 143) },
-                { time: '11:00', load: live(920, 144), limit: live(1000, 145) },
-                { time: '12:00', load: live(980, 146), limit: live(1000, 147) },
-                { time: '13:00', load: live(1050, 148), limit: live(1000, 149) },
-                { time: '14:00', load: live(940, 150), limit: live(1000, 151) },
-                { time: '15:00', load: live(880, 152), limit: live(1000, 153) },
-              ]}>
+              <LineChart data={peak} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Line type="stepAfter" dataKey="load" stroke="#ef4444" strokeWidth={2} name="Current Load (kW)" />
-                <Line type="monotone" dataKey="limit" stroke="#94a3b8" strokeDasharray="5 5" name="Contract Limit" />
+                <YAxis unit=" kW" domain={[700, 1150]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <ReferenceLine y={limit} stroke="#ef4444" strokeDasharray="5 5" label={{ value: t('계약 전력 1,000kW'), position: 'insideTopLeft', fontSize: 10, fill: '#ef4444' }} />
+                <Line type="stepAfter" dataKey="load" stroke="#f59e0b" strokeWidth={2} name={t('부하 (kW)')}
+                  dot={(props: { cx?: number; cy?: number; index?: number; payload?: { load: number } }) => (
+                    <circle key={props.index} cx={props.cx} cy={props.cy} r={4} fill={(props.payload?.load ?? 0) > limit ? '#ef4444' : '#f59e0b'} />
+                  )} />
               </LineChart>
             );
+          }
           default:
             return (
               <AreaChart data={sensorData}>
@@ -6076,19 +6136,16 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           case 32: // 긴급 정지 및 알람 제어
             return (
               <BarChart data={[
-                { type: 'Fire', count: live(1, 171) },
-                { type: 'Collision', count: live(4, 172) },
-                { type: 'Manual', count: live(2, 173) },
-                { type: 'System', count: 0 },
+                { type: t('화재'), count: Math.round(live(1, 171)) },
+                { type: t('충돌'), count: Math.round(live(4, 172)) },
+                { type: t('수동'), count: Math.round(live(2, 173)) },
+                { type: t('시스템'), count: 0 },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="type" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} name="E-Stop Events" />
+                <YAxis allowDecimals={false} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} name={t('비상 정지 (건)')} />
               </BarChart>
             );
           default:
@@ -6126,93 +6183,104 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 { line: t('Line 2'), running: live(92, 180), idle: live(5, 181), down: live(3, 182) },
                 { line: t('Line 3'), running: live(78, 183), idle: live(15, 184), down: live(7, 185) },
                 { line: t('Line 4'), running: live(88, 186), idle: live(8, 187), down: live(4, 188) },
-              ]}>
+              ].map(r => {
+                const total = r.running + r.idle + r.down;
+                const pct = (v: number) => Number(((v / total) * 100).toFixed(1));
+                return { ...r, running: pct(r.running), idle: pct(r.idle), down: pct(r.down) };
+              })}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="line" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="running" stackId="a" fill="#10b981" name="Running" />
-                <Bar dataKey="idle" stackId="a" fill="#f59e0b" name="Idle" />
-                <Bar dataKey="down" stackId="a" fill="#ef4444" name="Down" />
+                <YAxis unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="running" stackId="a" fill="#10b981" name={t('가동 (%)')} />
+                <Bar dataKey="idle" stackId="a" fill="#f59e0b" name={t('대기 (%)')} />
+                <Bar dataKey="down" stackId="a" fill="#ef4444" name={t('정지 (%)')} />
               </BarChart>
             );
-          case 12: // OEE 대시보드
+          case 12: { // OEE 대시보드
+            const availability = Math.min(100, live(92, 189));
+            const performance = Math.min(100, live(88, 190));
+            const quality = Math.min(100, live(99, 191));
+            const oee = Number(((availability * performance * quality) / 10000).toFixed(1));
+            const parts = [
+              { name: t('가용률'), value: availability, fill: '#3b82f6' },
+              { name: t('성능'), value: performance, fill: '#8b5cf6' },
+              { name: t('양품률'), value: quality, fill: '#10b981' },
+              { name: 'OEE', value: oee, fill: oee < 85 ? '#ef4444' : '#f59e0b' },
+            ];
             return (
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
-                { subject: t('Availability'), A: live(92, 189), fullMark: 100 },
-                { subject: t('Performance'), A: live(88, 190), fullMark: 100 },
-                { subject: t('Quality'), A: live(99, 191), fullMark: 100 },
-              ]}>
-                <PolarGrid stroke={chart.grid} />
-                <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={chart.axis} fontSize={8} />
-                <Radar name="OEE Components" dataKey="A" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-              </RadarChart>
+              <BarChart data={parts}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Bar dataKey="value" name={t('비율 (%)')} radius={[4, 4, 0, 0]}>
+                  {parts.map(p => <Cell key={p.name} fill={p.fill} />)}
+                </Bar>
+                <ReferenceLine y={85} stroke="#ef4444" strokeDasharray="4 4" strokeWidth={2} label={{ value: t('OEE 목표 85%'), position: 'insideTopRight', fontSize: 10, fill: '#ef4444' }} />
+              </BarChart>
             );
-          case 13: // 택트타임 분석
+          }
+          case 13: { // 택트타임 분석
+            const tact = [
+              { process: t('공급'), time: live(12, 192), target: 10 },
+              { process: t('도금'), time: live(45, 194), target: 40 },
+              { process: t('검사'), time: live(15, 196), target: 15 },
+              { process: t('배출'), time: live(8, 198), target: 10 },
+              { process: t('적재'), time: live(22, 200), target: 20 },
+            ];
             return (
-              <BarChart data={[
-                { process: t('공급'), time: live(12, 192), target: live(10, 193) },
-                { process: t('도금'), time: live(45, 194), target: live(40, 195) },
-                { process: t('검사'), time: live(15, 196), target: live(15, 197) },
-                { process: t('배출'), time: live(8, 198), target: live(10, 199) },
-                { process: t('적재'), time: live(22, 200), target: live(20, 201) },
-              ]}>
+              <BarChart data={tact}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="process" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="time" fill="#3b82f6" name="Actual Tact (s)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="target" fill="#94a3b8" name="Target Tact (s)" radius={[4, 4, 0, 0]} />
+                <YAxis unit="s" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="time" fill="#3b82f6" name={t('실제 택트 (초)')} radius={[4, 4, 0, 0]}>
+                  {tact.map(p => <Cell key={p.process} fill={p.time > p.target ? '#ef4444' : '#3b82f6'} />)}
+                </Bar>
+                <Bar dataKey="target" fill="#94a3b8" name={t('목표 택트 (초)')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
-          case 14: // 배치별 생산 이력
+          }
+          case 14: { // 배치별 생산 이력
+            // One batch's route, as a timeline: when it entered each step and how long it stayed.
+            let clock = 0;
+            const route = [['원자재 입고', 20], ['공급', 12], ['도금', 45], ['검사', 15], ['포장', 22]].map(([stage, minutes], i) => {
+              const dur = Math.round(live(minutes as number, 202 + i));
+              const row = { stage: t(stage as string), start: clock, dur };
+              clock += dur;
+              return row;
+            });
             return (
-              <LineChart data={[
-                { step: t('Start'), val: 0 },
-                { step: t('Supply'), val: live(10, 202) },
-                { step: t('Plating'), val: live(55, 203) },
-                { step: t('Inspect'), val: live(70, 204) },
-                { step: t('Pack'), val: live(92, 205) },
-                { step: t('Finish'), val: live(100, 206) },
-              ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="step" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Line type="monotone" dataKey="val" stroke="#10b981" strokeWidth={3} name="Completion %" />
-              </LineChart>
+              <BarChart layout="vertical" data={route} margin={{ top: 10, right: 16, left: 8, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} horizontal={false} />
+                <XAxis type="number" unit={t('분')} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis dataKey="stage" type="category" width={72} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="start" stackId="route" fill="transparent" legendType="none" name={t('투입 시점 (분)')} />
+                <Bar dataKey="dur" stackId="route" fill="#10b981" name={t('공정 소요 시간 (분)')} radius={[0, 4, 4, 0]} />
+              </BarChart>
             );
+          }
           case 15: // 생산 계획 대비 실적
             return (
               <BarChart data={[
-                { day: t('Mon'), plan: live(1000, 207), actual: live(950, 208) },
-                { day: t('Tue'), plan: live(1000, 209), actual: live(1020, 210) },
-                { day: t('Wed'), plan: live(1200, 211), actual: live(1180, 212) },
-                { day: t('Thu'), plan: live(1200, 213), actual: live(900, 214) },
-                { day: t('Fri'), plan: live(1000, 215), actual: live(1050, 216) },
+                { day: t('Mon'), plan: 1000, actual: Math.round(live(950, 208)) },
+                { day: t('Tue'), plan: 1000, actual: Math.round(live(1020, 210)) },
+                { day: t('Wed'), plan: 1200, actual: Math.round(live(1180, 212)) },
+                { day: t('Thu'), plan: 1200, actual: Math.round(live(900, 214)) },
+                { day: t('Fri'), plan: 1000, actual: Math.round(live(1050, 216)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="day" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="plan" fill="#334155" name="Plan" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="actual" fill="#6366f1" name="Actual" radius={[4, 4, 0, 0]} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="plan" fill="#94a3b8" name={t('계획 (개)')} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="actual" fill="#6366f1" name={t('실적 (개)')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
           default:
@@ -6743,24 +6811,17 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 <AMRCollisionViewer />
               ) : (
                 <div className="dashboard-card">
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center justify-between mb-6">
                     <div>
                       <h3 className="text-sm font-bold flex items-center gap-2">
                         <Activity size={16} className="text-accent" />
-                        {t('Module Execution Preview (Live)')}
+                        {t(MODULE_CHARTS[item.id]?.title ?? 'Module Execution Preview (Live)')}
                       </h3>
-                      <p className="text-[10px] text-text-secondary mt-1">{t('Real-time telemetry from Kafka stream')}</p>
+                      <p className="text-[11px] text-text-secondary mt-1">{t(MODULE_CHARTS[item.id]?.caption ?? 'Real-time telemetry from Kafka stream')}</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                        <span className="text-[10px] font-bold text-text-secondary uppercase">{t('Primary')}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <span className="text-[10px] font-bold text-text-secondary uppercase">{t('Secondary')}</span>
-                      </div>
-                    </div>
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase shrink-0">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                    </span>
                   </div>
                   <div className="h-[350px] w-full">
                     <ResponsiveContainer width="100%" height="100%">

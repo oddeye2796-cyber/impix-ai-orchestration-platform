@@ -45,7 +45,8 @@ export interface Excursion {
 }
 
 const WINDOW = 21;
-const TICK_MS = 2000;
+/** How often the plant produces a reading. */
+export const TICK_MS = 2000;
 
 /** Nominal operating point each signal is pulled back toward. */
 const NOMINAL = { vibration: 3.4, temperature: 174, current: 12.6, energy: 1240 };
