@@ -1,0 +1,2018 @@
+{
+  "AI 설정 바꿔 보기": [
+    "AI設定を試す",
+    "Try AI settings"
+  ],
+  "AI 설정 바꿔 보기 (전/후 비교)": [
+    "AI設定を試す（変更前後を比較）",
+    "Try AI settings (before/after)"
+  ],
+  "기술 상세 보기 (엔지니어용)": [
+    "技術詳細を見る（エンジニア向け）",
+    "Show technical details (for engineers)"
+  ],
+  "기술 상세 접기": [
+    "技術詳細を閉じる",
+    "Hide technical details"
+  ],
+  "설정 변경을 되돌렸어요.": [
+    "設定変更を元に戻しました。",
+    "Setting change reverted."
+  ],
+  "설정 적용: {changes}": [
+    "設定を適用: {changes}",
+    "Settings applied: {changes}"
+  ],
+  "설정을 적용했어요. 전/후 결과를 화면에 남겨 뒀어요.": [
+    "設定を適用しました。変更前後の結果を画面に残しています。",
+    "Settings applied. The before/after result is kept on the screen."
+  ],
+  "{time}에 적용한 설정 변경": [
+    "{time}に適用した設定変更",
+    "Settings changed at {time}"
+  ],
+  "① 설정을 움직여 보세요": [
+    "① 設定を動かしてみてください",
+    "① Move the settings"
+  ],
+  "② 결과가 이렇게 바뀌어요 (지금 → 바꾸면)": [
+    "② 結果はこう変わります（現在 → 変更後）",
+    "② How the results change (now → changed)"
+  ],
+  "AI가 하는 일": [
+    "AIがすること",
+    "What the AI does"
+  ],
+  "그대로": [
+    "変化なし",
+    "No change"
+  ],
+  "기본값": [
+    "既定値",
+    "Default"
+  ],
+  "기본값으로": [
+    "既定値に戻す",
+    "Reset to defaults"
+  ],
+  "나빠지는 지표가 {bad}개예요. 적용 전에 다시 생각해 보세요.": [
+    "悪化する指標が{bad}個あります。適用前にもう一度ご検討ください。",
+    "{bad} indicator(s) get worse. Think twice before applying."
+  ],
+  "나빠짐": [
+    "悪化",
+    "Worse"
+  ],
+  "누가 쓰나요": [
+    "誰が使う？",
+    "Who uses it"
+  ],
+  "다시 조정": [
+    "再調整",
+    "Adjust again"
+  ],
+  "대표적인 하루의 공장 데이터에 두 설정을 각각 적용해 계산한 값이에요. 실제 적용 후에는 실행 이력에 전/후 값이 남아요.": [
+    "代表的な1日の工場データに2つの設定をそれぞれ当てはめて計算した値です。実際に適用すると、実行履歴に変更前後の値が残ります。",
+    "Calculated by applying each setting to a representative day of plant data. Once applied, the before/after values are kept in the execution history."
+  ],
+  "되돌리기": [
+    "元に戻す",
+    "Revert"
+  ],
+  "바꾼 설정": [
+    "変更後の設定",
+    "Changed setting"
+  ],
+  "변경": [
+    "変更後",
+    "changed"
+  ],
+  "엔": [
+    "円",
+    "yen"
+  ],
+  "왼쪽 설정을 움직이면 아래 숫자와 그래프가 바로 다시 계산돼요.": [
+    "左の設定を動かすと、下の数値とグラフがすぐに再計算されます。",
+    "Move a setting on the left and the numbers and chart below are recalculated right away."
+  ],
+  "이 설정 적용": [
+    "この設定を適用",
+    "Apply these settings"
+  ],
+  "이 화면은?": [
+    "この画面は？",
+    "About this screen"
+  ],
+  "이렇게 해 보세요": [
+    "試してみよう",
+    "Try this"
+  ],
+  "좋아지는 지표 {good}개, 나빠지는 지표 {bad}개. 하나를 얻으면 다른 하나를 내주는 설정이에요.": [
+    "改善する指標{good}個、悪化する指標{bad}個。何かを得れば何かを手放す設定です。",
+    "{good} indicator(s) improve, {bad} get worse. This setting is a trade-off."
+  ],
+  "좋아지는 지표 {good}개, 나빠지는 지표는 없어요.": [
+    "改善する指標{good}個、悪化する指標はありません。",
+    "{good} indicator(s) improve and none get worse."
+  ],
+  "좋아짐": [
+    "改善",
+    "Better"
+  ],
+  "지금": [
+    "現在",
+    "now"
+  ],
+  "지금 설정": [
+    "現在の設定",
+    "Current setting"
+  ],
+  "참고": [
+    "参考",
+    "Info"
+  ],
+  "AI 팀이 현장 사건을 스스로 해결하는 라이브 데모": [
+    "AIチームが現場の事象を自ら解決するライブデモ",
+    "Live demo: an AI team resolving shop-floor events on its own"
+  ],
+  "{sec}초": [
+    "{sec}秒",
+    "{sec} s"
+  ],
+  "0회": [
+    "0回",
+    "0 times"
+  ],
+  "15분 안에 계약 전력을 넘을 가능성이 높다고 예측하고 슈퍼바이저에 보고": [
+    "15分以内に契約電力を超える可能性が高いと予測し、スーパーバイザーに報告",
+    "Predicts the contract demand is likely to be exceeded within 15 minutes and reports to the supervisor"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 모터 부하 10% 낮춰 운전, 보전 작업 오더 초안 작성": [
+    "AIの権限内の対応なので即実行: モーター負荷を10%下げて運転、保全作業指示の下書きを作成",
+    "Within the AI's authority, so done at once: motor load cut by 10%, maintenance work order drafted"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 배터리(ESS) 120kW 방전, 공조·컴프레서 부하 20분 이전": [
+    "AIの権限内の対応なので即実行: 蓄電池(ESS)120kW放電、空調・コンプレッサー負荷を20分後ろ倒し",
+    "Within the AI's authority, so done at once: 120 kW battery (ESS) discharge, HVAC and compressor load moved by 20 minutes"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 실링 온도 2°C 낮춤, 라인 속도 5% 줄임": [
+    "AIの権限内の対応なので即実行: シール温度を2°C下げ、ライン速度を5%落とす",
+    "Within the AI's authority, so done at once: sealing temperature down 2°C, line speed down 5%"
+  ],
+  "AI 팀 자율 대응": [
+    "AIチームが自律対応",
+    "AI team responds"
+  ],
+  "AI 팀이 대응 중…": [
+    "AIチームが対応中…",
+    "AI team at work…"
+  ],
+  "IMPIX AI 오케스트레이션": [
+    "IMPIX AIオーケストレーション",
+    "IMPIX AI orchestration"
+  ],
+  "감속 후 진동이 3.6mm/s로 안정. 예상 고장 시점이 계획 정지 이후로 늦춰짐": [
+    "減速後、振動は3.6mm/sで安定。予想故障時期が計画停止の後へずれた",
+    "After slowing down, vibration settles at 3.6 mm/s. Predicted failure now falls after the planned stop"
+  ],
+  "감지부터 첫 조치까지": [
+    "検知から初動まで",
+    "Detection to first action"
+  ],
+  "결과": [
+    "結果",
+    "Results"
+  ],
+  "계약 전력 초과": [
+    "契約電力超過",
+    "Contract demand exceeded"
+  ],
+  "곧 이 사건이 공장에서 일어납니다. 왼쪽 공장 지도와 이 패널을 함께 봐 주세요.": [
+    "まもなくこの事象が工場で発生します。左の工場マップとこのパネルを一緒にご覧ください。",
+    "This event is about to happen in the plant. Watch the floor map on the left together with this panel."
+  ],
+  "공장 전력이 계약 전력의 92%까지 상승 (오후 2시, 바깥 기온 33°C)": [
+    "工場の電力が契約電力の92%まで上昇（午後2時、外気温33°C）",
+    "Plant power climbs to 92% of contract demand (2 pm, 33°C outside)"
+  ],
+  "교체용 베어링 재고 2개 확인, 정비 시간에 맞춰 출고 예약": [
+    "交換用ベアリングの在庫2個を確認、保全時刻に合わせて出庫を予約",
+    "Finds 2 spare bearings in stock and books them out for the maintenance slot"
+  ],
+  "내일 06시 계획 정지 때 정비하면 생산 손실이 없음을 확인": [
+    "明日6時の計画停止で整備すれば生産ロスがないことを確認",
+    "Confirms servicing at tomorrow's 06:00 planned stop costs no production"
+  ],
+  "다음 사례: {title}": [
+    "次の事例: {title}",
+    "Next case: {title}"
+  ],
+  "더운 오후에 공조와 설비가 한꺼번에 돌면 계약 전력을 넘기 쉬워요. 한 번만 넘어도 1년 내내 기본요금이 올라요.": [
+    "暑い午後に空調と設備が一斉に動くと、契約電力を超えやすくなります。一度でも超えると1年間基本料金が上がります。",
+    "On a hot afternoon, HVAC and machines running together easily exceed the contract demand. Exceed it once and the base charge goes up for a year."
+  ],
+  "라인 속도를 5% 줄여도 오늘 납기에는 영향이 없음을 확인": [
+    "ライン速度を5%落としても本日の納期に影響がないことを確認",
+    "Confirms a 5% slower line does not affect today's deliveries"
+  ],
+  "막은 라인 정지": [
+    "防いだライン停止",
+    "Line stoppage prevented"
+  ],
+  "모든 판단이 기록돼요": [
+    "すべての判断が記録されます",
+    "Every decision is recorded"
+  ],
+  "모터 베어링이 닳으면 진동이 서서히 커지다가 어느 순간 멈춰 버려요. 갑작스러운 정지는 라인 전체를 세워요.": [
+    "モーターのベアリングが摩耗すると、振動が徐々に大きくなり、ある時突然止まります。突然の停止はライン全体を止めてしまいます。",
+    "As a motor bearing wears, vibration slowly grows until it suddenly fails. A sudden stop halts the whole line."
+  ],
+  "보전 책임자가 승인. 작업 오더 확정, 정비 기사 배정": [
+    "保全責任者が承認。作業指示を確定し、保全担当者を割り当て",
+    "Maintenance lead approves. Work order confirmed, technician assigned"
+  ],
+  "보통은 불량품이 쌓인 뒤에야 발견하고, 원인을 찾아 조정하기까지 2~3시간이 걸려요.": [
+    "通常は不良品がたまってから気づき、原因を探して調整するまで2〜3時間かかります。",
+    "Usually it is noticed only after defects pile up, and finding the cause and adjusting takes 2–3 hours."
+  ],
+  "보통은 설비가 고장으로 멈춘 뒤에야 알게 되고, 부품을 구하는 동안 라인이 4~8시간 서요.": [
+    "通常は設備が故障で止まってから気づき、部品を手配する間ラインが4〜8時間止まります。",
+    "Usually it is noticed only after the machine breaks down, and the line stands for 4–8 hours while parts are found."
+  ],
+  "보통은 전력 경보가 울린 뒤 담당자가 뛰어가 설비를 끄지만, 이미 넘은 뒤인 경우가 많아요.": [
+    "通常は電力アラームが鳴ってから担当者が駆けつけて設備を止めますが、すでに超えた後であることが多いです。",
+    "Usually someone runs to switch machines off after the power alarm sounds, often after the limit is already exceeded."
+  ],
+  "사건 소개": [
+    "事象の紹介",
+    "The event"
+  ],
+  "사람": [
+    "人",
+    "Person"
+  ],
+  "사람 결정": [
+    "人の判断",
+    "Human decision"
+  ],
+  "사람 손을 거치지 않고 해결. 관리자에게 결과만 보고하고 기록": [
+    "人の手を介さずに解決。管理者には結果のみ報告し記録",
+    "Resolved with no one involved. Only the result is reported to the manager and logged"
+  ],
+  "사람이 반려. AI는 임시 조치만 유지하고 기록을 남김": [
+    "人が却下。AIは応急対応のみ維持し、記録を残す",
+    "A person rejected it. The AI keeps only the temporary fix and logs it"
+  ],
+  "사람이 한 일": [
+    "人がしたこと",
+    "What people did"
+  ],
+  "사례 {n} / {total}": [
+    "事例 {n} / {total}",
+    "Case {n} / {total}"
+  ],
+  "생산 설비는 그대로 두기로. 공조·컴프레서는 20분 늦춰도 품질 영향이 없음을 확인": [
+    "生産設備はそのまま維持。空調・コンプレッサーは20分遅らせても品質に影響がないことを確認",
+    "Leaves production machines untouched. Confirms HVAC and compressors can wait 20 minutes without affecting quality"
+  ],
+  "설비 AI": [
+    "設備AI",
+    "Maintenance AI"
+  ],
+  "설비·생산·물류 AI를 불러 대응 계획 수립": [
+    "設備・生産・物流AIを招集し、対応計画を立案",
+    "Calls in the maintenance, production and logistics AIs to plan the response"
+  ],
+  "센서": [
+    "センサー",
+    "Sensor"
+  ],
+  "슈퍼바이저 AI": [
+    "スーパーバイザーAI",
+    "Supervisor AI"
+  ],
+  "승인 1번": [
+    "承認1回",
+    "One approval"
+  ],
+  "승인 불필요": [
+    "承認不要",
+    "No approval needed"
+  ],
+  "실링 불량 징후 감지. 이대로면 불량률이 2.1%에서 7.3%로 오를 것으로 예측하고 슈퍼바이저에 보고": [
+    "シール不良の兆候を検知。このままでは不良率が2.1%から7.3%に上がると予測し、スーパーバイザーに報告",
+    "Detects signs of seal defects. Predicts the defect rate will climb from 2.1% to 7.3% and reports to the supervisor"
+  ],
+  "아낀 비용 (추정)": [
+    "削減コスト（推定）",
+    "Cost saved (est.)"
+  ],
+  "어떤 데이터를 보고, 어떤 AI가, 왜 그렇게 판단했는지, 누가 승인했는지가 모두 남아요. 지금 화면은 엔지니어용 기록이에요.": [
+    "どのデータを見て、どのAIが、なぜそう判断したのか、誰が承認したのかがすべて残ります。今の画面はエンジニア向けの記録です。",
+    "Which data was used, which AI decided, why, and who approved it are all kept. This screen is the engineer's record."
+  ],
+  "없음 (결과 보고만)": [
+    "なし（結果報告のみ）",
+    "Nothing (result report only)"
+  ],
+  "에너지·생산·안전 AI를 불러 줄일 수 있는 부하 검토": [
+    "エネルギー・生産・安全AIを招集し、削減できる負荷を検討",
+    "Calls in the energy, production and safety AIs to find load that can be cut"
+  ],
+  "여기서부터는 사람이 결정해요": [
+    "ここから先は人が判断します",
+    "From here, a person decides"
+  ],
+  "여름 오후 피크 전력 초과 위험": [
+    "夏の午後のピーク電力超過リスク",
+    "Summer afternoon peak-power risk"
+  ],
+  "왼쪽 화면의 [승인] 버튼을 직접 눌러 보세요. 누르지 않으면 잠시 뒤 시연이 대신 승인해요.": [
+    "左の画面の［承認］ボタンを押してみてください。押さなければ、しばらくしてデモが代わりに承認します。",
+    "Press the [Approve] button on the left yourself. If you don't, the demo approves it shortly."
+  ],
+  "자동 시연": [
+    "自動デモ",
+    "Auto demo"
+  ],
+  "자율 실행": [
+    "自律実行",
+    "Done by AI"
+  ],
+  "자율 해결": [
+    "自律解決",
+    "Resolved by AI"
+  ],
+  "재발을 막으려면 기본 온도를 173°C로 바꿔야 함. 기본 설정 변경은 AI 권한 밖이라 현장 책임자에게 승인 요청": [
+    "再発防止には基準温度を173°Cに変える必要あり。基準設定の変更はAIの権限外のため、現場責任者に承認を依頼",
+    "Preventing a repeat means changing the base temperature to 173°C. That is beyond the AI's authority, so it asks the line lead to approve"
+  ],
+  "전력이 계약 전력의 92%에서 81%로 내려감. 피크 시간대 무사 통과": [
+    "電力が契約電力の92%から81%に低下。ピーク時間帯を無事通過",
+    "Power drops from 92% to 81% of contract demand. The peak passes safely"
+  ],
+  "정비 일정 확정과 인력 배정은 보전 책임자에게 승인 요청": [
+    "整備日程の確定と人員配置は保全責任者に承認を依頼",
+    "Asks the maintenance lead to approve the schedule and staffing"
+  ],
+  "조치 후 불량률이 7.3%에서 2.4%로 돌아온 것을 확인": [
+    "対応後、不良率が7.3%から2.4%に戻ったことを確認",
+    "Confirms the defect rate fell back from 7.3% to 2.4% after the fix"
+  ],
+  "진동 패턴이 베어링 마모와 일치. 72시간 안에 고장 날 확률 85%로 예측": [
+    "振動パターンがベアリング摩耗と一致。72時間以内の故障確率を85%と予測",
+    "Vibration pattern matches bearing wear. Predicts an 85% chance of failure within 72 hours"
+  ],
+  "판단 기록": [
+    "判断の記録",
+    "Decision record"
+  ],
+  "포장기 모터 베어링 마모": [
+    "包装機モーターのベアリング摩耗",
+    "Packing machine motor bearing wear"
+  ],
+  "포장기 실링 온도 이상": [
+    "包装機のシール温度異常",
+    "Packing machine sealing temperature fault"
+  ],
+  "포장기-01 메인 모터 진동이 3.4에서 4.2mm/s로 상승 (기준 3.5 초과)": [
+    "包装機-01のメインモーター振動が3.4から4.2mm/sに上昇（基準3.5超過）",
+    "Packer-01 main motor vibration rises from 3.4 to 4.2 mm/s (limit 3.5)"
+  ],
+  "포장기-01 실링부 온도가 176°C에서 181°C로 오르기 시작": [
+    "包装機-01のシール部温度が176°Cから181°Cに上がり始める",
+    "Packer-01 sealing temperature starts rising from 176°C to 181°C"
+  ],
+  "품질·설비·생산 AI를 불러 원인 분석 시작": [
+    "品質・設備・生産AIを招集し、原因分析を開始",
+    "Calls in the quality, maintenance and production AIs to find the cause"
+  ],
+  "플랫폼이 없었다면: {text}": [
+    "プラットフォームがなければ: {text}",
+    "Without the platform: {text}"
+  ],
+  "필름 롤을 새로 바꾼 뒤 실링 온도가 흔들리면서 포장 불량이 늘어나는, 포장 라인에서 흔히 생기는 일이에요.": [
+    "フィルムロールを交換した後にシール温度が不安定になり、包装不良が増える。包装ラインでよくある出来事です。",
+    "After a new film roll goes on, the sealing temperature wavers and packing defects rise. It happens often on packing lines."
+  ],
+  "해결 완료": [
+    "解決済み",
+    "Resolved"
+  ],
+  "현장 책임자가 근거를 확인하고 승인. 기본 온도 173°C 적용": [
+    "現場責任者が根拠を確認して承認。基準温度173°Cを適用",
+    "The line lead reviews the evidence and approves. Base temperature set to 173°C"
+  ],
+  "현장에서 실제로 생기는 사건이 터지면, 여러 AI가 한 팀처럼 원인을 찾고 권한 안의 조치는 스스로 실행해요. 사람은 꼭 필요한 결정만 내려요.": [
+    "現場で実際に起きる事象が発生すると、複数のAIが一つのチームとして原因を探り、権限内の対応は自ら実行します。人は本当に必要な判断だけを行います。",
+    "When a real shop-floor event happens, several AIs work as one team to find the cause and carry out whatever is within their authority. People make only the decisions that need them."
+  ],
+  "환기·소방 설비는 줄이는 대상에서 제외": [
+    "換気・消防設備は削減対象から除外",
+    "Keeps ventilation and fire systems off the list"
+  ],
+  "효과 확인": [
+    "効果を確認",
+    "Verified"
+  ],
+  "히터와 제어기는 정상. 10분 전 필름 롤 교체 기록을 찾아냄: 새 롤의 두께 차이가 원인": [
+    "ヒーターと制御器は正常。10分前のフィルムロール交換記録を発見: 新しいロールの厚みの違いが原因",
+    "Heater and controller are fine. Finds a film-roll change 10 minutes ago: the new roll's thickness is the cause"
+  ],
+  "'오늘 불량률 어때?' 또는 '에너지 절감 방법'처럼 물어보세요.": [
+    "「今日の不良率は？」や「省エネの方法」のように聞いてみてください。",
+    "Ask things like \"How is today's defect rate?\" or \"How can we save energy?\""
+  ],
+  "[AI 설정 바꿔 보기]에서 경보 기준을 바꾸고, 경보 수와 놓치는 불량이 어떻게 달라지는지 비교해 보세요.": [
+    "［AI設定を試す］でアラーム基準を変え、アラーム件数と見逃す不良がどう変わるか比べてみてください。",
+    "In [Try AI settings], change the alarm threshold and compare how the number of alarms and missed defects change."
+  ],
+  "6개 AI가 찾은 문제를 공장 지도 위에 표시하고, 감지 → 분석 → 조치 제안 → 승인 대기 → 해결 순서로 진행 상황을 보여줘요.": [
+    "6つのAIが見つけた問題を工場マップ上に表示し、検知 → 分析 → 対応提案 → 承認待ち → 解決の順に進み具合を示します。",
+    "Shows the problems the six AIs find on the floor map and tracks each one through detected → analysed → action proposed → awaiting approval → resolved."
+  ],
+  "AI 추천이 실제 정비 작업이 되는 과정": [
+    "AIの提案が実際の保全作業になるまで",
+    "How an AI recommendation becomes real maintenance work"
+  ],
+  "AI가 제안한 조치와 그 이유": [
+    "AIが提案した対応とその理由",
+    "Actions the AI proposes, and why"
+  ],
+  "AI가 판단할 때 쓰는 설비 간 관계와 규칙·임계치를 한곳에서 관리해요.": [
+    "AIが判断に使う設備間の関係やルール・しきい値を一か所で管理します。",
+    "Manages, in one place, the equipment relationships, rules and thresholds the AI decides with."
+  ],
+  "AI와 사람이 무엇을 언제 바꿨는지 기록": [
+    "AIと人がいつ何を変えたかの記録",
+    "A record of what the AI and people changed, and when"
+  ],
+  "AI와 사람이 한 모든 조치를 시간 순서로 남겨, 나중에 되짚어 볼 수 있게 해요.": [
+    "AIと人が行ったすべての対応を時系列で残し、後から振り返れるようにします。",
+    "Keeps every action by the AI and by people in time order, so it can be traced later."
+  ],
+  "CCTV 영상으로 불꽃·연기 자동 감지": [
+    "CCTV映像で炎・煙を自動検知",
+    "Detects flames and smoke on CCTV automatically"
+  ],
+  "CCTV 화면에서 불꽃과 연기를 찾아내고, 확실하면 즉시 경보를 울려요.": [
+    "CCTV映像から炎と煙を見つけ、確信できればすぐにアラームを鳴らします。",
+    "Finds flames and smoke in CCTV footage and sounds the alarm at once when it is sure."
+  ],
+  "OEE 목표를 바꿔, 목표를 달성한 시간대가 얼마나 되는지 보세요.": [
+    "OEE目標を変えて、目標を達成した時間帯がどれくらいあるか見てみてください。",
+    "Change the OEE target and see how much of the day meets it."
+  ],
+  "가용률·성능·양품률을 자동으로 계산하고, 점수를 깎아 먹는 가장 큰 원인을 찾아요.": [
+    "稼働率・性能・良品率を自動計算し、スコアを下げている最大の原因を探します。",
+    "Calculates availability, performance and quality automatically and finds what drags the score down most."
+  ],
+  "각 AI의 제안을 한곳에 모으고, 왜 그렇게 판단했는지 근거를 붙여요.": [
+    "各AIの提案を一か所に集め、なぜそう判断したのか根拠を添えます。",
+    "Gathers every AI's proposals in one place, each with the reasoning behind it."
+  ],
+  "각 라인이 지금 돌고 있는지, 멈췄는지": [
+    "各ラインが今動いているか、止まっているか",
+    "Whether each line is running or stopped right now"
+  ],
+  "감속 시작 거리를 바꿔, 안전과 운반 속도 사이의 균형을 확인해 보세요.": [
+    "減速開始距離を変えて、安全と搬送速度のバランスを確かめてみてください。",
+    "Change the slow-down distance and see the balance between safety and delivery speed."
+  ],
+  "경고 기준선을 움직여 보세요. 기준이 낮을수록 고장을 일찍 알지만 경고도 많아져요.": [
+    "警告基準線を動かしてみてください。基準が低いほど故障に早く気づけますが、警告も増えます。",
+    "Move the warning line. The lower it is, the earlier you know about a failure, but the more warnings you get."
+  ],
+  "계약 전력을 넘지 않도록 부하 조절": [
+    "契約電力を超えないよう負荷を調整",
+    "Keeps load under the contract demand"
+  ],
+  "계획과 실적의 차이를 미리 예측하고, 미달이 예상되면 일정 조정을 제안해요.": [
+    "計画と実績の差を事前に予測し、未達が見込まれると日程調整を提案します。",
+    "Predicts the gap between plan and actual, and proposes schedule changes when a shortfall is likely."
+  ],
+  "계획만큼 만들고 있는지 차이 확인": [
+    "計画どおり作れているか差を確認",
+    "Checks whether output is keeping up with the plan"
+  ],
+  "고장 예측 결과로 작업 오더 초안을 만들고, 담당자와 우선순위를 제안해요.": [
+    "故障予測の結果から作業指示の下書きを作り、担当者と優先度を提案します。",
+    "Drafts work orders from failure predictions and suggests who should do them and in what order."
+  ],
+  "공장 전체를 한눈에, 역할별로 보는 첫 화면": [
+    "工場全体をひと目で、役割別に見る最初の画面",
+    "The whole plant at a glance, seen by role"
+  ],
+  "공장에 쓰이는 AI 모델의 버전 관리": [
+    "工場で使うAIモデルのバージョン管理",
+    "Version management for the AI models in the plant"
+  ],
+  "공장장, 생산 관리자": [
+    "工場長、生産管理者",
+    "Plant manager, production manager"
+  ],
+  "공장장, 원가 담당": [
+    "工場長、原価担当",
+    "Plant manager, cost controller"
+  ],
+  "공정 엔지니어": [
+    "工程エンジニア",
+    "Process engineer"
+  ],
+  "공정마다 걸리는 시간을 비교해 라인 전체를 늦추는 병목 공정을 찾아요.": [
+    "工程ごとの所要時間を比べ、ライン全体を遅らせるボトルネック工程を見つけます。",
+    "Compares the time each station takes and finds the bottleneck slowing the whole line."
+  ],
+  "공정별 작업 시간과 병목 찾기": [
+    "工程別の作業時間とボトルネックの発見",
+    "Station cycle times and bottlenecks"
+  ],
+  "과거 데이터를 학습해 불량이 가장 적은 온도 구간을 찾아 추천해요.": [
+    "過去データを学習し、不良が最も少ない温度帯を見つけて推奨します。",
+    "Learns from past data to find and recommend the temperature range with the fewest defects."
+  ],
+  "관리자 (결재권자)": [
+    "管理者（決裁者）",
+    "Manager (approver)"
+  ],
+  "기간·배치·설비별 검사 기록 찾기": [
+    "期間・バッチ・設備別に検査記録を探す",
+    "Find inspection records by period, batch or machine"
+  ],
+  "누가 무엇을 보고 승인할 수 있는지": [
+    "誰が何を見て承認できるか",
+    "Who can see and approve what"
+  ],
+  "누구나": [
+    "誰でも",
+    "Anyone"
+  ],
+  "대기 전력 차단 시간을 바꿔, 하루 전력과 낭비가 얼마나 줄어드는지 보세요.": [
+    "待機電力の遮断時間を変えて、1日の電力とムダがどれだけ減るか見てみてください。",
+    "Change the standby cut-off time and see how much daily power and waste drop."
+  ],
+  "데이터 사이언티스트, 엔지니어": [
+    "データサイエンティスト、エンジニア",
+    "Data scientist, engineer"
+  ],
+  "라인 반장, 관리자": [
+    "ライン班長、管理者",
+    "Line lead, manager"
+  ],
+  "라인 반장, 생산 관리자": [
+    "ライン班長、生産管理者",
+    "Line lead, production manager"
+  ],
+  "라인 상태를 실시간으로 모아 멈춘 라인과 그 이유를 바로 알려줘요.": [
+    "ラインの状態をリアルタイムに集め、止まったラインとその理由をすぐに知らせます。",
+    "Collects line status live and tells you at once which line stopped and why."
+  ],
+  "라인·설비별 불량률을 실시간으로": [
+    "ライン・設備別の不良率をリアルタイムで",
+    "Defect rate by line and machine, live"
+  ],
+  "로봇 주변의 사람을 감지해 미리 속도를 줄이고, 너무 가까우면 멈춰요.": [
+    "ロボットの周りの人を検知して早めに減速し、近すぎれば停止します。",
+    "Detects people near the robot, slows down early and stops if they get too close."
+  ],
+  "많은 검사 기록 중 이상이 있던 배치를 자동으로 표시해 줘요.": [
+    "大量の検査記録の中から異常があったバッチを自動で表示します。",
+    "Flags the batches with problems among many inspection records automatically."
+  ],
+  "말로 묻고 답을 받는 AI 비서": [
+    "話しかけて答えをもらうAIアシスタント",
+    "An AI assistant you ask in plain words"
+  ],
+  "모델 버전·성능·배포 상태를 관리하고, 새 버전은 일부에만 먼저 적용해 검증해요.": [
+    "モデルのバージョン・性能・配備状況を管理し、新バージョンはまず一部に適用して検証します。",
+    "Manages model versions, performance and deployment, and tries each new version on a small share first."
+  ],
+  "모든 사람 (작업자·관리자·엔지니어)": [
+    "すべての人（作業者・管理者・エンジニア）",
+    "Everyone (workers, managers, engineers)"
+  ],
+  "모든 설비의 건강 상태를 정상·주의·위험으로": [
+    "全設備の健康状態を正常・注意・危険で",
+    "Every machine's health as normal, caution or danger"
+  ],
+  "목록에서 조치를 골라 바꾸기 전/후 값과 이유를 확인해 보세요.": [
+    "一覧から対応を選び、変更前後の値と理由を確認してみてください。",
+    "Pick an action from the list and check its before/after values and reason."
+  ],
+  "목표 택트타임을 바꿔, 시간당 생산량과 작업자 대기 시간이 어떻게 바뀌는지 보세요.": [
+    "目標タクトタイムを変えて、時間当たり生産量と作業者の待ち時間がどう変わるか見てみてください。",
+    "Change the target takt time and see how hourly output and operator waiting time change."
+  ],
+  "반복 고장 기준을 바꿔, 집중 관리할 설비가 어떻게 달라지는지 보세요.": [
+    "繰り返し故障の基準を変えて、重点管理する設備がどう変わるか見てみてください。",
+    "Change the repeat-failure threshold and see which machines need close attention."
+  ],
+  "배치 번호 하나로 사용된 원자재·설비·작업자를 거꾸로 찾아, 문제가 생기면 영향 범위를 바로 알려줘요.": [
+    "バッチ番号ひとつで使われた原材料・設備・作業者を逆にたどり、問題が起きれば影響範囲をすぐに示します。",
+    "From a single batch number, traces back the materials, machines and operators used, and shows the impact at once when something goes wrong."
+  ],
+  "보전 관리자": [
+    "保全管理者",
+    "Maintenance manager"
+  ],
+  "보전 담당자": [
+    "保全担当者",
+    "Maintenance staff"
+  ],
+  "보전 담당자, 공장장": [
+    "保全担当者、工場長",
+    "Maintenance staff, plant manager"
+  ],
+  "보전 담당자, 생산 계획 담당": [
+    "保全担当者、生産計画担当",
+    "Maintenance staff, production planner"
+  ],
+  "보전 반장, 정비 기사": [
+    "保全班長、保全技術者",
+    "Maintenance lead, technician"
+  ],
+  "불량 판정 기준을 바꿔 보세요. 기준을 낮추면 놓치는 불량은 줄지만, 정상품을 불량으로 잡는 일이 늘어요.": [
+    "不良判定の基準を変えてみてください。基準を下げると見逃す不良は減りますが、良品を不良と判定することが増えます。",
+    "Change the defect threshold. Lowering it misses fewer defects but rejects more good products."
+  ],
+  "불량률이 오를 조짐을 먼저 찾아 경보를 보내고, 원인이 될 만한 설비를 함께 알려줘요.": [
+    "不良率が上がる兆しを先に見つけてアラームを出し、原因になりそうな設備もあわせて知らせます。",
+    "Spots the signs of a rising defect rate first, raises an alarm and points to the machine likely behind it."
+  ],
+  "불량을 유형별로 모아 가장 큰 원인부터 순서대로 보여주고, 집중해서 고칠 유형을 골라줘요.": [
+    "不良をタイプ別に集めて大きな原因から順に示し、重点的に直すタイプを選びます。",
+    "Groups defects by type, ranks them from the biggest cause and picks the types to fix first."
+  ],
+  "비가동 판정 시간을 바꿔, 짧은 정지가 얼마나 기록되는지 비교해 보세요.": [
+    "非稼働の判定時間を変えて、短い停止がどれだけ記録されるか比べてみてください。",
+    "Change the stoppage threshold and compare how many short stops get recorded."
+  ],
+  "비상시 전 공정 정지와 알림": [
+    "非常時の全工程停止と通知",
+    "Stopping every process and alerting everyone in an emergency"
+  ],
+  "사람의 결정을 기다리는 AI 제안": [
+    "人の判断を待つAIの提案",
+    "AI proposals waiting for a person's decision"
+  ],
+  "사용자를 추가하거나 역할별 권한을 바꿔 보세요.": [
+    "ユーザーを追加したり、役割別の権限を変えてみてください。",
+    "Add a user or change the permissions of a role."
+  ],
+  "새 버전 배포 버튼을 눌러 모델이 단계적으로 배포되는 과정을 보세요.": [
+    "新バージョン配備ボタンを押して、モデルが段階的に配備される様子を見てみてください。",
+    "Press the deploy-new-version button and watch the model roll out step by step."
+  ],
+  "생산 계획 담당, 공장장": [
+    "生産計画担当、工場長",
+    "Production planner, plant manager"
+  ],
+  "서버·GPU·데이터 지연을 감시해, AI가 늦게 판단하는 일이 없도록 해요.": [
+    "サーバー・GPU・データ遅延を監視し、AIの判断が遅れないようにします。",
+    "Watches servers, GPUs and data delays so the AI never decides late."
+  ],
+  "설비 상태 데이터로 남은 수명을 예측하고, 생산에 지장이 적은 정비 시점을 추천해요.": [
+    "設備の状態データから残り寿命を予測し、生産への影響が少ない整備時期を推奨します。",
+    "Predicts remaining life from machine condition data and recommends a maintenance time that disturbs production least."
+  ],
+  "설비 진동·온도의 변화와 경고 기준선": [
+    "設備の振動・温度の変化と警告基準線",
+    "Machine vibration and temperature against warning lines"
+  ],
+  "설비·규칙·관계를 정리한 공장 지식 지도": [
+    "設備・ルール・関係を整理した工場の知識マップ",
+    "A knowledge map of the plant's machines, rules and links"
+  ],
+  "설비·에너지 담당자": [
+    "設備・エネルギー担当者",
+    "Facilities and energy staff"
+  ],
+  "설비가 얼마나 더 버틸 수 있는지 예측": [
+    "設備があとどれくらい持つかを予測",
+    "How much longer a machine will last"
+  ],
+  "설비가 얼마나 효율적으로 일했는지 점수로": [
+    "設備がどれだけ効率よく動いたかをスコアで",
+    "How efficiently machines worked, as a score"
+  ],
+  "설비를 골라 남은 수명과 추천 정비 시점을 확인해 보세요.": [
+    "設備を選んで、残り寿命と推奨整備時期を確認してみてください。",
+    "Pick a machine and check its remaining life and recommended maintenance time."
+  ],
+  "설비별 전력을 실시간으로 나눠 보고, 평소보다 많이 쓰거나 멈춘 채 전기를 쓰는 설비를 찾아요.": [
+    "設備ごとの電力をリアルタイムで見て、普段より多く使う設備や止まったまま電気を使う設備を見つけます。",
+    "Breaks power down by machine live and finds machines using more than usual or drawing power while idle."
+  ],
+  "설비별 정비 기록과 고장 통계": [
+    "設備別の整備記録と故障統計",
+    "Maintenance records and failure statistics by machine"
+  ],
+  "설비별로 전기를 얼마나 쓰는지": [
+    "設備ごとにどれだけ電気を使っているか",
+    "How much electricity each machine uses"
+  ],
+  "수집 주기와 보관 기간을 바꿔 보세요.": [
+    "収集周期と保管期間を変えてみてください。",
+    "Change the collection interval and retention period."
+  ],
+  "시간대별 요금을 반영한 전기요금": [
+    "時間帯別料金を反映した電気料金",
+    "The electricity bill with time-of-day tariffs"
+  ],
+  "시간대별 요금을 적용해 비용을 계산하고, 요금이 싼 시간대로 옮길 수 있는 작업을 찾아요.": [
+    "時間帯別料金を当てはめてコストを計算し、料金の安い時間帯に移せる作業を探します。",
+    "Prices energy by time of day and finds work that can move to cheaper hours."
+  ],
+  "시스템 관리자": [
+    "システム管理者",
+    "System administrator"
+  ],
+  "시스템 엔지니어": [
+    "システムエンジニア",
+    "Systems engineer"
+  ],
+  "실링 온도를 바꿔 보세요. 173°C 근처에서 예상 불량률이 가장 낮아져요.": [
+    "シール温度を変えてみてください。173°C付近で予想不良率が最も低くなります。",
+    "Change the sealing temperature. The predicted defect rate is lowest around 173°C."
+  ],
+  "안전 관리자": [
+    "安全管理者",
+    "Safety manager"
+  ],
+  "안전 관리자, 공장장": [
+    "安全管理者、工場長",
+    "Safety manager, plant manager"
+  ],
+  "안전 관리자, 물류 담당": [
+    "安全管理者、物流担当",
+    "Safety manager, logistics staff"
+  ],
+  "알림 채널과 중요도 기준을 켜고 꺼 보세요.": [
+    "通知チャネルと重要度の基準をオン・オフしてみてください。",
+    "Turn notification channels and severity levels on and off."
+  ],
+  "어떤 불량이 가장 많은지 순위로": [
+    "どの不良が最も多いかをランキングで",
+    "Which defects happen most, ranked"
+  ],
+  "어떤 알림을 누구에게 어떻게 보낼지": [
+    "どの通知を誰にどう送るか",
+    "Which alerts go to whom, and how"
+  ],
+  "엔지니어, 감사 담당": [
+    "エンジニア、監査担当",
+    "Engineer, auditor"
+  ],
+  "엔지니어, 공장장": [
+    "エンジニア、工場長",
+    "Engineer, plant manager"
+  ],
+  "여러 AI를 지휘하는 총괄 AI": [
+    "複数のAIを指揮する統括AI",
+    "The AI that directs the other AIs"
+  ],
+  "여러 AI의 제안이 부딪히면 안전 > 품질 > 납기 > 비용 순서로 조율하고, 정해진 대응 절차(플레이북)를 실행해요.": [
+    "複数のAIの提案がぶつかると安全 > 品質 > 納期 > コストの順で調整し、決められた対応手順（プレイブック）を実行します。",
+    "When AI proposals conflict, it settles them in the order safety > quality > delivery > cost, and runs the agreed response procedures (playbooks)."
+  ],
+  "역추적 단계를 늘려, 연결되는 원자재 로트와 영향 배치 수를 비교해 보세요.": [
+    "遡る段階を増やして、つながる原材料ロットと影響バッチ数を比べてみてください。",
+    "Trace back more steps and compare the linked material lots and affected batches."
+  ],
+  "역할별로 볼 수 있는 화면과 승인할 수 있는 조치 수준을 정해요.": [
+    "役割ごとに見られる画面と承認できる対応レベルを決めます。",
+    "Sets which screens each role sees and which level of action it may approve."
+  ],
+  "오른쪽 메뉴에서 규칙이나 임계치를 열어 편집해 보세요.": [
+    "右のメニューからルールやしきい値を開いて編集してみてください。",
+    "Open a rule or threshold from the menu on the right and edit it."
+  ],
+  "온도에 따라 불량이 어떻게 변하는지": [
+    "温度によって不良がどう変わるか",
+    "How defects change with temperature"
+  ],
+  "운반 로봇과 사람이 부딪히지 않게": [
+    "搬送ロボットと人がぶつからないように",
+    "Keeping transport robots and people apart"
+  ],
+  "위쪽 역할 버튼으로 작업자·관리자·엔지니어 화면을 바꿔 보세요. 같은 사건이 역할마다 다르게 보여요.": [
+    "上の役割ボタンで作業者・管理者・エンジニアの画面を切り替えてみてください。同じ事象が役割ごとに違って見えます。",
+    "Switch between the worker, manager and engineer screens with the role buttons above. The same event looks different to each."
+  ],
+  "위험 신호가 확인되면 공정을 순서대로 안전하게 멈추고 문자·앱·사이렌으로 동시에 알려요.": [
+    "危険信号が確認されると工程を順番に安全に止め、SMS・アプリ・サイレンで同時に知らせます。",
+    "When a danger signal is confirmed, stops processes safely in order and alerts by SMS, app and siren at once."
+  ],
+  "위험도에 따라 제안을 나눠, 중요한 조치만 사람에게 승인을 요청해요.": [
+    "リスク度合いで提案を分け、重要な対応だけを人に承認依頼します。",
+    "Sorts proposals by risk and asks a person to approve only the important ones."
+  ],
+  "자동 승인 범위를 바꿔, 사람이 승인할 건수와 조치 속도가 어떻게 바뀌는지 보세요.": [
+    "自動承認の範囲を変えて、人が承認する件数と対応の速さがどう変わるか見てみてください。",
+    "Change what the AI may do on its own and see how approvals and response time change."
+  ],
+  "자동 재계획 허용 범위를 바꿔, 달성률과 잔업 시간이 어떻게 바뀌는지 보세요.": [
+    "自動再計画の許容範囲を変えて、達成率と残業時間がどう変わるか見てみてください。",
+    "Change how much the AI may replan on its own and see how attainment and overtime change."
+  ],
+  "작업 행을 눌러 상태를 바꾸거나 새 작업을 만들어 보세요.": [
+    "作業の行を押して状態を変えたり、新しい作業を作ってみてください。",
+    "Click a work order to change its status, or create a new one."
+  ],
+  "정비 기록에서 고장 간격(MTBF)과 수리 시간(MTTR)을 계산하고, 같은 고장이 반복되는 설비를 찾아요.": [
+    "整備記録から故障間隔(MTBF)と修理時間(MTTR)を計算し、同じ故障を繰り返す設備を見つけます。",
+    "Calculates time between failures (MTBF) and repair time (MTTR) from maintenance records, and finds machines with repeat failures."
+  ],
+  "정지 확인 시간을 바꿔, 정지 속도와 오작동 정지 사이의 균형을 보세요.": [
+    "停止前の確認時間を変えて、停止の速さと誤作動による停止のバランスを見てみてください。",
+    "Change the confirmation time and see the balance between fast stops and false stops."
+  ],
+  "제안을 승인하거나 반려해 보세요. 결정한 내용은 실행 이력에 남아요.": [
+    "提案を承認または却下してみてください。決めた内容は実行履歴に残ります。",
+    "Approve or reject a proposal. Your decision is kept in the execution history."
+  ],
+  "제품 배치를 원자재까지 거꾸로 추적": [
+    "製品バッチを原材料までさかのぼって追跡",
+    "Trace a product batch back to its raw materials"
+  ],
+  "조회 기간과 이상 표시 기준을 바꿔, 다시 확인할 배치 수가 어떻게 달라지는지 보세요.": [
+    "照会期間と異常表示の基準を変えて、再確認するバッチ数がどう変わるか見てみてください。",
+    "Change the period and the flag threshold and see how many batches need a second look."
+  ],
+  "주의 기준 점수를 바꿔, 몇 대가 주의 대상으로 바뀌는지 비교해 보세요.": [
+    "注意基準スコアを変えて、何台が注意対象になるか比べてみてください。",
+    "Change the caution score and compare how many machines turn to caution."
+  ],
+  "중요도에 따라 알림 채널과 받는 사람을 나눠, 꼭 필요한 알림만 가게 해요.": [
+    "重要度に応じて通知チャネルと受信者を分け、本当に必要な通知だけが届くようにします。",
+    "Routes alerts by severity to the right channels and people, so only the ones that matter get through."
+  ],
+  "진동·온도·전류를 종합해 설비마다 건강 점수를 매기고, 나빠지는 설비를 먼저 알려줘요.": [
+    "振動・温度・電流を総合して設備ごとに健康スコアを付け、悪化している設備を先に知らせます。",
+    "Combines vibration, temperature and current into a health score per machine and flags the ones getting worse first."
+  ],
+  "질문을 이해해 공장 데이터와 문서를 찾아 답하고, 근거 자료도 함께 보여줘요.": [
+    "質問を理解して工場データと文書から答えを探し、根拠資料もあわせて示します。",
+    "Understands the question, answers from plant data and documents, and shows the sources."
+  ],
+  "집중 관리 기준을 바꿔, 몇 가지 유형만 잡아도 불량이 얼마나 줄어드는지 보세요.": [
+    "重点管理の基準を変えて、いくつかのタイプを抑えるだけで不良がどれだけ減るか見てみてください。",
+    "Change the focus threshold and see how far defects drop by fixing just a few types."
+  ],
+  "카메라 검사 사진과 AI 판정 결과": [
+    "カメラ検査画像とAI判定結果",
+    "Camera inspection images and the AI's verdicts"
+  ],
+  "카메라 사진에서 흠집·이물·인쇄 불량을 찾아 양품/불량을 판정하고, 애매한 건 사람에게 넘겨요.": [
+    "カメラ画像から傷・異物・印刷不良を見つけて良品／不良を判定し、判断が難しいものは人に回します。",
+    "Finds scratches, foreign matter and print defects in camera images, judges pass or fail, and hands unclear cases to a person."
+  ],
+  "판정 확신도를 바꿔, 오경보와 감지 속도 사이의 균형을 비교해 보세요.": [
+    "判定の確信度を変えて、誤報と検知速度のバランスを比べてみてください。",
+    "Change the confidence level and compare false alarms against detection speed."
+  ],
+  "평소와 다른 진동·온도 패턴을 찾아 고장 전에 미리 경고해요.": [
+    "普段と違う振動・温度パターンを見つけ、故障前に警告します。",
+    "Finds unusual vibration and temperature patterns and warns before a failure."
+  ],
+  "품질 검사원": [
+    "品質検査員",
+    "Quality inspector"
+  ],
+  "품질 관리자": [
+    "品質管理者",
+    "Quality manager"
+  ],
+  "품질 담당자, 고객 대응 담당": [
+    "品質担当者、顧客対応担当",
+    "Quality staff, customer service"
+  ],
+  "품질 담당자, 라인 반장": [
+    "品質担当者、ライン班長",
+    "Quality staff, line lead"
+  ],
+  "플랫폼 서버와 데이터 흐름 상태": [
+    "プラットフォームのサーバーとデータの流れの状態",
+    "Health of the platform's servers and data flow"
+  ],
+  "플레이북을 켜고 끄거나, 오케스트레이션 화면에서 AI들이 협업하는 모습을 보세요.": [
+    "プレイブックをオン・オフしたり、オーケストレーション画面でAIたちが連携する様子を見てみてください。",
+    "Turn playbooks on and off, or watch the AIs work together on the orchestration screen."
+  ],
+  "피크 목표와 ESS 방전 시점을 바꿔, 최대 부하와 절감액을 비교해 보세요. 배터리를 너무 일찍 쓰면 진짜 피크 때 모자라요.": [
+    "ピーク目標とESS放電のタイミングを変えて、最大負荷と削減額を比べてみてください。蓄電池を早く使いすぎると、本当のピークで足りなくなります。",
+    "Change the peak target and when the ESS starts, and compare peak load and savings. Use the battery too early and it runs short at the real peak."
+  ],
+  "피크 시간대 가동 비중을 줄여, 월 전기요금이 얼마나 줄어드는지 보세요.": [
+    "ピーク時間帯の稼働比率を下げて、月の電気料金がどれだけ減るか見てみてください。",
+    "Reduce production in peak-tariff hours and see how much the monthly bill drops."
+  ],
+  "피크를 미리 예측해 배터리(ESS) 방전과 부하 이전을 제안하고, 승인하면 자동으로 제어해요.": [
+    "ピークを事前に予測して蓄電池(ESS)の放電と負荷移動を提案し、承認されれば自動で制御します。",
+    "Predicts peaks ahead, proposes battery (ESS) discharge and load shifting, and controls them automatically once approved."
+  ],
+  "0이면 모든 조치를 사람이 승인해요. 2면 위험도 2단계 이하는 AI가 바로 실행하고 기록만 남겨요.": [
+    "0ならすべての対応を人が承認します。2ならリスク2以下はAIがすぐ実行し、記録だけ残します。",
+    "At 0 a person approves every action. At 2 the AI carries out anything up to risk level 2 itself and just logs it."
+  ],
+  "0초면 신호 즉시 멈춰요. 늘리면 센서 오작동으로 인한 정지는 줄지만 정지가 늦어져요.": [
+    "0秒なら信号と同時に停止します。延ばすとセンサー誤作動による停止は減りますが、停止が遅れます。",
+    "At 0 s it stops on the signal. Longer means fewer stops from faulty sensors, but a slower stop."
+  ],
+  "AI 제안 중 어느 위험도까지는 AI가 바로 실행하고, 어디부터 사람이 승인할지 정해요.": [
+    "AIの提案のうち、どのリスクまではAIがすぐ実行し、どこから人が承認するかを決めます。",
+    "Sets up to which risk level the AI acts on its own, and from where a person must approve."
+  ],
+  "AI가 바로 실행해도 되는 위험도": [
+    "AIがすぐ実行してよいリスクレベル",
+    "Risk level the AI may act on alone"
+  ],
+  "AI가 사람 승인 없이 옮길 수 있는 생산량 비율이에요.": [
+    "AIが人の承認なしに移せる生産量の割合です。",
+    "The share of production the AI may move without a person's approval."
+  ],
+  "AI가 사진을 보고 얼마나 확신할 때 불량으로 판정할지 정해요. 애매한 제품은 사람에게 넘길 수 있어요.": [
+    "AIが画像を見てどれだけ確信したら不良と判定するかを決めます。判断が難しい製品は人に回せます。",
+    "Sets how sure the AI must be from an image to call a product defective. Unclear products can go to a person."
+  ],
+  "AI가 얼마나 확신할 때 화재 경보를 울릴지 정해요. 오경보와 늦은 감지 사이의 균형이에요.": [
+    "AIがどれだけ確信したら火災アラームを鳴らすかを決めます。誤報と検知の遅れのバランスです。",
+    "Sets how sure the AI must be to sound the fire alarm. It is a balance between false alarms and late detection."
+  ],
+  "ESS 방전 시작 (계약 전력 대비)": [
+    "ESS放電開始（契約電力比）",
+    "ESS discharge starts at (% of contract)"
+  ],
+  "kWh/일": [
+    "kWh/日",
+    "kWh/day"
+  ],
+  "OEE 목표": [
+    "OEE目標",
+    "OEE target"
+  ],
+  "OEE 목표와 집계 단위를 정해요. 목표가 높을수록 개선할 곳이 더 많이 보여요.": [
+    "OEE目標と集計単位を決めます。目標が高いほど改善すべき箇所が多く見えます。",
+    "Sets the OEE target and the averaging window. A higher target shows more to improve."
+  ],
+  "가장 나쁜 설비의 건강 점수 (오늘)": [
+    "最も状態の悪い設備の健康スコア（今日）",
+    "Health score of the worst machine (today)"
+  ],
+  "감속 시작 거리": [
+    "減速開始距離",
+    "Slow-down distance"
+  ],
+  "감지까지": [
+    "検知まで",
+    "Time to detect"
+  ],
+  "같은 고장이 이 횟수 이상이면 반복 고장 설비로 표시해요.": [
+    "同じ故障がこの回数以上なら、繰り返し故障設備として表示します。",
+    "A machine with the same failure this many times or more is flagged as a repeat failure."
+  ],
+  "같은 원자재를 쓴 배치를 며칠 전까지 찾을지 정해요.": [
+    "同じ原材料を使ったバッチを何日前までさかのぼって探すかを決めます。",
+    "Sets how many days back to look for batches that used the same materials."
+  ],
+  "개": [
+    "個",
+    "pcs"
+  ],
+  "개/분": [
+    "個/分",
+    "pcs/min"
+  ],
+  "개/시간": [
+    "個/時",
+    "pcs/h"
+  ],
+  "개선 알림": [
+    "改善通知",
+    "Improvement alerts"
+  ],
+  "개월": [
+    "か月",
+    "months"
+  ],
+  "건": [
+    "件",
+    "cases"
+  ],
+  "건/년": [
+    "件/年",
+    "per year"
+  ],
+  "건/월": [
+    "件/月",
+    "per month"
+  ],
+  "건/일": [
+    "件/日",
+    "per day"
+  ],
+  "건/주": [
+    "件/週",
+    "per week"
+  ],
+  "건강 점수가 몇 점 아래로 내려가면 주의·위험으로 표시할지 정해요.": [
+    "健康スコアが何点を下回ったら注意・危険と表示するかを決めます。",
+    "Sets the health score below which a machine shows as caution or danger."
+  ],
+  "검사 기록에서 어떤 배치를 이상으로 표시할지 정해요. 표시된 배치는 담당자가 다시 확인해요.": [
+    "検査記録のうち、どのバッチを異常として表示するかを決めます。表示されたバッチは担当者が再確認します。",
+    "Sets which batches in the inspection records are flagged. Someone re-checks the flagged ones."
+  ],
+  "검사 속도": [
+    "検査速度",
+    "Inspection speed"
+  ],
+  "경고 기준": [
+    "警告基準",
+    "Warning limit"
+  ],
+  "경보 기준": [
+    "アラーム基準",
+    "Alarm threshold"
+  ],
+  "경보 기준 불량률": [
+    "アラーム基準不良率",
+    "Alarm threshold (defect rate)"
+  ],
+  "경보 전 확인 시간": [
+    "アラーム前の確認時間",
+    "Confirmation time before alarm"
+  ],
+  "계산 기간": [
+    "計算期間",
+    "Calculation period"
+  ],
+  "계약 전력": [
+    "契約電力",
+    "Contract demand"
+  ],
+  "계획 미달 경고 기준": [
+    "計画未達の警告基準",
+    "Shortfall warning level"
+  ],
+  "계획보다 얼마나 뒤처지면 경고하고, AI가 일정을 어디까지 스스로 다시 짤지 정해요.": [
+    "計画からどれだけ遅れたら警告し、AIがどこまで自ら日程を組み直すかを決めます。",
+    "Sets how far behind plan triggers a warning, and how much the AI may replan on its own."
+  ],
+  "고장 전에 미리 아는 시간": [
+    "故障前に気づける時間",
+    "Warning time before failure"
+  ],
+  "공정별 작업 시간": [
+    "工程別の作業時間",
+    "Cycle time by station"
+  ],
+  "과소비 경고": [
+    "過剰消費の警告",
+    "Overuse warnings"
+  ],
+  "과소비 경고 기준": [
+    "過剰消費の警告基準",
+    "Overuse warning level"
+  ],
+  "과소비 경고 기준 (평소 대비)": [
+    "過剰消費の警告基準（平常比）",
+    "Overuse warning (vs. usual)"
+  ],
+  "기록되는 정지": [
+    "記録される停止",
+    "Stops recorded"
+  ],
+  "기준 근처(±이 값)의 애매한 제품은 사람이 다시 봐요. 넓을수록 정확하지만 일이 늘어요.": [
+    "基準付近（±この値）の判断が難しい製品は人が再確認します。広いほど正確ですが、手間が増えます。",
+    "Unclear products near the threshold (± this value) are re-checked by a person. Wider is more accurate but more work."
+  ],
+  "기준을 넘은 상태가 이만큼 이어져야 경보를 울려요. 길수록 헛경보는 줄지만 대응이 늦어요.": [
+    "基準を超えた状態がこの時間続いたらアラームを鳴らします。長いほど誤報は減りますが、対応が遅れます。",
+    "The threshold must be exceeded this long before the alarm sounds. Longer means fewer false alarms but a later response."
+  ],
+  "길게 묶을수록 그래프가 매끄러워지지만 짧은 문제는 묻혀요.": [
+    "長くまとめるほどグラフは滑らかになりますが、短い問題が埋もれます。",
+    "Longer windows smooth the chart but hide short problems."
+  ],
+  "길수록 결과가 믿을 만하지만, 최근 변화가 묻힐 수 있어요.": [
+    "長いほど結果は信頼できますが、最近の変化が埋もれることがあります。",
+    "Longer is more reliable but can hide recent changes."
+  ],
+  "길수록 오래된 기록까지 보지만 확인할 양도 늘어요.": [
+    "長いほど古い記録まで見られますが、確認する量も増えます。",
+    "Longer reaches older records but means more to check."
+  ],
+  "길수록 통계가 안정적이지만 최근 개선 효과가 덜 보여요.": [
+    "長いほど統計は安定しますが、最近の改善効果が見えにくくなります。",
+    "Longer gives steadier statistics but shows recent improvements less."
+  ],
+  "낮추면 문제를 더 빨리 잡지만 경보가 늘어요.": [
+    "下げると問題を早くつかめますが、アラームが増えます。",
+    "Lower catches problems sooner but raises more alarms."
+  ],
+  "낮출수록 고장을 일찍 알지만 헛경고가 늘어요.": [
+    "下げるほど故障に早く気づけますが、誤警告が増えます。",
+    "Lower warns of failures earlier but gives more false warnings."
+  ],
+  "낮출수록 과열을 일찍 알지만 여름철 헛경고가 늘어요.": [
+    "下げるほど過熱に早く気づけますが、夏場の誤警告が増えます。",
+    "Lower catches overheating earlier but gives more false warnings in summer."
+  ],
+  "너무 낮으면 접착 불량, 너무 높으면 필름 변형이 늘어요. AI가 찾은 최적점은 173°C예요.": [
+    "低すぎると接着不良、高すぎるとフィルム変形が増えます。AIが見つけた最適点は173°Cです。",
+    "Too low and seals fail, too high and the film deforms. The AI found 173°C to be best."
+  ],
+  "높을수록 오경보는 줄지만 연기만 나는 초기 화재를 늦게 잡을 수 있어요.": [
+    "高いほど誤報は減りますが、煙だけの初期火災の検知が遅れることがあります。",
+    "Higher means fewer false alarms, but an early fire with only smoke may be caught later."
+  ],
+  "높이면 나빠지기 시작한 설비를 더 일찍 표시해요.": [
+    "上げると悪化し始めた設備を早めに表示します。",
+    "Higher flags machines that are starting to deteriorate earlier."
+  ],
+  "높이면 정상품을 불량으로 잡는 일은 줄지만, 진짜 불량을 놓칠 수 있어요.": [
+    "上げると良品を不良と判定することは減りますが、本当の不良を見逃すことがあります。",
+    "Higher rejects fewer good products but may miss real defects."
+  ],
+  "놓치는 짧은 정지": [
+    "見逃す短時間停止",
+    "Short stops missed"
+  ],
+  "놓친 불량 로트": [
+    "見逃した不良ロット",
+    "Defective lots missed"
+  ],
+  "다시 확인할 배치": [
+    "再確認するバッチ",
+    "Batches to re-check"
+  ],
+  "단계": [
+    "段階",
+    "steps"
+  ],
+  "대": [
+    "台",
+    "units"
+  ],
+  "대기 알림": [
+    "待機通知",
+    "Idle alerts"
+  ],
+  "대기 알림 기준": [
+    "待機通知の基準",
+    "Idle alert threshold"
+  ],
+  "대기 전력 낭비": [
+    "待機電力のムダ",
+    "Standby power wasted"
+  ],
+  "대기 전력 자동 차단": [
+    "待機電力の自動遮断",
+    "Auto standby cut-off"
+  ],
+  "라인 속도": [
+    "ライン速度",
+    "Line speed"
+  ],
+  "라인이 몇 분 이상 멈춰야 비가동으로 기록할지, 대기를 언제 알릴지 정해요.": [
+    "ラインが何分以上止まったら非稼働として記録し、待機をいつ知らせるかを決めます。",
+    "Sets how long a line must stop to count as downtime, and when idling is reported."
+  ],
+  "리콜 시 확인할 배치": [
+    "リコール時に確認するバッチ",
+    "Batches to check in a recall"
+  ],
+  "많을수록 원자재 공급사까지 찾아가지만 확인할 배치가 늘어요.": [
+    "多いほど原材料の供給元までたどれますが、確認するバッチが増えます。",
+    "More steps reach back to the material supplier but add batches to check."
+  ],
+  "많이 옮길수록 요금은 줄지만 야간 근무가 늘어요.": [
+    "多く移すほど料金は下がりますが、夜間勤務が増えます。",
+    "Moving more lowers the bill but adds night work."
+  ],
+  "멀리서부터 줄일수록 안전하지만 운반이 느려져요.": [
+    "遠くから減速するほど安全ですが、搬送が遅くなります。",
+    "Slowing from further away is safer but makes deliveries slower."
+  ],
+  "메인 모터 진동 (오늘)": [
+    "メインモーターの振動（今日）",
+    "Main motor vibration (today)"
+  ],
+  "명": [
+    "人",
+    "people"
+  ],
+  "모터 온도 경고 기준": [
+    "モーター温度の警告基準",
+    "Motor temperature warning"
+  ],
+  "목표 불량률": [
+    "目標不良率",
+    "Target defect rate"
+  ],
+  "목표 택트타임": [
+    "目標タクトタイム",
+    "Target takt time"
+  ],
+  "목표 택트타임(제품 하나를 만드는 데 허용하는 시간)과 병목 판정 기준을 정해요. AI가 이 목표에 맞춰 작업을 다시 나눠요.": [
+    "目標タクトタイム（製品1個を作るのに許す時間）とボトルネックの判定基準を決めます。AIはこの目標に合わせて作業を割り振り直します。",
+    "Sets the target takt time (the time allowed per product) and the bottleneck threshold. The AI rebalances work to meet the target."
+  ],
+  "목표까지 부족분": [
+    "目標までの不足分",
+    "Gap to target"
+  ],
+  "목표를 달성한 시간": [
+    "目標を達成した時間",
+    "Time on target"
+  ],
+  "문제가 생긴 배치에서 몇 단계 앞까지 거슬러 올라가 추적할지 정해요.": [
+    "問題が起きたバッチから何段階前までさかのぼって追跡するかを決めます。",
+    "Sets how many steps upstream to trace from a problem batch."
+  ],
+  "미뤄지는 생산": [
+    "後ろ倒しになる生産",
+    "Production deferred"
+  ],
+  "반복 고장 기준": [
+    "繰り返し故障の基準",
+    "Repeat-failure threshold"
+  ],
+  "반복 고장 설비": [
+    "繰り返し故障の設備",
+    "Machines with repeat failures"
+  ],
+  "배치 불량률이 이 값을 넘으면 이상으로 표시해요.": [
+    "バッチの不良率がこの値を超えると異常として表示します。",
+    "Batches with a defect rate above this are flagged."
+  ],
+  "병목 판정 편차": [
+    "ボトルネック判定の偏差",
+    "Bottleneck threshold"
+  ],
+  "병목으로 표시된 공정": [
+    "ボトルネックと表示された工程",
+    "Stations flagged as bottlenecks"
+  ],
+  "부하가 계약 전력의 이 비율을 넘으면 배터리를 쓰기 시작해요.": [
+    "負荷が契約電力のこの割合を超えると蓄電池を使い始めます。",
+    "The battery starts discharging when load passes this share of the contract demand."
+  ],
+  "분": [
+    "分",
+    "min"
+  ],
+  "분/일": [
+    "分/日",
+    "min/day"
+  ],
+  "분석 기간": [
+    "分析期間",
+    "Analysis period"
+  ],
+  "분석 신뢰도": [
+    "分析の信頼度",
+    "Analysis confidence"
+  ],
+  "불꽃이 이 시간 동안 계속 보여야 경보를 울려요.": [
+    "炎がこの時間見え続けたらアラームを鳴らします。",
+    "Flames must be seen for this long before the alarm sounds."
+  ],
+  "불량 유형 중 어디까지를 집중 관리 대상으로 삼을지 정해요. 소수 유형이 대부분의 불량을 만든다는 점을 이용해요.": [
+    "不良タイプのうち、どこまでを重点管理の対象にするかを決めます。少数のタイプが不良の大半を生むことを利用します。",
+    "Sets how many defect types to focus on, using the fact that a few types cause most defects."
+  ],
+  "불량 유형별 누적 비율 (많은 순)": [
+    "不良タイプ別の累積比率（多い順）",
+    "Cumulative share by defect type (largest first)"
+  ],
+  "불량 판정 기준 (이상 점수)": [
+    "不良判定の基準（異常スコア）",
+    "Defect threshold (anomaly score)"
+  ],
+  "불량률이 어디까지 오르면 경보를 울릴지 정해요. 경보가 너무 잦으면 무시하게 되고, 너무 늦으면 불량품이 쌓여요.": [
+    "不良率がどこまで上がったらアラームを鳴らすかを決めます。アラームが多すぎると無視されがちになり、遅すぎると不良品がたまります。",
+    "Sets how high the defect rate may rise before the alarm sounds. Too many alarms get ignored; too late and defects pile up."
+  ],
+  "불량을 놓치는 비율": [
+    "不良の見逃し率",
+    "Defects missed"
+  ],
+  "비가동 판정 시간": [
+    "非稼働の判定時間",
+    "Downtime threshold"
+  ],
+  "비상 신호를 얼마나 확인한 뒤 전 공정을 멈출지, 사이렌을 얼마나 크게 울릴지 정해요.": [
+    "非常信号をどれだけ確認してから全工程を止めるか、サイレンをどれだけ大きく鳴らすかを決めます。",
+    "Sets how long an emergency signal is confirmed before every process stops, and how loud the siren is."
+  ],
+  "빠를수록 많이 검사하지만 사진이 흐려져 정확도가 조금 떨어져요.": [
+    "速いほど多く検査できますが、画像がぶれて精度が少し下がります。",
+    "Faster inspects more, but images blur and accuracy drops a little."
+  ],
+  "빠를수록 많이 만들지만, 열이 충분히 전달되지 않아 불량이 늘 수 있어요.": [
+    "速いほど多く作れますが、熱が十分に伝わらず不良が増えることがあります。",
+    "Faster makes more, but heat may not transfer fully and defects can rise."
+  ],
+  "사람 재검사": [
+    "人による再検査",
+    "Manual re-checks"
+  ],
+  "사람 재검사 구간": [
+    "人による再検査の範囲",
+    "Manual re-check band"
+  ],
+  "사람이 결재할 건": [
+    "人が決裁する件数",
+    "Approvals by people"
+  ],
+  "사람이 이 거리 안에 들어오면 로봇이 멈춰요.": [
+    "人がこの距離内に入るとロボットが止まります。",
+    "The robot stops when a person comes within this distance."
+  ],
+  "사람이 확인하는 비율": [
+    "人が確認する割合",
+    "Share checked by people"
+  ],
+  "사이렌 음량": [
+    "サイレン音量",
+    "Siren volume"
+  ],
+  "설비가 이 시간 동안 놀면 대기 전력을 꺼요. 짧을수록 아끼지만 재가동이 조금 늦어요.": [
+    "設備がこの時間止まっていると待機電力を切ります。短いほど節約できますが、再稼働が少し遅れます。",
+    "Cuts standby power after a machine idles this long. Shorter saves more but restarts a little slower."
+  ],
+  "수전 부하 (시간별)": [
+    "受電負荷（時間別）",
+    "Incoming load (hourly)"
+  ],
+  "승인 기한": [
+    "承認期限",
+    "Approval deadline"
+  ],
+  "시간/주": [
+    "時間/週",
+    "h/week"
+  ],
+  "시간당 검사량": [
+    "時間当たり検査数",
+    "Inspections per hour"
+  ],
+  "시간당 생산량": [
+    "時間当たり生産量",
+    "Output per hour"
+  ],
+  "시간당 양품": [
+    "時間当たり良品数",
+    "Good units per hour"
+  ],
+  "시간당 운반": [
+    "時間当たり搬送回数",
+    "Deliveries per hour"
+  ],
+  "시간대별 전력 사용": [
+    "時間帯別の電力使用量",
+    "Power use by hour"
+  ],
+  "시끄러운 현장에서도 모두 들을 수 있게 정해요.": [
+    "騒がしい現場でも全員に聞こえるように設定します。",
+    "Set so everyone can hear it even on a noisy floor."
+  ],
+  "실링 온도 설정": [
+    "シール温度の設定",
+    "Sealing temperature"
+  ],
+  "실적이 계획의 이 비율 아래로 떨어질 것 같으면 경고해요.": [
+    "実績が計画のこの割合を下回りそうなら警告します。",
+    "Warns when output looks likely to fall below this share of plan."
+  ],
+  "아찔한 근접": [
+    "ヒヤリとする接近",
+    "Near misses"
+  ],
+  "야간으로 옮기는 물량": [
+    "夜間に移す生産量",
+    "Volume moved to night"
+  ],
+  "역추적 단계": [
+    "遡る段階",
+    "Trace-back depth"
+  ],
+  "연결되는 원자재 로트": [
+    "つながる原材料ロット",
+    "Linked material lots"
+  ],
+  "예상 계획 달성률": [
+    "予想計画達成率",
+    "Expected plan attainment"
+  ],
+  "예상 불량률": [
+    "予想不良率",
+    "Expected defect rate"
+  ],
+  "오경보": [
+    "誤報",
+    "False alarms"
+  ],
+  "오늘 OEE (시간별)": [
+    "今日のOEE（時間別）",
+    "Today's OEE (hourly)"
+  ],
+  "오늘 불량률 (시간별)": [
+    "今日の不良率（時間別）",
+    "Today's defect rate (hourly)"
+  ],
+  "오늘 불량률을 이 설정으로 다시 돌렸다면": [
+    "今日の不良率をこの設定でやり直したら",
+    "Today's defect rate, replayed with this setting"
+  ],
+  "오늘 전력 사용 (시간별)": [
+    "今日の電力使用量（時間別）",
+    "Today's power use (hourly)"
+  ],
+  "오작동 정지": [
+    "誤作動による停止",
+    "False stops"
+  ],
+  "요금이 비싼 시간대에 얼마나 가동하고, 얼마를 싼 야간으로 옮길지 정해요.": [
+    "料金の高い時間帯にどれだけ稼働し、どれだけを安い夜間に移すかを決めます。",
+    "Sets how much runs in expensive hours and how much moves to cheaper night hours."
+  ],
+  "운반 로봇이 사람을 보면 몇 m 앞에서 속도를 줄이고 멈출지 정해요.": [
+    "搬送ロボットが人を見つけたら、何m手前で減速し停止するかを決めます。",
+    "Sets how many metres from a person a transport robot slows down and stops."
+  ],
+  "운반 지연": [
+    "搬送の遅れ",
+    "Delivery delay"
+  ],
+  "월 기본요금 절감": [
+    "月の基本料金削減",
+    "Monthly demand charge saved"
+  ],
+  "월 전기요금": [
+    "月の電気料金",
+    "Monthly electricity bill"
+  ],
+  "위험 기준 점수": [
+    "危険基準スコア",
+    "Danger score"
+  ],
+  "위험 설비": [
+    "危険設備",
+    "Machines in danger"
+  ],
+  "이 값 아래인 시간대를 개선 대상으로 표시해요.": [
+    "この値を下回る時間帯を改善対象として表示します。",
+    "Hours below this are flagged for improvement."
+  ],
+  "이 시간 안에 결정이 없으면 상급자에게 넘겨요.": [
+    "この時間内に決定がなければ上位者に回します。",
+    "If no one decides within this time, it goes to the next level up."
+  ],
+  "이 점수 아래는 바로 정비가 필요한 위험 설비로 표시해요.": [
+    "このスコアを下回る設備は、すぐ整備が必要な危険設備として表示します。",
+    "Machines below this score are flagged as needing maintenance now."
+  ],
+  "이상 배치 표시 기준 불량률": [
+    "異常バッチ表示の基準不良率",
+    "Flag batches above (defect rate)"
+  ],
+  "이상 표시 기준": [
+    "異常表示の基準",
+    "Flag threshold"
+  ],
+  "일": [
+    "日",
+    "days"
+  ],
+  "자동 재계획 허용 범위": [
+    "自動再計画の許容範囲",
+    "Auto-replan allowance"
+  ],
+  "자재·작업자를 기다리며 서 있는 시간이 이만큼 넘으면 알려요.": [
+    "資材や作業者を待って止まっている時間がこれを超えると知らせます。",
+    "Alerts when a line has waited this long for materials or operators."
+  ],
+  "작업자 대기 시간": [
+    "作業者の待ち時間",
+    "Operator waiting time"
+  ],
+  "잔업": [
+    "残業",
+    "Overtime"
+  ],
+  "재계획 알림": [
+    "再計画の通知",
+    "Replan alerts"
+  ],
+  "전 공정 정지까지": [
+    "全工程停止まで",
+    "Time to full stop"
+  ],
+  "전력을 어디까지 낮게 유지할지, 배터리(ESS)를 언제부터 쓸지 정해요. 배터리는 하루 용량이 정해져 있어 너무 일찍 쓰면 진짜 피크 때 모자라요.": [
+    "電力をどこまで低く保つか、蓄電池(ESS)をいつから使うかを決めます。蓄電池は1日の容量が決まっているので、早く使いすぎると本当のピークで足りなくなります。",
+    "Sets how low to hold power and when the battery (ESS) starts. The battery has a fixed daily capacity, so using it too early leaves it short at the real peak."
+  ],
+  "전체 불량의 이만큼을 차지하는 유형까지 집중 관리해요. 높을수록 많이 줄지만 관리할 유형도 늘어요.": [
+    "不良全体のこの割合を占めるタイプまで重点管理します。高いほど多く減らせますが、管理するタイプも増えます。",
+    "Focuses on the types that make up this share of all defects. Higher cuts more but means more types to manage."
+  ],
+  "전체 생산 중 가장 비싼 시간대에 만드는 비율이에요.": [
+    "全生産のうち、最も料金の高い時間帯に作る割合です。",
+    "The share of production made in the most expensive hours."
+  ],
+  "점": [
+    "点",
+    "pts"
+  ],
+  "정비 기록을 어떤 기준으로 묶어 볼지 정해요. 같은 고장이 반복되는 설비를 찾는 데 써요.": [
+    "整備記録をどんな基準でまとめるかを決めます。同じ故障を繰り返す設備を見つけるのに使います。",
+    "Sets how maintenance records are grouped, to find machines with the same failure again and again."
+  ],
+  "정상품을 불량으로 판정": [
+    "良品を不良と判定",
+    "Good products rejected"
+  ],
+  "정지 거리": [
+    "停止距離",
+    "Stop distance"
+  ],
+  "정지 전 확인 시간": [
+    "停止前の確認時間",
+    "Confirmation time before stop"
+  ],
+  "제품 1개당 전기요금": [
+    "製品1個当たりの電気料金",
+    "Electricity cost per product"
+  ],
+  "조치까지 평균": [
+    "対応までの平均",
+    "Average time to action"
+  ],
+  "조회 기간": [
+    "照会期間",
+    "Search period"
+  ],
+  "조회되는 배치": [
+    "照会されるバッチ",
+    "Batches found"
+  ],
+  "주의 기준": [
+    "注意基準",
+    "Caution threshold"
+  ],
+  "주의 기준 점수": [
+    "注意基準スコア",
+    "Caution score"
+  ],
+  "주의 설비": [
+    "注意設備",
+    "Machines on caution"
+  ],
+  "줄일 수 있는 불량": [
+    "減らせる不良",
+    "Defects that can be cut"
+  ],
+  "진동 경고 기준": [
+    "振動の警告基準",
+    "Vibration warning"
+  ],
+  "진동과 온도가 어디까지 오르면 경고할지 정해요. 고장을 얼마나 미리 알 수 있는지가 달라져요.": [
+    "振動と温度がどこまで上がったら警告するかを決めます。故障にどれだけ前もって気づけるかが変わります。",
+    "Sets how high vibration and temperature may go before a warning. It decides how far ahead you learn of a failure."
+  ],
+  "집계 단위": [
+    "集計単位",
+    "Averaging window"
+  ],
+  "집중 관리 기준": [
+    "重点管理の基準",
+    "Focus threshold"
+  ],
+  "집중 관리 기준 (누적 비율)": [
+    "重点管理の基準（累積比率）",
+    "Focus threshold (cumulative share)"
+  ],
+  "집중 관리할 유형": [
+    "重点管理するタイプ",
+    "Types to focus on"
+  ],
+  "짧게 잡으면 잦은 짧은 정지까지 잡아내지만 기록이 많아져요.": [
+    "短くすると頻繁な短時間停止までとらえられますが、記録が多くなります。",
+    "Shorter catches frequent short stops but records many more."
+  ],
+  "짧을수록 많이 만들지만, 가장 느린 공정보다 짧게는 못 맞춰요.": [
+    "短いほど多く作れますが、最も遅い工程より短くはできません。",
+    "Shorter makes more, but it cannot beat the slowest station."
+  ],
+  "첫 대응까지": [
+    "初動まで",
+    "Time to first response"
+  ],
+  "초": [
+    "秒",
+    "s"
+  ],
+  "초기 화재를 놓칠 위험": [
+    "初期火災を見逃すリスク",
+    "Risk of missing an early fire"
+  ],
+  "최근 배치 불량률": [
+    "最近のバッチ不良率",
+    "Recent batch defect rate"
+  ],
+  "추가 야간 인원": [
+    "追加の夜間人員",
+    "Extra night staff"
+  ],
+  "추적에 걸리는 시간": [
+    "追跡にかかる時間",
+    "Time to trace"
+  ],
+  "판정 전 확인 시간": [
+    "判定前の確認時間",
+    "Confirmation time"
+  ],
+  "평균 고장 간격 (MTBF)": [
+    "平均故障間隔（MTBF）",
+    "Mean time between failures (MTBF)"
+  ],
+  "평균 수리 시간 (MTTR)": [
+    "平均修理時間（MTTR）",
+    "Mean time to repair (MTTR)"
+  ],
+  "평균보다 이만큼 느린 공정을 병목으로 표시해요.": [
+    "平均よりこれだけ遅い工程をボトルネックとして表示します。",
+    "Stations this much slower than average are flagged as bottlenecks."
+  ],
+  "평소보다 얼마나 더 쓰면 경고하고, 멈춘 설비의 대기 전력을 언제 끌지 정해요.": [
+    "普段よりどれだけ多く使ったら警告し、止まった設備の待機電力をいつ切るかを決めます。",
+    "Sets how much above usual use triggers a warning, and when idle machines' standby power is cut."
+  ],
+  "평소보다 이 비율 이상 쓰면 경고해요.": [
+    "普段よりこの割合以上使うと警告します。",
+    "Warns when use is this far above usual."
+  ],
+  "포장기 실링 온도와 라인 속도를 바꾸면 불량률과 생산량이 어떻게 변할지 미리 봐요.": [
+    "包装機のシール温度とライン速度を変えると、不良率と生産量がどう変わるかを事前に確認します。",
+    "Preview how the defect rate and output change with the packer's sealing temperature and line speed."
+  ],
+  "피크 목표": [
+    "ピーク目標",
+    "Peak target"
+  ],
+  "피크 요금 시간대 가동 비중": [
+    "ピーク料金時間帯の稼働比率",
+    "Share run in peak-tariff hours"
+  ],
+  "하루 경고": [
+    "1日の警告",
+    "Warnings per day"
+  ],
+  "하루 경보": [
+    "1日のアラーム",
+    "Alarms per day"
+  ],
+  "하루 전력 사용": [
+    "1日の電力使用量",
+    "Daily power use"
+  ],
+  "하루 최대 부하": [
+    "1日の最大負荷",
+    "Daily peak load"
+  ],
+  "헛경고": [
+    "誤警告",
+    "False warnings"
+  ],
+  "현장 알림 도달률": [
+    "現場への通知到達率",
+    "Alert reach on the floor"
+  ],
+  "화재 판정 확신도": [
+    "火災判定の確信度",
+    "Fire confidence threshold"
+  ],
+  "확인에 드는 시간": [
+    "確認にかかる時間",
+    "Time to review"
+  ],
+  "회": [
+    "回",
+    "times"
+  ],
+  "히터 전력": [
+    "ヒーター電力",
+    "Heater power"
+  ],
+  "부하를 이 아래로 유지하려고 해요. 너무 낮게 잡으면 배터리가 일찍 바닥나 정작 큰 피크를 못 막아요.": [
+    "負荷をこれ以下に保とうとします。低くしすぎると蓄電池が早く尽き、肝心の大きなピークを抑えられません。",
+    "Tries to keep load below this. Set it too low and the battery runs out early, leaving the big peak uncovered."
+  ],
+  "공급사 로트 불량": [
+    "サプライヤーのロット不良",
+    "Supplier lot defect"
+  ],
+  "긴급 오더 3만 개 접수 (내일 18시 납기)": [
+    "緊急オーダー3万個を受注（明日18時納期）",
+    "Rush order for 30,000 units (due 18:00 tomorrow)"
+  ],
+  "긴급 오더 대응 계획": [
+    "緊急オーダー対応計画",
+    "rush-order plan"
+  ],
+  "긴급 입고분 수입 검사 일정 확인": [
+    "緊急入荷分の受入検査日程を確認",
+    "Schedule incoming inspection for the rush delivery"
+  ],
+  "대체 공급사에 필름 긴급 발주": [
+    "代替サプライヤーにフィルムを緊急発注",
+    "Rush-order film from the alternate supplier"
+  ],
+  "라인 3 품목 전환 준비": [
+    "ライン3の品目切替を準備",
+    "Prepare line 3 for the product changeover"
+  ],
+  "라인 3·4 작업 순서 재배치, 자재 선출고": [
+    "ライン3・4の作業順を組み替え、資材を先出し",
+    "Resequence lines 3 and 4, release materials early"
+  ],
+  "문제 필름 로트 사용 중지·격리, 의심 제품 출하 보류": [
+    "問題のフィルムロットを使用停止・隔離し、疑わしい製品の出荷を保留",
+    "Stop and quarantine the bad film lot, hold suspect products"
+  ],
+  "보류 팔레트 표시 확인": [
+    "保留パレットの表示を確認",
+    "Check the held pallets are tagged"
+  ],
+  "야간 잔업 편성 후 고객에게 납기 확정 회신": [
+    "夜間残業を編成し、顧客に納期確定を回答",
+    "Schedule a night shift and confirm the delivery date to the customer"
+  ],
+  "야간 조 인원 확정": [
+    "夜間班の人員を確定",
+    "Confirm night-shift staff"
+  ],
+  "원자재 입고 지연": [
+    "原材料の入荷遅延",
+    "late material delivery"
+  ],
+  "이미 출하된 2개 팔레트 회수, 공급사에 클레임 제기": [
+    "出荷済みの2パレットを回収し、サプライヤーにクレームを提起",
+    "Recall the 2 pallets already shipped and file a supplier claim"
+  ],
+  "재고 있는 품목부터 생산 순서 변경": [
+    "在庫のある品目から生産順を変更",
+    "Resequence production to items with materials in stock"
+  ],
+  "창고 대체 자재 위치 확인": [
+    "倉庫の代替資材の位置を確認",
+    "Locate substitute materials in the warehouse"
+  ],
+  "포장 1·2라인 인쇄 불량 급증 (불량률 6.8%)": [
+    "包装ライン1・2で印刷不良が急増（不良率6.8%）",
+    "Print defects surge on packing lines 1 and 2 (6.8%)"
+  ],
+  "포장 필름 입고 6시간 지연 통보": [
+    "包装フィルムの入荷が6時間遅れると通知",
+    "Packing film delivery delayed by 6 hours"
+  ],
+  "회수 대상 거래처 연락": [
+    "回収対象の取引先に連絡",
+    "Contact the customers affected by the recall"
+  ],
+  "0개 (보류·회수)": [
+    "0個（保留・回収）",
+    "0 (held or recalled)"
+  ],
+  "20시 입고 전까지 자재가 끊기지 않고 생산이 이어짐을 확인": [
+    "20時の入荷まで資材が途切れず生産が続くことを確認",
+    "Confirms production runs without a material gap until the 20:00 delivery"
+  ],
+  "2개 팔레트 회수": [
+    "2パレット回収",
+    "Recall 2 pallets"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 라인 3·4 순서 재배치, 자재 선출고, 정비 일정 이동": [
+    "AIの権限内の対応なので即実行: ライン3・4の順序組み替え、資材の先出し、整備日程の移動",
+    "Within the AI's authority, so done at once: lines 3 and 4 resequenced, materials released early, maintenance moved"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 생산 순서 변경, 창고 대체 자재 선출고, AMR 운반 순서 재배치": [
+    "AIの権限内の対応なので即実行: 生産順の変更、倉庫の代替資材の先出し、AMR搬送順の組み替え",
+    "Within the AI's authority, so done at once: production resequenced, substitute materials released, AMR runs reordered"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 해당 로트 사용 중지·격리, 다른 로트로 교체, 09시 이후 생산품 출하 보류": [
+    "AIの権限内の対応なので即実行: 該当ロットを使用停止・隔離、別ロットに交換、9時以降の生産品を出荷保留",
+    "Within the AI's authority, so done at once: lot stopped and quarantined, swapped for another, everything made since 09:00 held"
+  ],
+  "갑자기 여러 라인에서 같은 불량이 쏟아지면, 원인을 찾는 동안에도 불량품이 계속 만들어지고 출하될 수 있어요.": [
+    "突然複数のラインで同じ不良が多発すると、原因を探している間にも不良品が作られ、出荷されてしまうことがあります。",
+    "When the same defect suddenly floods several lines, bad products keep being made and shipped while people look for the cause."
+  ],
+  "같은 공급사의 입고 지연이 이번 달 두 번째입니다. 다음 주 생산분 일부는 대체 공급사로 나눠 발주하는 것이 안전합니다.": [
+    "同じサプライヤーの入荷遅延は今月2回目です。来週の生産分の一部は代替サプライヤーに分けて発注するのが安全です。",
+    "This is the supplier's second late delivery this month. Splitting part of next week's order to an alternate supplier is safer."
+  ],
+  "같은 지연이 이번 달 두 번째. 대체 공급사 긴급 발주(단가 4% 높음)는 구매 담당자에게 승인 요청": [
+    "同じ遅延は今月2回目。代替サプライヤーへの緊急発注（単価4%高）は購買担当者に承認を依頼",
+    "Second delay this month. Asks purchasing to approve a rush order from an alternate supplier (4% dearer)"
+  ],
+  "거래처에서 긴급 오더 접수: 제품 3만 개, 내일 18시까지": [
+    "取引先から緊急オーダーを受注: 製品3万個、明日18時まで",
+    "Rush order from a customer: 30,000 units by 18:00 tomorrow"
+  ],
+  "고객에게 간 불량품": [
+    "顧客に届いた不良品",
+    "Defects reaching customers"
+  ],
+  "공급사 사정으로 원자재가 늦게 들어오면, 미리 손쓰지 않는 한 자재가 떨어지는 순간 라인이 멈춰요.": [
+    "サプライヤーの都合で原材料の入荷が遅れると、先に手を打たない限り資材が尽きた瞬間にラインが止まります。",
+    "When a supplier delivers late, the line stops the moment materials run out unless someone acts first."
+  ],
+  "공급사가 포장 필름 입고가 14시에서 20시로 늦어진다고 통보": [
+    "サプライヤーから包装フィルムの入荷が14時から20時に遅れると通知",
+    "Supplier says the packing film arrives at 20:00 instead of 14:00"
+  ],
+  "교체 후 불량률이 0.8%로 회복. 보류 제품 4,800개는 전수 재검사 대상으로 분류": [
+    "交換後、不良率が0.8%に回復。保留品4,800個は全数再検査の対象に分類",
+    "After the swap the defect rate is back to 0.8%. The 4,800 held units are queued for full re-inspection"
+  ],
+  "구매 담당자가 승인. 대체 공급사에 발주": [
+    "購買担当者が承認。代替サプライヤーに発注",
+    "Purchasing approves. Order placed with the alternate supplier"
+  ],
+  "긴급 오더": [
+    "緊急オーダー",
+    "Rush order"
+  ],
+  "긴급 오더 3만 개, 내일까지": [
+    "緊急オーダー3万個、明日まで",
+    "30,000-unit rush order, due tomorrow"
+  ],
+  "긴급 오더 3만 개를 내일 18시까지 맞추려면 라인 3·4의 순서 재배치와 야간 1개 조 추가가 필요합니다. 다른 주문의 납기에는 영향이 없습니다.": [
+    "緊急オーダー3万個を明日18時までに間に合わせるには、ライン3・4の順序組み替えと夜間1班の追加が必要です。他の注文の納期には影響しません。",
+    "Meeting the 30,000-unit rush order by 18:00 tomorrow needs lines 3 and 4 resequenced and one extra night shift. Other orders' deadlines are unaffected."
+  ],
+  "긴급 오더 납기": [
+    "緊急オーダーの納期",
+    "Rush order delivery"
+  ],
+  "내일 15시 완료 (3시간 여유)": [
+    "明日15時完了（3時間の余裕）",
+    "Done 15:00 tomorrow (3 h to spare)"
+  ],
+  "대량 불량": [
+    "大量不良",
+    "Defect surge"
+  ],
+  "대체 공급사 긴급 발주": [
+    "代替サプライヤーへ緊急発注",
+    "Rush order from alternate supplier"
+  ],
+  "두 라인 모두 오늘 09시에 투입된 같은 필름 로트를 쓰고 있음을 확인": [
+    "両ラインとも今日9時に投入された同じフィルムロットを使っていることを確認",
+    "Finds both lines using the same film lot, loaded at 09:00 today"
+  ],
+  "두 라인에서 같은 인쇄 번짐 불량. 설비보다 자재 문제로 보고 슈퍼바이저에 보고": [
+    "2つのラインで同じ印刷にじみ不良。設備より資材の問題と見てスーパーバイザーに報告",
+    "Same smeared-print defect on two lines. Suspects materials rather than machines and reports to the supervisor"
+  ],
+  "두 라인에서 불량이 한꺼번에 급증": [
+    "2つのラインで不良が一斉に急増",
+    "Defects surge on two lines at once"
+  ],
+  "두 라인의 인쇄기와 히터는 정상. 설비 원인이 아님": [
+    "両ラインの印刷機とヒーターは正常。設備が原因ではない",
+    "Printers and heaters on both lines are fine. Not a machine fault"
+  ],
+  "라인 3·4의 작업 순서를 바꾸고 야간 1개 조를 더하면 내일 15시 완료 가능": [
+    "ライン3・4の作業順を変え、夜間1班を加えれば明日15時に完了可能",
+    "Resequencing lines 3 and 4 and adding one night shift finishes by 15:00 tomorrow"
+  ],
+  "라인 4의 내일 10시 정기 정비는 모레로 미뤄도 위험 없음": [
+    "ライン4の明日10時の定期整備は明後日に延ばしても問題なし",
+    "Line 4's routine maintenance at 10:00 tomorrow can safely move to the day after"
+  ],
+  "로트 교체 20분을 반영해 오늘 생산 계획 재조정. 납기 영향 없음": [
+    "ロット交換の20分を反映して今日の生産計画を再調整。納期への影響なし",
+    "Replans today's production around the 20-minute lot swap. No impact on deliveries"
+  ],
+  "물류·생산·품질 AI를 불러 대응 검토 시작": [
+    "物流・生産・品質AIを招集し、対応の検討を開始",
+    "Calls in the logistics, production and quality AIs to plan a response"
+  ],
+  "바뀐 계획으로 내일 15시 완료 예상. 다른 주문의 납기도 모두 지킴": [
+    "変更後の計画で明日15時に完了見込み。他の注文の納期もすべて守る",
+    "The new plan finishes at 15:00 tomorrow, and every other order still ships on time"
+  ],
+  "보통은 고객 클레임이 들어온 뒤에야 알게 되고, 어느 로트가 문제인지 찾는 데 하루가 걸려요.": [
+    "通常は顧客からのクレームで初めて気づき、どのロットが問題かを突き止めるのに1日かかります。",
+    "Usually it is noticed only when customers complain, and finding the bad lot takes a day."
+  ],
+  "보통은 생산 관리자가 일정을 다시 짜고 부서마다 전화를 돌리느라 반나절이 걸려요.": [
+    "通常は生産管理者が日程を組み直し、部署ごとに電話をかけるのに半日かかります。",
+    "Usually the production manager spends half a day replanning and phoning every department."
+  ],
+  "보통은 자재가 떨어져 라인이 멈춘 뒤에야 일정을 바꾸고, 그동안 라인이 몇 시간씩 서요.": [
+    "通常は資材が尽きてラインが止まってから日程を変え、その間ラインが数時間止まります。",
+    "Usually the schedule changes only after materials run out and the line stops, and it stands for hours."
+  ],
+  "불량은 오늘 09시에 투입된 필름 로트에서 시작됐습니다. 그 뒤 출하된 2개 팔레트가 같은 로트를 사용해 회수가 필요합니다.": [
+    "不良は今日9時に投入されたフィルムロットから始まりました。その後出荷された2パレットが同じロットを使っているため、回収が必要です。",
+    "The defects started with the film lot loaded at 09:00 today. Two pallets shipped since then used the same lot and need recalling."
+  ],
+  "사례 고르기": [
+    "事例を選ぶ",
+    "Pick a case"
+  ],
+  "생산 관리자가 승인. 야간 조 편성, 고객에게 내일 15시 납품 확정 회신": [
+    "生産管理者が承認。夜間班を編成し、顧客に明日15時納品を確定回答",
+    "Production manager approves. Night shift set, customer told delivery is confirmed for 15:00 tomorrow"
+  ],
+  "생산·물류·설비·품질 AI를 불러 대응 방안 검토 시작": [
+    "生産・物流・設備・品質AIを招集し、対応策の検討を開始",
+    "Calls in the production, logistics, maintenance and quality AIs to plan a response"
+  ],
+  "야간 1개 조 추가": [
+    "夜間1班を追加",
+    "Add one night shift"
+  ],
+  "야간 잔업 편성과 고객에게 보낼 납기 회신은 생산 관리자에게 승인 요청": [
+    "夜間残業の編成と顧客への納期回答は生産管理者に承認を依頼",
+    "Asks the production manager to approve the night shift and the delivery reply to the customer"
+  ],
+  "원자재 창고": [
+    "原材料倉庫",
+    "Materials warehouse"
+  ],
+  "이미 출하된 2개 팔레트의 회수와 공급사 클레임은 품질 책임자에게 승인 요청": [
+    "出荷済み2パレットの回収とサプライヤーへのクレームは品質責任者に承認を依頼",
+    "Asks the quality lead to approve recalling the 2 shipped pallets and the supplier claim"
+  ],
+  "자재 입고 지연": [
+    "資材の入荷遅延",
+    "Late materials"
+  ],
+  "자재 재고 충분. 모자란 필름 2롤은 내일 오전 입고분을 앞당겨 받도록 조율": [
+    "資材在庫は十分。不足するフィルム2ロールは明日午前の入荷分を前倒しで受け取るよう調整",
+    "Materials are in stock. Arranges for the 2 missing film rolls to arrive early tomorrow morning"
+  ],
+  "주문·구매 시스템": [
+    "受発注システム",
+    "Order system"
+  ],
+  "지금 계획대로면 1만 8천 개가 모자람. 슈퍼바이저에 보고": [
+    "今の計画のままでは1万8千個不足。スーパーバイザーに報告",
+    "The current plan falls 18,000 units short. Reports to the supervisor"
+  ],
+  "지금 재고로는 16시에 라인 1·2가 자재 부족으로 멈출 것으로 예측": [
+    "今の在庫では16時にライン1・2が資材不足で止まると予測",
+    "Predicts lines 1 and 2 will stop for lack of film at 16:00"
+  ],
+  "처음 만드는 1천 개는 검사 표본을 2배로 늘려 품질 확인": [
+    "最初に作る1千個は検査サンプルを2倍にして品質を確認",
+    "Doubles inspection sampling on the first 1,000 units"
+  ],
+  "큰 거래처에서 내일까지 제품을 더 달라는 긴급 주문이 들어왔어요. 생산 일정, 자재, 정비, 품질, 인력이 한꺼번에 얽히는 공장 전체의 문제예요.": [
+    "大口の取引先から、明日までに製品を追加してほしいという緊急注文が入りました。生産日程、資材、整備、品質、人員が一度に絡む工場全体の問題です。",
+    "A major customer needs more product by tomorrow. Schedules, materials, maintenance, quality and staffing all get tangled at once: a whole-plant problem."
+  ],
+  "포장 1·2라인": [
+    "包装ライン1・2",
+    "Packing lines 1–2"
+  ],
+  "포장 1·2라인 비전 검사 불량률이 0.8%에서 6.8%로 급등": [
+    "包装ライン1・2の画像検査不良率が0.8%から6.8%に急上昇",
+    "Vision-inspection defect rate on packing lines 1 and 2 jumps from 0.8% to 6.8%"
+  ],
+  "포장 3·4라인": [
+    "包装ライン3・4",
+    "Packing lines 3–4"
+  ],
+  "포장 필름 입고 6시간 지연": [
+    "包装フィルムの入荷が6時間遅延",
+    "Packing film delivery 6 hours late"
+  ],
+  "품목이 바뀔 때 첫 제품 검사 조건을 자동으로 바꿔 둠": [
+    "品目切替時の初品検査条件を自動で切り替えておく",
+    "Sets the first-article inspection for each product change automatically"
+  ],
+  "품질 책임자가 승인. 회수 지시, 공급사에 클레임 접수": [
+    "品質責任者が承認。回収を指示し、サプライヤーにクレームを提出",
+    "Quality lead approves. Recall ordered, supplier claim filed"
+  ],
+  "품질·물류·설비·생산 AI를 불러 원인과 영향 범위 추적 시작": [
+    "品質・物流・設備・生産AIを招集し、原因と影響範囲の追跡を開始",
+    "Calls in the quality, logistics, maintenance and production AIs to trace the cause and the impact"
+  ],
+  "피크 전력": [
+    "ピーク電力",
+    "Power peak"
+  ],
+  "필름 재고가 있는 다른 품목을 먼저 생산하도록 순서를 바꾸면 라인이 멈추지 않음": [
+    "フィルム在庫がある別の品目を先に生産するよう順序を変えれば、ラインは止まらない",
+    "Running items whose film is in stock first keeps the line going"
+  ]
+}

@@ -1,0 +1,5 @@
+{
+ "{n} Active Entity Types": ["有効なエンティティタイプ {n}件", null],
+ "{name}: {state}": ["{name}: {state}", null],
+ "Type: String | Required: No": ["型: String | 必須: いいえ", null]
+}

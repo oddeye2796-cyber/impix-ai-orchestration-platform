@@ -26,10 +26,11 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { t, useI18n } from '../i18n';
+import { getLocaleTag, t, useI18n } from '../i18n';
 import type { AgentDecision } from '../types';
-import type { PlantState } from '../services/telemetry';
+import type { Excursion, PlantState } from '../services/telemetry';
 import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
+import { EXPO, IS_EXPO } from '../config/edition';
 import ErrorBoundary from './ErrorBoundary';
 
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
@@ -144,6 +145,9 @@ const DECISION_COPY: Record<string, { title: string; action: string; task: strin
   inspect_bearing: { title: '베어링 진동 임계치 초과', action: '다음 정지 때 베어링 점검 예약', task: '모터 소음·발열 육안 점검', hours: 4 },
   lubricator_operation: { title: '진동 상승 추세', action: '자동 급유 선행 가동', task: '급유기 오일 잔량 확인', hours: 2 },
   load_balance: { title: '피크 전력 접근', action: '비핵심 부하 분산', task: '공조·컴프레서 부하 이전 확인', hours: 0.5, extraKrw: 4_000_000 },
+  approve_overtime: { title: '긴급 오더 대응 계획', action: '야간 잔업 편성 후 고객에게 납기 확정 회신', task: '야간 조 인원 확정', hours: 0, extraKrw: 8_000_000 },
+  recall_shipped: { title: '공급사 로트 불량', action: '이미 출하된 2개 팔레트 회수, 공급사에 클레임 제기', task: '회수 대상 거래처 연락', hours: 0, extraKrw: 6_000_000 },
+  switch_supplier: { title: '원자재 입고 지연', action: '대체 공급사에 필름 긴급 발주', task: '긴급 입고분 수입 검사 일정 확인', hours: 2 },
 };
 
 /** Live excursions, written for the line. */
@@ -161,6 +165,27 @@ const EXCURSION_COPY: Record<NonNullable<PlantState['excursion']>['kind'], Omit<
     action: '감속 운전 유지, 다음 정지 때 베어링 점검',
     task: '모터 베어링 소음·발열 점검',
     hours: 4, extraKrw: 0,
+  },
+  rush_order: {
+    zoneId: 'ptp3', agent: 'production',
+    title: '긴급 오더 3만 개 접수 (내일 18시 납기)',
+    action: '라인 3·4 작업 순서 재배치, 자재 선출고',
+    task: '라인 3 품목 전환 준비',
+    hours: 0, extraKrw: 20_000_000,
+  },
+  mass_defect: {
+    zoneId: 'ptp1', agent: 'quality',
+    title: '포장 1·2라인 인쇄 불량 급증 (불량률 6.8%)',
+    action: '문제 필름 로트 사용 중지·격리, 의심 제품 출하 보류',
+    task: '보류 팔레트 표시 확인',
+    hours: 3, extraKrw: 15_000_000,
+  },
+  supply_delay: {
+    zoneId: ACTIVE_SITE.zones.some(z => z.id === 'warehouse') ? 'warehouse' : 'storage', agent: 'logistics',
+    title: '포장 필름 입고 6시간 지연 통보',
+    action: '재고 있는 품목부터 생산 순서 변경',
+    task: '창고 대체 자재 위치 확인',
+    hours: 6, extraKrw: 0,
   },
   energy: {
     zoneId: 'storage', agent: 'energy',
@@ -182,7 +207,14 @@ const EARLIER_TODAY: Incident[] = [
 /** Live excursions that have ended, kept for the rest of the session. */
 const clearedExcursions: Incident[] = [];
 
-const clock = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+/** Keep only the latest `n` ended excursions, so a demo looping all day stays believable. */
+export function trimClearedExcursions(n: number) {
+  clearedExcursions.splice(n);
+}
+
+/** 24-hour clock in the interface language, not the booth machine's. */
+const timeOf = (date: Date) => date.toLocaleTimeString(getLocaleTag(), { hour: '2-digit', minute: '2-digit', hour12: false });
+const clock = () => timeOf(new Date());
 
 /**
  * Everything happening on the plant as incidents: the live excursion (moving
@@ -234,7 +266,7 @@ export function useIncidents(plant: PlantState, decisions: AgentDecision[]): Inc
       stage: d.status === 'pending' ? 3 : 4,
       hours: copy?.hours ?? 1,
       extraKrw: copy?.extraKrw ?? 0,
-      time: new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time: timeOf(new Date(d.timestamp)),
       decisionIndex: d.status === 'pending' ? i : undefined,
     });
   });
@@ -242,16 +274,34 @@ export function useIncidents(plant: PlantState, decisions: AgentDecision[]): Inc
   return [...incidents, ...clearedExcursions, ...EARLIER_TODAY];
 }
 
+/** Downtime prevented and money saved by handling one excursion and approving its follow-up decision. */
+export function caseValue(kind: Excursion['kind'], action: string): { hours: number; krw: number } {
+  const live = EXCURSION_COPY[kind];
+  const follow = DECISION_COPY[action];
+  const hours = live.hours + (follow?.hours ?? 0);
+  return { hours, krw: hours * ACTIVE_SITE.downtimeCostPerHour + live.extraKrw + (follow?.extraKrw ?? 0) };
+}
+
 const savedKrw = (incident: Incident) => incident.hours * ACTIVE_SITE.downtimeCostPerHour + incident.extraKrw;
 
-function useMoney() {
+export function useMoney() {
   const { locale } = useI18n();
+  // The expo edition shows yen for a Japanese audience; amounts are kept in KRW
+  // and converted at the edge.
+  if (IS_EXPO) {
+    return (krw: number) => {
+      const jpy = krw * EXPO.jpyPerKrw;
+      return locale === 'en'
+        ? `¥${Math.round(jpy / 1_000).toLocaleString('en-US')}k`
+        : `${Math.round(jpy / 10_000).toLocaleString('ja-JP')}${locale === 'ja' ? '万円' : '만 엔'}`;
+    };
+  }
   return (krw: number) => locale === 'ko'
     ? `${Math.round(krw / 10_000).toLocaleString('ko-KR')}만 원`
     : `₩${(krw / 1_000_000).toFixed(1)}M`;
 }
 
-const formatHours = (h: number) => `${Number.isInteger(h) ? h : h.toFixed(1)}${t('시간')}`;
+export const formatHours = (h: number) => `${Number.isInteger(h) ? h : h.toFixed(1)}${t('시간')}`;
 
 /* ------------------------------------------------------------ shared bits */
 

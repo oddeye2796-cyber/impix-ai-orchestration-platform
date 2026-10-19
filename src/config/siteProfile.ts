@@ -18,6 +18,7 @@
  */
 
 import { PHARMA_SITE } from './pharmaSite';
+import { IS_EXPO } from './edition';
 
 export type AgentKey = 'quality' | 'pm' | 'safety' | 'production' | 'energy' | 'logistics';
 
@@ -131,7 +132,9 @@ const SITES: Record<string, SiteProfile> = { demo: DEMO_SITE, pharma: PHARMA_SIT
 function pickSite(): SiteProfile {
   let requested: string | null = null;
   try { requested = new URLSearchParams(window.location.search).get('site'); } catch { /* no window */ }
-  return (requested && SITES[requested]) || PHARMA_SITE;
+  const site = (requested && SITES[requested]) || PHARMA_SITE;
+  // At a trade show the hall is introduced as a demo plant, not a named site.
+  return IS_EXPO ? { ...site, name: '전시 데모 공장' } : site;
 }
 
 export const ACTIVE_SITE: SiteProfile = pickSite();

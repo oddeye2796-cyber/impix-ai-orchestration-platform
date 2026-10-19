@@ -10,6 +10,7 @@ import './index.css';
 // Lets anyone — the CI smoke test, or you with devtools open — confirm which
 // commit the live page is actually running.
 document.documentElement.dataset.build = process.env.BUILD_REF || 'dev';
+if (process.env.EDITION === 'tokyo') document.title = 'IMPIX AI Orchestration · NexTech Week Tokyo 2026';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

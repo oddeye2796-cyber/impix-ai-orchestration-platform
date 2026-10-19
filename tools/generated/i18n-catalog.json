@@ -28,6 +28,111 @@
     ]
   },
   {
+    "key": "{doc} 핵심 내용 요약해줘",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{doc}의 핵심은 세 가지입니다. 1) 이상 징후는 감지 즉시 담당 AI가 1차 조치하고 기록합니다. 2) 설정값을 바꾸는 조치는 반드시 사람이 승인합니다. 3) 모든 조치는 근거 데이터와 함께 감사 로그에 남깁니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{equipment}: AI 제안 승인 대기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{n} Active Entity Types",
+    "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{n}일",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} ({size}KB)을 읽었습니다. 설비 이력·품질 기준과 대조해 보니 특이사항 2건이 있습니다: 측정 주기가 표준(5초)보다 긴 구간이 있고, 온도 상한 기준이 최신 매뉴얼과 1°C 다릅니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 계정을 {status} 상태로 바꿨습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 문서를 학습 자료에 추가했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 스키마를 가져왔습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 타입을 삭제했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 파일을 내려받았습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name}: {state}",
+    "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{version} 배포 완료: 정확도 +0.4%p, 지연 -12ms",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{version} 배포를 완료했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{version} 카나리 배포 시작 (트래픽 10%)",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "+ Add Condition",
     "lang": "en",
     "files": [
@@ -56,36 +161,8 @@
     ]
   },
   {
-    "key": "1 Hour",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "1 Week",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "1-Click 승인",
     "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "12 Hours",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "15 Minutes",
-    "lang": "en",
     "files": [
       "src/App.tsx"
     ]
@@ -119,13 +196,6 @@
     ]
   },
   {
-    "key": "24 Hours",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "2건",
     "lang": "ko",
     "files": [
@@ -141,20 +211,6 @@
   },
   {
     "key": "3 Conflicts Detected",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "30 Days",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "30 Minutes",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -182,20 +238,6 @@
     ]
   },
   {
-    "key": "45 Active Entity Types",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "48 Hours",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "4월",
     "lang": "ko",
     "files": [
@@ -205,13 +247,6 @@
   {
     "key": "5월",
     "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "8 Hours (Shift)",
-    "lang": "en",
     "files": [
       "src/App.tsx"
     ]
@@ -274,13 +309,6 @@
   },
   {
     "key": "ACS Integration",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "ACS Parameters",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -427,13 +455,6 @@
     ]
   },
   {
-    "key": "Advanced Parameters",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Agent Orchestration",
     "lang": "en",
     "files": [
@@ -442,13 +463,6 @@
   },
   {
     "key": "AI Analysis",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "AI Model",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -503,6 +517,21 @@
     "files": [
       "src/App.tsx",
       "src/constants.ts"
+    ]
+  },
+  {
+    "key": "AI 설정 바꿔 보기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "AI 설정 바꿔 보기 (전/후 비교)",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
     ]
   },
   {
@@ -595,6 +624,14 @@
     ]
   },
   {
+    "key": "AMR 2대 충전 대기로 자재 공급 지연",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "AMR 이송 경로 최적화",
     "lang": "ko",
     "files": [
@@ -618,13 +655,6 @@
   {
     "key": "AMR 충전 스케줄 조정",
     "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Anomaly Threshold",
-    "lang": "en",
     "files": [
       "src/App.tsx"
     ]
@@ -658,13 +688,6 @@
     ]
   },
   {
-    "key": "Auto Control",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Auto E-Stop",
     "lang": "en",
     "files": [
@@ -680,13 +703,6 @@
   },
   {
     "key": "Auto-rollback",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Auto-Schedule Optimization",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -749,13 +765,6 @@
     ]
   },
   {
-    "key": "Base Contract Power",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Batch Number",
     "lang": "en",
     "files": [
@@ -764,20 +773,6 @@
   },
   {
     "key": "Battery",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Billing Cycle",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Bottleneck Sensitivity",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -833,15 +828,15 @@
     ]
   },
   {
-    "key": "B라인 핀홀 결함 재학습 데이터 수집",
+    "key": "B라인 케이스패커-02 감속기 진동이 3일째 상승 중이며, 이 추세라면 72시간 안에 정지 위험이 62%입니다. 오늘 야간 정지 시간에 베어링 점검을 권장합니다.",
     "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
   },
   {
-    "key": "Calculation Window (Min)",
-    "lang": "en",
+    "key": "B라인 핀홀 결함 재학습 데이터 수집",
+    "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
@@ -864,7 +859,8 @@
     "key": "Cancel",
     "lang": "en",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/components/ModuleTuning.tsx"
     ]
   },
   {
@@ -876,13 +872,6 @@
   },
   {
     "key": "Close",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Collision Avoidance",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -966,13 +955,6 @@
     ]
   },
   {
-    "key": "Current Threshold (A)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Cycle Time",
     "lang": "en",
     "files": [
@@ -996,13 +978,6 @@
   {
     "key": "C구역 화재·연기 영상 감시",
     "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Daily",
-    "lang": "en",
     "files": [
       "src/App.tsx"
     ]
@@ -1043,13 +1018,6 @@
     ]
   },
   {
-    "key": "Deployed: 2024-03-10",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Describe the entity's role in the ontology...",
     "lang": "en",
     "files": [
@@ -1064,28 +1032,7 @@
     ]
   },
   {
-    "key": "Detection Confidence (%)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Detection Log",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Detection Parameters",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Detection Sensitivity",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -1128,13 +1075,6 @@
   },
   {
     "key": "EMERGENCY ALERT",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Emergency Interlock",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -1351,13 +1291,6 @@
     ]
   },
   {
-    "key": "Harmonic Limit (%)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Health Degradation Curve",
     "lang": "en",
     "files": [
@@ -1366,13 +1299,6 @@
   },
   {
     "key": "Hierarchical Message-Based Orchestration Framework (HMBO)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "High",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -1624,13 +1550,6 @@
     ]
   },
   {
-    "key": "Low",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Maintenance Recommendation",
     "lang": "en",
     "files": [
@@ -1687,13 +1606,6 @@
     ]
   },
   {
-    "key": "Medium",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Methodology",
     "lang": "en",
     "files": [
@@ -1702,13 +1614,6 @@
   },
   {
     "key": "Model Lifecycle",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Modifying these parameters affects the real-time heuristic logic and agent orchestration. Changes will be logged in the system audit trail.",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -1757,13 +1662,6 @@
     ]
   },
   {
-    "key": "Monthly",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "New Order",
     "lang": "en",
     "files": [
@@ -1793,13 +1691,6 @@
   },
   {
     "key": "No recommendations available. Click refresh to generate insights.",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "No specialized parameters available for this module.",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -1932,20 +1823,6 @@
     ]
   },
   {
-    "key": "Peak Load Limit (kW)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Peak Multiplier",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Performance",
     "lang": "en",
     "files": [
@@ -1975,13 +1852,6 @@
   },
   {
     "key": "Policy: Quality First",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Prediction Horizon (Hours)",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2289,13 +2159,6 @@
     ]
   },
   {
-    "key": "Safety Radius (m)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Safety-First 정책에 따라 인명 피해 가능성이 0.1%라도 존재할 경우 즉시 중단이 원칙임. 경제적 손실보다 안전 가드레일이 상위 계층임.",
     "lang": "ko",
     "files": [
@@ -2303,21 +2166,7 @@
     ]
   },
   {
-    "key": "Sampling Frequency",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Sampling Interval",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Sampling Interval (s)",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2332,20 +2181,6 @@
   },
   {
     "key": "Save Rule",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Scan Interval (ms)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Scan Speed (ms)",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2387,21 +2222,7 @@
     ]
   },
   {
-    "key": "Sensitivity",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Severity",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Shedding Priority",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2423,20 +2244,6 @@
   },
   {
     "key": "Siren",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Siren Volume",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Slack",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2493,13 +2300,6 @@
   },
   {
     "key": "Status",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Stop Distance (m)",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2604,21 +2404,7 @@
     ]
   },
   {
-    "key": "Target OEE (%)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Target:",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Temp Limit (°C)",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2709,14 +2495,14 @@
     ]
   },
   {
-    "key": "Type: String | Required: Yes",
+    "key": "Type: String | Required: No",
     "lang": "en",
     "files": [
       "src/App.tsx"
     ]
   },
   {
-    "key": "Unit Cost (KRW/kWh)",
+    "key": "Type: String | Required: Yes",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2779,20 +2565,6 @@
     ]
   },
   {
-    "key": "Vibration Limit (mm/s)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Voltage Threshold (V)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Waiting for agent proposals...",
     "lang": "en",
     "files": [
@@ -2807,13 +2579,6 @@
     ]
   },
   {
-    "key": "Warning Threshold (%)",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "Warnings",
     "lang": "en",
     "files": [
@@ -2822,20 +2587,6 @@
   },
   {
     "key": "Wed",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Weekly",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "When activated, all production lines will be immediately halted upon detection of critical safety violations.",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2934,6 +2685,13 @@
     ]
   },
   {
+    "key": "검증 규칙을 저장했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "결함 객체 검출",
     "lang": "ko",
     "files": [
@@ -2942,13 +2700,6 @@
   },
   {
     "key": "계약 전력 92% 도달로 피크 초과 위험",
-    "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "고급 파라미터가 저장되었습니다.",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -2994,6 +2745,7 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
+      "src/config/menuGuides.ts",
       "src/constants.ts"
     ]
   },
@@ -3048,6 +2800,20 @@
     ]
   },
   {
+    "key": "기술 상세 보기 (엔지니어용)",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "기술 상세 접기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "기타",
     "lang": "ko",
     "files": [
@@ -3069,6 +2835,13 @@
     ]
   },
   {
+    "key": "꺼짐",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "대기",
     "lang": "ko",
     "files": [
@@ -3077,6 +2850,34 @@
   },
   {
     "key": "대응 중",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대화 내보내기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대화 설정",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대화 초기화",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대화를 초기화했습니다",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3095,6 +2896,13 @@
     "files": [
       "src/App.tsx",
       "src/constants.ts"
+    ]
+  },
+  {
+    "key": "듣는 중…",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
     ]
   },
   {
@@ -3148,6 +2956,13 @@
   },
   {
     "key": "메인 모터 베어링 잔여수명 예측",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "모두 읽음",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3238,6 +3053,27 @@
     ]
   },
   {
+    "key": "배포 중…",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "배포일: {date}",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "변경 사항을 저장했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "변색",
     "lang": "ko",
     "files": [
@@ -3267,6 +3103,13 @@
   },
   {
     "key": "병목 조율",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "보고서를 내려받았습니다",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3338,6 +3181,35 @@
   },
   {
     "key": "비지도 이상 탐지",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "비핵심 부하 분산",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "사용자 {name}을(를) 추가했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "삭제",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "새 엔티티 타입을 만들었습니다",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3444,10 +3316,39 @@
     ]
   },
   {
+    "key": "설정 변경을 되돌렸어요.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "설정 적용: {changes}",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "설정을 적용했어요. 전/후 결과를 화면에 남겨 뒀어요.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "성능",
     "lang": "ko",
     "files": [
       "src/App.tsx"
+    ]
+  },
+  {
+    "key": "세척실 바닥 누수로 미끄럼 위험",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
     ]
   },
   {
@@ -3494,7 +3395,8 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -3509,7 +3411,8 @@
     "key": "승인 요청",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -3662,6 +3565,13 @@
     ]
   },
   {
+    "key": "야간 조 실측값 기준으로 0.5°C 낮춰 적용",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "없음",
     "lang": "ko",
     "files": [
@@ -3769,6 +3679,27 @@
     ]
   },
   {
+    "key": "원래 크기로",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "위험",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "음성 입력",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "의견 수집",
     "lang": "ko",
     "files": [
@@ -3790,6 +3721,13 @@
     ]
   },
   {
+    "key": "일치하는 화면이 없어요",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "임계치",
     "lang": "ko",
     "files": [
@@ -3805,6 +3743,13 @@
   },
   {
     "key": "자재 투입 배차 명령 하달",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "작업 오더 {id}를 발행했습니다",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3868,6 +3813,13 @@
   },
   {
     "key": "전체 에이전트",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "정기 점검 중이라 이번 회차는 보류",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4029,6 +3981,13 @@
     ]
   },
   {
+    "key": "첨부 파일: {name}",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "초 전",
     "lang": "ko",
     "files": [
@@ -4078,6 +4037,13 @@
     ]
   },
   {
+    "key": "충돌 3건을 해결하고 병합했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "컨베이어-04",
     "lang": "ko",
     "files": [
@@ -4091,6 +4057,42 @@
       "src/App.tsx",
       "src/config/pharmaSite.ts",
       "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "케이스패커-02 감속기 토크 이상",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "켜짐",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "크게 보기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "클릭하면 다음 상태로 넘어갑니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "클릭해서 켜기/끄기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
     ]
   },
   {
@@ -4115,6 +4117,13 @@
     ]
   },
   {
+    "key": "테스트 완료: 엔티티 1,262개 중 {n}건이 규칙에 걸렸습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "통합 대시보드의 AI 오케스트레이션 패널로 이동",
     "lang": "ko",
     "files": [
@@ -4126,6 +4135,24 @@
     "lang": "ko",
     "files": [
       "src/App.tsx"
+    ]
+  },
+  {
+    "key": "파일 첨부",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "포장1라인",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/config/pharmaSite.ts",
+      "src/config/siteProfile.ts",
+      "src/services/demoResponses.ts",
+      "src/services/telemetry.ts"
     ]
   },
   {
@@ -4207,7 +4234,21 @@
     ]
   },
   {
+    "key": "피크 요금 시간대(13~17시)를 피해 세척·건조 공정을 06~09시로 옮기면 하루 전력비를 약 8% 줄일 수 있습니다. 포장 라인은 현재 일정 그대로 유지하는 것이 좋습니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "피크 전력 긴급 부하 제약",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "필수 여부 전환",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4350,7 +4391,8 @@
     "key": "닫기",
     "lang": "ko",
     "files": [
-      "src/components/AiSettingsModal.tsx"
+      "src/components/AiSettingsModal.tsx",
+      "src/components/ModuleTuning.tsx"
     ]
   },
   {
@@ -4459,6 +4501,188 @@
     ]
   },
   {
+    "key": "{time}에 적용한 설정 변경",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "① 설정을 움직여 보세요",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "② 결과가 이렇게 바뀌어요 (지금 → 바꾸면)",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "AI가 하는 일",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "그대로",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "기본값",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "기본값으로",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "나빠지는 지표가 {bad}개예요. 적용 전에 다시 생각해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "나빠짐",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "누가 쓰나요",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "다시 조정",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "대표적인 하루의 공장 데이터에 두 설정을 각각 적용해 계산한 값이에요. 실제 적용 후에는 실행 이력에 전/후 값이 남아요.",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "되돌리기",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "바꾼 설정",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "변경",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "엔",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "왼쪽 설정을 움직이면 아래 숫자와 그래프가 바로 다시 계산돼요.",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "이 설정 적용",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "이 화면은?",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "이렇게 해 보세요",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "좋아지는 지표 {good}개, 나빠지는 지표 {bad}개. 하나를 얻으면 다른 하나를 내주는 설정이에요.",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "좋아지는 지표 {good}개, 나빠지는 지표는 없어요.",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "좋아짐",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "지금",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "지금 설정",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
+    "key": "참고",
+    "lang": "ko",
+    "files": [
+      "src/components/ModuleTuning.tsx"
+    ]
+  },
+  {
     "key": "{effect}하면 {hours} 정지를 막고 약 {krw}을 아낄 수 있어요.",
     "lang": "ko",
     "files": [
@@ -4536,13 +4760,6 @@
     ]
   },
   {
-    "key": "AMR 2대 충전 대기로 자재 공급 지연",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx"
-    ]
-  },
-  {
     "key": "ESS 120kW 방전, 공조 부하 이전",
     "lang": "ko",
     "files": [
@@ -4567,7 +4784,8 @@
     "key": "감지",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -4579,6 +4797,13 @@
   },
   {
     "key": "결재할 건이 없어요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "공급사 로트 불량",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4634,6 +4859,27 @@
     ]
   },
   {
+    "key": "긴급 오더 3만 개 접수 (내일 18시 납기)",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 대응 계획",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "긴급 입고분 수입 검사 일정 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "내가 할 일",
     "lang": "ko",
     "files": [
@@ -4655,7 +4901,28 @@
     ]
   },
   {
+    "key": "대체 공급사에 필름 긴급 발주",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "라인 3 품목 전환 준비",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "라인 3·4 작업 순서 재배치, 자재 선출고",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4683,10 +4950,18 @@
     ]
   },
   {
-    "key": "물류 AI",
+    "key": "문제 필름 로트 사용 중지·격리, 의심 제품 출하 보류",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "물류 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -4725,21 +5000,22 @@
     ]
   },
   {
-    "key": "분석",
+    "key": "보류 팔레트 표시 확인",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "분석",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
     "key": "불량률 상승 조짐",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx"
-    ]
-  },
-  {
-    "key": "비핵심 부하 분산",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4763,18 +5039,12 @@
     "key": "생산 AI",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
     "key": "설비·IT 엔지니어",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx"
-    ]
-  },
-  {
-    "key": "세척실 바닥 누수로 미끄럼 위험",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4826,7 +5096,8 @@
     "key": "시간",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/config/moduleTuning.ts"
     ]
   },
   {
@@ -4854,11 +5125,26 @@
     "key": "안전 AI",
     "lang": "ko",
     "files": [
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "야간 잔업 편성 후 고객에게 납기 확정 회신",
+    "lang": "ko",
+    "files": [
       "src/components/RoleViews.tsx"
     ]
   },
   {
     "key": "야간 정지 시간에 감속기 점검 완료",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "야간 조 인원 확정",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4875,7 +5161,8 @@
     "key": "에너지 AI",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -4914,7 +5201,21 @@
     ]
   },
   {
+    "key": "원자재 입고 지연",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "이 구역에는 오늘 사건이 없어요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "이미 출하된 2개 팔레트 회수, 공급사에 클레임 제기",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4936,6 +5237,13 @@
   },
   {
     "key": "장력 자동 보정, 정지 없이 생산 유지",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "재고 있는 품목부터 생산 순서 변경",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4980,7 +5288,8 @@
     "key": "조치 제안",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -5005,6 +5314,13 @@
     ]
   },
   {
+    "key": "창고 대체 자재 위치 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "충전 순서 재배치, 공급 간격 단축",
     "lang": "ko",
     "files": [
@@ -5012,7 +5328,14 @@
     ]
   },
   {
-    "key": "케이스패커-02 감속기 토크 이상",
+    "key": "포장 1·2라인 인쇄 불량 급증 (불량률 6.8%)",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "포장 필름 입고 6시간 지연 통보",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5022,7 +5345,8 @@
     "key": "품질 AI",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -5043,7 +5367,8 @@
     "key": "해결",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -5072,6 +5397,2288 @@
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "회수 대상 거래처 연락",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AI 팀이 현장 사건을 스스로 해결하는 라이브 데모",
+    "lang": "ko",
+    "files": [
+      "src/config/edition.ts"
+    ]
+  },
+  {
+    "key": "넥스테크 위크 도쿄 2026 [가을]",
+    "lang": "ko",
+    "files": [
+      "src/config/edition.ts"
+    ]
+  },
+  {
+    "key": "'오늘 불량률 어때?' 또는 '에너지 절감 방법'처럼 물어보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "[AI 설정 바꿔 보기]에서 경보 기준을 바꾸고, 경보 수와 놓치는 불량이 어떻게 달라지는지 비교해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "6개 AI가 찾은 문제를 공장 지도 위에 표시하고, 감지 → 분석 → 조치 제안 → 승인 대기 → 해결 순서로 진행 상황을 보여줘요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "AI 추천이 실제 정비 작업이 되는 과정",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "AI가 제안한 조치와 그 이유",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "AI가 판단할 때 쓰는 설비 간 관계와 규칙·임계치를 한곳에서 관리해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "AI와 사람이 무엇을 언제 바꿨는지 기록",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "AI와 사람이 한 모든 조치를 시간 순서로 남겨, 나중에 되짚어 볼 수 있게 해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "CCTV 영상으로 불꽃·연기 자동 감지",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "CCTV 화면에서 불꽃과 연기를 찾아내고, 확실하면 즉시 경보를 울려요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "OEE 목표를 바꿔, 목표를 달성한 시간대가 얼마나 되는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "가용률·성능·양품률을 자동으로 계산하고, 점수를 깎아 먹는 가장 큰 원인을 찾아요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "각 AI의 제안을 한곳에 모으고, 왜 그렇게 판단했는지 근거를 붙여요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "각 라인이 지금 돌고 있는지, 멈췄는지",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "감속 시작 거리를 바꿔, 안전과 운반 속도 사이의 균형을 확인해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "경고 기준선을 움직여 보세요. 기준이 낮을수록 고장을 일찍 알지만 경고도 많아져요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "계약 전력을 넘지 않도록 부하 조절",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "계획과 실적의 차이를 미리 예측하고, 미달이 예상되면 일정 조정을 제안해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "계획만큼 만들고 있는지 차이 확인",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "고장 예측 결과로 작업 오더 초안을 만들고, 담당자와 우선순위를 제안해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "공장 전체를 한눈에, 역할별로 보는 첫 화면",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "공장에 쓰이는 AI 모델의 버전 관리",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "공장장, 생산 관리자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "공장장, 원가 담당",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "공정 엔지니어",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "공정마다 걸리는 시간을 비교해 라인 전체를 늦추는 병목 공정을 찾아요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "공정별 작업 시간과 병목 찾기",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "과거 데이터를 학습해 불량이 가장 적은 온도 구간을 찾아 추천해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "관리자 (결재권자)",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "기간·배치·설비별 검사 기록 찾기",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "누가 무엇을 보고 승인할 수 있는지",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "누구나",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "대기 전력 차단 시간을 바꿔, 하루 전력과 낭비가 얼마나 줄어드는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "데이터 사이언티스트, 엔지니어",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "라인 반장, 관리자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "라인 반장, 생산 관리자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "라인 상태를 실시간으로 모아 멈춘 라인과 그 이유를 바로 알려줘요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "라인·설비별 불량률을 실시간으로",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "로봇 주변의 사람을 감지해 미리 속도를 줄이고, 너무 가까우면 멈춰요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "많은 검사 기록 중 이상이 있던 배치를 자동으로 표시해 줘요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "말로 묻고 답을 받는 AI 비서",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "모델 버전·성능·배포 상태를 관리하고, 새 버전은 일부에만 먼저 적용해 검증해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "모든 사람 (작업자·관리자·엔지니어)",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "모든 설비의 건강 상태를 정상·주의·위험으로",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "목록에서 조치를 골라 바꾸기 전/후 값과 이유를 확인해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "목표 택트타임을 바꿔, 시간당 생산량과 작업자 대기 시간이 어떻게 바뀌는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "반복 고장 기준을 바꿔, 집중 관리할 설비가 어떻게 달라지는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "배치 번호 하나로 사용된 원자재·설비·작업자를 거꾸로 찾아, 문제가 생기면 영향 범위를 바로 알려줘요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "보전 관리자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "보전 담당자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "보전 담당자, 공장장",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "보전 담당자, 생산 계획 담당",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "보전 반장, 정비 기사",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "불량 판정 기준을 바꿔 보세요. 기준을 낮추면 놓치는 불량은 줄지만, 정상품을 불량으로 잡는 일이 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "불량률이 오를 조짐을 먼저 찾아 경보를 보내고, 원인이 될 만한 설비를 함께 알려줘요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "불량을 유형별로 모아 가장 큰 원인부터 순서대로 보여주고, 집중해서 고칠 유형을 골라줘요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "비가동 판정 시간을 바꿔, 짧은 정지가 얼마나 기록되는지 비교해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "비상시 전 공정 정지와 알림",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "사람의 결정을 기다리는 AI 제안",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "사용자를 추가하거나 역할별 권한을 바꿔 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "새 버전 배포 버튼을 눌러 모델이 단계적으로 배포되는 과정을 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "생산 계획 담당, 공장장",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "서버·GPU·데이터 지연을 감시해, AI가 늦게 판단하는 일이 없도록 해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비 상태 데이터로 남은 수명을 예측하고, 생산에 지장이 적은 정비 시점을 추천해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비 진동·온도의 변화와 경고 기준선",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비·규칙·관계를 정리한 공장 지식 지도",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비·에너지 담당자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비가 얼마나 더 버틸 수 있는지 예측",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비가 얼마나 효율적으로 일했는지 점수로",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비를 골라 남은 수명과 추천 정비 시점을 확인해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비별 전력을 실시간으로 나눠 보고, 평소보다 많이 쓰거나 멈춘 채 전기를 쓰는 설비를 찾아요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비별 정비 기록과 고장 통계",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "설비별로 전기를 얼마나 쓰는지",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "수집 주기와 보관 기간을 바꿔 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "시간대별 요금을 반영한 전기요금",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "시간대별 요금을 적용해 비용을 계산하고, 요금이 싼 시간대로 옮길 수 있는 작업을 찾아요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "시스템 관리자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "시스템 엔지니어",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "실링 온도를 바꿔 보세요. 173°C 근처에서 예상 불량률이 가장 낮아져요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "안전 관리자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "안전 관리자, 공장장",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "안전 관리자, 물류 담당",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "알림 채널과 중요도 기준을 켜고 꺼 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "어떤 불량이 가장 많은지 순위로",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "어떤 알림을 누구에게 어떻게 보낼지",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "엔지니어, 감사 담당",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "엔지니어, 공장장",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "여러 AI를 지휘하는 총괄 AI",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "여러 AI의 제안이 부딪히면 안전 > 품질 > 납기 > 비용 순서로 조율하고, 정해진 대응 절차(플레이북)를 실행해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "역추적 단계를 늘려, 연결되는 원자재 로트와 영향 배치 수를 비교해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "역할별로 볼 수 있는 화면과 승인할 수 있는 조치 수준을 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "오른쪽 메뉴에서 규칙이나 임계치를 열어 편집해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "온도에 따라 불량이 어떻게 변하는지",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "운반 로봇과 사람이 부딪히지 않게",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "위쪽 역할 버튼으로 작업자·관리자·엔지니어 화면을 바꿔 보세요. 같은 사건이 역할마다 다르게 보여요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "위험 신호가 확인되면 공정을 순서대로 안전하게 멈추고 문자·앱·사이렌으로 동시에 알려요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "위험도에 따라 제안을 나눠, 중요한 조치만 사람에게 승인을 요청해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "자동 승인 범위를 바꿔, 사람이 승인할 건수와 조치 속도가 어떻게 바뀌는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "자동 재계획 허용 범위를 바꿔, 달성률과 잔업 시간이 어떻게 바뀌는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "작업 행을 눌러 상태를 바꾸거나 새 작업을 만들어 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "정비 기록에서 고장 간격(MTBF)과 수리 시간(MTTR)을 계산하고, 같은 고장이 반복되는 설비를 찾아요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "정지 확인 시간을 바꿔, 정지 속도와 오작동 정지 사이의 균형을 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "제안을 승인하거나 반려해 보세요. 결정한 내용은 실행 이력에 남아요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "제품 배치를 원자재까지 거꾸로 추적",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "조회 기간과 이상 표시 기준을 바꿔, 다시 확인할 배치 수가 어떻게 달라지는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "주의 기준 점수를 바꿔, 몇 대가 주의 대상으로 바뀌는지 비교해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "중요도에 따라 알림 채널과 받는 사람을 나눠, 꼭 필요한 알림만 가게 해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "진동·온도·전류를 종합해 설비마다 건강 점수를 매기고, 나빠지는 설비를 먼저 알려줘요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "질문을 이해해 공장 데이터와 문서를 찾아 답하고, 근거 자료도 함께 보여줘요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "집중 관리 기준을 바꿔, 몇 가지 유형만 잡아도 불량이 얼마나 줄어드는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "카메라 검사 사진과 AI 판정 결과",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "카메라 사진에서 흠집·이물·인쇄 불량을 찾아 양품/불량을 판정하고, 애매한 건 사람에게 넘겨요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "판정 확신도를 바꿔, 오경보와 감지 속도 사이의 균형을 비교해 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "평소와 다른 진동·온도 패턴을 찾아 고장 전에 미리 경고해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "품질 검사원",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "품질 관리자",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "품질 담당자, 고객 대응 담당",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "품질 담당자, 라인 반장",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "플랫폼 서버와 데이터 흐름 상태",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "플레이북을 켜고 끄거나, 오케스트레이션 화면에서 AI들이 협업하는 모습을 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "피크 목표와 ESS 방전 시점을 바꿔, 최대 부하와 절감액을 비교해 보세요. 배터리를 너무 일찍 쓰면 진짜 피크 때 모자라요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "피크 시간대 가동 비중을 줄여, 월 전기요금이 얼마나 줄어드는지 보세요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "피크를 미리 예측해 배터리(ESS) 방전과 부하 이전을 제안하고, 승인하면 자동으로 제어해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/menuGuides.ts"
+    ]
+  },
+  {
+    "key": "0이면 모든 조치를 사람이 승인해요. 2면 위험도 2단계 이하는 AI가 바로 실행하고 기록만 남겨요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "0초면 신호 즉시 멈춰요. 늘리면 센서 오작동으로 인한 정지는 줄지만 정지가 늦어져요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "AI 제안 중 어느 위험도까지는 AI가 바로 실행하고, 어디부터 사람이 승인할지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "AI가 바로 실행해도 되는 위험도",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "AI가 사람 승인 없이 옮길 수 있는 생산량 비율이에요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "AI가 사진을 보고 얼마나 확신할 때 불량으로 판정할지 정해요. 애매한 제품은 사람에게 넘길 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "AI가 얼마나 확신할 때 화재 경보를 울릴지 정해요. 오경보와 늦은 감지 사이의 균형이에요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "ESS 방전 시작 (계약 전력 대비)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "kWh/일",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "OEE 목표",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "OEE 목표와 집계 단위를 정해요. 목표가 높을수록 개선할 곳이 더 많이 보여요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "가장 나쁜 설비의 건강 점수 (오늘)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "감속 시작 거리",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "감지까지",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "같은 고장이 이 횟수 이상이면 반복 고장 설비로 표시해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "같은 원자재를 쓴 배치를 며칠 전까지 찾을지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "개",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "개/분",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "개/시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "개선 알림",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "개월",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "건",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "건/년",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "건/월",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "건/일",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "건/주",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "건강 점수가 몇 점 아래로 내려가면 주의·위험으로 표시할지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "검사 기록에서 어떤 배치를 이상으로 표시할지 정해요. 표시된 배치는 담당자가 다시 확인해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "검사 속도",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "경고 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "경보 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "경보 기준 불량률",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "경보 전 확인 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "계산 기간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "계약 전력",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "계획 미달 경고 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "계획보다 얼마나 뒤처지면 경고하고, AI가 일정을 어디까지 스스로 다시 짤지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "고장 전에 미리 아는 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "공정별 작업 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "과소비 경고",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "과소비 경고 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "과소비 경고 기준 (평소 대비)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "기록되는 정지",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "기준 근처(±이 값)의 애매한 제품은 사람이 다시 봐요. 넓을수록 정확하지만 일이 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "기준을 넘은 상태가 이만큼 이어져야 경보를 울려요. 길수록 헛경보는 줄지만 대응이 늦어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "길게 묶을수록 그래프가 매끄러워지지만 짧은 문제는 묻혀요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "길수록 결과가 믿을 만하지만, 최근 변화가 묻힐 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "길수록 오래된 기록까지 보지만 확인할 양도 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "길수록 통계가 안정적이지만 최근 개선 효과가 덜 보여요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "낮추면 문제를 더 빨리 잡지만 경보가 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "낮출수록 고장을 일찍 알지만 헛경고가 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "낮출수록 과열을 일찍 알지만 여름철 헛경고가 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "너무 낮으면 접착 불량, 너무 높으면 필름 변형이 늘어요. AI가 찾은 최적점은 173°C예요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "높을수록 오경보는 줄지만 연기만 나는 초기 화재를 늦게 잡을 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "높이면 나빠지기 시작한 설비를 더 일찍 표시해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "높이면 정상품을 불량으로 잡는 일은 줄지만, 진짜 불량을 놓칠 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "놓치는 짧은 정지",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "놓친 불량 로트",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "다시 확인할 배치",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "단계",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "대",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "대기 알림",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "대기 알림 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "대기 전력 낭비",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "대기 전력 자동 차단",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "라인 속도",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "라인이 몇 분 이상 멈춰야 비가동으로 기록할지, 대기를 언제 알릴지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "리콜 시 확인할 배치",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "많을수록 원자재 공급사까지 찾아가지만 확인할 배치가 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "많이 옮길수록 요금은 줄지만 야간 근무가 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "멀리서부터 줄일수록 안전하지만 운반이 느려져요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "메인 모터 진동 (오늘)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "명",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "모터 온도 경고 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "목표 불량률",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "목표 택트타임",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "목표 택트타임(제품 하나를 만드는 데 허용하는 시간)과 병목 판정 기준을 정해요. AI가 이 목표에 맞춰 작업을 다시 나눠요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "목표까지 부족분",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "목표를 달성한 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "문제가 생긴 배치에서 몇 단계 앞까지 거슬러 올라가 추적할지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "미뤄지는 생산",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "반복 고장 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "반복 고장 설비",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "배치 불량률이 이 값을 넘으면 이상으로 표시해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "병목 판정 편차",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "병목으로 표시된 공정",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "부하가 계약 전력의 이 비율을 넘으면 배터리를 쓰기 시작해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "부하를 이 아래로 유지하려고 해요. 너무 낮게 잡으면 배터리가 일찍 바닥나 정작 큰 피크를 못 막아요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "분",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "분/일",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "분석 기간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "분석 신뢰도",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "불꽃이 이 시간 동안 계속 보여야 경보를 울려요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "불량 유형 중 어디까지를 집중 관리 대상으로 삼을지 정해요. 소수 유형이 대부분의 불량을 만든다는 점을 이용해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "불량 유형별 누적 비율 (많은 순)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "불량 판정 기준 (이상 점수)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "불량률이 어디까지 오르면 경보를 울릴지 정해요. 경보가 너무 잦으면 무시하게 되고, 너무 늦으면 불량품이 쌓여요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "불량을 놓치는 비율",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "비가동 판정 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "비상 신호를 얼마나 확인한 뒤 전 공정을 멈출지, 사이렌을 얼마나 크게 울릴지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "빠를수록 많이 검사하지만 사진이 흐려져 정확도가 조금 떨어져요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "빠를수록 많이 만들지만, 열이 충분히 전달되지 않아 불량이 늘 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "사람 재검사",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "사람 재검사 구간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "사람이 결재할 건",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "사람이 이 거리 안에 들어오면 로봇이 멈춰요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "사람이 확인하는 비율",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "사이렌 음량",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "설비가 이 시간 동안 놀면 대기 전력을 꺼요. 짧을수록 아끼지만 재가동이 조금 늦어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "수전 부하 (시간별)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "승인 기한",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "시간/주",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "시간당 검사량",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "시간당 생산량",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "시간당 양품",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "시간당 운반",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "시간대별 전력 사용",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "시끄러운 현장에서도 모두 들을 수 있게 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "실링 온도 설정",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "실적이 계획의 이 비율 아래로 떨어질 것 같으면 경고해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "아찔한 근접",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "야간으로 옮기는 물량",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "역추적 단계",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "연결되는 원자재 로트",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "예상 계획 달성률",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "예상 불량률",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "오경보",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "오늘 OEE (시간별)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "오늘 불량률 (시간별)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "오늘 불량률을 이 설정으로 다시 돌렸다면",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "오늘 전력 사용 (시간별)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "오작동 정지",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "요금이 비싼 시간대에 얼마나 가동하고, 얼마를 싼 야간으로 옮길지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "운반 로봇이 사람을 보면 몇 m 앞에서 속도를 줄이고 멈출지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "운반 지연",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "월 기본요금 절감",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "월 전기요금",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "위험 기준 점수",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "위험 설비",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "이 값 아래인 시간대를 개선 대상으로 표시해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "이 시간 안에 결정이 없으면 상급자에게 넘겨요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "이 점수 아래는 바로 정비가 필요한 위험 설비로 표시해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "이상 배치 표시 기준 불량률",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "이상 표시 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "일",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "자동 재계획 허용 범위",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "자재·작업자를 기다리며 서 있는 시간이 이만큼 넘으면 알려요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "작업자 대기 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "잔업",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "재계획 알림",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "전 공정 정지까지",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "전력을 어디까지 낮게 유지할지, 배터리(ESS)를 언제부터 쓸지 정해요. 배터리는 하루 용량이 정해져 있어 너무 일찍 쓰면 진짜 피크 때 모자라요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "전체 불량의 이만큼을 차지하는 유형까지 집중 관리해요. 높을수록 많이 줄지만 관리할 유형도 늘어요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "전체 생산 중 가장 비싼 시간대에 만드는 비율이에요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "점",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "정비 기록을 어떤 기준으로 묶어 볼지 정해요. 같은 고장이 반복되는 설비를 찾는 데 써요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "정상품을 불량으로 판정",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "정지 거리",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "정지 전 확인 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "제품 1개당 전기요금",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "조치까지 평균",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "조회 기간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "조회되는 배치",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "주의 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "주의 기준 점수",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "주의 설비",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "줄일 수 있는 불량",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "진동 경고 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "진동과 온도가 어디까지 오르면 경고할지 정해요. 고장을 얼마나 미리 알 수 있는지가 달라져요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "집계 단위",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "집중 관리 기준",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "집중 관리 기준 (누적 비율)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "집중 관리할 유형",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "짧게 잡으면 잦은 짧은 정지까지 잡아내지만 기록이 많아져요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "짧을수록 많이 만들지만, 가장 느린 공정보다 짧게는 못 맞춰요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "첫 대응까지",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "초",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "초기 화재를 놓칠 위험",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "최근 배치 불량률",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "추가 야간 인원",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "추적에 걸리는 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "판정 전 확인 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "평균 고장 간격 (MTBF)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "평균 수리 시간 (MTTR)",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "평균보다 이만큼 느린 공정을 병목으로 표시해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "평소보다 얼마나 더 쓰면 경고하고, 멈춘 설비의 대기 전력을 언제 끌지 정해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "평소보다 이 비율 이상 쓰면 경고해요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "포장기 실링 온도와 라인 속도를 바꾸면 불량률과 생산량이 어떻게 변할지 미리 봐요.",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "피크 목표",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "피크 요금 시간대 가동 비중",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "하루 경고",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "하루 경보",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "하루 전력 사용",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "하루 최대 부하",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "헛경고",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "현장 알림 도달률",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "화재 판정 확신도",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "확인에 드는 시간",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "회",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
+    ]
+  },
+  {
+    "key": "히터 전력",
+    "lang": "ko",
+    "files": [
+      "src/config/moduleTuning.ts"
     ]
   },
   {
@@ -5160,7 +7767,8 @@
     "key": "유틸리티실",
     "lang": "ko",
     "files": [
-      "src/config/pharmaSite.ts"
+      "src/config/pharmaSite.ts",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -5189,16 +7797,6 @@
     "lang": "ko",
     "files": [
       "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "포장1라인",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts",
-      "src/config/siteProfile.ts",
-      "src/services/demoResponses.ts",
-      "src/services/telemetry.ts"
     ]
   },
   {
@@ -6830,6 +9428,804 @@
     "lang": "ko",
     "files": [
       "src/constants.ts"
+    ]
+  },
+  {
+    "key": "{sec}초",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "0개 (보류·회수)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "0회",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "15분 안에 계약 전력을 넘을 가능성이 높다고 예측하고 슈퍼바이저에 보고",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "20시 입고 전까지 자재가 끊기지 않고 생산이 이어짐을 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "2개 팔레트 회수",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "AI 권한 범위 안의 조치라 바로 실행: 라인 3·4 순서 재배치, 자재 선출고, 정비 일정 이동",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "AI 권한 범위 안의 조치라 바로 실행: 배터리(ESS) 120kW 방전, 공조·컴프레서 부하 20분 이전",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "AI 권한 범위 안의 조치라 바로 실행: 생산 순서 변경, 창고 대체 자재 선출고, AMR 운반 순서 재배치",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "AI 권한 범위 안의 조치라 바로 실행: 해당 로트 사용 중지·격리, 다른 로트로 교체, 09시 이후 생산품 출하 보류",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "AI 팀 자율 대응",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "AI 팀이 대응 중…",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "ESS 120kW 방전",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "IMPIX AI 오케스트레이션",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "감지부터 첫 조치까지",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "갑자기 여러 라인에서 같은 불량이 쏟아지면, 원인을 찾는 동안에도 불량품이 계속 만들어지고 출하될 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "같은 공급사의 입고 지연이 이번 달 두 번째입니다. 다음 주 생산분 일부는 대체 공급사로 나눠 발주하는 것이 안전합니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "같은 지연이 이번 달 두 번째. 대체 공급사 긴급 발주(단가 4% 높음)는 구매 담당자에게 승인 요청",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "거래처에서 긴급 오더 접수: 제품 3만 개, 내일 18시까지",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "결과",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "계약 전력 초과",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "고객에게 간 불량품",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "곧 이 사건이 공장에서 일어납니다. 왼쪽 공장 지도와 이 패널을 함께 봐 주세요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "공급사 사정으로 원자재가 늦게 들어오면, 미리 손쓰지 않는 한 자재가 떨어지는 순간 라인이 멈춰요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "공급사가 포장 필름 입고가 14시에서 20시로 늦어진다고 통보",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "공장 전력이 계약 전력의 92%까지 상승 (오후 2시, 바깥 기온 33°C)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "교체 후 불량률이 0.8%로 회복. 보류 제품 4,800개는 전수 재검사 대상으로 분류",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "구매 담당자가 승인. 대체 공급사에 발주",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 3만 개, 내일까지",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 3만 개를 내일 18시까지 맞추려면 라인 3·4의 순서 재배치와 야간 1개 조 추가가 필요합니다. 다른 주문의 납기에는 영향이 없습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 납기",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "내일 15시 완료 (3시간 여유)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "다음 단계",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "다음 사례: {title}",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "대량 불량",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "대체 공급사 긴급 발주",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "더운 오후에 공조와 설비가 한꺼번에 돌면 계약 전력을 넘기 쉬워요. 한 번만 넘어도 1년 내내 기본요금이 올라요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인 모두 오늘 09시에 투입된 같은 필름 로트를 쓰고 있음을 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인에서 같은 인쇄 번짐 불량. 설비보다 자재 문제로 보고 슈퍼바이저에 보고",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인에서 불량이 한꺼번에 급증",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인의 인쇄기와 히터는 정상. 설비 원인이 아님",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "라인 3·4의 작업 순서를 바꾸고 야간 1개 조를 더하면 내일 15시 완료 가능",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "라인 4의 내일 10시 정기 정비는 모레로 미뤄도 위험 없음",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "로트 교체 20분을 반영해 오늘 생산 계획 재조정. 납기 영향 없음",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "막은 라인 정지",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "모든 판단이 기록돼요",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "물류·생산·품질 AI를 불러 대응 검토 시작",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "바뀐 계획으로 내일 15시 완료 예상. 다른 주문의 납기도 모두 지킴",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "보통은 고객 클레임이 들어온 뒤에야 알게 되고, 어느 로트가 문제인지 찾는 데 하루가 걸려요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "보통은 생산 관리자가 일정을 다시 짜고 부서마다 전화를 돌리느라 반나절이 걸려요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "보통은 자재가 떨어져 라인이 멈춘 뒤에야 일정을 바꾸고, 그동안 라인이 몇 시간씩 서요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "보통은 전력 경보가 울린 뒤 담당자가 뛰어가 설비를 끄지만, 이미 넘은 뒤인 경우가 많아요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "불량은 오늘 09시에 투입된 필름 로트에서 시작됐습니다. 그 뒤 출하된 2개 팔레트가 같은 로트를 사용해 회수가 필요합니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "사건 소개",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "사람",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "사람 결정",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "사람 손을 거치지 않고 해결. 관리자에게 결과만 보고하고 기록",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "사람이 반려. AI는 임시 조치만 유지하고 기록을 남김",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "사람이 한 일",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "사례 {n} / {total}",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "사례 고르기",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "생산 관리자가 승인. 야간 조 편성, 고객에게 내일 15시 납품 확정 회신",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "생산 설비는 그대로 두기로. 공조·컴프레서는 20분 늦춰도 품질 영향이 없음을 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "생산·물류·설비·품질 AI를 불러 대응 방안 검토 시작",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "설비 AI",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "센서",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "슈퍼바이저 AI",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "승인 1번",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "승인 불필요",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "아낀 비용 (추정)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "야간 1개 조 추가",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "야간 잔업 편성과 고객에게 보낼 납기 회신은 생산 관리자에게 승인 요청",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "어떤 데이터를 보고, 어떤 AI가, 왜 그렇게 판단했는지, 누가 승인했는지가 모두 남아요. 지금 화면은 엔지니어용 기록이에요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "없음 (결과 보고만)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "에너지·생산·안전 AI를 불러 줄일 수 있는 부하 검토",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "여기서부터는 사람이 결정해요",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "여름 오후 피크 전력 초과 위험",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "왼쪽 화면의 [승인] 버튼을 직접 눌러 보세요. 누르지 않으면 잠시 뒤 시연이 대신 승인해요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "원자재 창고",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "이미 출하된 2개 팔레트의 회수와 공급사 클레임은 품질 책임자에게 승인 요청",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자동 데모 일시정지",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자동 데모 재생",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자동 데모 진행 중",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자동 시연",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자율 실행",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자율 해결",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자재 입고 지연",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자재 재고 충분. 모자란 필름 2롤은 내일 오전 입고분을 앞당겨 받도록 조율",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "전력이 계약 전력의 92%에서 81%로 내려감. 피크 시간대 무사 통과",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "주문·구매 시스템",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "지금 계획대로면 1만 8천 개가 모자람. 슈퍼바이저에 보고",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "지금 재고로는 16시에 라인 1·2가 자재 부족으로 멈출 것으로 예측",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "직접 조작 중 · 손을 떼면 {sec}초 뒤 자동 데모로 돌아가요",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "처음 만드는 1천 개는 검사 표본을 2배로 늘려 품질 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "처음부터",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "큰 거래처에서 내일까지 제품을 더 달라는 긴급 주문이 들어왔어요. 생산 일정, 자재, 정비, 품질, 인력이 한꺼번에 얽히는 공장 전체의 문제예요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "판단 기록",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "포장 1·2라인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "포장 1·2라인 비전 검사 불량률이 0.8%에서 6.8%로 급등",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "포장 3·4라인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "포장 필름 입고 6시간 지연",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "품목이 바뀔 때 첫 제품 검사 조건을 자동으로 바꿔 둠",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "품질 책임자가 승인. 회수 지시, 공급사에 클레임 접수",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "품질·물류·설비·생산 AI를 불러 원인과 영향 범위 추적 시작",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "플랫폼이 없었다면: {text}",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "피크 시간대 직전마다 같은 패턴이 반복됩니다. 공조·컴프레서 부하를 피크 전에 미리 옮기는 운전 계획으로 바꾸면 계약 전력 초과를 막을 수 있습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "피크 전력",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "필름 재고가 있는 다른 품목을 먼저 생산하도록 순서를 바꾸면 라인이 멈추지 않음",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "해결 완료",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "현장에서 실제로 생기는 사건이 터지면, 여러 AI가 한 팀처럼 원인을 찾고 권한 안의 조치는 스스로 실행해요. 사람은 꼭 필요한 결정만 내려요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "화면을 직접 눌러 보세요. 궁금한 점은 부스 스태프에게!",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "환기·소방 설비는 줄이는 대상에서 제외",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "효과 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {

@@ -9,5 +9,6 @@ declare namespace NodeJS {
     GEMINI_API_KEY?: string;
     AI_PROXY_URL?: string;
     BUILD_REF?: string;
+    EDITION?: string;
   }
 }

@@ -144,16 +144,20 @@ import LanguageSwitcher from './i18n/LanguageSwitcher';
 import AiSettingsModal from './components/AiSettingsModal';
 import ThemeSwitcher from './theme/ThemeSwitcher';
 import { useToast } from './components/Toast';
+import { downloadCsv, downloadFile, downloadJson, fileStamp, simplePdf } from './utils/demoFiles';
 
 // Split out of the initial download: markdown is only needed for the
 // orchestration methodology tab.
 const MarkdownView = lazy(() => import('./components/MarkdownView'));
 import DemoModeBadge from './components/DemoModeBadge';
+import { IS_EXPO } from './config/edition';
+import { ExpoBanner, ExpoDirector } from './expo/ExpoDirector';
 import { ManagerView, RoleSwitcher, WorkerView, useIncidents, useViewerRole, type ViewerRole } from './components/RoleViews';
+import { AppliedTuningCard, ScreenGuide, TuningModal, menuSummary, useModuleTuning } from './components/ModuleTuning';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
 import { useLiveValue } from './hooks/useLiveValue';
-import { livingSeries, type PlantState } from './services/telemetry';
+import { livingSeries, type Excursion, type PlantState } from './services/telemetry';
 import { chartPalette, useTheme } from './theme';
 
 /** Placeholder shown while a lazily loaded chunk arrives. */
@@ -192,14 +196,42 @@ const INITIAL_DECISIONS: AgentDecision[] = [
   }
 ];
 
-/** Operator identity stamped on approvals and audit entries. */
-const CURRENT_OPERATOR = 'oddeye2796@gmail.com';
+const hoursAgo = (h: number) => new Date(Date.now() - h * 3_600_000).toISOString();
+
+/**
+ * At the booth the self-running demo files the live proposals itself, so the
+ * day starts with proposals people already approved: the recommendation list
+ * and the tracker are never empty.
+ */
+const EXPO_DECISIONS: AgentDecision[] = [
+  { ...INITIAL_DECISIONS[1], status: 'approved', timestamp: hoursAgo(3.5) },
+  { ...INITIAL_DECISIONS[0], status: 'approved', timestamp: hoursAgo(5) },
+];
+
+/** Earlier approvals and overrides, so the audit trail has a history before anyone acts. */
+const MOCK_OVERRIDE_LOGS: OverrideLog[] = [
+  { id: 'log-3', timestamp: hoursAgo(3.5), operator: 'Lee Eng', equipment: '케이스패커-02', parameter: 'replace_bearing', original_value: '교체 권장', new_value: '교체 권장', reason: 'Approved as recommended', type: 'ai_adjustment' },
+  { id: 'log-2', timestamp: hoursAgo(5), operator: 'Kim Tech', equipment: '수축포장기-01', parameter: 'adjust_temperature', original_value: 173, new_value: 172.5, reason: '야간 조 실측값 기준으로 0.5°C 낮춰 적용', type: 'manual_override' },
+  { id: 'log-1', timestamp: hoursAgo(7), operator: 'Park Maint', equipment: '포장1라인', parameter: 'load_balance', original_value: '비핵심 부하 분산', new_value: 'REJECTED', reason: '정기 점검 중이라 이번 회차는 보류', type: 'manual_override' },
+];
+
+/** Operator identity stamped on approvals and audit entries. A public booth shows no real account. */
+const CURRENT_OPERATOR = IS_EXPO ? 'demo@impix' : 'oddeye2796@gmail.com';
 
 /** Short random id for client-side records (logs, events, evidence packs). */
 const newId = () => Math.random().toString(36).slice(2, 11);
 
 /** Menu id of the integrated dashboard, and the anchor of its orchestration panel. */
 const DASHBOARD_MENU_ID = 0;
+/** Screens with their own view instead of the generic module page; the app puts the screen guide above them. */
+const OWN_VIEW_MENU_IDS = [DASHBOARD_MENU_ID, 8, 9, 22, 23, 31];
+
+/** The day's earlier alerts in the bell menu; each opens the screen it is about. */
+const EARLIER_NOTIFICATIONS: { id: string; title: string; time: string; tone: 'danger' | 'warning' | 'info'; menuId: number }[] = [
+  { id: 'n1', title: 'AMR 2대 충전 대기로 자재 공급 지연', time: '10:10', tone: 'warning', menuId: 20 },
+  { id: 'n2', title: '세척실 바닥 누수로 미끄럼 위험', time: '09:30', tone: 'danger', menuId: 0 },
+  { id: 'n3', title: '케이스패커-02 감속기 토크 이상', time: '06:20', tone: 'info', menuId: 9 },
+];
 const ORCHESTRATION_ANCHOR = 'orchestration-panel';
 
 export default function App() {
@@ -209,11 +241,12 @@ export default function App() {
   const { theme } = useTheme();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<MenuItem>(MENU_ITEMS[0]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // At a booth the dashboard gets the whole screen; the menu is one click away.
+  const [isSidebarOpen, setIsSidebarOpen] = useState(!IS_EXPO);
   const plant = useTelemetry();
   const sensorData = plant.history;
-  const [decisions, setDecisions] = useState<AgentDecision[]>(INITIAL_DECISIONS);
-  const [overrideLogs, setOverrideLogs] = useState<OverrideLog[]>([]);
+  const [decisions, setDecisions] = useState<AgentDecision[]>(IS_EXPO ? EXPO_DECISIONS : INITIAL_DECISIONS);
+  const [overrideLogs, setOverrideLogs] = useState<OverrideLog[]>(MOCK_OVERRIDE_LOGS);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { role: 'assistant', content: '안녕하세요! IMPIX AI Supervisor입니다. 무엇을 도와드릴까요?', timestamp: new Date().toLocaleTimeString() }
   ]);
@@ -224,6 +257,30 @@ export default function App() {
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const [viewerRole, setViewerRole] = useViewerRole();
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  // Matches a screen by its name, group or description, in whichever language is showing.
+  const searchResults = (() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return MENU_ITEMS.filter(item =>
+      [item.name, item.category, item.description, item.agent ?? ''].some(text => t(text).toLowerCase().includes(q) || text.toLowerCase().includes(q)),
+    ).slice(0, 8);
+  })();
+  const [readNotifs, setReadNotifs] = useState<Set<string>>(() => new Set());
+  // Proposals waiting on a person come first, then the day's earlier alerts.
+  const notifications = [
+    ...decisions
+      .filter(d => d.status === 'pending')
+      .map(d => ({
+        id: `d-${d.timestamp}-${d.action}`,
+        title: t('{equipment}: AI 제안 승인 대기', { equipment: t(d.target_equipment) }),
+        time: new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        tone: 'warning' as const,
+        menuId: DASHBOARD_MENU_ID,
+      })),
+    ...EARLIER_NOTIFICATIONS.map(n => ({ ...n, title: t(n.title) })),
+  ];
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   /** Switch view, optionally scrolling to an anchor once the new view has rendered. */
@@ -423,14 +480,18 @@ export default function App() {
                 <button
                   key={item.id}
                   onClick={() => navigateTo(item.id)}
+                  title={t(menuSummary(item.id) ?? item.description)}
                   aria-current={selectedMenu.id === item.id ? 'page' : undefined}
                   className={cn(
                     "sidebar-item w-full text-left text-sm",
                     selectedMenu.id === item.id && "sidebar-item-active"
                   )}
                 >
-                  <ChevronRight size={14} className={cn("transition-transform", selectedMenu.id === item.id && "rotate-90")} />
-                  <span className="truncate">{t(item.name)}</span>
+                  <ChevronRight size={14} className={cn("shrink-0 transition-transform", selectedMenu.id === item.id && "rotate-90")} />
+                  <span className="min-w-0">
+                    <span className="block truncate">{t(item.name)}</span>
+                    {menuSummary(item.id) && <span className="block truncate text-[10px] font-normal text-text-secondary">{t(menuSummary(item.id)!)}</span>}
+                  </span>
                 </button>
               ))}
             </div>
@@ -452,6 +513,7 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {IS_EXPO && <ExpoBanner />}
         {/* Header */}
         <header className="h-16 border-b border-border bg-surface/30 backdrop-blur-md flex items-center justify-between px-6 z-10">
           <div className="flex min-w-0 items-center gap-4">
@@ -477,16 +539,84 @@ export default function App() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={16} />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.nativeEvent.isComposing && searchResults[0]) {
+                    navigateTo(searchResults[0].id);
+                    setSearchQuery('');
+                  }
+                  if (e.key === 'Escape') setSearchQuery('');
+                }}
                 placeholder={t('지표, 에이전트, 로그 검색...')}
+                aria-label={t('지표, 에이전트, 로그 검색...')}
                 className="bg-surface border border-border rounded-full py-1.5 pl-10 pr-4 text-xs w-64 focus:outline-none focus:border-accent transition-colors"
               />
+              {searchQuery.trim() && (
+                <div className="absolute left-0 top-10 z-50 w-80 rounded-2xl border border-border bg-surface p-2 shadow-2xl" data-testid="search-results">
+                  {searchResults.length === 0 ? (
+                    <div className="px-3 py-4 text-center text-[11px] text-text-secondary">{t('일치하는 화면이 없어요')}</div>
+                  ) : searchResults.map(item => (
+                    <button
+                      key={item.id}
+                      onClick={() => { navigateTo(item.id); setSearchQuery(''); }}
+                      className="flex w-full flex-col rounded-xl px-3 py-2 text-left hover:bg-surface-hover"
+                    >
+                      <span className="text-xs font-bold">{t(item.name)}</span>
+                      <span className="text-[10px] text-text-secondary">{t(item.category)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <ThemeSwitcher />
             <LanguageSwitcher />
-            <button className="p-2 rounded-lg hover:bg-surface-hover relative" aria-label={t('알림')}>
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-bg" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsNotifOpen(open => !open)}
+                className="p-2 rounded-lg hover:bg-surface-hover relative"
+                aria-label={t('알림')}
+                aria-expanded={isNotifOpen}
+              >
+                <Bell size={20} />
+                {notifications.some(n => !readNotifs.has(n.id)) && (
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-bg" />
+                )}
+              </button>
+              {isNotifOpen && (
+                <div className="absolute right-0 top-11 z-50 w-80 rounded-2xl border border-border bg-surface p-2 shadow-2xl" data-testid="notifications">
+                  <div className="flex items-center justify-between px-2 py-1.5">
+                    <span className="text-xs font-bold">{t('알림')}</span>
+                    <button
+                      onClick={() => setReadNotifs(new Set(notifications.map(n => n.id)))}
+                      className="text-[10px] font-bold text-accent hover:underline"
+                    >{t('모두 읽음')}</button>
+                  </div>
+                  <div className="max-h-80 space-y-1 overflow-y-auto custom-scrollbar">
+                    {notifications.map(n => (
+                      <button
+                        key={n.id}
+                        onClick={() => {
+                          setReadNotifs(prev => new Set(prev).add(n.id));
+                          setIsNotifOpen(false);
+                          navigateTo(n.menuId);
+                        }}
+                        className={cn(
+                          "flex w-full items-start gap-2 rounded-xl p-2 text-left hover:bg-surface-hover",
+                          !readNotifs.has(n.id) && "bg-accent/5",
+                        )}
+                      >
+                        <span className={cn("mt-1 h-2 w-2 shrink-0 rounded-full", n.tone === 'danger' ? "bg-danger" : n.tone === 'warning' ? "bg-warning" : "bg-accent")} />
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[11px] font-bold leading-snug">{n.title}</span>
+                          <span className="block text-[10px] text-text-secondary">{n.time}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <button
               onClick={() => setIsAiSettingsOpen(true)}
               className="p-2 rounded-lg hover:bg-surface-hover cursor-pointer"
@@ -499,14 +629,17 @@ export default function App() {
         </header>
 
         {/* Dynamic Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+        <div className={cn("flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar", IS_EXPO && "pb-[50vh] lg:pb-6")}>
+          {OWN_VIEW_MENU_IDS.includes(selectedMenu.id) && (
+            <ScreenGuide key={selectedMenu.id} menuId={selectedMenu.id} defaultOpen={selectedMenu.id !== DASHBOARD_MENU_ID} />
+          )}
           {renderContent()}
         </div>
 
         {/* Chatbot Toggle Button */}
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent text-white shadow-2xl shadow-accent/40 flex items-center justify-center hover:scale-110 transition-transform z-50"
+          className={cn("fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent text-white shadow-2xl shadow-accent/40 flex items-center justify-center hover:scale-110 transition-transform z-50", IS_EXPO && "bottom-[52vh] lg:bottom-6 lg:right-[424px] xl:right-[464px]")}
           aria-label={t('AI Supervisor')}
         >
           {isChatOpen ? <X size={24} /> : <MessageSquare size={24} />}
@@ -519,7 +652,7 @@ export default function App() {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] bg-surface border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
+              className={cn("fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] bg-surface border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50", IS_EXPO && "lg:right-[424px] xl:right-[464px]")}
             >
               <div className="p-4 border-b border-border bg-accent/10 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
@@ -591,6 +724,15 @@ export default function App() {
 
         <AiSettingsModal isOpen={isAiSettingsOpen} onClose={() => setIsAiSettingsOpen(false)} />
       </main>
+
+      {IS_EXPO && (
+        <ExpoDirector
+          decisions={decisions}
+          setDecisions={setDecisions}
+          onApprove={handleApprove}
+          setRole={role => { setSelectedMenu(MENU_ITEMS[0]); setViewerRole(role); }}
+        />
+      )}
     </div>
   );
 }
@@ -770,7 +912,31 @@ function RULPredictionView() {
   );
 }
 
+const MOCK_WORK_ORDERS = [
+  { id: 'WO-2024-001', asset: '수축포장기-01', type: 'Preventive', priority: 'Medium', status: 'In Progress', user: 'Kim Tech' },
+  { id: 'WO-2024-002', asset: '로봇팔-02', type: 'Corrective', priority: 'High', status: 'Pending', user: 'Lee Eng' },
+  { id: 'WO-2024-003', asset: '컨베이어-04', type: 'Inspection', priority: 'Low', status: 'Completed', user: 'Park Maint' },
+  { id: 'WO-2024-004', asset: '모터-08', type: 'Corrective', priority: 'Urgent', status: 'Pending', user: 'Choi Tech' },
+];
+
+/** What a new order is raised for, in turn, so repeated clicks add different work. */
+const NEW_ORDER_POOL = [
+  { asset: '케이스패커-02', type: 'Corrective', priority: 'High', user: 'Kim Tech' },
+  { asset: '컨베이어-04', type: 'Preventive', priority: 'Medium', user: 'Park Maint' },
+  { asset: '모터-08', type: 'Inspection', priority: 'Low', user: 'Lee Eng' },
+];
+
+const NEXT_STATUS: Record<string, string> = { Pending: 'In Progress', 'In Progress': 'Completed', Completed: 'Pending' };
+
 function WorkOrderView() {
+  const [orders, setOrders] = useState(MOCK_WORK_ORDERS);
+  const { showToast } = useToast();
+  const addOrder = () => {
+    const pick = NEW_ORDER_POOL[orders.length % NEW_ORDER_POOL.length];
+    const id = `WO-2024-${String(orders.length + 1).padStart(3, '0')}`;
+    setOrders(prev => [{ id, ...pick, status: 'Pending' }, ...prev]);
+    showToast(t('작업 오더 {id}를 발행했습니다', { id }));
+  };
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -778,7 +944,7 @@ function WorkOrderView() {
           <h2 className="text-2xl font-bold">{t('Maintenance Work Orders')}</h2>
           <p className="text-sm text-text-secondary">{t('Manage and track maintenance tasks across the facility')}</p>
         </div>
-        <button className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
+        <button onClick={addOrder} className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
           <Wrench size={14} /> {t('New Order')}
         </button>
       </div>
@@ -796,15 +962,15 @@ function WorkOrderView() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {[
-              { id: 'WO-2024-001', asset: t('수축포장기-01'), type: 'Preventive', priority: 'Medium', status: 'In Progress', user: 'Kim Tech' },
-              { id: 'WO-2024-002', asset: t('로봇팔-02'), type: 'Corrective', priority: 'High', status: 'Pending', user: 'Lee Eng' },
-              { id: 'WO-2024-003', asset: t('컨베이어-04'), type: 'Inspection', priority: 'Low', status: 'Completed', user: 'Park Maint' },
-              { id: 'WO-2024-004', asset: t('모터-08'), type: 'Corrective', priority: 'Urgent', status: 'Pending', user: 'Choi Tech' },
-            ].map((order, i) => (
-              <tr key={i} className="hover:bg-surface-hover transition-colors">
+            {orders.map((order, i) => (
+              <tr
+                key={order.id}
+                onClick={() => setOrders(prev => prev.map((o, j) => j === i ? { ...o, status: NEXT_STATUS[o.status] } : o))}
+                title={t('클릭하면 다음 상태로 넘어갑니다')}
+                className="hover:bg-surface-hover transition-colors cursor-pointer"
+              >
                 <td className="px-4 py-4 text-xs font-mono text-accent">{order.id}</td>
-                <td className="px-4 py-4 text-xs font-medium">{order.asset}</td>
+                <td className="px-4 py-4 text-xs font-medium">{t(order.asset)}</td>
                 <td className="px-4 py-4 text-xs text-text-secondary">{order.type}</td>
                 <td className="px-4 py-4">
                   <span className={cn(
@@ -1102,16 +1268,16 @@ function OverrideLogView({ logs }: { logs: OverrideLog[] }) {
                       {new Date(log.timestamp).toLocaleString()}
                     </td>
                     <td className="px-4 py-4 text-xs font-medium">{log.operator}</td>
-                    <td className="px-4 py-4 text-xs">{log.equipment}</td>
+                    <td className="px-4 py-4 text-xs">{t(log.equipment)}</td>
                     <td className="px-4 py-4 text-xs font-mono text-accent">{log.parameter}</td>
                     <td className="px-4 py-4 text-xs">
                       <div className="flex items-center gap-2">
-                        <span className="text-text-secondary line-through">{log.original_value}</span>
+                        <span className="text-text-secondary line-through">{tValue(log.original_value)}</span>
                         <ChevronRight size={12} className="text-text-secondary" />
                         <span className={cn(
                           "font-bold",
                           log.new_value === 'REJECTED' ? "text-danger" : "text-accent"
-                        )}>{log.new_value}</span>
+                        )}>{tValue(log.new_value)}</span>
                       </div>
                     </td>
                     <td className="px-4 py-4">
@@ -1122,8 +1288,8 @@ function OverrideLogView({ logs }: { logs: OverrideLog[] }) {
                         {log.type.replace('_', ' ')}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-xs text-text-secondary max-w-xs truncate" title={log.reason}>
-                      {log.reason}
+                    <td className="px-4 py-4 text-xs text-text-secondary max-w-xs truncate" title={t(log.reason)}>
+                      {t(log.reason)}
                     </td>
                   </tr>
                 ))
@@ -2055,7 +2221,8 @@ const AGENT_HIERARCHY: {
   role: string;
   decisionAgent: string;
   menuId: number | null;
-  excursion?: 'temperature' | 'vibration' | 'energy';
+  /** Plant events that stall this agent until they clear. */
+  excursions?: Excursion['kind'][];
   color: string;
   hex: string;
   icon: React.ReactNode;
@@ -2065,7 +2232,7 @@ const AGENT_HIERARCHY: {
 }[] = [
   {
     key: 'quality', coordId: 'qual', name: 'AI 품질 에이전트', role: '비전 기반 결함 100% 전수 검출',
-    decisionAgent: 'Quality Agent', menuId: 1, excursion: 'temperature',
+    decisionAgent: 'Quality Agent', menuId: 1, excursions: ['temperature', 'mass_defect'],
     color: 'text-emerald-500', hex: '#10b981', icon: <ShieldCheck size={16} />,
     models: [{ name: 'Anomalib', task: '비지도 이상 탐지' }, { name: 'YOLOv8', task: '결함 객체 검출' }],
     tasks: ['포장1라인 실링 비전 전수검사', 'B라인 핀홀 결함 재학습 데이터 수집', '불량 유형별 원인 추적 리포트 생성', 'YOLOv8 결함 검출 임계값 보정'],
@@ -2073,7 +2240,7 @@ const AGENT_HIERARCHY: {
   },
   {
     key: 'pm', coordId: 'pm', name: 'AI 설비예지보전 에이전트', role: '진동·온도·토크 시계열 분석',
-    decisionAgent: 'PM Agent', menuId: 6, excursion: 'vibration',
+    decisionAgent: 'PM Agent', menuId: 6, excursions: ['vibration'],
     color: 'text-purple-500', hex: '#8b5cf6', icon: <Wrench size={16} />,
     models: [{ name: 'LSTM', task: '시계열 이상 예측' }, { name: 'RUL Regressor', task: '잔여수명·돌발 셧다운 예측' }],
     tasks: ['수축포장기-01 진동 스펙트럼 분석', '메인 모터 베어링 잔여수명 예측', '정비 작업지시서 자동 발행', '감속기 토크 이상 패턴 학습'],
@@ -2089,7 +2256,7 @@ const AGENT_HIERARCHY: {
   },
   {
     key: 'production', coordId: 'prod', name: 'AI 생산 최적화 에이전트', role: '택트타임·설비종합효율 실시간 추적',
-    decisionAgent: 'Production Agent', menuId: 11,
+    decisionAgent: 'Production Agent', menuId: 11, excursions: ['rush_order'],
     color: 'text-blue-500', hex: '#3b82f6', icon: <TrendingUp size={16} />,
     models: [{ name: 'XGBoost', task: 'OEE 손실 요인 분석' }, { name: 'Bottleneck Detector', task: '병목 구간 식별' }],
     tasks: ['포장1라인 택트타임 추적', 'OEE 손실 요인 분해 분석', '긴급 오더 생산 일정 재조정', '라인 밸런싱 시뮬레이션'],
@@ -2097,7 +2264,7 @@ const AGENT_HIERARCHY: {
   },
   {
     key: 'energy', coordId: 'energy', name: 'AI 에너지 에이전트', role: '피크 부하·태양광 통합 분석',
-    decisionAgent: 'Energy Agent', menuId: 16, excursion: 'energy',
+    decisionAgent: 'Energy Agent', menuId: 16, excursions: ['energy'],
     color: 'text-orange-500', hex: '#f97316', icon: <Zap size={16} />,
     models: [{ name: 'Prophet', task: '피크 부하 예측' }, { name: 'GRU', task: '태양광 발전량 예측' }],
     tasks: ['15분 단위 피크 부하 예측', '태양광 발전량 예측 반영', 'ESS 충·방전 스케줄 최적화', '공조 설비 부하 이전 계획'],
@@ -2105,7 +2272,7 @@ const AGENT_HIERARCHY: {
   },
   {
     key: 'logistics', coordId: 'logistics', name: 'AI 물류 에이전트', role: 'AMR 최적 경로·회피 시뮬레이션',
-    decisionAgent: 'Logistics Agent', menuId: null,
+    decisionAgent: 'Logistics Agent', menuId: null, excursions: ['supply_delay'],
     color: 'text-yellow-500', hex: '#eab308', icon: <Truck size={16} />,
     models: [{ name: 'RL Path Planner', task: 'AMR 최적 경로 탐색' }, { name: 'RTD / ACS', task: '배차·이송 명령 하달' }],
     tasks: ['AMR 이송 경로 최적화', '완제품 출하 버퍼 슬롯 배정', '자재 투입 배차 명령 하달', 'AMR 충전 스케줄 조정'],
@@ -2189,7 +2356,7 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
     const phase = t0 % cycle;
     resolvedToday[agent.key] = 18 + i * 3 + round;
 
-    const byExcursion = agent.excursion !== undefined && plant.excursion?.kind === agent.excursion;
+    const byExcursion = plant.excursion !== null && (agent.excursions ?? []).includes(plant.excursion.kind);
     const byRotation = !plant.excursion && agent.key === rotatingStall && stallPhase < STALL_TICKS;
     if (byExcursion || byRotation) {
       stalled.add(agent.key);
@@ -2720,7 +2887,7 @@ function SupervisorCenterView({ onOpenOrchestration }: { onOpenOrchestration: ()
   const [evidencePacks, setEvidencePacks] = useState<EvidencePack[]>([]);
   const [coordinationEvents, setCoordinationEvents] = useState<CoordinationEvent[]>(MOCK_COORDINATION_EVENTS.slice(0, 2));
 
-  const [playbooks] = useState<Playbook[]>(MOCK_PLAYBOOKS);
+  const [playbooks, setPlaybooks] = useState<Playbook[]>(MOCK_PLAYBOOKS);
 
   const activeGoal: Goal = MOCK_GOALS[0];
 
@@ -2991,16 +3158,22 @@ function SupervisorCenterView({ onOpenOrchestration }: { onOpenOrchestration: ()
             </h3>
             <div className="space-y-3">
               {playbooks.map(pb => (
-                <div key={pb.id} className="p-3 rounded-lg bg-surface-hover border border-border hover:border-accent/50 transition-colors cursor-pointer group">
+                <button
+                  key={pb.id}
+                  onClick={() => setPlaybooks(prev => prev.map(p => p.id === pb.id ? { ...p, status: p.status === 'Active' ? 'Inactive' : 'Active' } : p))}
+                  aria-pressed={pb.status === 'Active'}
+                  title={t('클릭해서 켜기/끄기')}
+                  className="block w-full text-left p-3 rounded-lg bg-surface-hover border border-border hover:border-accent/50 transition-colors cursor-pointer group"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold group-hover:text-accent">{t(pb.name)}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-bold uppercase">{pb.status}</span>
+                    <span className={cn("text-[10px] px-1.5 py-0.5 rounded font-bold uppercase", pb.status === 'Active' ? "bg-emerald-500/10 text-emerald-500" : "bg-border/40 text-text-secondary")}>{pb.status}</span>
                   </div>
                   <div className="text-[10px] text-text-secondary flex items-center gap-1">
                     <Zap size={10} />
                     {t('Trigger:')} {t(pb.triggerEvent)}
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -3365,6 +3538,7 @@ function VisionInspectionViewer() {
                 <motion.div 
                   key={item.id}
                   whileHover={{ scale: 1.05, translateY: -2 }}
+                  onClick={() => { if (status !== 'Inspecting') { setCurrentResult(item.result); setStatus('Complete'); } }}
                   className={cn(
                     "shrink-0 w-24 h-24 rounded-lg border flex flex-col items-center justify-center gap-1 transition-all cursor-pointer relative overflow-hidden",
                     item.result === 'OK' ? "bg-emerald-500/5 border-emerald-500/20" : "bg-red-500/5 border-red-500/20"
@@ -3392,11 +3566,125 @@ function VisionInspectionViewer() {
   );
 }
 
+/* Mock records for the management console, so every list in it can grow, shrink and export. */
+const MOCK_USERS = [
+  { name: 'Admin User', email: 'admin@factory.ai', role: 'System Admin', status: 'Online', last: 'Just now' },
+  { name: 'John Doe', email: 'john.d@factory.ai', role: 'Operator', status: 'Online', last: '12m ago' },
+  { name: 'Sarah Chen', email: 's.chen@factory.ai', role: 'Quality Lead', status: 'Offline', last: '2h ago' },
+  { name: 'Mike Ross', email: 'm.ross@factory.ai', role: 'Maintenance', status: 'Online', last: '45m ago' },
+];
+
+const NEW_USER_POOL = [
+  { name: 'Yuki Tanaka', email: 'y.tanaka@factory.ai', role: 'Operator' },
+  { name: 'Ken Sato', email: 'k.sato@factory.ai', role: 'Maintenance' },
+  { name: 'Emma Wilson', email: 'e.wilson@factory.ai', role: 'Quality Lead' },
+  { name: 'Min-jun Park', email: 'mj.park@factory.ai', role: 'Operator' },
+];
+
+const MOCK_AUDIT = [
+  { time: '2024-03-18 09:42:12', user: 'admin_01', action: 'Modified Threshold: Vibration Limit', severity: 'info', target: 'ID: 12 (Motor A)', category: 'Config' },
+  { time: '2024-03-18 09:38:05', user: 'system', action: 'Auto-rollback: Model v2.4.1 -> v2.4.0', severity: 'warn', target: 'Model Registry', category: 'System' },
+  { time: '2024-03-18 09:15:22', user: 'john_doe', action: 'Failed Login Attempt', severity: 'error', target: 'Auth Service', category: 'Security' },
+  { time: '2024-03-18 08:55:10', user: 'admin_01', action: 'User Created: sarah_c', severity: 'success', target: 'User Directory', category: 'Security' },
+  { time: '2024-03-18 08:30:45', user: 'system', action: 'Scheduled Backup Completed', severity: 'success', target: 'Database', category: 'System' },
+  { time: '2024-03-18 08:12:33', user: 'mike_r', action: 'Emergency Stop Triggered', severity: 'error', target: 'Line 01', category: 'Security' },
+];
+
+const MOCK_HEALTH = [
+  { service: 'API Gateway', status: 'Healthy', latency_ms: 12, uptime: '99.99%' },
+  { service: 'Main Database', status: 'Healthy', latency_ms: 5, uptime: '99.98%' },
+  { service: 'ML Inference', status: 'Warning', latency_ms: 450, uptime: '98.5%' },
+  { service: 'Kafka Stream', status: 'Healthy', latency_ms: 2, uptime: '100%' },
+  { service: 'Redis Cache', status: 'Healthy', latency_ms: 1, uptime: '99.99%' },
+  { service: 'Auth Service', status: 'Healthy', latency_ms: 18, uptime: '99.95%' },
+];
+
+const MOCK_ENTITIES = [
+  { name: 'Manufacturing Line', parent: 'Asset', props: 12, instances: 4, icon: Factory },
+  { name: 'Electric Motor', parent: 'Equipment', props: 8, instances: 124, icon: Cpu },
+  { name: 'Quality Sensor', parent: 'IoT Device', props: 6, instances: 56, icon: Zap },
+  { name: 'Raw Material', parent: 'Inventory', props: 5, instances: 12, icon: Box },
+];
+
+const MOCK_RULES = [
+  { name: 'Mandatory Telemetry', desc: 'All active motors must report vibration data every 5s.', status: 'Active', icon: Code2 },
+  { name: 'Parent-Child Constraint', desc: 'Sensors cannot exist without a parent equipment assignment.', status: 'Active', icon: Link },
+  { name: 'Data Type Integrity', desc: 'Temperature values must be within -40 to 150 range.', status: 'Active', icon: FileCode },
+];
+
+const EXTRA_CONDITIONS = [
+  'entity.properties.temperature > 120',
+  'entity.status == \'running\'',
+  'entity.parent.line == \'Line_01\'',
+];
+
+const ONTOLOGY_RELATIONS = [
+  { source: 'Line_01', relation: 'composed_of', target: 'Motor_A12' },
+  { source: 'Motor_A12', relation: 'monitored_by', target: 'Vibration_Sensor_4' },
+  { source: 'Vibration_Sensor_4', relation: 'reports_to', target: 'Edge_Gateway_2' },
+  { source: 'Motor_A12', relation: 'connected_to', target: 'PLC_04' },
+];
+
+const ONTOLOGY_JSONLD = {
+  '@context': { '@vocab': 'https://impix.ai/ontology#', rdfs: 'http://www.w3.org/2000/01/rdf-schema#' },
+  '@graph': [
+    { '@id': 'Asset', '@type': 'rdfs:Class' },
+    { '@id': 'Equipment', '@type': 'rdfs:Class', 'rdfs:subClassOf': 'Asset' },
+    { '@id': 'ElectricMotor', '@type': 'rdfs:Class', 'rdfs:subClassOf': 'Equipment' },
+    ...ONTOLOGY_RELATIONS.map(r => ({ '@id': r.source, [r.relation]: { '@id': r.target } })),
+  ],
+};
+
+/** The relation graph in the format a button on the export screen promises. */
+function exportOntology(ext: string) {
+  const name = `ontology-graph-${fileStamp()}${ext}`;
+  const nodes = [...new Set(ONTOLOGY_RELATIONS.flatMap(r => [r.source, r.target]))];
+  switch (ext) {
+    case '.json':
+      return downloadJson(name, ONTOLOGY_JSONLD);
+    case '.rdf':
+      return downloadFile(name, `<?xml version="1.0"?>\n<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:i="https://impix.ai/ontology#">\n${ONTOLOGY_RELATIONS.map(r => `  <rdf:Description rdf:about="i:${r.source}"><i:${r.relation} rdf:resource="i:${r.target}"/></rdf:Description>`).join('\n')}\n</rdf:RDF>\n`, 'application/rdf+xml');
+    case '.graphml':
+      return downloadFile(name, `<?xml version="1.0"?>\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns"><graph edgedefault="directed">\n${nodes.map(n => `  <node id="${n}"/>`).join('\n')}\n${ONTOLOGY_RELATIONS.map((r, i) => `  <edge id="e${i}" source="${r.source}" target="${r.target}"/>`).join('\n')}\n</graph></graphml>\n`, 'application/xml');
+    case '.csv':
+      return downloadCsv(name, nodes.map(a => Object.fromEntries([['node', a], ...nodes.map(b => [b, ONTOLOGY_RELATIONS.some(r => r.source === a && r.target === b) ? 1 : 0])])));
+    case '.svg': {
+      const pos = (i: number) => ({ x: 90 + (i % 3) * 200, y: 70 + Math.floor(i / 3) * 140 });
+      const at = (n: string) => pos(nodes.indexOf(n));
+      return downloadFile(name, `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" font-family="sans-serif" font-size="12">\n${ONTOLOGY_RELATIONS.map(r => `<line x1="${at(r.source).x}" y1="${at(r.source).y}" x2="${at(r.target).x}" y2="${at(r.target).y}" stroke="#10b981"/>`).join('\n')}\n${nodes.map((n, i) => `<g><rect x="${pos(i).x - 70}" y="${pos(i).y - 18}" width="140" height="36" rx="8" fill="#1e293b" stroke="#10b981"/><text x="${pos(i).x}" y="${pos(i).y + 4}" fill="#fff" text-anchor="middle">${n}</text></g>`).join('\n')}\n</svg>\n`, 'image/svg+xml');
+    }
+    default:
+      return downloadFile(name, simplePdf([
+        'IMPIX Ontology Specification',
+        `Generated ${new Date().toISOString()}`,
+        '',
+        ...MOCK_ENTITIES.map(e => `Entity: ${e.name} (parent ${e.parent}, ${e.props} properties)`),
+        '',
+        ...ONTOLOGY_RELATIONS.map(r => `Relation: ${r.source} --${r.relation}--> ${r.target}`),
+      ]));
+  }
+}
+
 function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, isOpen: boolean, onClose: () => void }) {
   const live = useLiveValue();
   const chart = chartPalette();
   const [subView, setSubView] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const { showToast } = useToast();
+  const [users, setUsers] = useState(MOCK_USERS);
+  const [auditFilter, setAuditFilter] = useState('All Events');
+  const [selectedRole, setSelectedRole] = useState('System Admin');
+  const [entities, setEntities] = useState(MOCK_ENTITIES);
+  const [draftProps, setDraftProps] = useState([
+    { key: 'serial_number', type: 'string' },
+    { key: 'installation_date', type: 'timestamp' },
+    { key: 'operating_status', type: 'enum' },
+  ]);
+  const [entityProps, setEntityProps] = useState([1, 2, 3, 4].map(i => ({ key: `property_key_${i}`, required: true })));
+  const [conflicts, setConflicts] = useState<Record<number, 'local' | 'remote'>>({});
+  const [ruleConditions, setRuleConditions] = useState<string[]>([]);
+  const [rules, setRules] = useState(MOCK_RULES);
+  const importRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -3444,7 +3732,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   className="w-full bg-bg border border-border rounded-lg py-2 pl-10 pr-4 text-xs focus:border-accent outline-none"
                 />
               </div>
-              <button className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold hover:opacity-90 transition-opacity">
+              <button
+                onClick={() => {
+                  const next = NEW_USER_POOL[users.length % NEW_USER_POOL.length];
+                  setUsers(prev => [{ ...next, status: 'Online', last: 'Just now' }, ...prev]);
+                  showToast(t('사용자 {name}을(를) 추가했습니다', { name: next.name }));
+                }}
+                className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold hover:opacity-90 transition-opacity"
+              >
                 {t('Add User')}
               </button>
             </div>
@@ -3460,12 +3755,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {[
-                    { name: 'Admin User', email: 'admin@factory.ai', role: 'System Admin', status: 'Online', last: 'Just now' },
-                    { name: 'John Doe', email: 'john.d@factory.ai', role: 'Operator', status: 'Online', last: '12m ago' },
-                    { name: 'Sarah Chen', email: 's.chen@factory.ai', role: 'Quality Lead', status: 'Offline', last: '2h ago' },
-                    { name: 'Mike Ross', email: 'm.ross@factory.ai', role: 'Maintenance', status: 'Online', last: '45m ago' },
-                  ].map((user, i) => (
+                  {users.map((user, i) => (
                     <tr key={i} className="hover:bg-bg/30 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -3491,7 +3781,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                       </td>
                       <td className="px-4 py-3 text-text-secondary">{user.last}</td>
                       <td className="px-4 py-3 text-right">
-                        <button className="text-accent hover:underline font-bold">{t('Manage')}</button>
+                        <button
+                          onClick={() => {
+                            const status = user.status === 'Online' ? 'Offline' : 'Online';
+                            setUsers(prev => prev.map((u, j) => j === i ? { ...u, status } : u));
+                            showToast(t('{name} 계정을 {status} 상태로 바꿨습니다', { name: user.name, status: t(status) }), 'info');
+                          }}
+                          className="text-accent hover:underline font-bold"
+                        >{t('Manage')}</button>
                       </td>
                     </tr>
                   ))}
@@ -3505,7 +3802,11 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {['System Admin', 'Operator', 'Auditor', 'Viewer'].map(role => (
-                <div key={role} className="p-4 rounded-xl bg-surface border border-border hover:border-accent/30 transition-colors cursor-pointer group">
+                <div
+                  key={role}
+                  onClick={() => setSelectedRole(role)}
+                  className={cn("p-4 rounded-xl bg-surface border hover:border-accent/30 transition-colors cursor-pointer group", selectedRole === role ? "border-accent ring-1 ring-accent" : "border-border")}
+                >
                   <div className="flex items-center justify-between mb-3">
                     <Shield className="text-accent" size={20} />
                     <div className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -3531,10 +3832,9 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 ].map((row, i) => (
                   <div key={i} className="grid grid-cols-5 gap-4 py-2 border-b border-border/50 text-[11px] items-center">
                     <div className="font-bold text-text-primary">{row.module}</div>
-                    <div className="text-emerald-500 font-bold">{row.admin}</div>
-                    <div className="text-text-secondary">{row.operator}</div>
-                    <div className="text-text-secondary">{row.auditor}</div>
-                    <div className="text-text-secondary">{row.viewer}</div>
+                    {([['System Admin', row.admin], ['Operator', row.operator], ['Auditor', row.auditor], ['Viewer', row.viewer]] as const).map(([role, value]) => (
+                      <div key={role} className={cn(role === selectedRole ? "text-emerald-500 font-bold" : "text-text-secondary")}>{value}</div>
+                    ))}
                   </div>
                 ))}
               </div>
@@ -3547,9 +3847,9 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
             <div className="flex items-center justify-between mb-2">
               <div className="flex gap-2">
                 {['All Events', 'Security', 'Config', 'System'].map(f => (
-                  <button key={f} className={cn(
+                  <button key={f} onClick={() => setAuditFilter(f)} aria-pressed={auditFilter === f} className={cn(
                     "px-3 py-1 rounded-full text-[10px] font-bold border transition-colors",
-                    f === 'All Events' ? "bg-accent text-bg border-accent" : "bg-surface border-border text-text-secondary hover:border-accent/50"
+                    f === auditFilter ? "bg-accent text-bg border-accent" : "bg-surface border-border text-text-secondary hover:border-accent/50"
                   )}>
                     {f}
                   </button>
@@ -3558,14 +3858,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
               <div className="text-[10px] text-text-secondary font-mono">{t('Total: 1,284 entries')}</div>
             </div>
             <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-              {[
-                { time: '2024-03-18 09:42:12', user: 'admin_01', action: 'Modified Threshold: Vibration Limit', severity: 'info', target: 'ID: 12 (Motor A)' },
-                { time: '2024-03-18 09:38:05', user: 'system', action: 'Auto-rollback: Model v2.4.1 -> v2.4.0', severity: 'warn', target: 'Model Registry' },
-                { time: '2024-03-18 09:15:22', user: 'john_doe', action: 'Failed Login Attempt', severity: 'error', target: 'Auth Service' },
-                { time: '2024-03-18 08:55:10', user: 'admin_01', action: 'User Created: sarah_c', severity: 'success', target: 'User Directory' },
-                { time: '2024-03-18 08:30:45', user: 'system', action: 'Scheduled Backup Completed', severity: 'success', target: 'Database' },
-                { time: '2024-03-18 08:12:33', user: 'mike_r', action: 'Emergency Stop Triggered', severity: 'error', target: 'Line 01' },
-              ].map((log, i) => (
+              {MOCK_AUDIT.filter(log => auditFilter === 'All Events' || log.category === auditFilter).map((log, i) => (
                 <div key={i} className="p-3 rounded-xl bg-surface border border-border flex items-start gap-4 hover:border-accent/30 transition-colors">
                   <div className={cn(
                     "p-2 rounded-lg shrink-0",
@@ -3701,22 +3994,25 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{t('Properties')}</label>
-                    <button className="text-accent text-[10px] font-bold flex items-center gap-1 hover:underline">
+                    <button
+                      onClick={() => setDraftProps(prev => [...prev, { key: `property_${prev.length + 1}`, type: 'string' }])}
+                      className="text-accent text-[10px] font-bold flex items-center gap-1 hover:underline"
+                    >
                       <Plus size={12} /> {t('Add Property')}
                     </button>
                   </div>
                   <div className="space-y-2">
-                    {[
-                      { key: 'serial_number', type: 'string' },
-                      { key: 'installation_date', type: 'timestamp' },
-                      { key: 'operating_status', type: 'enum' },
-                    ].map((prop, i) => (
+                    {draftProps.map((prop, i) => (
                       <div key={i} className="flex gap-2">
                         <input type="text" value={prop.key} readOnly className="flex-1 bg-bg border border-border rounded-lg p-2 text-xs font-mono" />
                         <select className="bg-bg border border-border rounded-lg p-2 text-[10px] font-bold uppercase">
                           <option>{prop.type}</option>
                         </select>
-                        <button className="p-2 text-text-secondary hover:text-red-500"><Trash2 size={14} /></button>
+                        <button
+                          onClick={() => setDraftProps(prev => prev.filter((_, j) => j !== i))}
+                          className="p-2 text-text-secondary hover:text-red-500"
+                          aria-label={t('삭제')}
+                        ><Trash2 size={14} /></button>
                       </div>
                     ))}
                   </div>
@@ -3724,7 +4020,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
               </div>
               <div className="flex justify-end gap-3 pt-6 border-t border-border">
                 <button onClick={() => setSubView(null)} className="px-6 py-2 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors">{t('Cancel')}</button>
-                <button className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity">{t('Create Entity Type')}</button>
+                <button
+                  onClick={() => {
+                    setEntities(prev => [...prev, { name: `Custom Entity ${prev.length - MOCK_ENTITIES.length + 1}`, parent: 'Asset', props: draftProps.length, instances: 0, icon: Box }]);
+                    showToast(t('새 엔티티 타입을 만들었습니다'));
+                    setSubView(null);
+                  }}
+                  className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity"
+                >{t('Create Entity Type')}</button>
               </div>
             </div>
           );
@@ -3737,7 +4040,21 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 <Upload size={48} className="text-text-secondary mb-4" />
                 <h4 className="text-sm font-bold mb-2">{t('Drag & Drop Schema File')}</h4>
                 <p className="text-xs text-text-secondary mb-6">{t('Supports .json, .yaml, .ttl (Turtle) formats')}</p>
-                <button className="px-6 py-2 bg-accent text-bg rounded-xl text-xs font-bold">{t('Browse Files')}</button>
+                <input
+                  ref={importRef}
+                  type="file"
+                  accept=".json,.yaml,.yml,.ttl"
+                  className="hidden"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setEntities(prev => [...prev, { name: file.name.replace(/\.[^.]+$/, ''), parent: 'Asset', props: 6, instances: 0, icon: Box }]);
+                    showToast(t('{name} 스키마를 가져왔습니다', { name: file.name }));
+                    e.target.value = '';
+                    setSubView(null);
+                  }}
+                />
+                <button onClick={() => importRef.current?.click()} className="px-6 py-2 bg-accent text-bg rounded-xl text-xs font-bold">{t('Browse Files')}</button>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl bg-surface border border-border flex items-center gap-4">
@@ -3746,7 +4063,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                     <div className="text-xs font-bold">{t('JSON-LD Template')}</div>
                     <div className="text-[10px] text-text-secondary">{t('Standard manufacturing ontology')}</div>
                   </div>
-                  <button className="ml-auto p-2 hover:bg-bg rounded-lg"><Download size={16} /></button>
+                  <button onClick={() => downloadJson('ontology-template.jsonld', ONTOLOGY_JSONLD)} className="ml-auto p-2 hover:bg-bg rounded-lg" aria-label={t('JSON-LD Template')}><Download size={16} /></button>
                 </div>
                 <div className="p-4 rounded-2xl bg-surface border border-border flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500"><FileSpreadsheet size={20} /></div>
@@ -3754,7 +4071,11 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                     <div className="text-xs font-bold">{t('Excel Mapping')}</div>
                     <div className="text-[10px] text-text-secondary">{t('Bulk entity property import')}</div>
                   </div>
-                  <button className="ml-auto p-2 hover:bg-bg rounded-lg"><Download size={16} /></button>
+                  <button
+                    onClick={() => downloadCsv('entity-mapping.csv', entities.map(e => ({ entity: e.name, parent: e.parent, properties: e.props, instances: e.instances })))}
+                    className="ml-auto p-2 hover:bg-bg rounded-lg"
+                    aria-label={t('Excel Mapping')}
+                  ><Download size={16} /></button>
                 </div>
               </div>
               <div className="flex justify-start">
@@ -3778,8 +4099,22 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   <p className="text-xs text-text-secondary">ID: ENT-{selectedItem.name.toUpperCase().replace(' ', '_')}</p>
                 </div>
                 <div className="ml-auto flex gap-2">
-                  <button className="px-4 py-2 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-bold uppercase tracking-widest">{t('Delete Type')}</button>
-                  <button className="px-4 py-2 rounded-xl bg-accent text-bg text-[10px] font-bold uppercase tracking-widest">{t('Save Changes')}</button>
+                  <button
+                    onClick={() => {
+                      setEntities(prev => prev.filter(e => e.name !== selectedItem.name));
+                      showToast(t('{name} 타입을 삭제했습니다', { name: selectedItem.name }), 'info');
+                      setSubView(null);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-bold uppercase tracking-widest"
+                  >{t('Delete Type')}</button>
+                  <button
+                    onClick={() => {
+                      setEntities(prev => prev.map(e => e.name === selectedItem.name ? { ...e, props: entityProps.length } : e));
+                      showToast(t('변경 사항을 저장했습니다'));
+                      setSubView(null);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-accent text-bg text-[10px] font-bold uppercase tracking-widest"
+                  >{t('Save Changes')}</button>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-6">
@@ -3787,17 +4122,24 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   <div className="dashboard-card">
                     <h5 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4">{t('Property Definitions')}</h5>
                     <div className="space-y-3">
-                      {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-bg border border-border group">
-                          <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-[10px] font-bold text-text-secondary">{i}</div>
+                      {entityProps.map((prop, idx) => (
+                        <div key={idx} className="flex items-center gap-4 p-3 rounded-xl bg-bg border border-border group">
+                          <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-[10px] font-bold text-text-secondary">{idx + 1}</div>
                           <div className="flex-1">
-                            <input type="text" defaultValue={`property_key_${i}`} className="bg-transparent border-none p-0 text-xs font-bold focus:ring-0 w-full" />
-                            <div className="text-[10px] text-text-secondary">{t('Type: String | Required: Yes')}</div>
+                            <input type="text" defaultValue={prop.key} className="bg-transparent border-none p-0 text-xs font-bold focus:ring-0 w-full" />
+                            <div className="text-[10px] text-text-secondary">{prop.required ? t('Type: String | Required: Yes') : t('Type: String | Required: No')}</div>
                           </div>
-                          <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-surface rounded-lg transition-all"><Settings2 size={14} /></button>
+                          <button
+                            onClick={() => setEntityProps(prev => prev.map((p, j) => j === idx ? { ...p, required: !p.required } : p))}
+                            title={t('필수 여부 전환')}
+                            aria-label={t('필수 여부 전환')}
+                            className="p-2 hover:bg-surface rounded-lg transition-all text-text-secondary hover:text-accent"
+                          ><Settings2 size={14} /></button>
                         </div>
                       ))}
-                      <button className="w-full py-3 rounded-xl border border-dashed border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
+                      <button
+                        onClick={() => setEntityProps(prev => [...prev, { key: `property_key_${prev.length + 1}`, required: false }])}
+                        className="w-full py-3 rounded-xl border border-dashed border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
                         {t('+ Add New Property')}
                       </button>
                     </div>
@@ -3865,15 +4207,10 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   {t('Import Schema')}
                 </button>
               </div>
-              <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">{t('45 Active Entity Types')}</div>
+              <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">{t('{n} Active Entity Types', { n: 41 + entities.length })}</div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { name: 'Manufacturing Line', parent: 'Asset', props: 12, instances: 4, icon: Factory },
-                { name: 'Electric Motor', parent: 'Equipment', props: 8, instances: 124, icon: Cpu },
-                { name: 'Quality Sensor', parent: 'IoT Device', props: 6, instances: 56, icon: Zap },
-                { name: 'Raw Material', parent: 'Inventory', props: 5, instances: 12, icon: Box },
-              ].map((entity, i) => (
+              {entities.map((entity, i) => (
                 <div key={i} className="p-4 rounded-2xl bg-surface border border-border hover:border-accent/30 transition-all group">
                   <div className="flex items-start justify-between mb-4">
                     <div className="p-3 rounded-xl bg-bg border border-border group-hover:border-accent/20 transition-colors">
@@ -3925,10 +4262,19 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   <div key={i} className="overflow-hidden rounded-2xl border border-border bg-surface">
                     <div className="p-3 bg-bg/50 border-b border-border flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Conflict #')}{i}{t(': Relation Mismatch')}</span>
-                      <div className="flex gap-2">
-                        <button className="px-3 py-1 rounded-lg bg-emerald-500 text-bg text-[10px] font-bold">{t('Keep Local')}</button>
-                        <button className="px-3 py-1 rounded-lg bg-blue-500 text-bg text-[10px] font-bold">{t('Keep Remote')}</button>
-                      </div>
+                      {conflicts[i] ? (
+                        <button
+                          onClick={() => setConflicts(prev => { const next = { ...prev }; delete next[i]; return next; })}
+                          className="flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-hover text-[10px] font-bold text-accent"
+                        >
+                          <Check size={12} />{conflicts[i] === 'local' ? t('Keep Local') : t('Keep Remote')}
+                        </button>
+                      ) : (
+                        <div className="flex gap-2">
+                          <button onClick={() => setConflicts(prev => ({ ...prev, [i]: 'local' }))} className="px-3 py-1 rounded-lg bg-emerald-500 text-bg text-[10px] font-bold">{t('Keep Local')}</button>
+                          <button onClick={() => setConflicts(prev => ({ ...prev, [i]: 'remote' }))} className="px-3 py-1 rounded-lg bg-blue-500 text-bg text-[10px] font-bold">{t('Keep Remote')}</button>
+                        </div>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 divide-x divide-border">
                       <div className="p-4 space-y-2">
@@ -3947,7 +4293,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 <button onClick={() => setSubView(null)} className="text-xs font-bold text-text-secondary flex items-center gap-2 hover:text-text-primary">
                   <ChevronLeft size={16} /> {t('Back to Relations')}
                 </button>
-                <button className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold">{t('Resolve All & Merge')}</button>
+                <button
+                  onClick={() => {
+                    setConflicts({ 1: conflicts[1] ?? 'local', 2: conflicts[2] ?? 'local', 3: conflicts[3] ?? 'local' });
+                    showToast(t('충돌 3건을 해결하고 병합했습니다'));
+                    setSubView(null);
+                  }}
+                  className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold"
+                >{t('Resolve All & Merge')}</button>
               </div>
             </div>
           );
@@ -3965,7 +4318,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   { name: 'Image (SVG)', ext: '.svg', icon: Share2, desc: 'High-res vector graphic' },
                   { name: 'Documentation', ext: '.pdf', icon: FileText, desc: 'Ontology spec report' },
                 ].map((format, i) => (
-                  <button key={i} className="p-4 rounded-2xl bg-surface border border-border hover:border-accent transition-all text-left group">
+                  <button
+                    key={i}
+                    onClick={() => {
+                      exportOntology(format.ext);
+                      showToast(t('{name} 파일을 내려받았습니다', { name: format.name }));
+                    }}
+                    className="p-4 rounded-2xl bg-surface border border-border hover:border-accent transition-all text-left group"
+                  >
                     <div className="p-3 rounded-xl bg-bg border border-border group-hover:border-accent/20 transition-colors mb-4 w-fit">
                       <format.icon size={20} className="text-accent" />
                     </div>
@@ -4084,12 +4444,22 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                         <div className="px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-[10px] font-bold uppercase">AND</div>
                         <div className="flex-1 p-3 rounded-xl bg-bg border border-border text-xs font-mono">entity.properties.vibration == null</div>
                       </div>
+                      {ruleConditions.map((cond, i) => (
+                        <div key={i} className="flex items-center gap-4">
+                          <div className="px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-[10px] font-bold uppercase">AND</div>
+                          <div className="flex-1 p-3 rounded-xl bg-bg border border-border text-xs font-mono">{cond}</div>
+                          <button onClick={() => setRuleConditions(prev => prev.filter((_, j) => j !== i))} className="p-2 text-text-secondary hover:text-red-500" aria-label={t('삭제')}><Trash2 size={14} /></button>
+                        </div>
+                      ))}
                       <div className="flex items-center gap-4">
                         <div className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-500 text-[10px] font-bold uppercase">THEN</div>
                         <div className="flex-1 p-3 rounded-xl bg-bg border border-border text-xs font-mono">trigger_alert('Missing Telemetry')</div>
                       </div>
                     </div>
-                    <button className="mt-6 w-full py-3 rounded-xl border border-dashed border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
+                    <button
+                      onClick={() => setRuleConditions(prev => [...prev, EXTRA_CONDITIONS[prev.length % EXTRA_CONDITIONS.length]])}
+                      className="mt-6 w-full py-3 rounded-xl border border-dashed border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:border-accent/50 hover:text-accent transition-all"
+                    >
                       {t('+ Add Condition')}
                     </button>
                   </div>
@@ -4100,8 +4470,19 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   <ChevronLeft size={16} /> {t('Back to Schema')}
                 </button>
                 <div className="flex gap-3">
-                  <button className="px-6 py-2 rounded-xl border border-border text-xs font-bold">{t('Test Rule')}</button>
-                  <button className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold">{t('Save Rule')}</button>
+                  <button
+                    onClick={() => showToast(t('테스트 완료: 엔티티 1,262개 중 {n}건이 규칙에 걸렸습니다', { n: 2 + ruleConditions.length }), 'info')}
+                    className="px-6 py-2 rounded-xl border border-border text-xs font-bold"
+                  >{t('Test Rule')}</button>
+                  <button
+                    onClick={() => {
+                      setRules(prev => [...prev, { name: `Custom Rule ${prev.length - MOCK_RULES.length + 1}`, desc: `IF entity.type == 'Electric Motor' AND entity.properties.vibration == null${ruleConditions.map(c => ` AND ${c}`).join('')} THEN trigger_alert`, status: 'Active', icon: Code2 }]);
+                      setRuleConditions([]);
+                      showToast(t('검증 규칙을 저장했습니다'));
+                      setSubView(null);
+                    }}
+                    className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold"
+                  >{t('Save Rule')}</button>
                 </div>
               </div>
             </div>
@@ -4138,11 +4519,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 </button>
               </div>
               <div className="space-y-3">
-                {[
-                  { name: 'Mandatory Telemetry', desc: 'All active motors must report vibration data every 5s.', status: 'Active', icon: Code2 },
-                  { name: 'Parent-Child Constraint', desc: 'Sensors cannot exist without a parent equipment assignment.', status: 'Active', icon: Link },
-                  { name: 'Data Type Integrity', desc: 'Temperature values must be within -40 to 150 range.', status: 'Active', icon: FileCode },
-                ].map((rule, i) => (
+                {rules.map((rule, i) => (
                   <div key={i} className="p-4 rounded-xl bg-bg border border-border flex items-start gap-4">
                     <div className="p-2 rounded-lg bg-surface border border-border text-accent">
                       <rule.icon size={18} />
@@ -4150,9 +4527,15 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <h5 className="text-sm font-bold">{rule.name}</h5>
-                        <div className="w-8 h-4 bg-accent rounded-full relative">
-                          <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-bg rounded-full" />
-                        </div>
+                        <button
+                          role="switch"
+                          aria-checked={rule.status === 'Active'}
+                          aria-label={rule.name}
+                          onClick={() => setRules(prev => prev.map((r, j) => j === i ? { ...r, status: r.status === 'Active' ? 'Paused' : 'Active' } : r))}
+                          className={cn("w-8 h-4 rounded-full relative transition-colors", rule.status === 'Active' ? "bg-accent" : "bg-border")}
+                        >
+                          <span className={cn("absolute top-0.5 w-3 h-3 bg-bg rounded-full transition-all", rule.status === 'Active' ? "right-0.5" : "left-0.5")} />
+                        </button>
                       </div>
                       <p className="text-[11px] text-text-secondary leading-relaxed">{rule.desc}</p>
                     </div>
@@ -4213,549 +4596,20 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
           >
             {t('Close')}
           </button>
-          <button className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity">
-            {t('Export Report')}
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-function AdvancedParametersModal({ item, isOpen, onClose }: { item: MenuItem, isOpen: boolean, onClose: () => void }) {
-  const { showToast } = useToast();
-  const [params, setParams] = useState<Record<string, any>>({});
-
-  useEffect(() => {
-    // Default parameters based on category
-    const defaults: Record<string, any> = {};
-    switch (item.category) {
-      case 'AI 품질 에이전트':
-        defaults.sensitivity = 85;
-        defaults.threshold = 0.75;
-        defaults.model = 'Anomalib-ResNet18';
-        defaults.scanSpeed = 120;
-        break;
-      case 'AI 설비예지보전 에이전트':
-        defaults.vibrationLimit = 4.5;
-        defaults.tempLimit = 85;
-        defaults.samplingFreq = 1000;
-        defaults.horizon = 24;
-        break;
-      case 'AI 에너지 에이전트':
-        if (item.id === 16) { // 전력 사용 현황
-          defaults.samplingInterval = 5;
-          defaults.voltageThreshold = 220;
-          defaults.currentThreshold = 50;
-          defaults.harmonicLimit = 5;
-        } else if (item.id === 17) { // 에너지 비용 분석
-          defaults.unitCost = 110;
-          defaults.billingCycle = 'Monthly';
-          defaults.peakTariffMultiplier = 1.5;
-          defaults.baseContractPower = 500;
-        } else if (item.id === 18) { // 피크 부하 관리
-          defaults.peakLimit = 450;
-          defaults.warningThreshold = 85;
-          defaults.sheddingPriority = 'Medium';
-          defaults.autoControlEnabled = true;
-        }
-        break;
-      case 'AI 안전 에이전트':
-        if (item.id === 19) { // 지능형 CCTV 화재 감시
-          defaults.detectionConfidence = 85;
-          defaults.scanInterval = 500;
-          defaults.alertSensitivity = 'High';
-          defaults.autoAlarmEnabled = true;
-        } else if (item.id === 20) { // AMR 충돌 방지 시스템
-          defaults.safetyRadius = 1.5;
-          defaults.stopDistance = 0.5;
-          defaults.responseTime = 50;
-          defaults.collisionAvoidance = true;
-        } else if (item.id === 32) { // 긴급 정지 및 알람 제어
-          defaults.eStopDelay = 0;
-          defaults.sirenVolume = 95;
-          defaults.notificationChannels = ['SMS', 'Push', 'Siren'];
-          defaults.interlockEnabled = true;
-        }
-        break;
-      case 'AI 생산 최적화 에이전트':
-        defaults.targetOEE = 88;
-        defaults.windowSize = 60;
-        defaults.bottleneckSensitivity = 0.8;
-        defaults.autoSchedule = false;
-        break;
-    }
-    setParams(defaults);
-  }, [item]);
-
-  if (!isOpen) return null;
-
-  const renderFields = () => {
-    switch (item.category) {
-      case 'AI 품질 에이전트':
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Detection Sensitivity')}</span>
-                <span className="text-accent">{params.sensitivity}%</span>
-              </div>
-              <input 
-                type="range" min="0" max="100" value={params.sensitivity} 
-                onChange={(e) => setParams({...params, sensitivity: parseInt(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Anomaly Threshold')}</span>
-                <span className="text-accent">{params.threshold}</span>
-              </div>
-              <input 
-                type="range" min="0" max="1" step="0.01" value={params.threshold} 
-                onChange={(e) => setParams({...params, threshold: parseFloat(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('AI Model')}</label>
-                <select 
-                  value={params.model} 
-                  onChange={(e) => setParams({...params, model: e.target.value})}
-                  className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                >
-                  <option>Anomalib-ResNet18</option>
-                  <option>Custom-CNN-v4</option>
-                  <option>Vision-Transformer-S</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Scan Speed (ms)')}</label>
-                <input 
-                  type="number" value={params.scanSpeed} 
-                  onChange={(e) => setParams({...params, scanSpeed: parseInt(e.target.value)})}
-                  className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                />
-              </div>
-            </div>
-          </div>
-        );
-      case 'AI 설비예지보전 에이전트':
-        return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Vibration Limit (mm/s)')}</label>
-                <input 
-                  type="number" step="0.1" value={params.vibrationLimit} 
-                  onChange={(e) => setParams({...params, vibrationLimit: parseFloat(e.target.value)})}
-                  className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Temp Limit (°C)')}</label>
-                <input 
-                  type="number" value={params.tempLimit} 
-                  onChange={(e) => setParams({...params, tempLimit: parseInt(e.target.value)})}
-                  className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Sampling Frequency')}</span>
-                <span className="text-accent">{params.samplingFreq} Hz</span>
-              </div>
-              <input 
-                type="range" min="100" max="5000" step="100" value={params.samplingFreq} 
-                onChange={(e) => setParams({...params, samplingFreq: parseInt(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Prediction Horizon (Hours)')}</label>
-              <select 
-                value={params.horizon} 
-                onChange={(e) => setParams({...params, horizon: parseInt(e.target.value)})}
-                className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-              >
-                <option value={12}>{t('12 Hours')}</option>
-                <option value={24}>{t('24 Hours')}</option>
-                <option value={48}>{t('48 Hours')}</option>
-                <option value={168}>{t('1 Week')}</option>
-              </select>
-            </div>
-          </div>
-        );
-      case 'AI 에너지 에이전트':
-        if (item.id === 16) { // 전력 사용 현황
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Sampling Interval (s)')}</span>
-                  <span className="text-accent">{params.samplingInterval}s</span>
-                </div>
-                <input 
-                  type="range" min="1" max="60" value={params.samplingInterval} 
-                  onChange={(e) => setParams({...params, samplingInterval: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Voltage Threshold (V)')}</label>
-                  <input 
-                    type="number" value={params.voltageThreshold} 
-                    onChange={(e) => setParams({...params, voltageThreshold: parseInt(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Current Threshold (A)')}</label>
-                  <input 
-                    type="number" value={params.currentThreshold} 
-                    onChange={(e) => setParams({...params, currentThreshold: parseInt(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Harmonic Limit (%)')}</span>
-                  <span className="text-accent">{params.harmonicLimit}%</span>
-                </div>
-                <input 
-                  type="range" min="1" max="15" value={params.harmonicLimit} 
-                  onChange={(e) => setParams({...params, harmonicLimit: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-            </div>
-          );
-        } else if (item.id === 17) { // 에너지 비용 분석
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Unit Cost (KRW/kWh)')}</span>
-                  <span className="text-accent">{params.unitCost} ₩</span>
-                </div>
-                <input 
-                  type="range" min="50" max="300" step="5" value={params.unitCost} 
-                  onChange={(e) => setParams({...params, unitCost: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Billing Cycle')}</label>
-                  <select 
-                    value={params.billingCycle} 
-                    onChange={(e) => setParams({...params, billingCycle: e.target.value})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  >
-                    <option value="Daily">{t('Daily')}</option>
-                    <option value="Weekly">{t('Weekly')}</option>
-                    <option value="Monthly">{t('Monthly')}</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Peak Multiplier')}</label>
-                  <input 
-                    type="number" step="0.1" value={params.peakTariffMultiplier} 
-                    onChange={(e) => setParams({...params, peakTariffMultiplier: parseFloat(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-surface border border-border">
-                <DollarSign size={16} className="text-emerald-500" />
-                <div className="flex-1">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Base Contract Power')}</div>
-                  <div className="text-sm font-black">{params.baseContractPower} kW</div>
-                </div>
-              </div>
-            </div>
-          );
-        } else if (item.id === 18) { // 피크 부하 관리
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Peak Load Limit (kW)')}</span>
-                  <span className="text-accent">{params.peakLimit} kW</span>
-                </div>
-                <input 
-                  type="range" min="100" max="1000" step="10" value={params.peakLimit} 
-                  onChange={(e) => setParams({...params, peakLimit: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Warning Threshold (%)')}</span>
-                  <span className="text-accent">{params.warningThreshold}%</span>
-                </div>
-                <input 
-                  type="range" min="50" max="95" value={params.warningThreshold} 
-                  onChange={(e) => setParams({...params, warningThreshold: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Shedding Priority')}</label>
-                  <select 
-                    value={params.sheddingPriority} 
-                    onChange={(e) => setParams({...params, sheddingPriority: e.target.value})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  >
-                    <option value="Low">{t('Low')}</option>
-                    <option value="Medium">{t('Medium')}</option>
-                    <option value="High">{t('High')}</option>
-                  </select>
-                </div>
-                <div className="flex items-center justify-between p-2 rounded-lg bg-surface border border-border mt-6">
-                  <span className="text-[10px] font-bold uppercase tracking-widest">{t('Auto Control')}</span>
-                  <button 
-                    onClick={() => setParams({...params, autoControlEnabled: !params.autoControlEnabled})}
-                    className={cn(
-                      "w-8 h-4 rounded-full transition-colors relative",
-                      params.autoControlEnabled ? "bg-accent" : "bg-border"
-                    )}
-                  >
-                    <div className={cn(
-                      "absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all",
-                      params.autoControlEnabled ? "right-0.5" : "left-0.5"
-                    )} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        }
-        return null;
-      case 'AI 안전 에이전트':
-        if (item.id === 19) { // 지능형 CCTV 화재 감시
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Detection Confidence (%)')}</span>
-                  <span className="text-accent">{params.detectionConfidence}%</span>
-                </div>
-                <input 
-                  type="range" min="50" max="99" value={params.detectionConfidence} 
-                  onChange={(e) => setParams({...params, detectionConfidence: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Scan Interval (ms)')}</label>
-                  <input 
-                    type="number" value={params.scanInterval} 
-                    onChange={(e) => setParams({...params, scanInterval: parseInt(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Sensitivity')}</label>
-                  <select 
-                    value={params.alertSensitivity} 
-                    onChange={(e) => setParams({...params, alertSensitivity: e.target.value})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  >
-                    <option value="Low">{t('Low')}</option>
-                    <option value="Medium">{t('Medium')}</option>
-                    <option value="High">{t('High')}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          );
-        } else if (item.id === 20) { // AMR 충돌 방지 시스템
-          return (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Safety Radius (m)')}</label>
-                  <input 
-                    type="number" step="0.1" value={params.safetyRadius} 
-                    onChange={(e) => setParams({...params, safetyRadius: parseFloat(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Stop Distance (m)')}</label>
-                  <input 
-                    type="number" step="0.1" value={params.stopDistance} 
-                    onChange={(e) => setParams({...params, stopDistance: parseFloat(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-surface border border-border">
-                <div className="flex items-center gap-2">
-                  <Zap size={16} className="text-yellow-500" />
-                  <span className="text-xs font-bold">{t('Collision Avoidance')}</span>
-                </div>
-                <button 
-                  onClick={() => setParams({...params, collisionAvoidance: !params.collisionAvoidance})}
-                  className={cn(
-                    "w-10 h-5 rounded-full transition-colors relative",
-                    params.collisionAvoidance ? "bg-accent" : "bg-border"
-                  )}
-                >
-                  <div className={cn(
-                    "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
-                    params.collisionAvoidance ? "right-1" : "left-1"
-                  )} />
-                </button>
-              </div>
-            </div>
-          );
-        } else if (item.id === 32) { // 긴급 정지 및 알람 제어
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Siren Volume')}</span>
-                  <span className="text-accent">{params.sirenVolume}%</span>
-                </div>
-                <input 
-                  type="range" min="0" max="100" value={params.sirenVolume} 
-                  onChange={(e) => setParams({...params, sirenVolume: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                <div className="flex items-center gap-2 text-red-500 mb-2">
-                  <AlertTriangle size={16} />
-                  <span className="text-xs font-bold uppercase tracking-widest">{t('Emergency Interlock')}</span>
-                </div>
-                <p className="text-[10px] text-text-secondary leading-relaxed">
-                  {t('When activated, all production lines will be immediately halted upon detection of critical safety violations.')}
-                </p>
-              </div>
-            </div>
-          );
-        }
-        return null;
-      case 'AI 생산 최적화 에이전트':
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Target OEE (%)')}</span>
-                <span className="text-accent">{params.targetOEE}%</span>
-              </div>
-              <input 
-                type="range" min="50" max="100" value={params.targetOEE} 
-                onChange={(e) => setParams({...params, targetOEE: parseInt(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Calculation Window (Min)')}</label>
-              <select 
-                value={params.windowSize} 
-                onChange={(e) => setParams({...params, windowSize: parseInt(e.target.value)})}
-                className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-              >
-                <option value={15}>{t('15 Minutes')}</option>
-                <option value={30}>{t('30 Minutes')}</option>
-                <option value={60}>{t('1 Hour')}</option>
-                <option value={480}>{t('8 Hours (Shift)')}</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Bottleneck Sensitivity')}</span>
-                <span className="text-accent">{params.bottleneckSensitivity}</span>
-              </div>
-              <input 
-                type="range" min="0" max="1" step="0.1" value={params.bottleneckSensitivity} 
-                onChange={(e) => setParams({...params, bottleneckSensitivity: parseFloat(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-surface border border-border">
-              <div className="flex items-center gap-2">
-                <Clock size={16} className="text-blue-500" />
-                <span className="text-xs font-bold">{t('Auto-Schedule Optimization')}</span>
-              </div>
-              <button 
-                onClick={() => setParams({...params, autoSchedule: !params.autoSchedule})}
-                className={cn(
-                  "w-10 h-5 rounded-full transition-colors relative",
-                  params.autoSchedule ? "bg-accent" : "bg-border"
-                )}
-              >
-                <div className={cn(
-                  "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
-                  params.autoSchedule ? "right-1" : "left-1"
-                )} />
-              </button>
-            </div>
-          </div>
-        );
-      default:
-        return <p className="text-xs text-text-secondary">{t('No specialized parameters available for this module.')}</p>;
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-bg border border-border rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
-      >
-        <div className="p-6 border-b border-border flex items-center justify-between bg-surface/30">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-accent/10 text-accent">
-              <Sliders size={20} />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold tracking-tight">{t('Advanced Parameters')}</h3>
-              <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{t(item.name)}</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-surface-hover rounded-full transition-colors">
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="p-6">
-          <div className="mb-6 p-3 rounded-lg bg-orange-500/5 border border-orange-500/20 flex gap-3">
-            <AlertTriangle size={16} className="text-orange-500 shrink-0 mt-0.5" />
-            <p className="text-[10px] text-orange-200/80 leading-relaxed">
-              {t('Modifying these parameters affects the real-time heuristic logic and agent orchestration. Changes will be logged in the system audit trail.')}
-            </p>
-          </div>
-
-          {renderFields()}
-        </div>
-
-        <div className="p-6 bg-surface/30 border-t border-border flex gap-3">
-          <button 
-            onClick={onClose}
-            className="flex-1 py-3 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors"
-          >
-            {t('Cancel')}
-          </button>
-          <button 
+          <button
             onClick={() => {
-              showToast(t('고급 파라미터가 저장되었습니다.'));
-              onClose();
+              const rows: Record<string, string | number>[] =
+                type === 'user-directory' ? users.map(u => ({ name: u.name, email: u.email, role: u.role, status: u.status, last_login: u.last })) :
+                type === 'audit-log' ? MOCK_AUDIT.map(({ category, ...log }) => ({ ...log, category })) :
+                type === 'ontology-entities' ? entities.map(e => ({ entity: e.name, parent: e.parent, properties: e.props, instances: e.instances })) :
+                type === 'ontology-schema' ? rules.map(r => ({ rule: r.name, description: r.desc, status: r.status })) :
+                MOCK_HEALTH;
+              downloadCsv(`${type}-${fileStamp()}.csv`, rows);
+              showToast(t('보고서를 내려받았습니다'));
             }}
-            className="flex-1 py-3 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity"
           >
-            <Save size={14} />
-            {t('Save Changes')}
+            {t('Export Report')}
           </button>
         </div>
       </motion.div>
@@ -5175,9 +5029,21 @@ function ChatbotViewer() {
     }
   }, [messages, isTyping]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const [docs, setDocs] = useState([
+    '2024 품질 관리 표준 매뉴얼',
+    'B라인 설비 유지보수 가이드',
+    '안전 수칙 및 비상 대응 절차',
+    'OEE 산출 공식 및 기준',
+  ]);
+  const [showMenu, setShowMenu] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [listening, setListening] = useState(false);
+  const attachRef = useRef<HTMLInputElement>(null);
+  const docRef = useRef<HTMLInputElement>(null);
+  const { showToast } = useToast();
 
+  /** Post a user message and answer it the way the supervisor would. */
+  const ask = (input: string, answer?: string) => {
     const userMsg: ChatMessage = {
       role: 'user',
       content: input,
@@ -5185,18 +5051,23 @@ function ChatbotViewer() {
     };
 
     setMessages(prev => [...prev, userMsg]);
-    setInput('');
     setIsTyping(true);
 
     // Simulate AI Response
     safeTimeout(() => {
       let response = '';
-      if (matchesKeyword(input, '불량률')) {
+      if (answer) {
+        response = answer;
+      } else if (matchesKeyword(input, '불량률')) {
         response = t('현재 전체 라인의 평균 불량률은 3.2%입니다. B라인의 도금 공정에서 미세한 변동이 감지되었으나, 허용 범위 내에 있습니다.');
       } else if (matchesKeyword(input, '가동률') || input.toUpperCase().includes('OEE')) {
         response = t('오늘의 종합 설비 효율(OEE)은 87.5%로 목표치(85%)를 상회하고 있습니다. 특히 조립 라인의 성능 지표가 전일 대비 4% 향상되었습니다.');
       } else if (matchesKeyword(input, '안전')) {
         response = t('현재 모든 안전 센서가 정상 작동 중입니다. 구역 C에서 작업자 1명이 보호구 미착용으로 경고 조치되었으며, 현재는 시정 완료되었습니다.');
+      } else if (matchesKeyword(input, '에너지')) {
+        response = t('피크 요금 시간대(13~17시)를 피해 세척·건조 공정을 06~09시로 옮기면 하루 전력비를 약 8% 줄일 수 있습니다. 포장 라인은 현재 일정 그대로 유지하는 것이 좋습니다.');
+      } else if (matchesKeyword(input, '위험')) {
+        response = t('B라인 케이스패커-02 감속기 진동이 3일째 상승 중이며, 이 추세라면 72시간 안에 정지 위험이 62%입니다. 오늘 야간 정지 시간에 베어링 점검을 권장합니다.');
       } else {
         response = t('요청하신 내용을 분석 중입니다. Supervisor 에이전트가 관련 데이터를 취합하여 최적의 답변을 준비하고 있습니다.');
       }
@@ -5211,6 +5082,22 @@ function ChatbotViewer() {
     }, 1500);
   };
 
+  const handleSend = () => {
+    if (!input.trim()) return;
+    ask(input);
+    setInput('');
+  };
+
+  /** Voice input stand-in: listens briefly, then fills in a question. */
+  const listen = () => {
+    if (listening) return;
+    setListening(true);
+    safeTimeout(() => {
+      setListening(false);
+      setInput(suggestedQueries[Math.floor(Math.random() * suggestedQueries.length)]);
+    }, 1600);
+  };
+
   const suggestedQueries = [
     t('현재 전체 불량률 요약해줘'),
     t('B라인 가동 중단 위험 분석'),
@@ -5219,7 +5106,10 @@ function ChatbotViewer() {
   ];
 
   return (
-    <div className="flex flex-col h-[750px] bg-surface border border-border rounded-2xl overflow-hidden shadow-2xl">
+    <div className={cn(
+      "flex flex-col bg-surface border border-border rounded-2xl overflow-hidden shadow-2xl",
+      expanded ? "fixed inset-4 z-[60]" : "h-[750px]",
+    )}>
       {/* Chat Header */}
       <div className="px-6 py-4 border-b border-border bg-surface-hover/30 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -5235,11 +5125,32 @@ function ChatbotViewer() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
-            <Settings size={18} />
-          </button>
-          <button className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
-            <Maximize2 size={18} />
+          <div className="relative">
+            <button onClick={() => setShowMenu(v => !v)} aria-label={t('대화 설정')} title={t('대화 설정')} className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
+              <Settings size={18} />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 top-10 z-20 w-44 rounded-xl border border-border bg-surface p-1 shadow-xl">
+                <button
+                  onClick={() => {
+                    setMessages(prev => prev.slice(0, 1));
+                    setShowMenu(false);
+                    showToast(t('대화를 초기화했습니다'), 'info');
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-surface-hover"
+                >{t('대화 초기화')}</button>
+                <button
+                  onClick={() => {
+                    downloadFile(`supervisor-chat-${fileStamp()}.txt`, messages.map(m => `[${m.timestamp}] ${m.role === 'user' ? 'USER' : 'AI'}: ${m.content}`).join('\n\n'));
+                    setShowMenu(false);
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-surface-hover"
+                >{t('대화 내보내기')}</button>
+              </div>
+            )}
+          </div>
+          <button onClick={() => setExpanded(v => !v)} aria-label={expanded ? t('원래 크기로') : t('크게 보기')} title={expanded ? t('원래 크기로') : t('크게 보기')} className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
+            {expanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
           </button>
         </div>
       </div>
@@ -5326,10 +5237,26 @@ function ChatbotViewer() {
                 className="w-full bg-surface border border-border rounded-2xl px-4 py-4 pr-32 text-sm focus:outline-none focus:border-accent/50 transition-colors resize-none h-24 custom-scrollbar"
               />
               <div className="absolute right-3 bottom-3 flex items-center gap-2">
-                <button className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
+                <input
+                  ref={attachRef}
+                  type="file"
+                  className="hidden"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    ask(t('첨부 파일: {name}', { name: file.name }), t('{name} ({size}KB)을 읽었습니다. 설비 이력·품질 기준과 대조해 보니 특이사항 2건이 있습니다: 측정 주기가 표준(5초)보다 긴 구간이 있고, 온도 상한 기준이 최신 매뉴얼과 1°C 다릅니다.', { name: file.name, size: Math.max(1, Math.round(file.size / 1024)) }));
+                    e.target.value = '';
+                  }}
+                />
+                <button onClick={() => attachRef.current?.click()} aria-label={t('파일 첨부')} title={t('파일 첨부')} className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
                   <Paperclip size={18} />
                 </button>
-                <button className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
+                <button
+                  onClick={listen}
+                  aria-label={t('음성 입력')}
+                  title={listening ? t('듣는 중…') : t('음성 입력')}
+                  className={cn("p-2 rounded-lg transition-colors", listening ? "bg-danger/15 text-danger animate-pulse" : "hover:bg-surface-hover text-text-secondary")}
+                >
                   <Mic size={18} />
                 </button>
                 <button 
@@ -5370,21 +5297,33 @@ function ChatbotViewer() {
           <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
             <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-4">{t('Reference Docs')}</h4>
             <div className="space-y-2">
-              {[
-                t('2024 품질 관리 표준 매뉴얼'),
-                t('B라인 설비 유지보수 가이드'),
-                t('안전 수칙 및 비상 대응 절차'),
-                t('OEE 산출 공식 및 기준')
-              ].map((doc, i) => (
-                <button key={i} className="w-full text-left p-2 rounded-lg hover:bg-surface-hover transition-colors group">
+              {docs.map((doc, i) => (
+                <button
+                  key={i}
+                  onClick={() => ask(t('{doc} 핵심 내용 요약해줘', { doc: t(doc) }), t('{doc}의 핵심은 세 가지입니다. 1) 이상 징후는 감지 즉시 담당 AI가 1차 조치하고 기록합니다. 2) 설정값을 바꾸는 조치는 반드시 사람이 승인합니다. 3) 모든 조치는 근거 데이터와 함께 감사 로그에 남깁니다.', { doc: t(doc) }))}
+                  className="w-full text-left p-2 rounded-lg hover:bg-surface-hover transition-colors group"
+                >
                   <div className="flex items-center gap-2 text-[11px] text-text-secondary group-hover:text-text-primary">
                     <FileText size={12} />
-                    <span className="truncate">{doc}</span>
+                    <span className="truncate">{t(doc)}</span>
                   </div>
                 </button>
               ))}
             </div>
-            <button className="w-full mt-4 py-2 rounded-lg border border-dashed border-border text-[10px] text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
+            <input
+              ref={docRef}
+              type="file"
+              accept=".pdf,.doc,.docx,.txt,.md,.xlsx"
+              className="hidden"
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setDocs(prev => [...prev, file.name]);
+                showToast(t('{name} 문서를 학습 자료에 추가했습니다', { name: file.name }));
+                e.target.value = '';
+              }}
+            />
+            <button onClick={() => docRef.current?.click()} className="w-full mt-4 py-2 rounded-lg border border-dashed border-border text-[10px] text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
               {t('+ 문서 추가하기')}
             </button>
           </div>
@@ -5394,13 +5333,44 @@ function ChatbotViewer() {
   );
 }
 
+/** A small on/off switch for settings panels. */
+function MiniSwitch({ on, label, onChange }: { on: boolean; label: string; onChange: () => void }) {
+  return (
+    <button
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={onChange}
+      className={cn("w-8 h-4 rounded-full relative transition-colors", on ? "bg-accent" : "bg-border")}
+    >
+      <span className={cn("absolute top-0.5 w-3 h-3 bg-bg rounded-full transition-all", on ? "right-0.5" : "left-0.5")} />
+    </button>
+  );
+}
+
 function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: SensorData[] }) {
   const live = useLiveValue();
   const chart = chartPalette();
   const [logs, setLogs] = useState<{time: string, msg: string, type: 'info' | 'warn' | 'success'}[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showTech, setShowTech] = useState(false);
+  const moduleTuning = useModuleTuning(item.id);
   const [activeManagementSubDetail, setActiveManagementSubDetail] = useState<string | null>(null);
+  const { showToast } = useToast();
+  const [modelVersion, setModelVersion] = useState({ major: 2, minor: 4, patch: 0, deployed: '2024-03-10' });
+  const [deploying, setDeploying] = useState(false);
+  const [prefs, setPrefs] = useState({ autoRollback: true, abTesting: false, email: true, sms: false, push: true, slack: false });
+  const [severity, setSeverity] = useState('Crit');
+  const [samplingMs, setSamplingMs] = useState(500);
+  const [retentionDays, setRetentionDays] = useState(30);
+  const togglePref = (key: keyof typeof prefs, label: string) => {
+    setPrefs(prev => {
+      const on = !prev[key];
+      showToast(t('{name}: {state}', { name: t(label), state: on ? t('켜짐') : t('꺼짐') }), 'info');
+      return { ...prev, [key]: on };
+    });
+  };
 
   useEffect(() => {
     // Generate initial logs
@@ -6262,12 +6232,29 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   <div className="p-3 rounded-xl bg-surface-hover border border-border">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[11px] font-bold">{t('Production Model')}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">v2.4.0</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">v{modelVersion.major}.{modelVersion.minor}.{modelVersion.patch}</span>
                     </div>
-                    <div className="text-[10px] text-text-secondary">{t('Deployed: 2024-03-10')}</div>
+                    <div className="text-[10px] text-text-secondary">{t('배포일: {date}', { date: modelVersion.deployed })}</div>
                   </div>
-                  <button className="w-full py-2.5 rounded-xl bg-accent text-bg text-[11px] font-bold hover:opacity-90 transition-opacity">
-                    {t('Deploy New Version')}
+                  <button
+                    disabled={deploying}
+                    onClick={() => {
+                      setDeploying(true);
+                      const next = { ...modelVersion, minor: modelVersion.minor, patch: modelVersion.patch + 1 };
+                      const version = `v${next.major}.${next.minor}.${next.patch}`;
+                      setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('{version} 카나리 배포 시작 (트래픽 10%)', { version }), type: 'info' as const }, ...prev].slice(0, 10));
+                      setTimeout(() => {
+                        const d = new Date();
+                        setModelVersion({ ...next, deployed: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` });
+                        setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('{version} 배포 완료: 정확도 +0.4%p, 지연 -12ms', { version }), type: 'success' as const }, ...prev].slice(0, 10));
+                        showToast(t('{version} 배포를 완료했습니다', { version }));
+                        setDeploying(false);
+                      }, 1800);
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-accent text-bg text-[11px] font-bold hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
+                  >
+                    {deploying && <Loader2 size={12} className="animate-spin" />}
+                    {deploying ? t('배포 중…') : t('Deploy New Version')}
                   </button>
                 </div>
               </div>
@@ -6276,15 +6263,11 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="text-text-secondary">{t('Auto-rollback')}</span>
-                    <div className="w-8 h-4 bg-accent rounded-full relative">
-                      <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-bg rounded-full" />
-                    </div>
+                    <MiniSwitch on={prefs.autoRollback} label={t('Auto-rollback')} onChange={() => togglePref('autoRollback', 'Auto-rollback')} />
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="text-text-secondary">{t('A/B Testing')}</span>
-                    <div className="w-8 h-4 bg-border rounded-full relative">
-                      <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-bg rounded-full" />
-                    </div>
+                    <MiniSwitch on={prefs.abTesting} label={t('A/B Testing')} onChange={() => togglePref('abTesting', 'A/B Testing')} />
                   </div>
                 </div>
               </div>
@@ -6337,20 +6320,16 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   <div>
                     <div className="flex justify-between text-[10px] mb-2">
                       <span className="text-text-secondary">{t('Sampling Interval')}</span>
-                      <span className="text-accent">500ms</span>
+                      <span className="text-accent">{samplingMs}ms</span>
                     </div>
-                    <div className="h-1 bg-border rounded-full overflow-hidden">
-                      <div className="h-full bg-accent w-1/2" />
-                    </div>
+                    <input type="range" min={100} max={1000} step={100} value={samplingMs} onChange={e => setSamplingMs(Number(e.target.value))} aria-label={t('Sampling Interval')} className="w-full accent-[var(--color-accent)]" />
                   </div>
                   <div>
                     <div className="flex justify-between text-[10px] mb-2">
                       <span className="text-text-secondary">{t('Log Retention')}</span>
-                      <span className="text-accent">{t('30 Days')}</span>
+                      <span className="text-accent">{t('{n}일', { n: retentionDays })}</span>
                     </div>
-                    <div className="h-1 bg-border rounded-full overflow-hidden">
-                      <div className="h-full bg-accent w-3/4" />
-                    </div>
+                    <input type="range" min={7} max={90} step={1} value={retentionDays} onChange={e => setRetentionDays(Number(e.target.value))} aria-label={t('Log Retention')} className="w-full accent-[var(--color-accent)]" />
                   </div>
                 </div>
               </div>
@@ -6370,34 +6349,37 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               <div>
                 <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest block mb-3">{t('Notification Channels')}</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="p-3 rounded-xl bg-surface-hover border border-accent/30 flex flex-col items-center gap-2">
-                    <Mail size={16} className="text-accent" />
-                    <span className="text-[10px] font-bold">{t('Email')}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-hover border border-border flex flex-col items-center gap-2 opacity-50">
-                    <MessageSquare size={16} />
-                    <span className="text-[10px] font-bold">{t('SMS')}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-hover border border-accent/30 flex flex-col items-center gap-2">
-                    <Bell size={16} className="text-accent" />
-                    <span className="text-[10px] font-bold">{t('Push')}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-hover border border-border flex flex-col items-center gap-2 opacity-50">
-                    <Slack size={16} />
-                    <span className="text-[10px] font-bold">{t('Slack')}</span>
-                  </div>
+                  {([
+                    ['email', 'Email', Mail],
+                    ['sms', 'SMS', MessageSquare],
+                    ['push', 'Push', Bell],
+                    ['slack', 'Slack', Slack],
+                  ] as const).map(([key, label, Icon]) => (
+                    <button
+                      key={key}
+                      aria-pressed={prefs[key]}
+                      onClick={() => togglePref(key, label)}
+                      className={cn(
+                        "p-3 rounded-xl bg-surface-hover border flex flex-col items-center gap-2 transition-all",
+                        prefs[key] ? "border-accent/30" : "border-border opacity-50 hover:opacity-80",
+                      )}
+                    >
+                      <Icon size={16} className={prefs[key] ? "text-accent" : undefined} />
+                      <span className="text-[10px] font-bold">{t(label)}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
               <div className="pt-6 border-t border-border">
                 <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest block mb-3">{t('Alert Severity')}</label>
                 <div className="flex gap-1">
                   {['Low', 'Med', 'High', 'Crit'].map(s => (
-                    <div key={s} className={cn(
-                      "flex-1 py-1 rounded text-[9px] font-bold text-center border",
-                      s === 'Crit' ? "bg-red-500/20 border-red-500/50 text-red-500" : "bg-surface-hover border-border text-text-secondary"
+                    <button key={s} onClick={() => setSeverity(s)} aria-pressed={severity === s} className={cn(
+                      "flex-1 py-1 rounded text-[9px] font-bold text-center border transition-colors",
+                      s === severity ? "bg-red-500/20 border-red-500/50 text-red-500" : "bg-surface-hover border-border text-text-secondary hover:border-red-500/30"
                     )}>
                       {s}
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -6413,6 +6395,7 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
             <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest block mb-3">{t('Supervisor Controls')}</label>
             <div className="space-y-2">
               <button 
+                onClick={() => setShowAdvanced(true)}
                 className="w-full py-3 px-4 rounded-xl bg-surface-hover border border-border text-text-primary text-xs font-bold hover:border-accent/50 transition-all flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
@@ -6471,8 +6454,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               onClick={() => setShowAdvanced(true)}
               className="w-full py-3 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors flex items-center justify-center gap-2"
             >
-              <Settings2 size={14} />
-              {t('Detection Parameters')}
+              <Sliders size={14} />
+              {t('AI 설정 바꿔 보기 (전/후 비교)')}
             </button>
           </div>
         </div>
@@ -6512,8 +6495,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               onClick={() => setShowAdvanced(true)}
               className="w-full py-3 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors flex items-center justify-center gap-2"
             >
-              <Settings2 size={14} />
-              {t('ACS Parameters')}
+              <Sliders size={14} />
+              {t('AI 설정 바꿔 보기 (전/후 비교)')}
             </button>
           </div>
         </div>
@@ -6549,15 +6532,17 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           </div>
         </div>
 
-        <div className="pt-6 border-t border-border">
-          <button 
-            onClick={() => setShowAdvanced(true)}
-            className="w-full py-3 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors flex items-center justify-center gap-2"
-          >
-            <Settings2 size={14} />
-            {t('Advanced Parameters')}
-          </button>
-        </div>
+        {moduleTuning.tuning && (
+          <div className="pt-6 border-t border-border">
+            <button 
+              onClick={() => setShowAdvanced(true)}
+              className="w-full py-3 rounded-xl bg-accent/10 border border-accent/40 text-accent text-xs font-bold hover:bg-accent/20 transition-colors flex items-center justify-center gap-2"
+            >
+              <Sliders size={14} />
+              {t('AI 설정 바꿔 보기 (전/후 비교)')}
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -6577,7 +6562,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 {item.agent || t('System')}
               </span>
             </div>
-            <p className="text-text-secondary max-w-2xl leading-relaxed">{t(item.description)}</p>
+            <p className="text-text-primary max-w-2xl leading-relaxed">{t(menuSummary(item.id) ?? item.description)}</p>
+            <p className="mt-0.5 text-[11px] text-text-secondary max-w-2xl">{t(item.description)}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -6588,6 +6574,15 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               {t('Active & Synchronized')}
             </div>
           </div>
+          {moduleTuning.tuning && (
+            <button
+              onClick={() => setShowAdvanced(true)}
+              className="px-4 py-3 rounded-xl font-bold text-sm border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-colors flex items-center gap-2"
+            >
+              <Sliders size={18} />
+              {t('AI 설정 바꿔 보기')}
+            </button>
+          )}
           <button 
             onClick={() => setIsExecuting(true)}
             disabled={isExecuting}
@@ -6604,6 +6599,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         </div>
       </div>
 
+      <ScreenGuide menuId={item.id} />
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {item.id === 21 ? (
           <div className="lg:col-span-12">
@@ -6613,7 +6610,30 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           <>
             {/* Main Content Area (8 cols) */}
             <div className="lg:col-span-8 space-y-6">
-              {/* Technical Specs Bento */}
+              {moduleTuning.tuning && moduleTuning.history[0] && (
+                <AppliedTuningCard
+                  tuning={moduleTuning.tuning}
+                  entry={moduleTuning.history[0]}
+                  onOpen={() => setShowAdvanced(true)}
+                  onRevert={() => {
+                    moduleTuning.revert();
+                    setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('설정 변경을 되돌렸어요.'), type: 'warn' as const }, ...prev].slice(0, 10));
+                    showToast(t('설정 변경을 되돌렸어요.'), 'info');
+                  }}
+                />
+              )}
+
+              {/* Technical details, for engineers */}
+              <div>
+                <button
+                  onClick={() => setShowTech(v => !v)}
+                  aria-expanded={showTech}
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-text-secondary hover:text-accent"
+                >
+                  <Cpu size={12} />{showTech ? t('기술 상세 접기') : t('기술 상세 보기 (엔지니어용)')}
+                </button>
+                {showTech && (
+                  <div className="mt-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="dashboard-card group hover:border-accent/30 transition-colors">
                   <div className="flex items-center gap-3 mb-4">
@@ -6653,6 +6673,9 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   </div>
                   <p className="text-sm leading-relaxed text-text-primary">{t(item.details?.output ?? '')}</p>
                 </div>
+              </div>
+                  </div>
+                )}
               </div>
 
               {/* Live Visualization */}
@@ -6745,11 +6768,26 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         )}
       </div>
       
-      <AdvancedParametersModal 
-        item={item} 
-        isOpen={showAdvanced} 
-        onClose={() => setShowAdvanced(false)} 
-      />
+      {moduleTuning.tuning && (
+        <TuningModal
+          menuName={item.name}
+          tuning={moduleTuning.tuning}
+          current={moduleTuning.values}
+          isOpen={showAdvanced}
+          onClose={() => setShowAdvanced(false)}
+          onApply={after => {
+            const tuning = moduleTuning.tuning!;
+            const entry = moduleTuning.apply(after);
+            const moved = tuning.params
+              .filter(p => entry.before[p.key] !== after[p.key])
+              .map(p => `${t(p.label)} ${entry.before[p.key]} → ${after[p.key]}${p.unit ? ` ${t(p.unit)}` : ''}`)
+              .join(', ');
+            setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('설정 적용: {changes}', { changes: moved }), type: 'success' as const }, ...prev].slice(0, 10));
+            showToast(t('설정을 적용했어요. 전/후 결과를 화면에 남겨 뒀어요.'));
+            setShowAdvanced(false);
+          }}
+        />
+      )}
 
       <ManagementSubModal
         type={activeManagementSubDetail}

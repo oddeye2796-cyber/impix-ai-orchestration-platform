@@ -7,7 +7,9 @@ import {defineConfig, loadEnv} from 'vite';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: process.env.GITHUB_PAGES ? '/impix-ai-orchestration-platform/' : '/',
+    // The expo build uses relative paths so the same dist folder runs from a
+    // booth laptop, a USB stick or any sub-path without a rebuild.
+    base: process.env.EDITION === 'tokyo' ? './' : process.env.GITHUB_PAGES ? '/impix-ai-orchestration-platform/' : '/',
     plugins: [
       react(),
       tailwindcss(),
@@ -27,6 +29,8 @@ export default defineConfig(({mode}) => {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
       // Endpoint of the key-holding proxy. Unlike the key, this is safe to ship.
       'process.env.AI_PROXY_URL': JSON.stringify(env.AI_PROXY_URL),
+      // 'tokyo' builds the NexTech Week Tokyo booth edition; anything else is the standard platform.
+      'process.env.EDITION': JSON.stringify(process.env.EDITION || 'standard'),
       // Stamped so the deployed page can report which commit it is running.
       'process.env.BUILD_REF': JSON.stringify(
         process.env.BUILD_REF || process.env.GITHUB_SHA || 'dev',
