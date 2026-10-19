@@ -15,6 +15,7 @@ import { EXPO } from '../config/edition';
 import { useTelemetry } from '../hooks/useTelemetry';
 import { setRandomExcursions, startExcursion, type Excursion } from '../services/telemetry';
 import { caseValue, formatHours, trimClearedExcursions, useMoney, type ViewerRole } from '../components/RoleViews';
+import { replayCoordination, setStagedCase, type StagedCase } from './stage';
 
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
@@ -43,7 +44,7 @@ const PHASES: { id: Phase; label: string; role: ViewerRole; sec: number | null }
   { id: 'live', label: 'AI 팀 자율 대응', role: 'worker', sec: null },
   { id: 'approval', label: '사람 결정', role: 'worker', sec: 12 },
   { id: 'results', label: '결과', role: 'manager', sec: 12 },
-  { id: 'evidence', label: '판단 기록', role: 'engineer', sec: 12 },
+  { id: 'evidence', label: '판단 기록', role: 'engineer', sec: 24 },
 ];
 
 /** Readings an excursion lasts, two seconds each. */
@@ -204,6 +205,86 @@ const SCENARIOS: Scenario[] = [
   },
 ];
 
+/**
+ * The same cases as an engineer sees them: who leads, what each agent called
+ * in works on (the control hierarchy), and how their positions were argued
+ * out into a decision (the agent coordination). Kept beside SCENARIOS so the
+ * two tellings stay in step.
+ */
+const ENGINEER_VIEW: Record<string, Omit<StagedCase, 'kind' | 'phase'>> = {
+  rush_order: {
+    lead: 'production',
+    leadTitle: '긴급 오더 3만 개 일정 재계획',
+    leadNote: '라인 3·4 순서 재배치와 야간 1개 조 추가 제안',
+    team: { logistics: '필름 2롤 입고 앞당기기 (PO-881)', pm: '라인 4 정기 정비 이동 위험 검토', quality: '첫 1천 개 검사 표본 2배 설정' },
+    coordination: {
+      title: '긴급 오더 3만 개 대응 조율',
+      description: '납기, 설비 수명, 품질, 자재를 한 번에 맞추는 다자 조율',
+      timeline: [
+        { fromAgent: 'prod', toAgent: 'supervisor', type: 'proposal', content: '1만 8천 개가 모자랍니다. 라인 3·4 순서를 바꾸고 라인 속도를 15% 올리면 내일 12시에 끝낼 수 있습니다. (MILP 스케줄러, 납기 준수 확률 0.97)' },
+        { fromAgent: 'pm', toAgent: 'supervisor', type: 'critique', content: '속도 상향은 반대합니다. 라인 4 주축 베어링이 15% 가속 시 온도 한계를 넘을 확률이 0.34입니다. 순서 변경과 정비 이동은 문제없습니다. (RUL 410시간)' },
+        { fromAgent: 'qual', toAgent: 'supervisor', type: 'critique', content: '속도를 올리면 실링 체류 시간이 짧아져 실링 불량이 0.8%에서 2.9%로 늘 것으로 예측됩니다.' },
+        { fromAgent: 'logistics', toAgent: 'supervisor', type: 'info', content: '필름 재고는 충분합니다. 모자란 2롤은 내일 오전 입고분(PO-881)을 앞당겨 받을 수 있습니다.' },
+        { fromAgent: 'prod', toAgent: 'supervisor', type: 'proposal', content: '수정안: 속도는 그대로 두고 야간 1개 조를 더하면 내일 15시 완료, 납기 여유 3시간입니다.' },
+        { fromAgent: 'supervisor', toAgent: 'all', type: 'agreement', content: '합의: 라인 속도 유지. 라인 3·4 순서 재배치, 자재 선입고, 라인 4 정비 이동은 즉시 실행. 야간 조 추가는 생산 관리자에게 승인 요청.', reasoning: '품질·설비 가드레일을 넘지 않는 안 중 납기 여유가 가장 큰 안을 골랐습니다. 인력 편성은 L2 권한이라 사람에게 넘겼습니다.' },
+      ],
+    },
+  },
+  mass_defect: {
+    lead: 'quality',
+    leadTitle: '포장 1·2라인 인쇄 불량 급증 원인 추적',
+    leadNote: '의심 로트 격리와 출하 보류 실행',
+    team: { logistics: '필름 로트 이력 추적 (FILM-0921)', pm: '인쇄기·히터 이상 여부 점검', production: '로트 교체 20분 반영해 일정 재조정' },
+    coordination: {
+      title: '포장 1·2라인 불량 급증 원인 조율',
+      description: '원인을 좁혀 라인을 세우지 않고 불량 유입을 끊는 조율',
+      timeline: [
+        { fromAgent: 'qual', toAgent: 'supervisor', type: 'proposal', content: '두 라인 비전 검사 불량률이 6.8%이고 같은 인쇄 번짐 유형입니다. (YOLOv8 신뢰도 0.96) 두 라인 동시 정지를 제안합니다.' },
+        { fromAgent: 'prod', toAgent: 'supervisor', type: 'critique', content: '두 라인을 다 세우면 시간당 6천 개를 잃습니다. 원인 범위부터 좁혀야 합니다.' },
+        { fromAgent: 'pm', toAgent: 'supervisor', type: 'info', content: '두 라인 인쇄기·히터의 진동과 온도는 정상입니다. (LSTM 이상 점수 0.12) 설비 원인일 가능성은 낮습니다.' },
+        { fromAgent: 'logistics', toAgent: 'supervisor', type: 'info', content: '로트 이력상 두 라인의 공통점은 09:02에 투입된 필름 로트 FILM-0921 하나뿐입니다.' },
+        { fromAgent: 'qual', toAgent: 'supervisor', type: 'proposal', content: '수정안: 라인 정지 대신 FILM-0921 격리·교체, 09시 이후 생산품 출하 보류.' },
+        { fromAgent: 'supervisor', toAgent: 'all', type: 'agreement', content: '합의: 라인은 세우지 않음. 로트 교체, 의심 로트 격리, 출하 보류는 즉시 실행. 출하된 2개 팔레트 회수는 품질 책임자에게 승인 요청.', reasoning: '원인이 자재로 좁혀져 라인 정지 없이 불량 유입을 끊을 수 있습니다. 출하품 회수는 고객에게 영향이 가는 L3 결정이라 사람에게 넘겼습니다.' },
+      ],
+    },
+  },
+  supply_delay: {
+    lead: 'logistics',
+    leadTitle: '포장 필름 입고 6시간 지연 대응',
+    leadNote: '생산 순서 변경과 대체 자재 선출고 실행',
+    team: { production: '재고 있는 품목부터 생산 순서 변경', quality: '품목 전환 첫 제품 검사 조건 변경' },
+    coordination: {
+      title: '포장 필름 입고 지연 대응 조율',
+      description: '자재가 끊기기 전에 생산 순서를 바꿔 라인 정지를 막는 조율',
+      timeline: [
+        { fromAgent: 'logistics', toAgent: 'supervisor', type: 'proposal', content: 'PO-902 입고가 14시에서 20시로 늦어집니다. 16시에 라인 1·2 자재가 바닥날 것으로 예측돼(신뢰도 0.93) 라인 1·2 감속을 제안합니다.' },
+        { fromAgent: 'prod', toAgent: 'supervisor', type: 'critique', content: '감속하면 오늘 생산량이 2,400개 줄어듭니다. 필름 재고가 있는 다른 품목을 먼저 돌리면 감속이 필요 없습니다.' },
+        { fromAgent: 'qual', toAgent: 'supervisor', type: 'info', content: '품목이 바뀔 때 첫 제품 검사 조건은 자동으로 바꿀 수 있습니다. 전환 손실은 회당 8분입니다.' },
+        { fromAgent: 'logistics', toAgent: 'supervisor', type: 'proposal', content: '동의합니다. 창고 대체 자재를 먼저 내보내고 AMR 운반 순서를 다시 짜겠습니다.' },
+        { fromAgent: 'supervisor', toAgent: 'all', type: 'agreement', content: '합의: 생산 순서 변경, 대체 자재 선출고, AMR 재배차는 즉시 실행. 이번 달 두 번째 지연이라 대체 공급사 발주는 구매 담당자에게 승인 요청.', reasoning: '라인 정지 0시간, 생산량 손실이 없는 안을 골랐습니다. 구매 발주와 단가 변경은 L2 권한이라 사람에게 넘겼습니다.' },
+      ],
+    },
+  },
+  energy: {
+    lead: 'energy',
+    leadTitle: '계약 전력 92% 도달로 피크 초과 위험',
+    leadNote: 'ESS 120kW 방전과 공조 부하 20분 이전 실행',
+    team: { production: '공조·컴프레서 지연 시 생산 영향 확인', safety: '환기·소방 설비 감축 제외 확인' },
+    coordination: {
+      title: '피크 전력 초과 방지 조율',
+      description: '생산을 멈추지 않고 계약 전력 안에 머무는 조율',
+      timeline: [
+        { fromAgent: 'energy', toAgent: 'supervisor', type: 'proposal', content: '15분 안에 계약 전력을 넘을 확률이 0.82입니다. (Prophet 부하 예측) 포장 라인 2개를 감속해 180kW를 줄이자고 제안합니다.' },
+        { fromAgent: 'prod', toAgent: 'supervisor', type: 'critique', content: '라인 감속은 반대합니다. 시간당 3천 개 손실입니다. 공조·컴프레서는 20분 늦춰도 생산에 영향이 없습니다.' },
+        { fromAgent: 'safety', toAgent: 'supervisor', type: 'info', content: '환기·소방 설비는 감축 대상에서 빼야 합니다.' },
+        { fromAgent: 'qual', toAgent: 'supervisor', type: 'info', content: '공조를 20분 늦춰도 실내 온습도는 품질 기준 안에 머뭅니다.' },
+        { fromAgent: 'energy', toAgent: 'supervisor', type: 'proposal', content: '수정안: ESS 120kW 방전과 공조·컴프레서 부하 20분 이전으로 160kW를 줄일 수 있습니다.' },
+        { fromAgent: 'supervisor', toAgent: 'all', type: 'agreement', content: '합의: 생산 라인은 그대로 두고 ESS 방전과 공조 부하 이전을 즉시 실행. L1 권한이라 사람 승인 없이 결과만 보고.', reasoning: '생산 손실 0, 안전 설비 유지, 품질 기준 유지를 모두 만족하는 안입니다. 계약 전력 초과를 막아 1년 기본요금 인상을 피했습니다.' },
+      ],
+    },
+  },
+};
+
 /** The five stages an incident goes through, as on the floor map. */
 const STAGES = ['감지', '분석', '조치 제안', '승인 대기', '해결'];
 
@@ -254,6 +335,18 @@ export function ExpoDirector({
       events.forEach(name => window.removeEventListener(name, onInput, { capture: true }));
     };
   }, []);
+
+  // The engineer's screens follow the case being played.
+  const casePhase = phase === 'intro' ? 'before' as const : phase === 'live' ? 'live' as const : 'after' as const;
+  useEffect(() => {
+    setStagedCase({ kind: scenario.kind, phase: casePhase, ...ENGINEER_VIEW[scenario.kind] });
+  }, [scenario.kind, casePhase]);
+  useEffect(() => () => setStagedCase(null), []);
+
+  // The decision record opens on the agents arguing the case out, from the start.
+  useEffect(() => {
+    if (phase === 'evidence') replayCoordination();
+  }, [phase]);
 
   const phaseAt = PHASES.findIndex(p => p.id === phase);
   const step = PHASES[phaseAt];
@@ -433,7 +526,8 @@ export function ExpoDirector({
         {phase === 'evidence' && (
           <div className="rounded-xl border border-border bg-surface-hover/40 p-3 text-xs leading-relaxed">
             <div className="mb-1 flex items-center gap-1.5 font-black"><FileSearch size={14} className="text-accent" />{t('모든 판단이 기록돼요')}</div>
-            <p>{t('어떤 데이터를 보고, 어떤 AI가, 왜 그렇게 판단했는지, 누가 승인했는지가 모두 남아요. 지금 화면은 엔지니어용 기록이에요.')}</p>
+            <p>{t('어떤 데이터를 보고, 어떤 AI가, 왜 그렇게 판단했는지, 누가 승인했는지가 모두 남아요.')}</p>
+            <p className="mt-1">{t('지금 화면은 같은 사건의 엔지니어용 기록이에요. 에이전트들이 어떤 근거로 제안하고 반대해서 합의했는지 보여 주고, [관제 구조] 탭에서는 어느 에이전트가 무엇을 맡았는지 볼 수 있어요.')}</p>
             <p className="mt-2 text-text-secondary">{t('다음 사례: {title}', { title: t(SCENARIOS[(scenarioIndex + 1) % SCENARIOS.length].title) })}</p>
           </div>
         )}

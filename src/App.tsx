@@ -88,6 +88,9 @@ import {
   Minimize2,
   FileSearch,
   Table as TableIcon,
+  ChevronDown,
+  Lock as LockIcon,
+  RefreshCw,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -114,7 +117,8 @@ import {
   Scatter,
   ZAxis,
   ComposedChart,
-  Legend
+  Legend,
+  ReferenceLine
 } from 'recharts';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -138,7 +142,10 @@ import {
   PolicyPriority,
   CoordinationEvent
 } from './types';
-import { generateChatResponse, generateRecommendations } from './services/geminiService';
+import { generateRecommendations } from './services/geminiService';
+import { ApprovalGate } from './components/AccessGate';
+import { accessActions, AREAS, canApprove, currentUser, initAccess, LEVEL_LABEL, LEVELS, levelFor, ROLES, roleOf, useAccess, type Level, type RoleKey } from './services/access';
+import { AnswerSources, SuggestedQuestions, useSuggestedQuestions, useSupervisorChat } from './components/SupervisorChat';
 import { t, tValue, matchesKeyword, useI18n } from './i18n';
 import LanguageSwitcher from './i18n/LanguageSwitcher';
 import AiSettingsModal from './components/AiSettingsModal';
@@ -152,12 +159,14 @@ const MarkdownView = lazy(() => import('./components/MarkdownView'));
 import DemoModeBadge from './components/DemoModeBadge';
 import { IS_EXPO } from './config/edition';
 import { ExpoBanner, ExpoDirector } from './expo/ExpoDirector';
+import { useStage, type StagedCase } from './expo/stage';
 import { ManagerView, RoleSwitcher, WorkerView, useIncidents, useViewerRole, type ViewerRole } from './components/RoleViews';
 import { AppliedTuningCard, ScreenGuide, TuningModal, menuSummary, useModuleTuning } from './components/ModuleTuning';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
 import { useLiveValue } from './hooks/useLiveValue';
-import { livingSeries, type Excursion, type PlantState } from './services/telemetry';
+import { getPlantState, livingSeries, TICK_MS, type Excursion, type PlantState } from './services/telemetry';
+import { BATCH_YIELD, CONTRACT_KW, DEFECT_OTHER, DEFECT_TYPES, EMERGENCY_STOPS, ENERGY_COST, EQUIPMENT, getWorkOrders, HEALTH_DANGER, HEALTH_WARN, OEE_TARGET, PEAK_LOAD, setFactDecisions, setWorkOrders, wrapperKw, YIELD_TARGET } from './services/plantFacts';
 import { chartPalette, useTheme } from './theme';
 
 /** Placeholder shown while a lazily loaded chunk arrives. */
@@ -171,6 +180,17 @@ function ChunkFallback() {
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+/**
+ * Readings arrive every couple of seconds but carry an HH:mm stamp, so a time
+ * axis keyed on it repeats the same minute on every tick. Label each reading by
+ * its age instead ("-40s" … "지금").
+ */
+function withAgoLabels<T>(history: T[]): (T & { ago: string })[] {
+  const step = TICK_MS / 1000;
+  const last = history.length - 1;
+  return history.map((d, i) => ({ ...d, ago: i === last ? t('지금') : `-${(last - i) * step}s` }));
 }
 
 const INITIAL_DECISIONS: AgentDecision[] = [
@@ -217,6 +237,7 @@ const MOCK_OVERRIDE_LOGS: OverrideLog[] = [
 
 /** Operator identity stamped on approvals and audit entries. A public booth shows no real account. */
 const CURRENT_OPERATOR = IS_EXPO ? 'demo@impix' : 'oddeye2796@gmail.com';
+initAccess(CURRENT_OPERATOR);
 
 /** Short random id for client-side records (logs, events, evidence packs). */
 const newId = () => Math.random().toString(36).slice(2, 11);
@@ -238,6 +259,10 @@ export default function App() {
   // Subscribing here re-renders the entire (unmemoized) tree when the operator
   // switches language, so every module level t() call is re-evaluated.
   const { locale } = useI18n();
+  const access = useAccess();
+  const me = currentUser(access);
+  const { showToast } = useToast();
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const { theme } = useTheme();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<MenuItem>(MENU_ITEMS[0]);
@@ -247,11 +272,12 @@ export default function App() {
   const sensorData = plant.history;
   const [decisions, setDecisions] = useState<AgentDecision[]>(IS_EXPO ? EXPO_DECISIONS : INITIAL_DECISIONS);
   const [overrideLogs, setOverrideLogs] = useState<OverrideLog[]>(MOCK_OVERRIDE_LOGS);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: '안녕하세요! IMPIX AI Supervisor입니다. 무엇을 도와드릴까요?', timestamp: new Date().toLocaleTimeString() }
-  ]);
+  const chat = useSupervisorChat();
+  const chatMessages = chat.messages;
+  const isChatLoading = chat.loading;
   const [chatInput, setChatInput] = useState('');
-  const [isChatLoading, setIsChatLoading] = useState(false);
+  // The assistant answers from the same proposals list the screens show.
+  useEffect(() => setFactDecisions(decisions), [decisions]);
   const [isRecommending, setIsRecommending] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
@@ -263,7 +289,7 @@ export default function App() {
   const searchResults = (() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return [];
-    return MENU_ITEMS.filter(item =>
+    return MENU_ITEMS.filter(item => levelFor(item.category, access) !== 'none').filter(item =>
       [item.name, item.category, item.description, item.agent ?? ''].some(text => t(text).toLowerCase().includes(q) || text.toLowerCase().includes(q)),
     ).slice(0, 8);
   })();
@@ -286,12 +312,22 @@ export default function App() {
   /** Switch view, optionally scrolling to an anchor once the new view has rendered. */
   const navigateTo = (menuId: number, anchor?: string) => {
     const target = MENU_ITEMS.find(m => m.id === menuId);
+    if (target && levelFor(target.category, access) === 'none') {
+      showToast(t('{role} 계정에는 "{menu}" 화면 권한이 없어요', { role: t(roleOf(me.role).label), menu: t(target.name) }), 'error');
+      return;
+    }
     if (target) setSelectedMenu(target);
     // The orchestration panel is the engineer's drill-down, so going there
     // switches the dashboard to the engineer view.
     if (anchor === ORCHESTRATION_ANCHOR) setViewerRole('engineer');
     setScrollTarget(anchor ?? null);
   };
+
+  // Switching to a user without access to the open screen goes back to the dashboard.
+  useEffect(() => {
+    if (levelFor(selectedMenu.category, access) === 'none') setSelectedMenu(MENU_ITEMS[0]);
+  }, [access, selectedMenu]);
+  const hiddenAreas = CATEGORIES.filter(category => levelFor(category, access) === 'none').length;
 
   useEffect(() => {
     if (!scrollTarget) return;
@@ -323,38 +359,18 @@ export default function App() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
-  const handleSendMessage = async () => {
-    const prompt = chatInput.trim();
-    if (!prompt || isChatLoading) return;
-
-    const userMsg: ChatMessage = { role: 'user', content: prompt, timestamp: new Date().toLocaleTimeString() };
-    setChatMessages(prev => [...prev, userMsg]);
+  const handleSendMessage = (text = chatInput) => {
+    if (!text.trim() || isChatLoading) return;
     setChatInput('');
-    setIsChatLoading(true);
-
-    const history = chatMessages.map(m => ({
-      role: m.role === 'user' ? 'user' as const : 'model' as const,
-      parts: [{ text: m.content }]
-    }));
-
-    try {
-      const result = await generateChatResponse(prompt, history, sensorData);
-      const assistantMsg: ChatMessage = {
-        role: 'assistant',
-        content: result.status === 'ok' ? result.data : result.message,
-        timestamp: new Date().toLocaleTimeString(),
-      };
-      setChatMessages(prev => [...prev, assistantMsg]);
-    } finally {
-      setIsChatLoading(false);
-    }
+    void chat.ask(text);
   };
 
   const appendLog = (log: Omit<OverrideLog, 'id' | 'timestamp' | 'operator'>) => {
-    setOverrideLogs(prev => [{ id: newId(), timestamp: new Date().toISOString(), operator: CURRENT_OPERATOR, ...log }, ...prev]);
+    setOverrideLogs(prev => [{ id: newId(), timestamp: new Date().toISOString(), operator: me.email, ...log }, ...prev]);
   };
 
-  const handleApprove = (index: number, adjustedValue?: number | string, notes?: string) => {
+  /** Approve without a permission check: the booth director plays the approving person. */
+  const approveDecision = (index: number, adjustedValue?: number | string, notes?: string) => {
     const decision = decisions[index];
     if (!decision || decision.status !== 'pending') return;
     const finalValue = adjustedValue !== undefined ? adjustedValue : decision.recommended_value;
@@ -376,9 +392,21 @@ export default function App() {
     });
   };
 
+  /** Whether the signed-in user may decide on this proposal; says who can when not. */
+  const mayDecide = (index: number) => {
+    const decision = decisions[index];
+    if (!decision || canApprove(decision.agent, access)) return true;
+    showToast(t('{role} 계정은 이 제안을 승인할 수 없어요', { role: t(roleOf(me.role).label) }), 'error');
+    return false;
+  };
+
+  const handleApprove = (index: number, adjustedValue?: number | string, notes?: string) => {
+    if (mayDecide(index)) approveDecision(index, adjustedValue, notes);
+  };
+
   const handleReject = (index: number, notes?: string) => {
     const decision = decisions[index];
-    if (!decision || decision.status !== 'pending') return;
+    if (!decision || decision.status !== 'pending' || !mayDecide(index)) return;
 
     setDecisions(prev => prev.map((d, i) => i === index ? {
       ...d,
@@ -448,7 +476,7 @@ export default function App() {
       case 31: // 슈퍼바이저 센터
         return <SupervisorCenterView onOpenOrchestration={() => navigateTo(DASHBOARD_MENU_ID, ORCHESTRATION_ANCHOR)} />;
       default:
-        return <ModuleDetailView key={selectedMenu.id} item={selectedMenu} sensorData={sensorData} />;
+        return <ModuleDetailView key={selectedMenu.id} item={selectedMenu} sensorData={sensorData} onNavigate={navigateTo} />;
     }
   };
 
@@ -471,7 +499,7 @@ export default function App() {
         </div>
 
         <nav className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
-          {CATEGORIES.map(category => (
+          {CATEGORIES.filter(category => levelFor(category, access) !== 'none').map(category => (
             <div key={category} className="space-y-1">
               <h2 className="px-3 text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-2">
                 {t(category)}
@@ -498,16 +526,57 @@ export default function App() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-border bg-surface/30">
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-            <div className="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center">
-              <User size={16} className="text-text-secondary" />
+        {hiddenAreas > 0 && (
+          <p className="px-6 py-2 border-t border-border text-[10px] text-text-secondary">
+            <LockIcon size={10} className="mr-1 inline" />{t('{role} 권한 밖의 메뉴 그룹 {n}개는 숨겨져 있어요', { role: t(roleOf(me.role).label), n: hiddenAreas })}
+          </p>
+        )}
+        <div className="relative p-4 border-t border-border bg-surface/30">
+          <button
+            onClick={() => setIsAccountOpen(v => !v)}
+            aria-expanded={isAccountOpen}
+            data-testid="account-switcher"
+            title={t('사용자 전환')}
+            className="w-full flex items-center gap-3 p-2 rounded-lg bg-white/5 text-left hover:bg-surface-hover transition-colors"
+          >
+            <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: roleOf(me.role).color }}>
+              {me.name[0].toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium truncate">{CURRENT_OPERATOR}</p>
-              <p className="text-[10px] text-text-secondary">{t('Administrator')}</p>
+              <p className="text-xs font-medium truncate">{me.email}</p>
+              <p className="text-[10px] text-text-secondary truncate">{t(roleOf(me.role).label)} · {t('사용자 전환')}</p>
             </div>
-          </div>
+            <ChevronDown size={14} className={cn("shrink-0 text-text-secondary transition-transform", isAccountOpen && "rotate-180")} />
+          </button>
+          {isAccountOpen && (
+            <div className="absolute bottom-full left-4 right-4 mb-2 max-h-[60vh] overflow-y-auto rounded-xl border border-border bg-surface p-1.5 shadow-2xl custom-scrollbar z-30">
+              <p className="px-2 pt-1 pb-2 text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('사용자 전환')}</p>
+              {ROLES.map(role => {
+                const people = access.users.filter(u => u.role === role.key && u.status === 'Online');
+                if (!people.length) return null;
+                return (
+                  <div key={role.key} className="mb-1">
+                    <p className="px-2 py-1 text-[10px] font-bold" style={{ color: role.color }}>{t(role.label)}</p>
+                    {people.map(u => (
+                      <button
+                        key={u.id}
+                        onClick={() => {
+                          accessActions.switchUser(u.id);
+                          setViewerRole(role.viewer);
+                          setIsAccountOpen(false);
+                          showToast(t('{name}({role}) 계정으로 전환했어요', { name: u.name, role: t(role.label) }), 'info');
+                        }}
+                        className={cn("w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left text-xs hover:bg-surface-hover", u.id === me.id && "bg-accent/10 text-accent")}
+                      >
+                        <span className="truncate">{u.name}</span>
+                        <span className="shrink-0 text-[10px] text-text-secondary">{u.email}</span>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </motion.aside>
 
@@ -682,6 +751,7 @@ export default function App() {
                     )}>
                       {t(msg.content)}
                     </div>
+                    {msg.role === 'assistant' && <AnswerSources sources={msg.sources} onOpen={id => navigateTo(id)} />}
                     <span className="text-[9px] text-text-secondary mt-1 px-1">{msg.timestamp}</span>
                   </div>
                 ))}
@@ -696,6 +766,7 @@ export default function App() {
               </div>
 
               <div className="p-4 border-t border-border bg-surface/50">
+                <SuggestedQuestions onPick={q => handleSendMessage(q)} disabled={isChatLoading} className="mb-2" />
                 <div className="relative">
                   <input
                     type="text"
@@ -709,7 +780,7 @@ export default function App() {
                     className="w-full bg-bg border border-border rounded-xl py-2 pl-4 pr-10 text-xs focus:outline-none focus:border-accent transition-colors"
                   />
                   <button
-                    onClick={handleSendMessage}
+                    onClick={() => handleSendMessage()}
                     disabled={isChatLoading || !chatInput.trim()}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-accent hover:text-accent-hover disabled:opacity-50"
                     aria-label={t('보내기')}
@@ -729,7 +800,7 @@ export default function App() {
         <ExpoDirector
           decisions={decisions}
           setDecisions={setDecisions}
-          onApprove={handleApprove}
+          onApprove={approveDecision}
           setRole={role => { setSelectedMenu(MENU_ITEMS[0]); setViewerRole(role); }}
         />
       )}
@@ -830,6 +901,7 @@ function RULPredictionView() {
       confidence: '92.4%',
       machinery: t('수축포장기-01'),
       warning: 'Vibration patterns indicate bearing wear. Schedule inspection within the next 7 days to prevent unplanned downtime.',
+      // Health index (%) over the bearing's run so far; below `threshold` it needs maintenance.
       chartData: [
         { name: 'Day 1', health: 100, threshold: 20 },
         { name: 'Day 5', health: 95, threshold: 20 },
@@ -866,17 +938,18 @@ function RULPredictionView() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 dashboard-card h-[400px]">
           <h3 className="font-bold mb-6">{t('Health Degradation Curve')}</h3>
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="85%">
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
               <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-              <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+              <YAxis unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
               <Tooltip 
                 contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
                 itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
               />
-              <Line type="monotone" dataKey="health" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} />
-              <Line type="monotone" dataKey="threshold" stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} dot={false} />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: '10px' }} />
+              <ReferenceLine y={data[0].threshold} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} label={{ value: t('정비 기준선 {n}%', { n: data[0].threshold }), position: 'insideBottomLeft', fontSize: 10, fill: '#ef4444' }} />
+              <Line type="monotone" dataKey="health" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} name={t('건강 지수 (%)')} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -912,12 +985,6 @@ function RULPredictionView() {
   );
 }
 
-const MOCK_WORK_ORDERS = [
-  { id: 'WO-2024-001', asset: '수축포장기-01', type: 'Preventive', priority: 'Medium', status: 'In Progress', user: 'Kim Tech' },
-  { id: 'WO-2024-002', asset: '로봇팔-02', type: 'Corrective', priority: 'High', status: 'Pending', user: 'Lee Eng' },
-  { id: 'WO-2024-003', asset: '컨베이어-04', type: 'Inspection', priority: 'Low', status: 'Completed', user: 'Park Maint' },
-  { id: 'WO-2024-004', asset: '모터-08', type: 'Corrective', priority: 'Urgent', status: 'Pending', user: 'Choi Tech' },
-];
 
 /** What a new order is raised for, in turn, so repeated clicks add different work. */
 const NEW_ORDER_POOL = [
@@ -929,7 +996,9 @@ const NEW_ORDER_POOL = [
 const NEXT_STATUS: Record<string, string> = { Pending: 'In Progress', 'In Progress': 'Completed', Completed: 'Pending' };
 
 function WorkOrderView() {
-  const [orders, setOrders] = useState(MOCK_WORK_ORDERS);
+  const [orders, setOrders] = useState(getWorkOrders);
+  // Report the list to the fact sheet, so the assistant knows about orders raised or moved here.
+  useEffect(() => setWorkOrders(orders), [orders]);
   const { showToast } = useToast();
   const addOrder = () => {
     const pick = NEW_ORDER_POOL[orders.length % NEW_ORDER_POOL.length];
@@ -1195,6 +1264,7 @@ function RecommendationEngineView({ decisions, onApprove, onReject, onLog, onRef
                       </div>
                     ) : (
                       <>
+                        <ApprovalGate agent={decision.agent}>
                         <button 
                           onClick={() => onApprove(idx)}
                           className="w-full py-2 bg-accent hover:bg-accent-hover text-bg text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -1213,6 +1283,7 @@ function RecommendationEngineView({ decisions, onApprove, onReject, onLog, onRef
                         >
                           <X size={16} /> {t('Reject')}
                         </button>
+                        </ApprovalGate>
                         <button 
                           onClick={() => onLog(idx)}
                           className="w-full py-2 bg-surface border border-border hover:bg-accent/10 hover:border-accent/30 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -1610,7 +1681,7 @@ function DashboardView({
           </div>
           <div className="flex-1 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={sensorData}>
+              <AreaChart data={withAgoLabels(sensorData)}>
                 <defs>
                   <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={sensorColor} stopOpacity={0.3}/>
@@ -1619,11 +1690,12 @@ function DashboardView({
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis 
-                  dataKey="timestamp" 
+                  dataKey="ago" 
                   stroke={chart.axis} 
                   fontSize={10} 
                   tickLine={false} 
                   axisLine={false} 
+                  minTickGap={16}
                 />
                 <YAxis 
                   stroke={chart.axis} 
@@ -1631,6 +1703,8 @@ function DashboardView({
                   tickLine={false} 
                   axisLine={false} 
                   domain={['auto', 'auto']}
+                  tickFormatter={(v: number) => `${v.toFixed(1)}${sensorMetric === 'vibration' ? ' mm/s' : '°C'}`}
+                  width={64}
                 />
                 <Tooltip 
                   contentStyle={tooltipStyle}
@@ -1639,6 +1713,7 @@ function DashboardView({
                 <Area 
                   type="monotone" 
                   dataKey={sensorMetric}
+                  name={sensorMetric === 'vibration' ? t('진동 (mm/s)') : t('온도 (°C)')}
                   stroke={sensorColor}
                   isAnimationActive={false}
                   fillOpacity={1} 
@@ -1652,12 +1727,12 @@ function DashboardView({
 
         {/* AI Recommendations */}
         <div className="dashboard-card flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold flex items-center gap-2">
-              <AlertTriangle size={18} className="text-warning" />
-              {t('AI Recommendations')}
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 mb-4">
+            <h3 className="font-bold flex items-center gap-2 min-w-0">
+              <AlertTriangle size={18} className="text-warning shrink-0" />
+              <span className="break-keep">{t('AI Recommendations')}</span>
             </h3>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <button 
                 onClick={fetchAIRecommendations}
                 disabled={isRecommending}
@@ -1667,7 +1742,7 @@ function DashboardView({
                 {isRecommending ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
               </button>
               <DemoModeBadge />
-              <span data-testid="pending-count" className="bg-warning/10 text-warning text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">
+              <span data-testid="pending-count" className="whitespace-nowrap bg-warning/10 text-warning text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">
                 {decisions.filter(d => d.status === 'pending').length} {t('Action Required')}
               </span>
             </div>
@@ -1699,6 +1774,7 @@ function DashboardView({
                   {t(decision.reasoning)}
                 </p>
                 {decision.status === 'pending' && (
+                  <ApprovalGate agent={decision.agent}>
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleApprove(idx)}
@@ -1713,6 +1789,7 @@ function DashboardView({
                       <X size={14} /> {t('Reject')}
                     </button>
                   </div>
+                  </ApprovalGate>
                 )}
                 {decision.status !== 'pending' && (
                   <div className={cn(
@@ -1734,7 +1811,7 @@ function DashboardView({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Defect Rate Analysis */}
         <div className="dashboard-card">
-          <h3 className="font-bold mb-6">{t('Defect Rate by Category')}</h3>
+          <h3 className="font-bold mb-6">{t('유형별 불량 건수 (오늘)')}</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={[
@@ -1743,15 +1820,15 @@ function DashboardView({
                 { name: t('변색'), value: live(15, 18) },
                 { name: t('라벨누락'), value: live(5, 19) },
                 { name: t('기타'), value: live(3, 20) },
-              ]}>
+              ].map(d => ({ ...d, value: Math.round(d.value) }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
                   contentStyle={tooltipStyle}
                   itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="value" name={t('불량 건수')} radius={[4, 4, 0, 0]}>
                   {[0, 1, 2, 3, 4].map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'][index]} />
                   ))}
@@ -1791,7 +1868,21 @@ function CoordinationVisualizer() {
   const [step, setStep] = useState(0);
   const [events, setEvents] = useState<CoordinationEvent[]>([]);
   const [activeScenario, setActiveScenario] = useState(0);
-  const scenarios = [
+  // At the booth the agenda is the case being played, so engineers see the
+  // same event the floor sees, argued out between the agents.
+  const { staged, replay } = useStage();
+  const stagedScenario = staged && {
+    title: t(staged.coordination.title),
+    description: t(staged.coordination.description),
+    agents: [...new Set(staged.coordination.timeline.map(e => e.fromAgent))],
+    timeline: staged.coordination.timeline.map(e => ({ ...e, content: t(e.content), reasoning: e.reasoning ? t(e.reasoning) : undefined })),
+  };
+  useEffect(() => {
+    setActiveScenario(0);
+    setEvents([]);
+    setStep(0);
+  }, [staged?.kind, replay]);
+  const scenarios = stagedScenario ? [stagedScenario] : [
     {
       title: t('[통합] 6대 에이전트 전사 최적화 조율'),
       description: t('생산 극대화 목표 하에 안전, 예지보전, 품질, 에너지, 물류 에이전트 간의 동시 다자 협업 및 실시간 중재'),
@@ -2336,9 +2427,12 @@ const STALL_TICKS = 14;
  * - each agent works through its task list on its own cycle length;
  * - an excursion in an agent's domain stalls it (the bottleneck), and every so
  *   often one agent stalls on a dependency so the board always has one to show;
- * - proposals in the approval queue are that agent's pending work.
+ * - proposals in the approval queue are that agent's pending work;
+ * - while the booth demo plays a case, the agents it involves work that case
+ *   instead (the lead escalated, the rest on their part of it), and nothing
+ *   else stalls.
  */
-function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
+function deriveAgentWork(plant: PlantState, decisions: AgentDecision[], staged: StagedCase | null = null) {
   const tick = plant.tick;
   const stallSlot = Math.floor(tick / STALL_WINDOW);
   const stallPhase = tick % STALL_WINDOW;
@@ -2348,6 +2442,8 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
   const tasks: AgentTask[] = [];
   const resolvedToday: Record<string, number> = {};
   const stalled = new Set<AgentKey>();
+  const caseLive = staged !== null && staged.phase === 'live' && plant.excursion?.kind === staged.kind;
+  const caseProgress = plant.excursion ? Math.round(100 - Math.min(100, (plant.excursion.remaining / 14) * 100)) : 100;
 
   AGENT_HIERARCHY.forEach((agent, i) => {
     const cycle = 12 + i * 2;
@@ -2357,8 +2453,19 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
     resolvedToday[agent.key] = 18 + i * 3 + round;
 
     const byExcursion = plant.excursion !== null && (agent.excursions ?? []).includes(plant.excursion.kind);
-    const byRotation = !plant.excursion && agent.key === rotatingStall && stallPhase < STALL_TICKS;
-    if (byExcursion || byRotation) {
+    const byRotation = !staged && !plant.excursion && agent.key === rotatingStall && stallPhase < STALL_TICKS;
+    const caseTask = staged ? (agent.key === staged.lead ? staged.leadTitle : staged.team[agent.key]) : undefined;
+    if (caseLive && caseTask) {
+      if (agent.key === staged!.lead) stalled.add(agent.key);
+      tasks.push({
+        id: `${agent.key}-case-${staged!.kind}`,
+        agent: agent.key,
+        title: caseTask,
+        state: agent.key === staged!.lead ? 'bottleneck' : 'running',
+        progress: caseProgress,
+        note: agent.key === staged!.lead ? staged!.leadNote : undefined,
+      });
+    } else if (!staged && (byExcursion || byRotation)) {
       stalled.add(agent.key);
       tasks.push({
         id: `${agent.key}-stall`,
@@ -2380,6 +2487,18 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
       });
     }
 
+    if (staged?.phase === 'after' && caseTask) {
+      tasks.push({
+        id: `${agent.key}-case-${staged.kind}-done`,
+        agent: agent.key,
+        title: caseTask,
+        state: 'resolved',
+        progress: 100,
+        note: agent.key === staged.lead ? staged.leadNote : undefined,
+        agoSec: 4,
+      });
+    }
+
     for (let k = 1; k <= 2; k++) {
       tasks.push({
         id: `${agent.key}-done-${round - k}`,
@@ -2396,16 +2515,16 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
       .forEach((d, j) => tasks.push({
         id: `${agent.key}-pending-${j}`,
         agent: agent.key,
-        title: `${d.target_equipment} · ${d.action.replace(/_/g, ' ')}`,
+        title: `${t(d.target_equipment)} · ${d.action.replace(/_/g, ' ')}`,
         state: 'pending',
         progress: 100,
-        note: String(d.recommended_value),
+        note: t(String(d.recommended_value)),
       }));
   });
 
   // The stall that just cleared shows up as resolved work, so the board shows
   // the supervisor closing bottlenecks, not only opening them.
-  if (!plant.excursion && stallPhase >= STALL_TICKS && stallPhase < STALL_TICKS + 10) {
+  if (!staged && !plant.excursion && stallPhase >= STALL_TICKS && stallPhase < STALL_TICKS + 10) {
     tasks.push({
       id: `${prevStall.key}-stall-cleared-${stallSlot}`,
       agent: prevStall.key,
@@ -2418,7 +2537,9 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
   }
 
   const helpers = new Set<AgentKey>(
-    AGENT_HIERARCHY.filter(a => stalled.has(a.key)).map(a => a.bottleneck.helper),
+    caseLive
+      ? (Object.keys(staged!.team) as AgentKey[])
+      : AGENT_HIERARCHY.filter(a => stalled.has(a.key)).map(a => a.bottleneck.helper),
   );
   const status = (key: AgentKey): TaskState => {
     if (stalled.has(key)) return 'bottleneck';
@@ -2459,7 +2580,8 @@ function SupervisorHierarchy({
   const plant = useTelemetry();
   const live = useLiveValue();
   const [selected, setSelected] = useState<AgentKey | null>(null);
-  const work = deriveAgentWork(plant, decisions);
+  const { staged } = useStage();
+  const work = deriveAgentWork(plant, decisions, staged);
   const count = (state: TaskState) => work.tasks.filter(task => task.state === state).length;
   const resolvedTotal = Object.values(work.resolvedToday).reduce((a, b) => a + b, 0);
   const stalledAgents = AGENT_HIERARCHY.filter(a => work.stalled.has(a.key));
@@ -2568,7 +2690,7 @@ function SupervisorHierarchy({
                 stalledAgents.map(a => (
                   <div key={a.key}>
                     <span className="font-bold text-danger">{t('병목 조율')}</span>
-                    <span className="text-text-secondary"> · {t(a.bottleneck.resolution)}</span>
+                    <span className="text-text-secondary"> · {t(work.tasks.find(task => task.agent === a.key && task.state === 'bottleneck')?.note ?? a.bottleneck.resolution)}</span>
                   </div>
                 ))
               ) : (
@@ -2811,7 +2933,17 @@ function OrchestrationPanel({
   decisions: AgentDecision[];
   onNavigate: (menuId: number, anchor?: string) => void;
 }) {
-  const [activeTab, setActiveTab] = useState<'hierarchy' | 'coordination' | 'methodology'>('hierarchy');
+  const { staged, replay } = useStage();
+  const [activeTab, setActiveTab] = useState<'hierarchy' | 'coordination' | 'methodology'>(
+    staged?.phase === 'after' && replay > 0 ? 'coordination' : 'hierarchy',
+  );
+  // The booth demo opens its decision record on the coordination replay.
+  const seenReplay = useRef(replay);
+  useEffect(() => {
+    if (replay === seenReplay.current) return;
+    seenReplay.current = replay;
+    if (staged) setActiveTab('coordination');
+  }, [replay]); // eslint-disable-line react-hooks/exhaustive-deps
   const tabs = [
     { id: 'hierarchy' as const, label: t('관제 구조') },
     { id: 'coordination' as const, label: t('에이전트 조율') },
@@ -3567,27 +3699,12 @@ function VisionInspectionViewer() {
 }
 
 /* Mock records for the management console, so every list in it can grow, shrink and export. */
-const MOCK_USERS = [
-  { name: 'Admin User', email: 'admin@factory.ai', role: 'System Admin', status: 'Online', last: 'Just now' },
-  { name: 'John Doe', email: 'john.d@factory.ai', role: 'Operator', status: 'Online', last: '12m ago' },
-  { name: 'Sarah Chen', email: 's.chen@factory.ai', role: 'Quality Lead', status: 'Offline', last: '2h ago' },
-  { name: 'Mike Ross', email: 'm.ross@factory.ai', role: 'Maintenance', status: 'Online', last: '45m ago' },
-];
-
-const NEW_USER_POOL = [
-  { name: 'Yuki Tanaka', email: 'y.tanaka@factory.ai', role: 'Operator' },
-  { name: 'Ken Sato', email: 'k.sato@factory.ai', role: 'Maintenance' },
-  { name: 'Emma Wilson', email: 'e.wilson@factory.ai', role: 'Quality Lead' },
-  { name: 'Min-jun Park', email: 'mj.park@factory.ai', role: 'Operator' },
-];
-
-const MOCK_AUDIT = [
-  { time: '2024-03-18 09:42:12', user: 'admin_01', action: 'Modified Threshold: Vibration Limit', severity: 'info', target: 'ID: 12 (Motor A)', category: 'Config' },
-  { time: '2024-03-18 09:38:05', user: 'system', action: 'Auto-rollback: Model v2.4.1 -> v2.4.0', severity: 'warn', target: 'Model Registry', category: 'System' },
-  { time: '2024-03-18 09:15:22', user: 'john_doe', action: 'Failed Login Attempt', severity: 'error', target: 'Auth Service', category: 'Security' },
-  { time: '2024-03-18 08:55:10', user: 'admin_01', action: 'User Created: sarah_c', severity: 'success', target: 'User Directory', category: 'Security' },
-  { time: '2024-03-18 08:30:45', user: 'system', action: 'Scheduled Backup Completed', severity: 'success', target: 'Database', category: 'System' },
-  { time: '2024-03-18 08:12:33', user: 'mike_r', action: 'Emergency Stop Triggered', severity: 'error', target: 'Line 01', category: 'Security' },
+/** Who "Add User" adds next, in turn, so repeated clicks add different people. */
+const NEW_USER_POOL: { name: string; email: string; role: RoleKey }[] = [
+  { name: 'Ken Sato', email: 'k.sato@factory.ai', role: 'engineer' },
+  { name: 'Ji-woo Kang', email: 'jw.kang@factory.ai', role: 'operator' },
+  { name: 'Lena Fischer', email: 'l.fischer@factory.ai', role: 'quality' },
+  { name: 'Hiro Mori', email: 'h.mori@factory.ai', role: 'operator' },
 ];
 
 const MOCK_HEALTH = [
@@ -3665,15 +3782,42 @@ function exportOntology(ext: string) {
   }
 }
 
+/** When the directory and permissions were last pushed to every screen, with a manual re-sync. */
+function SyncBar({ syncedAt, canEdit, onReset }: { syncedAt: Date; canEdit: boolean; onReset?: () => void }) {
+  const { showToast } = useToast();
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-2.5 text-[11px]">
+      <span className="flex items-center gap-2 text-emerald-500 font-bold">
+        <RefreshCw size={12} />
+        {t('동기화됨 · {time}', { time: syncedAt.toLocaleTimeString() })}
+        <span className="font-normal text-text-secondary">{t('변경 사항은 메뉴, 승인 버튼, 역할 차트에 바로 반영돼요.')}</span>
+      </span>
+      <span className="flex items-center gap-2">
+        {!canEdit && <span className="flex items-center gap-1 text-warning font-bold"><LockIcon size={11} />{t('보기 전용 (관리자만 변경 가능)')}</span>}
+        {canEdit && onReset && (
+          <button onClick={onReset} className="rounded-md border border-border px-2.5 py-1 font-bold hover:bg-surface-hover">{t('기본값으로')}</button>
+        )}
+        <button
+          onClick={() => { accessActions.sync(); showToast(t('사용자·권한을 인증 서버와 동기화했어요')); }}
+          className="rounded-md border border-emerald-500/40 px-2.5 py-1 font-bold text-emerald-500 hover:bg-emerald-500/10"
+        >{t('지금 동기화')}</button>
+      </span>
+    </div>
+  );
+}
+
 function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, isOpen: boolean, onClose: () => void }) {
   const live = useLiveValue();
   const chart = chartPalette();
   const [subView, setSubView] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const { showToast } = useToast();
-  const [users, setUsers] = useState(MOCK_USERS);
+  const access = useAccess();
+  const me = currentUser(access);
+  const isAdmin = levelFor('시스템 관리', access) === 'approve';
+  const [userQuery, setUserQuery] = useState('');
   const [auditFilter, setAuditFilter] = useState('All Events');
-  const [selectedRole, setSelectedRole] = useState('System Admin');
+  const [selectedRole, setSelectedRole] = useState<RoleKey>('admin');
   const [entities, setEntities] = useState(MOCK_ENTITIES);
   const [draftProps, setDraftProps] = useState([
     { key: 'serial_number', type: 'string' },
@@ -3720,32 +3864,38 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
 
   const renderContent = () => {
     switch (type) {
-      case 'user-directory':
+      case 'user-directory': {
+        const q = userQuery.trim().toLowerCase();
+        const shown = access.users.filter(u => !q || [u.name, u.email, t(roleOf(u.role).label)].some(text => text.toLowerCase().includes(q)));
         return (
           <div className="space-y-6">
+            <SyncBar syncedAt={access.syncedAt} canEdit={isAdmin} />
             <div className="flex items-center gap-4 p-4 rounded-xl bg-surface border border-border">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={16} />
                 <input 
                   type="text" 
+                  value={userQuery}
+                  onChange={e => setUserQuery(e.target.value)}
                   placeholder={t('Search users by name, email or role...')} 
                   className="w-full bg-bg border border-border rounded-lg py-2 pl-10 pr-4 text-xs focus:border-accent outline-none"
                 />
               </div>
               <button
+                disabled={!isAdmin}
                 onClick={() => {
-                  const next = NEW_USER_POOL[users.length % NEW_USER_POOL.length];
-                  setUsers(prev => [{ ...next, status: 'Online', last: 'Just now' }, ...prev]);
+                  const next = NEW_USER_POOL[access.users.length % NEW_USER_POOL.length];
+                  accessActions.addUser(next);
                   showToast(t('사용자 {name}을(를) 추가했습니다', { name: next.name }));
                 }}
-                className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold hover:opacity-90 transition-opacity"
+                className="whitespace-nowrap px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {t('Add User')}
               </button>
             </div>
-            <div className="overflow-hidden rounded-xl border border-border bg-surface">
+            <div className="max-h-[420px] overflow-auto rounded-xl border border-border bg-surface custom-scrollbar">
               <table className="w-full text-left text-xs">
-                <thead className="bg-bg/50 border-b border-border">
+                <thead className="sticky top-0 bg-surface border-b border-border">
                   <tr>
                     <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-widest">{t('User')}</th>
                     <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-widest">{t('Role')}</th>
@@ -3755,40 +3905,62 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {users.map((user, i) => (
-                    <tr key={i} className="hover:bg-bg/30 transition-colors">
+                  {shown.map(user => (
+                    <tr key={user.id} className={cn("hover:bg-bg/30 transition-colors", user.id === me.id && "bg-accent/5")}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent font-bold">
-                            {user.name[0]}
+                          <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: roleOf(user.role).color }}>
+                            {user.name[0].toUpperCase()}
                           </div>
-                          <div>
-                            <div className="font-bold">{user.name}</div>
-                            <div className="text-[10px] text-text-secondary">{user.email}</div>
+                          <div className="min-w-0">
+                            <div className="font-bold truncate">{user.name}{user.id === me.id && <span className="ml-1.5 text-[10px] text-accent">({t('나')})</span>}</div>
+                            <div className="text-[10px] text-text-secondary truncate">{user.email}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="px-2 py-0.5 rounded bg-surface-hover border border-border text-[10px] font-bold">
-                          {t(user.role)}
-                        </span>
+                        <select
+                          value={user.role}
+                          disabled={!isAdmin}
+                          aria-label={t('역할 변경')}
+                          onChange={e => {
+                            const role = e.target.value as RoleKey;
+                            accessActions.setRole(user.id, role);
+                            showToast(t('{name}의 역할을 {role}(으)로 바꿨어요. 모든 화면에 바로 적용됐어요', { name: user.name, role: t(roleOf(role).label) }));
+                          }}
+                          className="rounded border border-border bg-surface-hover px-2 py-1 text-[11px] font-bold disabled:opacity-70"
+                          style={{ color: roleOf(user.role).color }}
+                        >
+                          {ROLES.map(r => <option key={r.key} value={r.key}>{t(r.label)}</option>)}
+                        </select>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 whitespace-nowrap">
                           <div className={cn("w-1.5 h-1.5 rounded-full", user.status === 'Online' ? "bg-emerald-500" : "bg-text-secondary")} />
                           <span className={user.status === 'Online' ? "text-emerald-500 font-bold" : "text-text-secondary"}>{t(user.status)}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-text-secondary">{user.last}</td>
+                      <td className="px-4 py-3 text-text-secondary whitespace-nowrap">{t(user.last)}</td>
                       <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() => {
-                            const status = user.status === 'Online' ? 'Offline' : 'Online';
-                            setUsers(prev => prev.map((u, j) => j === i ? { ...u, status } : u));
-                            showToast(t('{name} 계정을 {status} 상태로 바꿨습니다', { name: user.name, status: t(status) }), 'info');
-                          }}
-                          className="text-accent hover:underline font-bold"
-                        >{t('Manage')}</button>
+                        <div className="flex justify-end gap-3 whitespace-nowrap">
+                          <button
+                            disabled={user.status !== 'Online' || user.id === me.id}
+                            onClick={() => {
+                              accessActions.switchUser(user.id);
+                              showToast(t('{name}({role}) 계정으로 전환했어요', { name: user.name, role: t(roleOf(user.role).label) }), 'info');
+                            }}
+                            className="text-text-secondary hover:text-accent font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                          >{t('이 사용자로 보기')}</button>
+                          <button
+                            disabled={!isAdmin || user.id === me.id}
+                            onClick={() => {
+                              const status = user.status === 'Online' ? 'Offline' : 'Online';
+                              accessActions.setStatus(user.id, status);
+                              showToast(t('{name} 계정을 {status} 상태로 바꿨습니다', { name: user.name, status: t(status) }), 'info');
+                            }}
+                            className="text-accent hover:underline font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                          >{user.status === 'Online' ? t('비활성화') : t('활성화')}</button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -3797,47 +3969,75 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
             </div>
           </div>
         );
+      }
       case 'role-definitions':
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {['System Admin', 'Operator', 'Auditor', 'Viewer'].map(role => (
-                <div
-                  key={role}
-                  onClick={() => setSelectedRole(role)}
-                  className={cn("p-4 rounded-xl bg-surface border hover:border-accent/30 transition-colors cursor-pointer group", selectedRole === role ? "border-accent ring-1 ring-accent" : "border-border")}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <Shield className="text-accent" size={20} />
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  </div>
-                  <h4 className="font-bold text-sm mb-1">{t(role)}</h4>
-                  <p className="text-[10px] text-text-secondary leading-relaxed">
-                    {role === 'System Admin' ? t('Full access to all system modules and configurations.') :
-                     role === 'Operator' ? t('Standard operational access for production lines.') :
-                     role === 'Auditor' ? t('Read-only access to logs and system reports.') :
-                     t('Restricted view-only access to dashboards.')}
-                  </p>
-                </div>
-              ))}
+            <SyncBar syncedAt={access.syncedAt} canEdit={isAdmin} onReset={() => { accessActions.resetMatrix(); showToast(t('권한을 기본값으로 되돌렸어요'), 'info'); }} />
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {ROLES.map(role => {
+                const count = access.users.filter(u => u.role === role.key).length;
+                return (
+                  <button
+                    key={role.key}
+                    onClick={() => setSelectedRole(role.key)}
+                    className={cn("p-3 rounded-xl bg-surface border text-left hover:border-accent/30 transition-colors", selectedRole === role.key ? "border-accent ring-1 ring-accent" : "border-border")}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <Shield size={18} style={{ color: role.color }} />
+                      <span className="text-[10px] font-bold text-text-secondary">{t('{n}명', { n: count })}</span>
+                    </div>
+                    <h4 className="font-bold text-sm mb-1 break-keep">{t(role.label)}</h4>
+                    <p className="text-[10px] text-text-secondary leading-relaxed break-keep">{t(role.summary)}</p>
+                  </button>
+                );
+              })}
             </div>
-            <div className="dashboard-card">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4">{t('Permission Matrix')}</h4>
-              <div className="space-y-3">
-                {[
-                  { module: 'Quality Control', admin: 'Full', operator: 'Read/Write', auditor: 'Read', viewer: 'Read' },
-                  { module: 'System Config', admin: 'Full', operator: 'None', auditor: 'Read', viewer: 'None' },
-                  { module: 'User Mgmt', admin: 'Full', operator: 'None', auditor: 'None', viewer: 'None' },
-                  { module: 'Live Telemetry', admin: 'Full', operator: 'Full', auditor: 'Read', viewer: 'Read' },
-                ].map((row, i) => (
-                  <div key={i} className="grid grid-cols-5 gap-4 py-2 border-b border-border/50 text-[11px] items-center">
-                    <div className="font-bold text-text-primary">{row.module}</div>
-                    {([['System Admin', row.admin], ['Operator', row.operator], ['Auditor', row.auditor], ['Viewer', row.viewer]] as const).map(([role, value]) => (
-                      <div key={role} className={cn(role === selectedRole ? "text-emerald-500 font-bold" : "text-text-secondary")}>{value}</div>
-                    ))}
-                  </div>
-                ))}
+            <div className="dashboard-card overflow-x-auto">
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-text-secondary">{t('Permission Matrix')}</h4>
+                <p className="text-[10px] text-text-secondary">{isAdmin ? t('칸을 누르면 없음 → 보기 → 편집 → 승인 순서로 바뀌고, 메뉴와 승인 버튼에 바로 적용돼요.') : t('권한 변경은 관리자만 할 수 있어요.')}</p>
               </div>
+              <table className="w-full min-w-[560px] text-[11px]">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="py-2 text-left font-bold text-text-secondary">{t('영역')}</th>
+                    {ROLES.map(role => (
+                      <th key={role.key} className={cn("py-2 text-center font-bold", selectedRole === role.key ? "text-accent" : "text-text-secondary")}>{t(role.label)}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {AREAS.map(area => (
+                    <tr key={area.category} className="border-b border-border/50">
+                      <td className="py-2 font-bold text-text-primary">{t(area.label)}</td>
+                      {ROLES.map(role => {
+                        const level = access.matrix[role.key][area.category] as Level;
+                        return (
+                          <td key={role.key} className="py-1.5 text-center">
+                            <button
+                              disabled={!isAdmin}
+                              data-testid={`perm-${role.key}-${area.label}`}
+                              onClick={() => {
+                                const next = LEVELS[(LEVELS.indexOf(level) + 1) % LEVELS.length];
+                                accessActions.setLevel(role.key, area.category, next);
+                              }}
+                              className={cn(
+                                "min-w-[52px] rounded-md border px-2 py-1 font-bold transition-colors disabled:cursor-default",
+                                level === 'approve' ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500" :
+                                level === 'edit' ? "border-blue-500/40 bg-blue-500/10 text-blue-400" :
+                                level === 'view' ? "border-border bg-surface-hover text-text-secondary" :
+                                "border-dashed border-border text-text-secondary/60",
+                                selectedRole === role.key && "ring-1 ring-accent/40",
+                              )}
+                            >{t(LEVEL_LABEL[level])}</button>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         );
@@ -3855,10 +4055,10 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   </button>
                 ))}
               </div>
-              <div className="text-[10px] text-text-secondary font-mono">{t('Total: 1,284 entries')}</div>
+              <div className="text-[10px] text-text-secondary font-mono">{t('Total: {n} entries', { n: (1279 + access.audit.length).toLocaleString() })}</div>
             </div>
             <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-              {MOCK_AUDIT.filter(log => auditFilter === 'All Events' || log.category === auditFilter).map((log, i) => (
+              {access.audit.filter(log => auditFilter === 'All Events' || log.category === auditFilter).map((log, i) => (
                 <div key={i} className="p-3 rounded-xl bg-surface border border-border flex items-start gap-4 hover:border-accent/30 transition-colors">
                   <div className={cn(
                     "p-2 rounded-lg shrink-0",
@@ -3927,11 +4127,11 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 <h4 className="text-xs font-bold uppercase tracking-widest text-text-secondary">{t('Infrastructure Load (24h)')}</h4>
                 <div className="flex gap-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-accent" />
+                    <div className="w-2 h-2 rounded-full bg-purple-500" />
                     <span className="text-[10px] text-text-secondary">CPU</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-purple-500" />
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
                     <span className="text-[10px] text-text-secondary">MEM</span>
                   </div>
                 </div>
@@ -4599,8 +4799,9 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
           <button
             onClick={() => {
               const rows: Record<string, string | number>[] =
-                type === 'user-directory' ? users.map(u => ({ name: u.name, email: u.email, role: u.role, status: u.status, last_login: u.last })) :
-                type === 'audit-log' ? MOCK_AUDIT.map(({ category, ...log }) => ({ ...log, category })) :
+                type === 'user-directory' ? access.users.map(u => ({ name: u.name, email: u.email, role: t(roleOf(u.role).label), status: u.status, last_login: u.last })) :
+                type === 'role-definitions' ? AREAS.map(area => ({ area: t(area.label), ...Object.fromEntries(ROLES.map(r => [t(r.label), t(LEVEL_LABEL[access.matrix[r.key][area.category]])])) })) :
+                type === 'audit-log' ? access.audit.map(({ category, ...log }) => ({ ...log, category })) :
                 type === 'ontology-entities' ? entities.map(e => ({ entity: e.name, parent: e.parent, properties: e.props, instances: e.instances })) :
                 type === 'ontology-schema' ? rules.map(r => ({ rule: r.name, description: r.desc, status: r.status })) :
                 MOCK_HEALTH;
@@ -5014,13 +5215,11 @@ function AMRCollisionViewer() {
   );
 }
 
-function ChatbotViewer() {
-  const safeTimeout = useSafeTimeout();
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: t('안녕하세요! AI 슈퍼바이저 어시스턴트입니다. 무엇을 도와드릴까요?'), timestamp: new Date().toLocaleTimeString() }
-  ]);
+function ChatbotViewer({ onNavigate }: { onNavigate?: (menuId: number) => void }) {
+  const chat = useSupervisorChat();
+  const messages = chat.messages;
+  const isTyping = chat.loading;
   const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -5031,55 +5230,33 @@ function ChatbotViewer() {
 
   const [docs, setDocs] = useState([
     '2024 품질 관리 표준 매뉴얼',
-    'B라인 설비 유지보수 가이드',
+    '포장 라인 설비 유지보수 가이드',
     '안전 수칙 및 비상 대응 절차',
     'OEE 산출 공식 및 기준',
   ]);
   const [showMenu, setShowMenu] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [listening, setListening] = useState(false);
   const attachRef = useRef<HTMLInputElement>(null);
   const docRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
 
-  /** Post a user message and answer it the way the supervisor would. */
-  const ask = (input: string, answer?: string) => {
-    const userMsg: ChatMessage = {
-      role: 'user',
-      content: input,
-      timestamp: new Date().toLocaleTimeString()
-    };
+  /** Ask the Supervisor, or post a fixed answer (attachments, reference documents). */
+  const ask = (question: string, answer?: string) => {
+    if (answer) chat.say(question, answer);
+    else void chat.ask(question);
+  };
 
-    setMessages(prev => [...prev, userMsg]);
-    setIsTyping(true);
-
-    // Simulate AI Response
+  const safeTimeout = useSafeTimeout();
+  const suggested = useSuggestedQuestions();
+  const [listening, setListening] = useState(false);
+  /** Voice input stand-in: listens briefly, then fills in a question. */
+  const listen = () => {
+    if (listening) return;
+    setListening(true);
     safeTimeout(() => {
-      let response = '';
-      if (answer) {
-        response = answer;
-      } else if (matchesKeyword(input, '불량률')) {
-        response = t('현재 전체 라인의 평균 불량률은 3.2%입니다. B라인의 도금 공정에서 미세한 변동이 감지되었으나, 허용 범위 내에 있습니다.');
-      } else if (matchesKeyword(input, '가동률') || input.toUpperCase().includes('OEE')) {
-        response = t('오늘의 종합 설비 효율(OEE)은 87.5%로 목표치(85%)를 상회하고 있습니다. 특히 조립 라인의 성능 지표가 전일 대비 4% 향상되었습니다.');
-      } else if (matchesKeyword(input, '안전')) {
-        response = t('현재 모든 안전 센서가 정상 작동 중입니다. 구역 C에서 작업자 1명이 보호구 미착용으로 경고 조치되었으며, 현재는 시정 완료되었습니다.');
-      } else if (matchesKeyword(input, '에너지')) {
-        response = t('피크 요금 시간대(13~17시)를 피해 세척·건조 공정을 06~09시로 옮기면 하루 전력비를 약 8% 줄일 수 있습니다. 포장 라인은 현재 일정 그대로 유지하는 것이 좋습니다.');
-      } else if (matchesKeyword(input, '위험')) {
-        response = t('B라인 케이스패커-02 감속기 진동이 3일째 상승 중이며, 이 추세라면 72시간 안에 정지 위험이 62%입니다. 오늘 야간 정지 시간에 베어링 점검을 권장합니다.');
-      } else {
-        response = t('요청하신 내용을 분석 중입니다. Supervisor 에이전트가 관련 데이터를 취합하여 최적의 답변을 준비하고 있습니다.');
-      }
-
-      const aiMsg: ChatMessage = {
-        role: 'assistant',
-        content: response,
-        timestamp: new Date().toLocaleTimeString()
-      };
-      setMessages(prev => [...prev, aiMsg]);
-      setIsTyping(false);
-    }, 1500);
+      setListening(false);
+      setInput(t(suggested[Math.floor(Math.random() * suggested.length)]));
+    }, 1600);
   };
 
   const handleSend = () => {
@@ -5087,23 +5264,6 @@ function ChatbotViewer() {
     ask(input);
     setInput('');
   };
-
-  /** Voice input stand-in: listens briefly, then fills in a question. */
-  const listen = () => {
-    if (listening) return;
-    setListening(true);
-    safeTimeout(() => {
-      setListening(false);
-      setInput(suggestedQueries[Math.floor(Math.random() * suggestedQueries.length)]);
-    }, 1600);
-  };
-
-  const suggestedQueries = [
-    t('현재 전체 불량률 요약해줘'),
-    t('B라인 가동 중단 위험 분석'),
-    t('에너지 절감을 위한 최적 가동 시간은?'),
-    t('최근 발생한 안전 경보 이력 조회')
-  ];
 
   return (
     <div className={cn(
@@ -5133,7 +5293,7 @@ function ChatbotViewer() {
               <div className="absolute right-0 top-10 z-20 w-44 rounded-xl border border-border bg-surface p-1 shadow-xl">
                 <button
                   onClick={() => {
-                    setMessages(prev => prev.slice(0, 1));
+                    chat.reset();
                     setShowMenu(false);
                     showToast(t('대화를 초기화했습니다'), 'info');
                   }}
@@ -5185,8 +5345,9 @@ function ChatbotViewer() {
                       ? "bg-surface border border-border text-text-primary rounded-tl-none" 
                       : "bg-accent/10 border border-accent/20 text-text-primary rounded-tr-none"
                   )}>
-                    {msg.content}
+                    {t(msg.content)}
                   </div>
+                  {msg.role === 'assistant' && <AnswerSources sources={msg.sources} onOpen={onNavigate} />}
                   <div className={cn(
                     "text-[10px] text-text-secondary font-mono",
                     msg.role === 'user' ? "text-right" : ""
@@ -5212,17 +5373,7 @@ function ChatbotViewer() {
 
           {/* Input Area */}
           <div className="p-6 border-t border-border bg-surface-hover/10">
-            <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar">
-              {suggestedQueries.map((query, i) => (
-                <button
-                  key={i}
-                  onClick={() => setInput(query)}
-                  className="whitespace-nowrap px-3 py-1.5 rounded-full bg-surface border border-border text-[11px] text-text-secondary hover:border-accent/50 hover:text-accent transition-all"
-                >
-                  {query}
-                </button>
-              ))}
-            </div>
+            <SuggestedQuestions onPick={q => ask(q)} disabled={isTyping} className="mb-4" />
             <div className="relative">
               <textarea
                 value={input}
@@ -5348,7 +5499,33 @@ function MiniSwitch({ on, label, onChange }: { on: boolean; label: string; onCha
   );
 }
 
-function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: SensorData[] }) {
+/** What the live chart on each module page shows, in the words of the person using it. */
+const MODULE_CHARTS: Record<number, { title: string; caption: string }> = {
+  1: { title: '불량률 추이 (최근 40초)', caption: '2초마다 들어오는 검사 결과로 계산한 불량률이에요. 3%를 넘으면 주의, 5%를 넘으면 경보예요.' },
+  3: { title: '불량 유형 파레토', caption: '많은 유형부터 정렬했어요. 꺾은선은 누적 비율로, 80% 선 안의 유형부터 잡으면 효과가 커요.' },
+  4: { title: '실링 온도별 불량률', caption: '점 하나가 온도 구간 하나예요. 173°C 근처에서 불량률이 가장 낮아요.' },
+  5: { title: '배치별 수율', caption: '목표 수율 95%보다 낮은 배치는 빨간색으로 표시해 다시 확인하게 해요.' },
+  6: { title: '설비별 건강 점수', caption: '진동·온도·전류를 종합한 100점 만점 점수예요. 70점 미만은 주의, 50점 미만은 위험이에요.' },
+  7: { title: '진동·온도 추세 (최근 40초)', caption: '진동은 왼쪽 축(mm/s), 온도는 오른쪽 축(°C)이에요. 빨간 점선이 진동 경고 기준선이에요.' },
+  10: { title: '월별 MTBF·MTTR', caption: 'MTBF(고장 간격)는 길수록, MTTR(수리 시간)은 짧을수록 좋아요.' },
+  11: { title: '라인별 가동·대기·정지 비율 (오늘)', caption: '오늘 근무 시간을 100%로 놓고 상태별 비율을 나눴어요.' },
+  12: { title: 'OEE와 구성 요소', caption: 'OEE = 가용률 × 성능 × 양품률이에요. 빨간 점선이 OEE 목표 85%예요.' },
+  13: { title: '공정별 실제 vs 목표 택트타임', caption: '목표보다 오래 걸리는 공정(빨간색)이 라인 전체를 늦추는 병목이에요.' },
+  14: { title: '배치 B-2405 공정 이력', caption: '원자재 입고부터 포장까지 각 공정에 들어간 시점과 머문 시간이에요. 문제가 생기면 이 경로를 거꾸로 따라가요.' },
+  15: { title: '요일별 계획 대비 실적', caption: '계획과 실적을 나란히 비교해요. 차이가 큰 날부터 원인을 확인하세요.' },
+  16: { title: '설비별 전력 사용량 (지금)', caption: '가동 중 전력과 멈춘 채 쓰는 대기 전력을 나눠 보여줘요.' },
+  17: { title: '시간대별 전기요금 (오늘)', caption: '시간대별 요금을 적용한 오늘 전기요금이에요. 낮 시간대가 가장 비싸요.' },
+  18: { title: '시간대별 부하와 계약 전력', caption: '빨간 점선이 계약 전력 1,600kW예요. 이 선을 넘는 시간대(빨간 점)에 초과 요금이 붙어요.' },
+  32: { title: '원인별 비상 정지 횟수 (이번 달)', caption: '어떤 위험 신호로 공정을 멈췄는지 원인별로 세었어요.' },
+  24: { title: '위험도별 AI 제안 처리', caption: '위험도가 높은 제안은 사람의 승인을 기다리고, 낮은 제안은 자동 승인 범위 안에서 바로 실행돼요.' },
+  26: { title: '지식 지도 구성', caption: '공장 지식 지도에 등록된 엔티티·관계·속성·규칙 수예요.' },
+  27: { title: '모델별 정확도·F1 점수', caption: '새 버전을 배포하기 전에 모델 성능을 비교해요 (1.0 = 100%).' },
+  28: { title: '역할별 사용자 수', caption: '역할마다 볼 수 있는 화면과 승인할 수 있는 조치가 달라요.' },
+  29: { title: '서버 자원과 데이터 지연 (최근 1시간)', caption: 'CPU·GPU 사용률(왼쪽 축)과 Kafka 데이터 지연(오른쪽 축)이에요. 사용률이 85%를 넘으면 경고해요.' },
+  30: { title: '채널별 알림 발송 건수 (이번 달)', caption: '어떤 채널로 알림이 얼마나 나갔는지 보여줘요.' },
+};
+
+function ModuleDetailView({ item, sensorData, onNavigate }: { item: MenuItem; sensorData: SensorData[]; onNavigate?: (menuId: number) => void }) {
   const live = useLiveValue();
   const chart = chartPalette();
   const [logs, setLogs] = useState<{time: string, msg: string, type: 'info' | 'warn' | 'success'}[]>([]);
@@ -5356,6 +5533,9 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showTech, setShowTech] = useState(false);
   const moduleTuning = useModuleTuning(item.id);
+  const access = useAccess();
+  const myLevel = levelFor(item.category, access);
+  const readOnly = myLevel === 'view';
   const [activeManagementSubDetail, setActiveManagementSubDetail] = useState<string | null>(null);
   const { showToast } = useToast();
   const [modelVersion, setModelVersion] = useState({ major: 2, minor: 4, patch: 0, deployed: '2024-03-10' });
@@ -5403,6 +5583,13 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
   }, [item]);
 
   const renderCategorySpecificChart = () => {
+    const tip = {
+      contentStyle: { backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' },
+      itemStyle: { color: chart.tooltipText, fontSize: '12px' },
+      labelStyle: { color: chart.tooltipText, fontSize: '11px' },
+    };
+    const legendProps = { iconType: 'circle' as const, wrapperStyle: { fontSize: '10px' } };
+    const trend = withAgoLabels(sensorData);
     const chartColors = {
       'AI 품질 에이전트': ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'],
       'AI 설비예지보전 에이전트': ['#3b82f6', '#10b981'],
@@ -5417,10 +5604,10 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           case 26: // 온톨로지 관리
             return (
               <BarChart data={[
-                { name: t('엔티티'), value: live(45, 33) },
-                { name: t('관계'), value: live(128, 34) },
-                { name: t('속성'), value: live(312, 35) },
-                { name: t('규칙'), value: live(84, 36) },
+                { name: t('엔티티'), value: Math.round(live(45, 33)) },
+                { name: t('관계'), value: Math.round(live(128, 34)) },
+                { name: t('속성'), value: Math.round(live(312, 35)) },
+                { name: t('규칙'), value: Math.round(live(84, 36)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -5429,24 +5616,22 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
                   itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
-                <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="#8b5cf6" name={t('등록 수')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
           case 27: // 모델 레지스트리
             return (
               <BarChart data={[
-                { name: 'Anomalib', acc: live(0.94, 37), f1: live(0.92, 38) },
-                { name: 'YOLOv8', acc: live(0.88, 39), f1: live(0.85, 40) },
-                { name: 'ResNet', acc: live(0.91, 41), f1: live(0.89, 42) },
-                { name: 'ViT', acc: live(0.96, 43), f1: live(0.95, 44) },
+                { name: 'Anomalib', acc: Math.min(1, live(0.94, 37)), f1: Math.min(1, live(0.92, 38)) },
+                { name: 'YOLOv8', acc: Math.min(1, live(0.88, 39)), f1: Math.min(1, live(0.85, 40)) },
+                { name: 'ResNet', acc: Math.min(1, live(0.91, 41)), f1: Math.min(1, live(0.89, 42)) },
+                { name: 'ViT', acc: Math.min(1, live(0.96, 43)), f1: Math.min(1, live(0.95, 44)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
+                <YAxis domain={[0, 1]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
                 <Bar dataKey="acc" fill="#3b82f6" name="Accuracy" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="f1" fill="#10b981" name="F1 Score" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -5456,10 +5641,7 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               <PieChart>
                 <Pie
                   data={[
-                    { name: t('관리자'), value: live(5, 45) },
-                    { name: t('오퍼레이터'), value: live(24, 46) },
-                    { name: t('설비엔지니어'), value: live(12, 47) },
-                    { name: t('품질관리자'), value: live(8, 48) },
+                    ...ROLES.map(role => ({ name: t(role.label), value: access.users.filter(u => u.role === role.key).length, fill: role.color })),
                   ]}
                   cx="50%"
                   cy="50%"
@@ -5467,43 +5649,43 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   outerRadius={100}
                   paddingAngle={5}
                   dataKey="value"
+                  label={({ value }: { value?: number }) => t('{n}명', { n: value ?? 0 })}
                 >
-                  {['#ef4444', '#3b82f6', '#f59e0b', '#10b981'].map((color, index) => (
-                    <Cell key={`cell-${index}`} fill={color} />
-                  ))}
+                  {ROLES.map(role => <Cell key={role.key} fill={role.color} />)}
                 </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
               </PieChart>
             );
-          case 29: // 시스템 모니터링
+          case 29: { // 시스템 모니터링
+            const load = Array.from({ length: 12 }, (_, i) => ({
+              ago: i === 11 ? t('지금') : `-${(11 - i) * 5}m`,
+              cpu: live(48 + (i % 4) * 5, 300 + i),
+              gpu: live(66 + (i % 3) * 6, 320 + i),
+              lag: live(18 + (i % 5) * 3, 340 + i),
+            }));
             return (
-              <AreaChart data={sensorData}>
-                <defs>
-                  <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
+              <LineChart data={load} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="vibration" stroke="#3b82f6" fillOpacity={1} fill="url(#colorCpu)" name="CPU Usage (%)" />
-              </AreaChart>
+                <XAxis dataKey="ago" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="pct" unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="ms" orientation="right" unit="ms" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <ReferenceLine yAxisId="pct" y={85} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('경고 85%'), position: 'insideTopLeft', fontSize: 10, fill: '#ef4444' }} />
+                <Line yAxisId="pct" type="monotone" dataKey="cpu" stroke="#3b82f6" strokeWidth={2} dot={false} name={t('CPU 사용률 (%)')} />
+                <Line yAxisId="pct" type="monotone" dataKey="gpu" stroke="#8b5cf6" strokeWidth={2} dot={false} name={t('GPU 사용률 (%)')} />
+                <Line yAxisId="ms" type="monotone" dataKey="lag" stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 3" dot={false} name={t('Kafka 데이터 지연 (ms)')} />
+              </LineChart>
             );
+          }
           case 30: // 알림 설정
             return (
               <BarChart data={[
-                { name: t('SMS'), value: live(142, 49) },
-                { name: t('Email'), value: live(856, 50) },
-                { name: t('Push'), value: live(2431, 51) },
-                { name: t('Siren'), value: live(12, 52) },
+                { name: t('SMS'), value: Math.round(live(142, 49)) },
+                { name: t('Email'), value: Math.round(live(856, 50)) },
+                { name: t('Push'), value: Math.round(live(2431, 51)) },
+                { name: t('Siren'), value: Math.round(live(12, 52)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
@@ -5512,7 +5694,7 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
                   itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
                 />
-                <Bar dataKey="value" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="#f59e0b" name={t('발송 건수')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
           default:
@@ -5587,22 +5769,17 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           case 24: // 승인 대기 큐
             return (
               <BarChart data={[
-                { status: 'Pending', count: live(5, 66) },
-                { status: 'Approved', count: live(42, 67) },
-                { status: 'Rejected', count: live(3, 68) },
+                { risk: t('높음'), human: Math.round(live(5, 66)), auto: 0 },
+                { risk: t('중간'), human: Math.round(live(4, 67)), auto: Math.round(live(9, 68)) },
+                { risk: t('낮음'), human: 0, auto: Math.round(live(31, 69)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="status" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="count">
-                  {['#f59e0b', '#10b981', '#ef4444'].map((color, index) => (
-                    <Cell key={`cell-${index}`} fill={color} />
-                  ))}
-                </Bar>
+                <XAxis dataKey="risk" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="human" stackId="q" fill="#f59e0b" name={t('사람 승인 대기 (건)')} />
+                <Bar dataKey="auto" stackId="q" fill="#10b981" name={t('자동 승인 (건)')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
           case 31: // 슈퍼바이저 센터
@@ -5647,7 +5824,7 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         switch (item.id) {
           case 1: // 실시간 불량률 현황
             return (
-              <AreaChart data={sensorData}>
+              <AreaChart data={trend} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorDefect" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
@@ -5655,13 +5832,13 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="defect_rate" stroke="#ef4444" fillOpacity={1} fill="url(#colorDefect)" name="Defect Rate (%)" />
+                <XAxis dataKey="ago" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} minTickGap={16} />
+                <YAxis unit="%" domain={[0, (max: number) => Math.max(6, Math.ceil(max))]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} formatter={(v) => `${Number(v).toFixed(2)}%`} />
+                <Legend {...legendProps} />
+                <ReferenceLine y={3} stroke="#f59e0b" strokeDasharray="4 4" label={{ value: t('주의 3%'), position: 'insideTopLeft', fontSize: 10, fill: '#f59e0b' }} />
+                <ReferenceLine y={5} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('경보 5%'), position: 'insideTopLeft', fontSize: 10, fill: '#ef4444' }} />
+                <Area type="monotone" dataKey="defect_rate" stroke="#ef4444" fillOpacity={1} fill="url(#colorDefect)" isAnimationActive={false} name={t('불량률 (%)')} />
               </AreaChart>
             );
           case 2: // 비전검사 결과 뷰어
@@ -5687,73 +5864,71 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 </Bar>
               </BarChart>
             );
-          case 3: // 불량 유형 분석
+          case 3: { // 불량 유형 분석
+            // Pareto: the biggest defect types first, with the cumulative share.
+            const counts = DEFECT_TYPES.map(d => ({ name: t(d.name), count: Math.round(live(...d.count)) }))
+              .sort((a, b) => b.count - a.count);
+            counts.push({ name: t('기타'), count: Math.round(live(...DEFECT_OTHER)) });
+            const total = counts.reduce((sum, r) => sum + r.count, 0) || 1;
+            let running = 0;
+            const pareto = counts.map(r => {
+              running += r.count;
+              return { ...r, cum: Number(((running / total) * 100).toFixed(1)) };
+            });
             return (
-              <PieChart>
-                <Pie
-                  data={[
-                    { name: t('찢김'), value: live(35, 83) },
-                    { name: t('기포'), value: live(25, 84) },
-                    { name: t('변색'), value: live(20, 85) },
-                    { name: t('라벨누락'), value: live(15, 86) },
-                    { name: t('기타'), value: live(5, 87) },
-                  ]}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6'].map((color, index) => (
-                    <Cell key={`cell-${index}`} fill={color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '10px' }} />
-              </PieChart>
+              <ComposedChart data={pareto} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="count" allowDecimals={false} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="cum" orientation="right" unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <ReferenceLine yAxisId="cum" y={80} stroke={chart.axis} strokeDasharray="4 4" label={{ value: '80%', position: 'insideTopRight', fontSize: 10, fill: chart.axis }} />
+                <Bar yAxisId="count" dataKey="count" fill="#ef4444" name={t('불량 건수 (오늘)')} radius={[4, 4, 0, 0]} />
+                <Line yAxisId="cum" type="monotone" dataKey="cum" stroke="#3b82f6" strokeWidth={2} name={t('누적 비율 (%)')} />
+              </ComposedChart>
             );
+          }
           case 4: // 온도-불량 상관분석
             return (
-              <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <ScatterChart margin={{ top: 20, right: 20, bottom: 10, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-                <XAxis type="number" dataKey="temp" name="Temperature" unit="°C" stroke={chart.axis} fontSize={10} />
-                <YAxis type="number" dataKey="defect" name="Defect Rate" unit="%" stroke={chart.axis} fontSize={10} />
-                <ZAxis type="number" range={[50, 400]} />
-                <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                <Scatter name="Temp vs Defect" data={[
-                  { temp: live(160, 88), defect: live(8.2, 89) },
-                  { temp: live(165, 90), defect: live(4.5, 91) },
-                  { temp: live(170, 92), defect: live(2.1, 93) },
-                  { temp: live(175, 94), defect: live(1.8, 95) },
-                  { temp: live(180, 96), defect: live(2.5, 97) },
-                  { temp: live(185, 98), defect: live(5.4, 99) },
-                  { temp: live(190, 100), defect: live(9.1, 101) },
-                ]} fill="#8b5cf6" />
+                <XAxis type="number" dataKey="temp" name={t('실링 온도')} unit="°C" domain={[155, 195]} stroke={chart.axis} fontSize={10} />
+                <YAxis type="number" dataKey="defect" name={t('불량률')} unit="%" stroke={chart.axis} fontSize={10} />
+                <ZAxis type="number" range={[80, 80]} />
+                <Tooltip {...tip} cursor={{ strokeDasharray: '3 3' }} />
+                <Legend {...legendProps} />
+                <ReferenceLine x={173} stroke="#10b981" strokeDasharray="4 4" label={{ value: t('최적 173°C'), position: 'insideTop', fontSize: 10, fill: '#10b981' }} />
+                {/* Temperature bands are fixed; only the measured defect rate moves. */}
+                <Scatter name={t('온도 구간별 불량률')} data={[
+                  { temp: 160, defect: live(8.2, 89) },
+                  { temp: 165, defect: live(4.5, 91) },
+                  { temp: 170, defect: live(2.1, 93) },
+                  { temp: 173, defect: live(1.4, 94) },
+                  { temp: 175, defect: live(1.8, 95) },
+                  { temp: 180, defect: live(2.9, 97) },
+                  { temp: 185, defect: live(5.4, 99) },
+                  { temp: 190, defect: live(9.1, 101) },
+                ]} fill="#8b5cf6" line={{ stroke: '#8b5cf6', strokeOpacity: 0.4 }} />
               </ScatterChart>
             );
-          case 5: // 품질 이력 검색
+          case 5: { // 품질 이력 검색
+            const batches = BATCH_YIELD.map(b => ({ batch: b.batch, yield: Math.min(100, live(...b.yield)) }));
             return (
-              <BarChart data={[
-                { batch: 'B001', yield: live(98.2, 102) },
-                { batch: 'B002', yield: live(94.5, 103) },
-                { batch: 'B003', yield: live(99.1, 104) },
-                { batch: 'B004', yield: live(88.4, 105) },
-                { batch: 'B005', yield: live(97.8, 106) },
-              ]}>
+              <BarChart data={batches}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="batch" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis domain={[80, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="yield" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <YAxis unit="%" domain={[80, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Bar dataKey="yield" name={t('수율 (%)')} radius={[4, 4, 0, 0]}>
+                  {batches.map(b => (
+                    <Cell key={b.batch} fill={b.yield < YIELD_TARGET ? '#ef4444' : '#10b981'} />
+                  ))}
+                </Bar>
+                <ReferenceLine y={95} stroke="#f59e0b" strokeDasharray="4 4" strokeWidth={2} label={{ value: t('목표 수율 95%'), position: 'insideTopRight', fontSize: 10, fill: '#f59e0b' }} />
               </BarChart>
             );
+          }
           default:
             return (
               <BarChart data={[
@@ -5780,37 +5955,36 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         }
       case 'AI 설비예지보전 에이전트':
         switch (item.id) {
-          case 6: // 설비 상태 종합
+          case 6: { // 설비 상태 종합
+            const health = EQUIPMENT.map(e => ({ name: t(e.name), score: Math.round(live(...e.health)) }));
             return (
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
-                { subject: t('진동'), A: live(120, 112), fullMark: 150 },
-                { subject: t('온도'), A: live(98, 113), fullMark: 150 },
-                { subject: t('전류'), A: live(86, 114), fullMark: 150 },
-                { subject: t('압력'), A: live(99, 115), fullMark: 150 },
-                { subject: t('소음'), A: live(85, 116), fullMark: 150 },
-              ]}>
-                <PolarGrid stroke={chart.grid} />
-                <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
-                <PolarRadiusAxis angle={30} domain={[0, 150]} stroke={chart.axis} fontSize={8} />
-                <Radar name="Maintenance Health" dataKey="A" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-              </RadarChart>
+              <BarChart layout="vertical" data={health} margin={{ top: 16, right: 16, left: 8, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} horizontal={false} />
+                <XAxis type="number" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis dataKey="name" type="category" width={92} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <ReferenceLine x={70} stroke="#f59e0b" strokeDasharray="4 4" label={{ value: t('주의 70'), position: 'top', fontSize: 10, fill: '#f59e0b' }} />
+                <ReferenceLine x={50} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('위험 50'), position: 'top', fontSize: 10, fill: '#ef4444' }} />
+                <Bar dataKey="score" name={t('건강 점수 (100점 만점)')} radius={[0, 4, 4, 0]}>
+                  {health.map(h => (
+                    <Cell key={h.name} fill={h.score < HEALTH_DANGER ? '#ef4444' : h.score < HEALTH_WARN ? '#f59e0b' : '#10b981'} />
+                  ))}
+                </Bar>
+              </BarChart>
             );
+          }
           case 7: // 진동/온도 추세
             return (
-              <LineChart data={sensorData}>
+              <LineChart data={trend} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Line type="monotone" dataKey="vibration" stroke="#3b82f6" strokeWidth={2} dot={false} name="Vibration (mm/s)" />
-                <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name="Temp (°C)" />
+                <XAxis dataKey="ago" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} minTickGap={16} />
+                <YAxis yAxisId="vib" domain={[2, 6]} ticks={[2, 3, 4, 5, 6]} stroke="#3b82f6" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="temp" orientation="right" domain={[160, 190]} ticks={[160, 170, 180, 190]} stroke="#10b981" fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} formatter={(v) => Number(v).toFixed(2)} />
+                <Legend {...legendProps} />
+                <ReferenceLine yAxisId="vib" y={4.6} stroke="#ef4444" strokeDasharray="4 4" label={{ value: t('진동 경고 4.6 mm/s'), position: 'insideTopLeft', fontSize: 10, fill: '#ef4444' }} />
+                <Line yAxisId="vib" type="monotone" dataKey="vibration" stroke="#3b82f6" strokeWidth={2} dot={false} isAnimationActive={false} name={t('진동 (mm/s)')} />
+                <Line yAxisId="temp" type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} isAnimationActive={false} name={t('온도 (°C)')} />
               </LineChart>
             );
           case 8: // RUL 잔여수명 예측
@@ -5873,12 +6047,10 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="month" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis yAxisId="left" stroke="#3b82f6" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis yAxisId="right" orientation="right" stroke="#ef4444" fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
+                <YAxis yAxisId="left" unit="h" stroke="#3b82f6" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="right" unit="h" orientation="right" stroke="#ef4444" fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
                 <Bar yAxisId="left" dataKey="mtbf" fill="#3b82f6" name="MTBF (h)" radius={[4, 4, 0, 0]} />
                 <Line yAxisId="right" type="monotone" dataKey="mttr" stroke="#ef4444" name="MTTR (h)" strokeWidth={2} />
               </ComposedChart>
@@ -5900,64 +6072,53 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         }
       case 'AI 에너지 에이전트':
         switch (item.id) {
-          case 16: // 전력 사용 현황
+          case 16: { // 전력 사용 현황
+            // kW from the shrink wrapper's live current: P = √3 × 380 V × I × PF 0.9.
+            const amps = sensorData[sensorData.length - 1]?.current_amp ?? 12.6;
             return (
-              <AreaChart data={sensorData}>
-                <defs>
-                  <linearGradient id="colorEnergy" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
+              <BarChart data={EQUIPMENT.map(e => ({
+                name: t(e.name),
+                run: e.run ? Number(live(...e.run).toFixed(1)) : wrapperKw(amps),
+                idle: Number(live(...e.idle).toFixed(1)),
+              }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="timestamp" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="current_amp" stroke="#f59e0b" fillOpacity={1} fill="url(#colorEnergy)" name="Energy Load (A)" />
-              </AreaChart>
-            );
-          case 17: // 에너지 비용 분석
-            return (
-              <BarChart data={[
-                { time: '00-06', cost: live(1200, 138) },
-                { time: '06-12', cost: live(3500, 139) },
-                { time: '12-18', cost: live(4200, 140) },
-                { time: '18-24', cost: live(2800, 141) },
-              ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="cost" name="Cost (KRW)" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis unit=" kW" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="run" stackId="kw" fill="#f59e0b" name={t('가동 중 전력 (kW)')} />
+                <Bar dataKey="idle" stackId="kw" fill="#ef4444" name={t('대기 전력 (kW)')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
-          case 18: // 피크 부하 관리
+          }
+          case 17: // 에너지 비용 분석
             return (
-              <LineChart data={[
-                { time: '10:00', load: live(850, 142), limit: live(1000, 143) },
-                { time: '11:00', load: live(920, 144), limit: live(1000, 145) },
-                { time: '12:00', load: live(980, 146), limit: live(1000, 147) },
-                { time: '13:00', load: live(1050, 148), limit: live(1000, 149) },
-                { time: '14:00', load: live(940, 150), limit: live(1000, 151) },
-                { time: '15:00', load: live(880, 152), limit: live(1000, 153) },
-              ]}>
+              <BarChart data={ENERGY_COST.map(c => ({ time: c.time, cost: Math.round(live(...c.cost)) }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Line type="stepAfter" dataKey="load" stroke="#ef4444" strokeWidth={2} name="Current Load (kW)" />
-                <Line type="monotone" dataKey="limit" stroke="#94a3b8" strokeDasharray="5 5" name="Contract Limit" />
+                <YAxis tickFormatter={(v: number) => `₩${v.toLocaleString()}`} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} formatter={(v) => `₩${Number(v).toLocaleString()}`} />
+                <Bar dataKey="cost" name={t('전기요금 (원)')} fill="#10b981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            );
+          case 18: { // 피크 부하 관리
+            const limit = CONTRACT_KW;
+            const peak = PEAK_LOAD.map(p => ({ time: p.time, load: Math.round(live(...p.load)) }));
+            return (
+              <LineChart data={peak} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="time" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis unit=" kW" domain={[1000, 1800]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <ReferenceLine y={limit} stroke="#ef4444" strokeDasharray="5 5" label={{ value: t('계약 전력 1,600kW'), position: 'insideTopLeft', fontSize: 10, fill: '#ef4444' }} />
+                <Line type="stepAfter" dataKey="load" stroke="#f59e0b" strokeWidth={2} name={t('부하 (kW)')}
+                  dot={(props: { cx?: number; cy?: number; index?: number; payload?: { load: number } }) => (
+                    <circle key={props.index} cx={props.cx} cy={props.cy} r={4} fill={(props.payload?.load ?? 0) > limit ? '#ef4444' : '#f59e0b'} />
+                  )} />
               </LineChart>
             );
+          }
           default:
             return (
               <AreaChart data={sensorData}>
@@ -6019,20 +6180,12 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
             );
           case 32: // 긴급 정지 및 알람 제어
             return (
-              <BarChart data={[
-                { type: 'Fire', count: live(1, 171) },
-                { type: 'Collision', count: live(4, 172) },
-                { type: 'Manual', count: live(2, 173) },
-                { type: 'System', count: 0 },
-              ]}>
+              <BarChart data={EMERGENCY_STOPS.map(e => ({ type: t(e.cause), count: e.count === 0 ? 0 : Math.round(live(...e.count)) }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="type" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} name="E-Stop Events" />
+                <YAxis allowDecimals={false} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} name={t('비상 정지 (건)')} />
               </BarChart>
             );
           default:
@@ -6070,93 +6223,106 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 { line: t('Line 2'), running: live(92, 180), idle: live(5, 181), down: live(3, 182) },
                 { line: t('Line 3'), running: live(78, 183), idle: live(15, 184), down: live(7, 185) },
                 { line: t('Line 4'), running: live(88, 186), idle: live(8, 187), down: live(4, 188) },
-              ]}>
+              ].map(r => {
+                const total = r.running + r.idle + r.down;
+                const pct = (v: number) => Number(((v / total) * 100).toFixed(1));
+                return { ...r, running: pct(r.running), idle: pct(r.idle), down: pct(r.down) };
+              })}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="line" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="running" stackId="a" fill="#10b981" name="Running" />
-                <Bar dataKey="idle" stackId="a" fill="#f59e0b" name="Idle" />
-                <Bar dataKey="down" stackId="a" fill="#ef4444" name="Down" />
+                <YAxis unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="running" stackId="a" fill="#10b981" name={t('가동 (%)')} />
+                <Bar dataKey="idle" stackId="a" fill="#f59e0b" name={t('대기 (%)')} />
+                <Bar dataKey="down" stackId="a" fill="#ef4444" name={t('정지 (%)')} />
               </BarChart>
             );
-          case 12: // OEE 대시보드
+          case 12: { // OEE 대시보드
+            // The same plant figures as the dashboard's OEE card, not a separate series.
+            const plant = getPlantState();
+            const availability = Number(plant.availability.toFixed(1));
+            const performance = Number(plant.performance.toFixed(1));
+            const quality = Number(plant.quality.toFixed(1));
+            const oee = Number(plant.oee.toFixed(1));
+            const parts = [
+              { name: t('가용률'), value: availability, fill: '#3b82f6' },
+              { name: t('성능'), value: performance, fill: '#8b5cf6' },
+              { name: t('양품률'), value: quality, fill: '#10b981' },
+              { name: 'OEE', value: oee, fill: oee < OEE_TARGET ? '#ef4444' : '#f59e0b' },
+            ];
             return (
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
-                { subject: t('Availability'), A: live(92, 189), fullMark: 100 },
-                { subject: t('Performance'), A: live(88, 190), fullMark: 100 },
-                { subject: t('Quality'), A: live(99, 191), fullMark: 100 },
-              ]}>
-                <PolarGrid stroke={chart.grid} />
-                <PolarAngleAxis dataKey="subject" stroke={chart.axis} fontSize={10} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={chart.axis} fontSize={8} />
-                <Radar name="OEE Components" dataKey="A" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-              </RadarChart>
+              <BarChart data={parts}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="name" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis unit="%" domain={[0, 100]} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Bar dataKey="value" name={t('비율 (%)')} radius={[4, 4, 0, 0]}>
+                  {parts.map(p => <Cell key={p.name} fill={p.fill} />)}
+                </Bar>
+                <ReferenceLine y={85} stroke="#ef4444" strokeDasharray="4 4" strokeWidth={2} label={{ value: t('OEE 목표 85%'), position: 'insideTopRight', fontSize: 10, fill: '#ef4444' }} />
+              </BarChart>
             );
-          case 13: // 택트타임 분석
+          }
+          case 13: { // 택트타임 분석
+            const tact = [
+              { process: t('공급'), time: live(12, 192), target: 10 },
+              { process: t('도금'), time: live(45, 194), target: 40 },
+              { process: t('검사'), time: live(15, 196), target: 15 },
+              { process: t('배출'), time: live(8, 198), target: 10 },
+              { process: t('적재'), time: live(22, 200), target: 20 },
+            ];
             return (
-              <BarChart data={[
-                { process: t('공급'), time: live(12, 192), target: live(10, 193) },
-                { process: t('도금'), time: live(45, 194), target: live(40, 195) },
-                { process: t('검사'), time: live(15, 196), target: live(15, 197) },
-                { process: t('배출'), time: live(8, 198), target: live(10, 199) },
-                { process: t('적재'), time: live(22, 200), target: live(20, 201) },
-              ]}>
+              <BarChart data={tact}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="process" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="time" fill="#3b82f6" name="Actual Tact (s)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="target" fill="#94a3b8" name="Target Tact (s)" radius={[4, 4, 0, 0]} />
+                <YAxis unit="s" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="time" fill="#3b82f6" name={t('실제 택트 (초)')} radius={[4, 4, 0, 0]}>
+                  {tact.map(p => <Cell key={p.process} fill={p.time > p.target ? '#ef4444' : '#3b82f6'} />)}
+                </Bar>
+                <Bar dataKey="target" fill="#94a3b8" name={t('목표 택트 (초)')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
-          case 14: // 배치별 생산 이력
+          }
+          case 14: { // 배치별 생산 이력
+            // One batch's route, as a timeline: when it entered each step and how long it stayed.
+            let clock = 0;
+            const route = [['원자재 입고', 20], ['공급', 12], ['도금', 45], ['검사', 15], ['포장', 22]].map(([stage, minutes], i) => {
+              const dur = Math.round(live(minutes as number, 202 + i));
+              const row = { stage: t(stage as string), start: clock, dur };
+              clock += dur;
+              return row;
+            });
             return (
-              <LineChart data={[
-                { step: t('Start'), val: 0 },
-                { step: t('Supply'), val: live(10, 202) },
-                { step: t('Plating'), val: live(55, 203) },
-                { step: t('Inspect'), val: live(70, 204) },
-                { step: t('Pack'), val: live(92, 205) },
-                { step: t('Finish'), val: live(100, 206) },
-              ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                <XAxis dataKey="step" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Line type="monotone" dataKey="val" stroke="#10b981" strokeWidth={3} name="Completion %" />
-              </LineChart>
+              <BarChart layout="vertical" data={route} margin={{ top: 10, right: 16, left: 8, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} horizontal={false} />
+                <XAxis type="number" unit={t('분')} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis dataKey="stage" type="category" width={72} stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="start" stackId="route" fill="transparent" legendType="none" name={t('투입 시점 (분)')} />
+                <Bar dataKey="dur" stackId="route" fill="#10b981" name={t('공정 소요 시간 (분)')} radius={[0, 4, 4, 0]} />
+              </BarChart>
             );
+          }
           case 15: // 생산 계획 대비 실적
             return (
               <BarChart data={[
-                { day: t('Mon'), plan: live(1000, 207), actual: live(950, 208) },
-                { day: t('Tue'), plan: live(1000, 209), actual: live(1020, 210) },
-                { day: t('Wed'), plan: live(1200, 211), actual: live(1180, 212) },
-                { day: t('Thu'), plan: live(1200, 213), actual: live(900, 214) },
-                { day: t('Fri'), plan: live(1000, 215), actual: live(1050, 216) },
+                { day: t('Mon'), plan: 1000, actual: Math.round(live(950, 208)) },
+                { day: t('Tue'), plan: 1000, actual: Math.round(live(1020, 210)) },
+                { day: t('Wed'), plan: 1200, actual: Math.round(live(1180, 212)) },
+                { day: t('Thu'), plan: 1200, actual: Math.round(live(900, 214)) },
+                { day: t('Fri'), plan: 1000, actual: Math.round(live(1050, 216)) },
               ]}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
                 <XAxis dataKey="day" stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
                 <YAxis stroke={chart.axis} fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}`, borderRadius: '8px' }}
-                  itemStyle={{ color: chart.tooltipText, fontSize: '12px' }}
-                />
-                <Bar dataKey="plan" fill="#334155" name="Plan" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="actual" fill="#6366f1" name="Actual" radius={[4, 4, 0, 0]} />
+                <Tooltip {...tip} />
+                <Legend {...legendProps} />
+                <Bar dataKey="plan" fill="#94a3b8" name={t('계획 (개)')} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="actual" fill="#6366f1" name={t('실적 (개)')} radius={[4, 4, 0, 0]} />
               </BarChart>
             );
           default:
@@ -6550,15 +6716,15 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border">
-        <div className="flex items-start gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shadow-lg shadow-accent/5">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-6 border-b border-border">
+        <div className="flex items-start gap-5 min-w-0 flex-1">
+          <div className="w-16 h-16 shrink-0 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shadow-lg shadow-accent/5">
             <Layers size={32} />
           </div>
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h2 className="text-3xl font-bold tracking-tight">{t(item.name)}</h2>
-              <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-widest border border-accent/20">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1">
+              <h2 className="text-2xl lg:text-3xl font-bold tracking-tight break-keep">{t(item.name)}</h2>
+              <span className="whitespace-nowrap px-2 py-0.5 rounded bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-widest border border-accent/20">
                 {item.agent || t('System')}
               </span>
             </div>
@@ -6566,18 +6732,24 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
             <p className="mt-0.5 text-[11px] text-text-secondary max-w-2xl">{t(item.description)}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="text-right hidden sm:block">
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="text-right hidden sm:block whitespace-nowrap">
             <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">{t('Status')}</div>
             <div className="flex items-center gap-2 text-emerald-500 font-bold text-sm">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               {t('Active & Synchronized')}
             </div>
+            <div className={cn("mt-1 flex items-center justify-end gap-1 text-[10px] font-bold", readOnly ? "text-warning" : "text-text-secondary")} data-testid="my-permission">
+              {readOnly && <LockIcon size={10} />}
+              {t('내 권한: {level}', { level: t(LEVEL_LABEL[myLevel]) })} · {t(roleOf(currentUser(access).role).label)}
+            </div>
           </div>
           {moduleTuning.tuning && (
             <button
               onClick={() => setShowAdvanced(true)}
-              className="px-4 py-3 rounded-xl font-bold text-sm border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-colors flex items-center gap-2"
+              disabled={readOnly}
+              title={readOnly ? t('보기 권한만 있어 설정을 바꿀 수 없어요') : undefined}
+              className="disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap px-4 py-3 rounded-xl font-bold text-sm border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-colors flex items-center gap-2"
             >
               <Sliders size={18} />
               {t('AI 설정 바꿔 보기')}
@@ -6585,10 +6757,11 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           )}
           <button 
             onClick={() => setIsExecuting(true)}
-            disabled={isExecuting}
+            disabled={isExecuting || readOnly}
+            title={readOnly ? t('보기 권한만 있어 실행할 수 없어요') : undefined}
             className={cn(
-              "px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2",
-              isExecuting 
+              "whitespace-nowrap px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2",
+              isExecuting || readOnly
                 ? "bg-surface-hover text-text-secondary cursor-not-allowed" 
                 : "bg-accent text-bg hover:opacity-90 active:scale-95 shadow-lg shadow-accent/20"
             )}
@@ -6604,7 +6777,7 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {item.id === 21 ? (
           <div className="lg:col-span-12">
-            <ChatbotViewer />
+            <ChatbotViewer onNavigate={onNavigate} />
           </div>
         ) : (
           <>
@@ -6687,24 +6860,17 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 <AMRCollisionViewer />
               ) : (
                 <div className="dashboard-card">
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center justify-between mb-6">
                     <div>
                       <h3 className="text-sm font-bold flex items-center gap-2">
                         <Activity size={16} className="text-accent" />
-                        {t('Module Execution Preview (Live)')}
+                        {t(MODULE_CHARTS[item.id]?.title ?? 'Module Execution Preview (Live)')}
                       </h3>
-                      <p className="text-[10px] text-text-secondary mt-1">{t('Real-time telemetry from Kafka stream')}</p>
+                      <p className="text-[11px] text-text-secondary mt-1">{t(MODULE_CHARTS[item.id]?.caption ?? 'Real-time telemetry from Kafka stream')}</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                        <span className="text-[10px] font-bold text-text-secondary uppercase">{t('Primary')}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <span className="text-[10px] font-bold text-text-secondary uppercase">{t('Secondary')}</span>
-                      </div>
-                    </div>
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase shrink-0">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                    </span>
                   </div>
                   <div className="h-[350px] w-full">
                     <ResponsiveContainer width="100%" height="100%">

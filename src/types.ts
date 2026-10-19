@@ -94,6 +94,8 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  /** Menu ids of the screens an answer's figures come from. */
+  sources?: number[];
 }
 
 export interface CoordinationEvent {

@@ -5,7 +5,7 @@
 
 import { useCallback } from 'react';
 
-import { seededUnit } from '../services/telemetry';
+import { breathe } from '../services/telemetry';
 import { useTelemetry } from './useTelemetry';
 
 /**
@@ -20,16 +20,7 @@ export function useLiveValue(): (base: number, slot: number) => number {
   const { tick, defectRate } = useTelemetry();
 
   return useCallback(
-    (base: number, slot: number) => {
-      // Percentages and rates should not wander outside their natural range.
-      const amplitude = base <= 1 ? base * 0.12 : base <= 100 ? base * 0.05 : base * 0.06;
-      const stress = 1 + Math.min(1, defectRate / 8);
-      const phase = seededUnit(String(slot)) * 6.28;
-      const wave = Math.sin(tick * 0.3 + phase) * 0.6 + Math.sin(tick * 0.11 + phase * 2) * 0.4;
-      const next = base + wave * amplitude * stress;
-      const decimals = base < 10 ? 2 : base < 1000 ? 1 : 0;
-      return Math.max(0, Number(next.toFixed(decimals)));
-    },
+    (base: number, slot: number) => breathe(base, slot, tick, defectRate),
     [tick, defectRate],
   );
 }
