@@ -48,6 +48,15 @@ jobs:
           AI_PROXY_URL: ${{ vars.AI_PROXY_URL }}
         run: npm run build
 
+      # The NexTech Week Tokyo booth edition, served beside the platform at
+      # /tokyo/ so it can be shared with people outside the booth. Its relative
+      # base path lets it run from that sub-path unchanged. Demo-mode AI only.
+      - name: Build the Tokyo booth edition
+        env:
+          EDITION: tokyo
+          BUILD_REF: ${{ github.sha }}
+        run: npx vite build --outDir dist/tokyo
+
       - name: Publish to gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -84,5 +93,11 @@ jobs:
       - name: Smoke-test the live site
         env:
           SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          EXPECTED_BUILD: ${{ github.event_name == 'schedule' && '' || github.sha }}
+        run: node .github/scripts/smoke.mjs
+
+      - name: Smoke-test the Tokyo booth edition
+        env:
+          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/tokyo/
           EXPECTED_BUILD: ${{ github.event_name == 'schedule' && '' || github.sha }}
         run: node .github/scripts/smoke.mjs
