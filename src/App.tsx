@@ -153,6 +153,7 @@ import DemoModeBadge from './components/DemoModeBadge';
 import { IS_EXPO } from './config/edition';
 import { ExpoBanner, ExpoDirector } from './expo/ExpoDirector';
 import { ManagerView, RoleSwitcher, WorkerView, useIncidents, useViewerRole, type ViewerRole } from './components/RoleViews';
+import { AppliedTuningCard, ScreenGuide, TuningModal, menuSummary, useModuleTuning } from './components/ModuleTuning';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
 import { useLiveValue } from './hooks/useLiveValue';
@@ -222,6 +223,8 @@ const newId = () => Math.random().toString(36).slice(2, 11);
 
 /** Menu id of the integrated dashboard, and the anchor of its orchestration panel. */
 const DASHBOARD_MENU_ID = 0;
+/** Screens with their own view instead of the generic module page; the app puts the screen guide above them. */
+const OWN_VIEW_MENU_IDS = [DASHBOARD_MENU_ID, 8, 9, 22, 23, 31];
 
 /** The day's earlier alerts in the bell menu; each opens the screen it is about. */
 const EARLIER_NOTIFICATIONS: { id: string; title: string; time: string; tone: 'danger' | 'warning' | 'info'; menuId: number }[] = [
@@ -477,14 +480,18 @@ export default function App() {
                 <button
                   key={item.id}
                   onClick={() => navigateTo(item.id)}
+                  title={t(menuSummary(item.id) ?? item.description)}
                   aria-current={selectedMenu.id === item.id ? 'page' : undefined}
                   className={cn(
                     "sidebar-item w-full text-left text-sm",
                     selectedMenu.id === item.id && "sidebar-item-active"
                   )}
                 >
-                  <ChevronRight size={14} className={cn("transition-transform", selectedMenu.id === item.id && "rotate-90")} />
-                  <span className="truncate">{t(item.name)}</span>
+                  <ChevronRight size={14} className={cn("shrink-0 transition-transform", selectedMenu.id === item.id && "rotate-90")} />
+                  <span className="min-w-0">
+                    <span className="block truncate">{t(item.name)}</span>
+                    {menuSummary(item.id) && <span className="block truncate text-[10px] font-normal text-text-secondary">{t(menuSummary(item.id)!)}</span>}
+                  </span>
                 </button>
               ))}
             </div>
@@ -622,14 +629,17 @@ export default function App() {
         </header>
 
         {/* Dynamic Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+        <div className={cn("flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar", IS_EXPO && "pb-[50vh] lg:pb-6")}>
+          {OWN_VIEW_MENU_IDS.includes(selectedMenu.id) && (
+            <ScreenGuide key={selectedMenu.id} menuId={selectedMenu.id} defaultOpen={selectedMenu.id !== DASHBOARD_MENU_ID} />
+          )}
           {renderContent()}
         </div>
 
         {/* Chatbot Toggle Button */}
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent text-white shadow-2xl shadow-accent/40 flex items-center justify-center hover:scale-110 transition-transform z-50"
+          className={cn("fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent text-white shadow-2xl shadow-accent/40 flex items-center justify-center hover:scale-110 transition-transform z-50", IS_EXPO && "bottom-[52vh] lg:bottom-6 lg:right-[424px] xl:right-[464px]")}
           aria-label={t('AI Supervisor')}
         >
           {isChatOpen ? <X size={24} /> : <MessageSquare size={24} />}
@@ -642,7 +652,7 @@ export default function App() {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] bg-surface border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
+              className={cn("fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] bg-surface border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50", IS_EXPO && "lg:right-[424px] xl:right-[464px]")}
             >
               <div className="p-4 border-b border-border bg-accent/10 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
@@ -713,16 +723,16 @@ export default function App() {
         </AnimatePresence>
 
         <AiSettingsModal isOpen={isAiSettingsOpen} onClose={() => setIsAiSettingsOpen(false)} />
-
-        {IS_EXPO && (
-          <ExpoDirector
-            decisions={decisions}
-            setDecisions={setDecisions}
-            onApprove={handleApprove}
-            setRole={role => { setSelectedMenu(MENU_ITEMS[0]); setViewerRole(role); }}
-          />
-        )}
       </main>
+
+      {IS_EXPO && (
+        <ExpoDirector
+          decisions={decisions}
+          setDecisions={setDecisions}
+          onApprove={handleApprove}
+          setRole={role => { setSelectedMenu(MENU_ITEMS[0]); setViewerRole(role); }}
+        />
+      )}
     </div>
   );
 }
@@ -4606,553 +4616,6 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
   );
 }
 
-function AdvancedParametersModal({ item, isOpen, onClose }: { item: MenuItem, isOpen: boolean, onClose: () => void }) {
-  const { showToast } = useToast();
-  const [params, setParams] = useState<Record<string, any>>({});
-
-  useEffect(() => {
-    // Default parameters based on category
-    const defaults: Record<string, any> = {};
-    switch (item.category) {
-      case 'AI 품질 에이전트':
-        defaults.sensitivity = 85;
-        defaults.threshold = 0.75;
-        defaults.model = 'Anomalib-ResNet18';
-        defaults.scanSpeed = 120;
-        break;
-      case 'AI 설비예지보전 에이전트':
-        defaults.vibrationLimit = 4.5;
-        defaults.tempLimit = 85;
-        defaults.samplingFreq = 1000;
-        defaults.horizon = 24;
-        break;
-      case 'AI 에너지 에이전트':
-        if (item.id === 16) { // 전력 사용 현황
-          defaults.samplingInterval = 5;
-          defaults.voltageThreshold = 220;
-          defaults.currentThreshold = 50;
-          defaults.harmonicLimit = 5;
-        } else if (item.id === 17) { // 에너지 비용 분석
-          defaults.unitCost = 110;
-          defaults.billingCycle = 'Monthly';
-          defaults.peakTariffMultiplier = 1.5;
-          defaults.baseContractPower = 500;
-        } else if (item.id === 18) { // 피크 부하 관리
-          defaults.peakLimit = 450;
-          defaults.warningThreshold = 85;
-          defaults.sheddingPriority = 'Medium';
-          defaults.autoControlEnabled = true;
-        }
-        break;
-      case 'AI 안전 에이전트':
-        if (item.id === 19) { // 지능형 CCTV 화재 감시
-          defaults.detectionConfidence = 85;
-          defaults.scanInterval = 500;
-          defaults.alertSensitivity = 'High';
-          defaults.autoAlarmEnabled = true;
-        } else if (item.id === 20) { // AMR 충돌 방지 시스템
-          defaults.safetyRadius = 1.5;
-          defaults.stopDistance = 0.5;
-          defaults.responseTime = 50;
-          defaults.collisionAvoidance = true;
-        } else if (item.id === 32) { // 긴급 정지 및 알람 제어
-          defaults.eStopDelay = 0;
-          defaults.sirenVolume = 95;
-          defaults.notificationChannels = ['SMS', 'Push', 'Siren'];
-          defaults.interlockEnabled = true;
-        }
-        break;
-      case 'AI 생산 최적화 에이전트':
-        defaults.targetOEE = 88;
-        defaults.windowSize = 60;
-        defaults.bottleneckSensitivity = 0.8;
-        defaults.autoSchedule = false;
-        break;
-    }
-    setParams(defaults);
-  }, [item]);
-
-  if (!isOpen) return null;
-
-  const renderFields = () => {
-    switch (item.category) {
-      case 'AI 품질 에이전트':
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Detection Sensitivity')}</span>
-                <span className="text-accent">{params.sensitivity}%</span>
-              </div>
-              <input 
-                type="range" min="0" max="100" value={params.sensitivity} 
-                onChange={(e) => setParams({...params, sensitivity: parseInt(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Anomaly Threshold')}</span>
-                <span className="text-accent">{params.threshold}</span>
-              </div>
-              <input 
-                type="range" min="0" max="1" step="0.01" value={params.threshold} 
-                onChange={(e) => setParams({...params, threshold: parseFloat(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('AI Model')}</label>
-                <select 
-                  value={params.model} 
-                  onChange={(e) => setParams({...params, model: e.target.value})}
-                  className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                >
-                  <option>Anomalib-ResNet18</option>
-                  <option>Custom-CNN-v4</option>
-                  <option>Vision-Transformer-S</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Scan Speed (ms)')}</label>
-                <input 
-                  type="number" value={params.scanSpeed} 
-                  onChange={(e) => setParams({...params, scanSpeed: parseInt(e.target.value)})}
-                  className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                />
-              </div>
-            </div>
-          </div>
-        );
-      case 'AI 설비예지보전 에이전트':
-        return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Vibration Limit (mm/s)')}</label>
-                <input 
-                  type="number" step="0.1" value={params.vibrationLimit} 
-                  onChange={(e) => setParams({...params, vibrationLimit: parseFloat(e.target.value)})}
-                  className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Temp Limit (°C)')}</label>
-                <input 
-                  type="number" value={params.tempLimit} 
-                  onChange={(e) => setParams({...params, tempLimit: parseInt(e.target.value)})}
-                  className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Sampling Frequency')}</span>
-                <span className="text-accent">{params.samplingFreq} Hz</span>
-              </div>
-              <input 
-                type="range" min="100" max="5000" step="100" value={params.samplingFreq} 
-                onChange={(e) => setParams({...params, samplingFreq: parseInt(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Prediction Horizon (Hours)')}</label>
-              <select 
-                value={params.horizon} 
-                onChange={(e) => setParams({...params, horizon: parseInt(e.target.value)})}
-                className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-              >
-                <option value={12}>{t('12 Hours')}</option>
-                <option value={24}>{t('24 Hours')}</option>
-                <option value={48}>{t('48 Hours')}</option>
-                <option value={168}>{t('1 Week')}</option>
-              </select>
-            </div>
-          </div>
-        );
-      case 'AI 에너지 에이전트':
-        if (item.id === 16) { // 전력 사용 현황
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Sampling Interval (s)')}</span>
-                  <span className="text-accent">{params.samplingInterval}s</span>
-                </div>
-                <input 
-                  type="range" min="1" max="60" value={params.samplingInterval} 
-                  onChange={(e) => setParams({...params, samplingInterval: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Voltage Threshold (V)')}</label>
-                  <input 
-                    type="number" value={params.voltageThreshold} 
-                    onChange={(e) => setParams({...params, voltageThreshold: parseInt(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Current Threshold (A)')}</label>
-                  <input 
-                    type="number" value={params.currentThreshold} 
-                    onChange={(e) => setParams({...params, currentThreshold: parseInt(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Harmonic Limit (%)')}</span>
-                  <span className="text-accent">{params.harmonicLimit}%</span>
-                </div>
-                <input 
-                  type="range" min="1" max="15" value={params.harmonicLimit} 
-                  onChange={(e) => setParams({...params, harmonicLimit: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-            </div>
-          );
-        } else if (item.id === 17) { // 에너지 비용 분석
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Unit Cost (KRW/kWh)')}</span>
-                  <span className="text-accent">{params.unitCost} ₩</span>
-                </div>
-                <input 
-                  type="range" min="50" max="300" step="5" value={params.unitCost} 
-                  onChange={(e) => setParams({...params, unitCost: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Billing Cycle')}</label>
-                  <select 
-                    value={params.billingCycle} 
-                    onChange={(e) => setParams({...params, billingCycle: e.target.value})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  >
-                    <option value="Daily">{t('Daily')}</option>
-                    <option value="Weekly">{t('Weekly')}</option>
-                    <option value="Monthly">{t('Monthly')}</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Peak Multiplier')}</label>
-                  <input 
-                    type="number" step="0.1" value={params.peakTariffMultiplier} 
-                    onChange={(e) => setParams({...params, peakTariffMultiplier: parseFloat(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-surface border border-border">
-                <DollarSign size={16} className="text-emerald-500" />
-                <div className="flex-1">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Base Contract Power')}</div>
-                  <div className="text-sm font-black">{params.baseContractPower} kW</div>
-                </div>
-              </div>
-            </div>
-          );
-        } else if (item.id === 18) { // 피크 부하 관리
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Peak Load Limit (kW)')}</span>
-                  <span className="text-accent">{params.peakLimit} kW</span>
-                </div>
-                <input 
-                  type="range" min="100" max="1000" step="10" value={params.peakLimit} 
-                  onChange={(e) => setParams({...params, peakLimit: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Warning Threshold (%)')}</span>
-                  <span className="text-accent">{params.warningThreshold}%</span>
-                </div>
-                <input 
-                  type="range" min="50" max="95" value={params.warningThreshold} 
-                  onChange={(e) => setParams({...params, warningThreshold: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Shedding Priority')}</label>
-                  <select 
-                    value={params.sheddingPriority} 
-                    onChange={(e) => setParams({...params, sheddingPriority: e.target.value})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  >
-                    <option value="Low">{t('Low')}</option>
-                    <option value="Medium">{t('Medium')}</option>
-                    <option value="High">{t('High')}</option>
-                  </select>
-                </div>
-                <div className="flex items-center justify-between p-2 rounded-lg bg-surface border border-border mt-6">
-                  <span className="text-[10px] font-bold uppercase tracking-widest">{t('Auto Control')}</span>
-                  <button 
-                    role="switch"
-                    aria-checked={Boolean(params.autoControlEnabled)}
-                    onClick={() => setParams({...params, autoControlEnabled: !params.autoControlEnabled})}
-                    className={cn(
-                      "w-8 h-4 rounded-full transition-colors relative",
-                      params.autoControlEnabled ? "bg-accent" : "bg-border"
-                    )}
-                  >
-                    <div className={cn(
-                      "absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all",
-                      params.autoControlEnabled ? "right-0.5" : "left-0.5"
-                    )} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        }
-        return null;
-      case 'AI 안전 에이전트':
-        if (item.id === 19) { // 지능형 CCTV 화재 감시
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Detection Confidence (%)')}</span>
-                  <span className="text-accent">{params.detectionConfidence}%</span>
-                </div>
-                <input 
-                  type="range" min="50" max="99" value={params.detectionConfidence} 
-                  onChange={(e) => setParams({...params, detectionConfidence: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Scan Interval (ms)')}</label>
-                  <input 
-                    type="number" value={params.scanInterval} 
-                    onChange={(e) => setParams({...params, scanInterval: parseInt(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Sensitivity')}</label>
-                  <select 
-                    value={params.alertSensitivity} 
-                    onChange={(e) => setParams({...params, alertSensitivity: e.target.value})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  >
-                    <option value="Low">{t('Low')}</option>
-                    <option value="Medium">{t('Medium')}</option>
-                    <option value="High">{t('High')}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          );
-        } else if (item.id === 20) { // AMR 충돌 방지 시스템
-          return (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Safety Radius (m)')}</label>
-                  <input 
-                    type="number" step="0.1" value={params.safetyRadius} 
-                    onChange={(e) => setParams({...params, safetyRadius: parseFloat(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Stop Distance (m)')}</label>
-                  <input 
-                    type="number" step="0.1" value={params.stopDistance} 
-                    onChange={(e) => setParams({...params, stopDistance: parseFloat(e.target.value)})}
-                    className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-surface border border-border">
-                <div className="flex items-center gap-2">
-                  <Zap size={16} className="text-yellow-500" />
-                  <span className="text-xs font-bold">{t('Collision Avoidance')}</span>
-                </div>
-                <button 
-                  role="switch"
-                    aria-checked={Boolean(params.collisionAvoidance)}
-                    onClick={() => setParams({...params, collisionAvoidance: !params.collisionAvoidance})}
-                  className={cn(
-                    "w-10 h-5 rounded-full transition-colors relative",
-                    params.collisionAvoidance ? "bg-accent" : "bg-border"
-                  )}
-                >
-                  <div className={cn(
-                    "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
-                    params.collisionAvoidance ? "right-1" : "left-1"
-                  )} />
-                </button>
-              </div>
-            </div>
-          );
-        } else if (item.id === 32) { // 긴급 정지 및 알람 제어
-          return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                  <span>{t('Siren Volume')}</span>
-                  <span className="text-accent">{params.sirenVolume}%</span>
-                </div>
-                <input 
-                  type="range" min="0" max="100" value={params.sirenVolume} 
-                  onChange={(e) => setParams({...params, sirenVolume: parseInt(e.target.value)})}
-                  className="w-full accent-accent"
-                />
-              </div>
-              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                <div className="flex items-center gap-2 text-red-500 mb-2">
-                  <AlertTriangle size={16} />
-                  <span className="text-xs font-bold uppercase tracking-widest">{t('Emergency Interlock')}</span>
-                </div>
-                <p className="text-[10px] text-text-secondary leading-relaxed">
-                  {t('When activated, all production lines will be immediately halted upon detection of critical safety violations.')}
-                </p>
-              </div>
-            </div>
-          );
-        }
-        return null;
-      case 'AI 생산 최적화 에이전트':
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Target OEE (%)')}</span>
-                <span className="text-accent">{params.targetOEE}%</span>
-              </div>
-              <input 
-                type="range" min="50" max="100" value={params.targetOEE} 
-                onChange={(e) => setParams({...params, targetOEE: parseInt(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Calculation Window (Min)')}</label>
-              <select 
-                value={params.windowSize} 
-                onChange={(e) => setParams({...params, windowSize: parseInt(e.target.value)})}
-                className="w-full bg-surface border border-border rounded-lg p-2 text-xs font-bold focus:border-accent outline-none"
-              >
-                <option value={15}>{t('15 Minutes')}</option>
-                <option value={30}>{t('30 Minutes')}</option>
-                <option value={60}>{t('1 Hour')}</option>
-                <option value={480}>{t('8 Hours (Shift)')}</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-text-secondary">
-                <span>{t('Bottleneck Sensitivity')}</span>
-                <span className="text-accent">{params.bottleneckSensitivity}</span>
-              </div>
-              <input 
-                type="range" min="0" max="1" step="0.1" value={params.bottleneckSensitivity} 
-                onChange={(e) => setParams({...params, bottleneckSensitivity: parseFloat(e.target.value)})}
-                className="w-full accent-accent"
-              />
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-surface border border-border">
-              <div className="flex items-center gap-2">
-                <Clock size={16} className="text-blue-500" />
-                <span className="text-xs font-bold">{t('Auto-Schedule Optimization')}</span>
-              </div>
-              <button 
-                role="switch"
-                    aria-checked={Boolean(params.autoSchedule)}
-                    onClick={() => setParams({...params, autoSchedule: !params.autoSchedule})}
-                className={cn(
-                  "w-10 h-5 rounded-full transition-colors relative",
-                  params.autoSchedule ? "bg-accent" : "bg-border"
-                )}
-              >
-                <div className={cn(
-                  "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
-                  params.autoSchedule ? "right-1" : "left-1"
-                )} />
-              </button>
-            </div>
-          </div>
-        );
-      default:
-        return <p className="text-xs text-text-secondary">{t('No specialized parameters available for this module.')}</p>;
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-bg border border-border rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
-      >
-        <div className="p-6 border-b border-border flex items-center justify-between bg-surface/30">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-accent/10 text-accent">
-              <Sliders size={20} />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold tracking-tight">{t('Advanced Parameters')}</h3>
-              <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{t(item.name)}</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-surface-hover rounded-full transition-colors">
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="p-6">
-          <div className="mb-6 p-3 rounded-lg bg-orange-500/5 border border-orange-500/20 flex gap-3">
-            <AlertTriangle size={16} className="text-orange-500 shrink-0 mt-0.5" />
-            <p className="text-[10px] text-orange-200/80 leading-relaxed">
-              {t('Modifying these parameters affects the real-time heuristic logic and agent orchestration. Changes will be logged in the system audit trail.')}
-            </p>
-          </div>
-
-          {renderFields()}
-        </div>
-
-        <div className="p-6 bg-surface/30 border-t border-border flex gap-3">
-          <button 
-            onClick={onClose}
-            className="flex-1 py-3 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors"
-          >
-            {t('Cancel')}
-          </button>
-          <button 
-            onClick={() => {
-              showToast(t('고급 파라미터가 저장되었습니다.'));
-              onClose();
-            }}
-            className="flex-1 py-3 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-          >
-            <Save size={14} />
-            {t('Save Changes')}
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 function FireMonitoringViewer() {
   const [isThermal, setIsThermal] = useState(false);
   const [isAlert, setIsAlert] = useState(false);
@@ -5890,6 +5353,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
   const [logs, setLogs] = useState<{time: string, msg: string, type: 'info' | 'warn' | 'success'}[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showTech, setShowTech] = useState(false);
+  const moduleTuning = useModuleTuning(item.id);
   const [activeManagementSubDetail, setActiveManagementSubDetail] = useState<string | null>(null);
   const { showToast } = useToast();
   const [modelVersion, setModelVersion] = useState({ major: 2, minor: 4, patch: 0, deployed: '2024-03-10' });
@@ -6988,8 +6453,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               onClick={() => setShowAdvanced(true)}
               className="w-full py-3 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors flex items-center justify-center gap-2"
             >
-              <Settings2 size={14} />
-              {t('Detection Parameters')}
+              <Sliders size={14} />
+              {t('AI 설정 바꿔 보기 (전/후 비교)')}
             </button>
           </div>
         </div>
@@ -7029,8 +6494,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               onClick={() => setShowAdvanced(true)}
               className="w-full py-3 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors flex items-center justify-center gap-2"
             >
-              <Settings2 size={14} />
-              {t('ACS Parameters')}
+              <Sliders size={14} />
+              {t('AI 설정 바꿔 보기 (전/후 비교)')}
             </button>
           </div>
         </div>
@@ -7066,15 +6531,17 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           </div>
         </div>
 
-        <div className="pt-6 border-t border-border">
-          <button 
-            onClick={() => setShowAdvanced(true)}
-            className="w-full py-3 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors flex items-center justify-center gap-2"
-          >
-            <Settings2 size={14} />
-            {t('Advanced Parameters')}
-          </button>
-        </div>
+        {moduleTuning.tuning && (
+          <div className="pt-6 border-t border-border">
+            <button 
+              onClick={() => setShowAdvanced(true)}
+              className="w-full py-3 rounded-xl bg-accent/10 border border-accent/40 text-accent text-xs font-bold hover:bg-accent/20 transition-colors flex items-center justify-center gap-2"
+            >
+              <Sliders size={14} />
+              {t('AI 설정 바꿔 보기 (전/후 비교)')}
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -7094,7 +6561,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 {item.agent || t('System')}
               </span>
             </div>
-            <p className="text-text-secondary max-w-2xl leading-relaxed">{t(item.description)}</p>
+            <p className="text-text-primary max-w-2xl leading-relaxed">{t(menuSummary(item.id) ?? item.description)}</p>
+            <p className="mt-0.5 text-[11px] text-text-secondary max-w-2xl">{t(item.description)}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -7105,6 +6573,15 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               {t('Active & Synchronized')}
             </div>
           </div>
+          {moduleTuning.tuning && (
+            <button
+              onClick={() => setShowAdvanced(true)}
+              className="px-4 py-3 rounded-xl font-bold text-sm border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-colors flex items-center gap-2"
+            >
+              <Sliders size={18} />
+              {t('AI 설정 바꿔 보기')}
+            </button>
+          )}
           <button 
             onClick={() => setIsExecuting(true)}
             disabled={isExecuting}
@@ -7121,6 +6598,8 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         </div>
       </div>
 
+      <ScreenGuide menuId={item.id} />
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {item.id === 21 ? (
           <div className="lg:col-span-12">
@@ -7130,7 +6609,30 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
           <>
             {/* Main Content Area (8 cols) */}
             <div className="lg:col-span-8 space-y-6">
-              {/* Technical Specs Bento */}
+              {moduleTuning.tuning && moduleTuning.history[0] && (
+                <AppliedTuningCard
+                  tuning={moduleTuning.tuning}
+                  entry={moduleTuning.history[0]}
+                  onOpen={() => setShowAdvanced(true)}
+                  onRevert={() => {
+                    moduleTuning.revert();
+                    setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('설정 변경을 되돌렸어요.'), type: 'warn' as const }, ...prev].slice(0, 10));
+                    showToast(t('설정 변경을 되돌렸어요.'), 'info');
+                  }}
+                />
+              )}
+
+              {/* Technical details, for engineers */}
+              <div>
+                <button
+                  onClick={() => setShowTech(v => !v)}
+                  aria-expanded={showTech}
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-text-secondary hover:text-accent"
+                >
+                  <Cpu size={12} />{showTech ? t('기술 상세 접기') : t('기술 상세 보기 (엔지니어용)')}
+                </button>
+                {showTech && (
+                  <div className="mt-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="dashboard-card group hover:border-accent/30 transition-colors">
                   <div className="flex items-center gap-3 mb-4">
@@ -7170,6 +6672,9 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   </div>
                   <p className="text-sm leading-relaxed text-text-primary">{t(item.details?.output ?? '')}</p>
                 </div>
+              </div>
+                  </div>
+                )}
               </div>
 
               {/* Live Visualization */}
@@ -7262,11 +6767,26 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
         )}
       </div>
       
-      <AdvancedParametersModal 
-        item={item} 
-        isOpen={showAdvanced} 
-        onClose={() => setShowAdvanced(false)} 
-      />
+      {moduleTuning.tuning && (
+        <TuningModal
+          menuName={item.name}
+          tuning={moduleTuning.tuning}
+          current={moduleTuning.values}
+          isOpen={showAdvanced}
+          onClose={() => setShowAdvanced(false)}
+          onApply={after => {
+            const tuning = moduleTuning.tuning!;
+            const entry = moduleTuning.apply(after);
+            const moved = tuning.params
+              .filter(p => entry.before[p.key] !== after[p.key])
+              .map(p => `${t(p.label)} ${entry.before[p.key]} → ${after[p.key]}${p.unit ? ` ${t(p.unit)}` : ''}`)
+              .join(', ');
+            setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('설정 적용: {changes}', { changes: moved }), type: 'success' as const }, ...prev].slice(0, 10));
+            showToast(t('설정을 적용했어요. 전/후 결과를 화면에 남겨 뒀어요.'));
+            setShowAdvanced(false);
+          }}
+        />
+      )}
 
       <ManagementSubModal
         type={activeManagementSubDetail}

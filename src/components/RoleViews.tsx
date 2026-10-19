@@ -28,7 +28,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { getLocaleTag, t, useI18n } from '../i18n';
 import type { AgentDecision } from '../types';
-import type { PlantState } from '../services/telemetry';
+import type { Excursion, PlantState } from '../services/telemetry';
 import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
 import { EXPO, IS_EXPO } from '../config/edition';
 import ErrorBoundary from './ErrorBoundary';
@@ -250,9 +250,17 @@ export function useIncidents(plant: PlantState, decisions: AgentDecision[]): Inc
   return [...incidents, ...clearedExcursions, ...EARLIER_TODAY];
 }
 
+/** Downtime prevented and money saved by handling one excursion and approving its follow-up decision. */
+export function caseValue(kind: Excursion['kind'], action: string): { hours: number; krw: number } {
+  const live = EXCURSION_COPY[kind];
+  const follow = DECISION_COPY[action];
+  const hours = live.hours + (follow?.hours ?? 0);
+  return { hours, krw: hours * ACTIVE_SITE.downtimeCostPerHour + live.extraKrw + (follow?.extraKrw ?? 0) };
+}
+
 const savedKrw = (incident: Incident) => incident.hours * ACTIVE_SITE.downtimeCostPerHour + incident.extraKrw;
 
-function useMoney() {
+export function useMoney() {
   const { locale } = useI18n();
   // The expo edition shows yen for a Japanese audience; amounts are kept in KRW
   // and converted at the edge.
@@ -269,7 +277,7 @@ function useMoney() {
     : `₩${(krw / 1_000_000).toFixed(1)}M`;
 }
 
-const formatHours = (h: number) => `${Number.isInteger(h) ? h : h.toFixed(1)}${t('시간')}`;
+export const formatHours = (h: number) => `${Number.isInteger(h) ? h : h.toFixed(1)}${t('시간')}`;
 
 /* ------------------------------------------------------------ shared bits */
 
