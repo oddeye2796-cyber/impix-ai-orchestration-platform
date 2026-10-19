@@ -55,12 +55,20 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 const drift = (value: number, nominal: number, pull: number, noise: number) =>
   value + (nominal - value) * pull + (Math.random() - 0.5) * noise;
 
+/** Off when something else (the expo director) stages the excursions. */
+let randomExcursions = true;
+
+/** Stop or resume the plant's own random bad stretches. */
+export function setRandomExcursions(on: boolean) {
+  randomExcursions = on;
+}
+
 function nextState(prev: PlantState): PlantState {
   let { excursion } = prev;
 
   // Every so often the plant has a bad stretch, so the demo has something to
   // react to without anyone having to stage it.
-  if (!excursion && Math.random() < 0.035) {
+  if (!excursion && randomExcursions && Math.random() < 0.035) {
     const kinds: Excursion['kind'][] = ['temperature', 'vibration', 'energy'];
     excursion = { kind: kinds[Math.floor(Math.random() * kinds.length)], remaining: 8 + Math.floor(Math.random() * 8) };
   } else if (excursion) {
@@ -171,6 +179,12 @@ const stop = () => {
 };
 
 export const getPlantState = (): PlantState => state;
+
+/** Start a bad stretch of the given kind now, lasting `ticks` readings. */
+export function startExcursion(kind: Excursion['kind'], ticks: number) {
+  state = { ...state, excursion: { kind, remaining: ticks } };
+  listeners.forEach(fn => fn(state));
+}
 
 /** Subscribe to the simulation. The clock only runs while someone is watching. */
 export function subscribeToPlant(fn: (state: PlantState) => void): () => void {

@@ -149,6 +149,8 @@ import { useToast } from './components/Toast';
 // orchestration methodology tab.
 const MarkdownView = lazy(() => import('./components/MarkdownView'));
 import DemoModeBadge from './components/DemoModeBadge';
+import { IS_EXPO } from './config/edition';
+import { ExpoBanner, ExpoDirector } from './expo/ExpoDirector';
 import { ManagerView, RoleSwitcher, WorkerView, useIncidents, useViewerRole, type ViewerRole } from './components/RoleViews';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
@@ -192,8 +194,8 @@ const INITIAL_DECISIONS: AgentDecision[] = [
   }
 ];
 
-/** Operator identity stamped on approvals and audit entries. */
-const CURRENT_OPERATOR = 'oddeye2796@gmail.com';
+/** Operator identity stamped on approvals and audit entries. A public booth shows no real account. */
+const CURRENT_OPERATOR = IS_EXPO ? 'demo@impix' : 'oddeye2796@gmail.com';
 
 /** Short random id for client-side records (logs, events, evidence packs). */
 const newId = () => Math.random().toString(36).slice(2, 11);
@@ -209,10 +211,11 @@ export default function App() {
   const { theme } = useTheme();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<MenuItem>(MENU_ITEMS[0]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // At a booth the dashboard gets the whole screen; the menu is one click away.
+  const [isSidebarOpen, setIsSidebarOpen] = useState(!IS_EXPO);
   const plant = useTelemetry();
   const sensorData = plant.history;
-  const [decisions, setDecisions] = useState<AgentDecision[]>(INITIAL_DECISIONS);
+  const [decisions, setDecisions] = useState<AgentDecision[]>(IS_EXPO ? [] : INITIAL_DECISIONS);
   const [overrideLogs, setOverrideLogs] = useState<OverrideLog[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { role: 'assistant', content: '안녕하세요! IMPIX AI Supervisor입니다. 무엇을 도와드릴까요?', timestamp: new Date().toLocaleTimeString() }
@@ -452,6 +455,7 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {IS_EXPO && <ExpoBanner />}
         {/* Header */}
         <header className="h-16 border-b border-border bg-surface/30 backdrop-blur-md flex items-center justify-between px-6 z-10">
           <div className="flex min-w-0 items-center gap-4">
@@ -590,6 +594,15 @@ export default function App() {
         </AnimatePresence>
 
         <AiSettingsModal isOpen={isAiSettingsOpen} onClose={() => setIsAiSettingsOpen(false)} />
+
+        {IS_EXPO && (
+          <ExpoDirector
+            decisions={decisions}
+            setDecisions={setDecisions}
+            onApprove={handleApprove}
+            setRole={role => { setSelectedMenu(MENU_ITEMS[0]); setViewerRole(role); }}
+          />
+        )}
       </main>
     </div>
   );

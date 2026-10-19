@@ -382,6 +382,9 @@ export const en: Catalog = {
   "현장": "Site",
   "현장 작업자·반장": "Operators & shift leads",
   "현재 설비종합효율": "Current OEE",
+  // ── src/config/edition.ts ─────────────────────────────────────
+  "AI 오케스트레이션 라이브 데모": "AI orchestration live demo",
+  "넥스테크 위크 도쿄 2026 [가을]": "NexTech Week Tokyo 2026 [Autumn]",
   // ── src/config/pharmaSite.ts ──────────────────────────────────
   "AI 슈퍼바이저 서버": "AI Supervisor server",
   "AMR 이송 라인": "AMR transport lane",
@@ -635,6 +638,21 @@ export const en: Catalog = {
   "피크 부하 관리 인터페이스 및 자동 제어 실행 이력 로그": "Peak-load management console and automated-control execution log",
   "피크 시간대 부하 분산 추천 + 자동 제어 연동": "Peak load-shifting advice with automated control",
   "화재 감지 정확도 99% 이상 및 감지 후 알림 전파 시간 2초 이내 유지": "Keeps fire-detection accuracy above 99 % and alert propagation under two seconds",
+  // ── src/expo/ExpoDirector.tsx ─────────────────────────────────
+  "AI 감지·분석": "AI detects & analyzes",
+  "AI 판단 근거": "Why the AI decided",
+  "ESS 120kW 방전": "Discharge ESS 120 kW",
+  "다음 단계": "Next step",
+  "사람이 승인": "A person approves",
+  "자동 데모 일시정지": "Pause auto demo",
+  "자동 데모 재생": "Play auto demo",
+  "자동 데모 진행 중": "Auto demo running",
+  "절감 효과": "Savings",
+  "정상 가동": "Normal running",
+  "직접 조작 중 · 손을 떼면 {sec}초 뒤 자동 데모로 돌아가요": "You're in control · auto demo resumes {sec}s after the last touch",
+  "처음부터": "Restart",
+  "피크 시간대 직전마다 같은 패턴이 반복됩니다. 공조·컴프레서 부하를 피크 전에 미리 옮기는 운전 계획으로 바꾸면 계약 전력 초과를 막을 수 있습니다.": "The same pattern repeats just before every peak period. Switching to a schedule that moves the HVAC and compressor load ahead of the peak keeps demand under the contracted limit.",
+  "화면을 직접 눌러 보세요. 궁금한 점은 부스 스태프에게!": "Go ahead and tap the screen. Questions? Ask our booth staff!",
   // ── src/i18n/LanguageSwitcher.tsx ─────────────────────────────
   "언어 선택": "Select language",
   // ── src/services/demoResponses.ts ─────────────────────────────

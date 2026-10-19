@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
+    "dev:tokyo": "EDITION=tokyo vite --port=3000 --host=0.0.0.0",
+    "build:tokyo": "EDITION=tokyo vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",

@@ -20,6 +20,7 @@ import {
   LocaleDescriptor,
   isLocale,
 } from './types';
+import { IS_EXPO } from '../config/edition';
 
 export type { Locale, LocaleDescriptor, Catalog };
 export { LOCALES, DEFAULT_LOCALE, isLocale };
@@ -138,6 +139,14 @@ export const tList = (keys: string[]): string[] => keys.map(k => t(k));
 
 function detectLocale(): Locale {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
+
+  // A booth machine is set up in whatever language the staff use, so the expo
+  // edition always opens in Japanese unless the URL asks otherwise (?lang=en).
+  if (IS_EXPO) {
+    let requested: string | null = null;
+    try { requested = new URLSearchParams(window.location.search).get('lang'); } catch { /* no URL */ }
+    return isLocale(requested) ? requested : DEFAULT_LOCALE;
+  }
 
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);

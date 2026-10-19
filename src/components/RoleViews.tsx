@@ -26,10 +26,11 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { t, useI18n } from '../i18n';
+import { getLocaleTag, t, useI18n } from '../i18n';
 import type { AgentDecision } from '../types';
 import type { PlantState } from '../services/telemetry';
 import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
+import { EXPO, IS_EXPO } from '../config/edition';
 import ErrorBoundary from './ErrorBoundary';
 
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
@@ -182,7 +183,14 @@ const EARLIER_TODAY: Incident[] = [
 /** Live excursions that have ended, kept for the rest of the session. */
 const clearedExcursions: Incident[] = [];
 
-const clock = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+/** Keep only the latest `n` ended excursions, so a demo looping all day stays believable. */
+export function trimClearedExcursions(n: number) {
+  clearedExcursions.splice(n);
+}
+
+/** 24-hour clock in the interface language, not the booth machine's. */
+const timeOf = (date: Date) => date.toLocaleTimeString(getLocaleTag(), { hour: '2-digit', minute: '2-digit', hour12: false });
+const clock = () => timeOf(new Date());
 
 /**
  * Everything happening on the plant as incidents: the live excursion (moving
@@ -234,7 +242,7 @@ export function useIncidents(plant: PlantState, decisions: AgentDecision[]): Inc
       stage: d.status === 'pending' ? 3 : 4,
       hours: copy?.hours ?? 1,
       extraKrw: copy?.extraKrw ?? 0,
-      time: new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time: timeOf(new Date(d.timestamp)),
       decisionIndex: d.status === 'pending' ? i : undefined,
     });
   });
@@ -246,6 +254,16 @@ const savedKrw = (incident: Incident) => incident.hours * ACTIVE_SITE.downtimeCo
 
 function useMoney() {
   const { locale } = useI18n();
+  // The expo edition shows yen for a Japanese audience; amounts are kept in KRW
+  // and converted at the edge.
+  if (IS_EXPO) {
+    return (krw: number) => {
+      const jpy = krw * EXPO.jpyPerKrw;
+      return locale === 'en'
+        ? `¥${Math.round(jpy / 1_000).toLocaleString('en-US')}k`
+        : `${Math.round(jpy / 10_000).toLocaleString('ja-JP')}${locale === 'ja' ? '万円' : '만 엔'}`;
+    };
+  }
   return (krw: number) => locale === 'ko'
     ? `${Math.round(krw / 10_000).toLocaleString('ko-KR')}만 원`
     : `₩${(krw / 1_000_000).toFixed(1)}M`;
