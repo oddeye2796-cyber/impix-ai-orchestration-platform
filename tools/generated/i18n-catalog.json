@@ -2702,7 +2702,8 @@
     "key": "계약 전력 92% 도달로 피크 초과 위험",
     "lang": "ko",
     "files": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -5246,7 +5247,8 @@
     "key": "재고 있는 품목부터 생산 순서 변경",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx"
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -9459,6 +9461,20 @@
     ]
   },
   {
+    "key": "15분 안에 계약 전력을 넘을 확률이 0.82입니다. (Prophet 부하 예측) 포장 라인 2개를 감속해 180kW를 줄이자고 제안합니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "1만 8천 개가 모자랍니다. 라인 3·4 순서를 바꾸고 라인 속도를 15% 올리면 내일 12시에 끝낼 수 있습니다. (MILP 스케줄러, 납기 준수 확률 0.97)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "20시 입고 전까지 자재가 끊기지 않고 생산이 이어짐을 확인",
     "lang": "ko",
     "files": [
@@ -9522,7 +9538,28 @@
     ]
   },
   {
+    "key": "ESS 120kW 방전과 공조 부하 20분 이전 실행",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "IMPIX AI 오케스트레이션",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "PO-902 입고가 14시에서 20시로 늦어집니다. 16시에 라인 1·2 자재가 바닥날 것으로 예측돼(신뢰도 0.93) 라인 1·2 감속을 제안합니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "감속하면 오늘 생산량이 2,400개 줄어듭니다. 필름 재고가 있는 다른 품목을 먼저 돌리면 감속이 필요 없습니다.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9613,6 +9650,20 @@
     ]
   },
   {
+    "key": "공조·컴프레서 지연 시 생산 영향 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "공조를 20분 늦춰도 실내 온습도는 품질 기준 안에 머뭅니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "교체 후 불량률이 0.8%로 회복. 보류 제품 4,800개는 전수 재검사 대상으로 분류",
     "lang": "ko",
     "files": [
@@ -9634,6 +9685,20 @@
     ]
   },
   {
+    "key": "긴급 오더 3만 개 대응 조율",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 3만 개 일정 재계획",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "긴급 오더 3만 개, 내일까지",
     "lang": "ko",
     "files": [
@@ -9649,6 +9714,13 @@
   },
   {
     "key": "긴급 오더 납기",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "납기, 설비 수명, 품질, 자재를 한 번에 맞추는 다자 조율",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9697,7 +9769,28 @@
     ]
   },
   {
+    "key": "동의합니다. 창고 대체 자재를 먼저 내보내고 AMR 운반 순서를 다시 짜겠습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "두 라인 모두 오늘 09시에 투입된 같은 필름 로트를 쓰고 있음을 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인 비전 검사 불량률이 6.8%이고 같은 인쇄 번짐 유형입니다. (YOLOv8 신뢰도 0.96) 두 라인 동시 정지를 제안합니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인 인쇄기·히터의 진동과 온도는 정상입니다. (LSTM 이상 점수 0.12) 설비 원인일 가능성은 낮습니다.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9718,7 +9811,21 @@
     ]
   },
   {
+    "key": "두 라인을 다 세우면 시간당 6천 개를 잃습니다. 원인 범위부터 좁혀야 합니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "두 라인의 인쇄기와 히터는 정상. 설비 원인이 아님",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "라인 3·4 순서 재배치와 야간 1개 조 추가 제안",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9732,6 +9839,13 @@
     ]
   },
   {
+    "key": "라인 4 정기 정비 이동 위험 검토",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "라인 4의 내일 10시 정기 정비는 모레로 미뤄도 위험 없음",
     "lang": "ko",
     "files": [
@@ -9739,7 +9853,35 @@
     ]
   },
   {
+    "key": "라인 감속은 반대합니다. 시간당 3천 개 손실입니다. 공조·컴프레서는 20분 늦춰도 생산에 영향이 없습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "라인 정지 0시간, 생산량 손실이 없는 안을 골랐습니다. 구매 발주와 단가 변경은 L2 권한이라 사람에게 넘겼습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "로트 교체 20분 반영해 일정 재조정",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "로트 교체 20분을 반영해 오늘 생산 계획 재조정. 납기 영향 없음",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "로트 이력상 두 라인의 공통점은 09:02에 투입된 필름 로트 FILM-0921 하나뿐입니다.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9879,7 +10021,28 @@
     ]
   },
   {
+    "key": "생산 손실 0, 안전 설비 유지, 품질 기준 유지를 모두 만족하는 안입니다. 계약 전력 초과를 막아 1년 기본요금 인상을 피했습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "생산 순서 변경과 대체 자재 선출고 실행",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "생산·물류·설비·품질 AI를 불러 대응 방안 검토 시작",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "생산을 멈추지 않고 계약 전력 안에 머무는 조율",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9894,6 +10057,41 @@
   },
   {
     "key": "센서",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "속도 상향은 반대합니다. 라인 4 주축 베어링이 15% 가속 시 온도 한계를 넘을 확률이 0.34입니다. 순서 변경과 정비 이동은 문제없습니다. (RUL 410시간)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "속도를 올리면 실링 체류 시간이 짧아져 실링 불량이 0.8%에서 2.9%로 늘 것으로 예측됩니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "수정안: ESS 120kW 방전과 공조·컴프레서 부하 20분 이전으로 160kW를 줄일 수 있습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "수정안: 라인 정지 대신 FILM-0921 격리·교체, 09시 이후 생산품 출하 보류.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "수정안: 속도는 그대로 두고 야간 1개 조를 더하면 내일 15시 완료, 납기 여유 3시간입니다.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9942,7 +10140,7 @@
     ]
   },
   {
-    "key": "어떤 데이터를 보고, 어떤 AI가, 왜 그렇게 판단했는지, 누가 승인했는지가 모두 남아요. 지금 화면은 엔지니어용 기록이에요.",
+    "key": "어떤 데이터를 보고, 어떤 AI가, 왜 그렇게 판단했는지, 누가 승인했는지가 모두 남아요.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9984,6 +10182,20 @@
     ]
   },
   {
+    "key": "원인을 좁혀 라인을 세우지 않고 불량 유입을 끊는 조율",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "원인이 자재로 좁혀져 라인 정지 없이 불량 유입을 끊을 수 있습니다. 출하품 회수는 고객에게 영향이 가는 L3 결정이라 사람에게 넘겼습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "원자재 창고",
     "lang": "ko",
     "files": [
@@ -9991,7 +10203,21 @@
     ]
   },
   {
+    "key": "의심 로트 격리와 출하 보류 실행",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "이미 출하된 2개 팔레트의 회수와 공급사 클레임은 품질 책임자에게 승인 요청",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "인쇄기·히터 이상 여부 점검",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -10054,6 +10280,13 @@
     ]
   },
   {
+    "key": "자재가 끊기기 전에 생산 순서를 바꿔 라인 정지를 막는 조율",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "전력이 계약 전력의 92%에서 81%로 내려감. 피크 시간대 무사 통과",
     "lang": "ko",
     "files": [
@@ -10082,6 +10315,13 @@
     ]
   },
   {
+    "key": "지금 화면은 같은 사건의 엔지니어용 기록이에요. 에이전트들이 어떤 근거로 제안하고 반대해서 합의했는지 보여 주고, [관제 구조] 탭에서는 어느 에이전트가 무엇을 맡았는지 볼 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "직접 조작 중 · 손을 떼면 {sec}초 뒤 자동 데모로 돌아가요",
     "lang": "ko",
     "files": [
@@ -10097,6 +10337,13 @@
   },
   {
     "key": "처음부터",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "첫 1천 개 검사 표본 2배 설정",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -10124,7 +10371,21 @@
     ]
   },
   {
+    "key": "포장 1·2라인 불량 급증 원인 조율",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "포장 1·2라인 비전 검사 불량률이 0.8%에서 6.8%로 급등",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "포장 1·2라인 인쇄 불량 급증 원인 추적",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -10139,6 +10400,34 @@
   },
   {
     "key": "포장 필름 입고 6시간 지연",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "포장 필름 입고 6시간 지연 대응",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "포장 필름 입고 지연 대응 조율",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "품목 전환 첫 제품 검사 조건 변경",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "품목이 바뀔 때 첫 제품 검사 조건은 자동으로 바꿀 수 있습니다. 전환 손실은 회당 8분입니다.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -10166,6 +10455,13 @@
     ]
   },
   {
+    "key": "품질·설비 가드레일을 넘지 않는 안 중 납기 여유가 가장 큰 안을 골랐습니다. 인력 편성은 L2 권한이라 사람에게 넘겼습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "플랫폼이 없었다면: {text}",
     "lang": "ko",
     "files": [
@@ -10187,7 +10483,63 @@
     ]
   },
   {
+    "key": "피크 전력 초과 방지 조율",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "필름 2롤 입고 앞당기기 (PO-881)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "필름 로트 이력 추적 (FILM-0921)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "필름 재고가 있는 다른 품목을 먼저 생산하도록 순서를 바꾸면 라인이 멈추지 않음",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "필름 재고는 충분합니다. 모자란 2롤은 내일 오전 입고분(PO-881)을 앞당겨 받을 수 있습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "합의: 라인 속도 유지. 라인 3·4 순서 재배치, 자재 선입고, 라인 4 정비 이동은 즉시 실행. 야간 조 추가는 생산 관리자에게 승인 요청.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "합의: 라인은 세우지 않음. 로트 교체, 의심 로트 격리, 출하 보류는 즉시 실행. 출하된 2개 팔레트 회수는 품질 책임자에게 승인 요청.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "합의: 생산 라인은 그대로 두고 ESS 방전과 공조 부하 이전을 즉시 실행. L1 권한이라 사람 승인 없이 결과만 보고.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "합의: 생산 순서 변경, 대체 자재 선출고, AMR 재배차는 즉시 실행. 이번 달 두 번째 지연이라 대체 공급사 발주는 구매 담당자에게 승인 요청.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -10209,6 +10561,20 @@
   },
   {
     "key": "화면을 직접 눌러 보세요. 궁금한 점은 부스 스태프에게!",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "환기·소방 설비 감축 제외 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "환기·소방 설비는 감축 대상에서 빼야 합니다.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"

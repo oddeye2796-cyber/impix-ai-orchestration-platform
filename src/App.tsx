@@ -152,6 +152,7 @@ const MarkdownView = lazy(() => import('./components/MarkdownView'));
 import DemoModeBadge from './components/DemoModeBadge';
 import { IS_EXPO } from './config/edition';
 import { ExpoBanner, ExpoDirector } from './expo/ExpoDirector';
+import { useStage, type StagedCase } from './expo/stage';
 import { ManagerView, RoleSwitcher, WorkerView, useIncidents, useViewerRole, type ViewerRole } from './components/RoleViews';
 import { AppliedTuningCard, ScreenGuide, TuningModal, menuSummary, useModuleTuning } from './components/ModuleTuning';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
@@ -1791,7 +1792,21 @@ function CoordinationVisualizer() {
   const [step, setStep] = useState(0);
   const [events, setEvents] = useState<CoordinationEvent[]>([]);
   const [activeScenario, setActiveScenario] = useState(0);
-  const scenarios = [
+  // At the booth the agenda is the case being played, so engineers see the
+  // same event the floor sees, argued out between the agents.
+  const { staged, replay } = useStage();
+  const stagedScenario = staged && {
+    title: t(staged.coordination.title),
+    description: t(staged.coordination.description),
+    agents: [...new Set(staged.coordination.timeline.map(e => e.fromAgent))],
+    timeline: staged.coordination.timeline.map(e => ({ ...e, content: t(e.content), reasoning: e.reasoning ? t(e.reasoning) : undefined })),
+  };
+  useEffect(() => {
+    setActiveScenario(0);
+    setEvents([]);
+    setStep(0);
+  }, [staged?.kind, replay]);
+  const scenarios = stagedScenario ? [stagedScenario] : [
     {
       title: t('[통합] 6대 에이전트 전사 최적화 조율'),
       description: t('생산 극대화 목표 하에 안전, 예지보전, 품질, 에너지, 물류 에이전트 간의 동시 다자 협업 및 실시간 중재'),
@@ -2336,9 +2351,12 @@ const STALL_TICKS = 14;
  * - each agent works through its task list on its own cycle length;
  * - an excursion in an agent's domain stalls it (the bottleneck), and every so
  *   often one agent stalls on a dependency so the board always has one to show;
- * - proposals in the approval queue are that agent's pending work.
+ * - proposals in the approval queue are that agent's pending work;
+ * - while the booth demo plays a case, the agents it involves work that case
+ *   instead (the lead escalated, the rest on their part of it), and nothing
+ *   else stalls.
  */
-function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
+function deriveAgentWork(plant: PlantState, decisions: AgentDecision[], staged: StagedCase | null = null) {
   const tick = plant.tick;
   const stallSlot = Math.floor(tick / STALL_WINDOW);
   const stallPhase = tick % STALL_WINDOW;
@@ -2348,6 +2366,8 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
   const tasks: AgentTask[] = [];
   const resolvedToday: Record<string, number> = {};
   const stalled = new Set<AgentKey>();
+  const caseLive = staged !== null && staged.phase === 'live' && plant.excursion?.kind === staged.kind;
+  const caseProgress = plant.excursion ? Math.round(100 - Math.min(100, (plant.excursion.remaining / 14) * 100)) : 100;
 
   AGENT_HIERARCHY.forEach((agent, i) => {
     const cycle = 12 + i * 2;
@@ -2357,8 +2377,19 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
     resolvedToday[agent.key] = 18 + i * 3 + round;
 
     const byExcursion = plant.excursion !== null && (agent.excursions ?? []).includes(plant.excursion.kind);
-    const byRotation = !plant.excursion && agent.key === rotatingStall && stallPhase < STALL_TICKS;
-    if (byExcursion || byRotation) {
+    const byRotation = !staged && !plant.excursion && agent.key === rotatingStall && stallPhase < STALL_TICKS;
+    const caseTask = staged ? (agent.key === staged.lead ? staged.leadTitle : staged.team[agent.key]) : undefined;
+    if (caseLive && caseTask) {
+      if (agent.key === staged!.lead) stalled.add(agent.key);
+      tasks.push({
+        id: `${agent.key}-case-${staged!.kind}`,
+        agent: agent.key,
+        title: caseTask,
+        state: agent.key === staged!.lead ? 'bottleneck' : 'running',
+        progress: caseProgress,
+        note: agent.key === staged!.lead ? staged!.leadNote : undefined,
+      });
+    } else if (!staged && (byExcursion || byRotation)) {
       stalled.add(agent.key);
       tasks.push({
         id: `${agent.key}-stall`,
@@ -2380,6 +2411,18 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
       });
     }
 
+    if (staged?.phase === 'after' && caseTask) {
+      tasks.push({
+        id: `${agent.key}-case-${staged.kind}-done`,
+        agent: agent.key,
+        title: caseTask,
+        state: 'resolved',
+        progress: 100,
+        note: agent.key === staged.lead ? staged.leadNote : undefined,
+        agoSec: 4,
+      });
+    }
+
     for (let k = 1; k <= 2; k++) {
       tasks.push({
         id: `${agent.key}-done-${round - k}`,
@@ -2396,16 +2439,16 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
       .forEach((d, j) => tasks.push({
         id: `${agent.key}-pending-${j}`,
         agent: agent.key,
-        title: `${d.target_equipment} · ${d.action.replace(/_/g, ' ')}`,
+        title: `${t(d.target_equipment)} · ${d.action.replace(/_/g, ' ')}`,
         state: 'pending',
         progress: 100,
-        note: String(d.recommended_value),
+        note: t(String(d.recommended_value)),
       }));
   });
 
   // The stall that just cleared shows up as resolved work, so the board shows
   // the supervisor closing bottlenecks, not only opening them.
-  if (!plant.excursion && stallPhase >= STALL_TICKS && stallPhase < STALL_TICKS + 10) {
+  if (!staged && !plant.excursion && stallPhase >= STALL_TICKS && stallPhase < STALL_TICKS + 10) {
     tasks.push({
       id: `${prevStall.key}-stall-cleared-${stallSlot}`,
       agent: prevStall.key,
@@ -2418,7 +2461,9 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
   }
 
   const helpers = new Set<AgentKey>(
-    AGENT_HIERARCHY.filter(a => stalled.has(a.key)).map(a => a.bottleneck.helper),
+    caseLive
+      ? (Object.keys(staged!.team) as AgentKey[])
+      : AGENT_HIERARCHY.filter(a => stalled.has(a.key)).map(a => a.bottleneck.helper),
   );
   const status = (key: AgentKey): TaskState => {
     if (stalled.has(key)) return 'bottleneck';
@@ -2459,7 +2504,8 @@ function SupervisorHierarchy({
   const plant = useTelemetry();
   const live = useLiveValue();
   const [selected, setSelected] = useState<AgentKey | null>(null);
-  const work = deriveAgentWork(plant, decisions);
+  const { staged } = useStage();
+  const work = deriveAgentWork(plant, decisions, staged);
   const count = (state: TaskState) => work.tasks.filter(task => task.state === state).length;
   const resolvedTotal = Object.values(work.resolvedToday).reduce((a, b) => a + b, 0);
   const stalledAgents = AGENT_HIERARCHY.filter(a => work.stalled.has(a.key));
@@ -2568,7 +2614,7 @@ function SupervisorHierarchy({
                 stalledAgents.map(a => (
                   <div key={a.key}>
                     <span className="font-bold text-danger">{t('병목 조율')}</span>
-                    <span className="text-text-secondary"> · {t(a.bottleneck.resolution)}</span>
+                    <span className="text-text-secondary"> · {t(work.tasks.find(task => task.agent === a.key && task.state === 'bottleneck')?.note ?? a.bottleneck.resolution)}</span>
                   </div>
                 ))
               ) : (
@@ -2811,7 +2857,17 @@ function OrchestrationPanel({
   decisions: AgentDecision[];
   onNavigate: (menuId: number, anchor?: string) => void;
 }) {
-  const [activeTab, setActiveTab] = useState<'hierarchy' | 'coordination' | 'methodology'>('hierarchy');
+  const { staged, replay } = useStage();
+  const [activeTab, setActiveTab] = useState<'hierarchy' | 'coordination' | 'methodology'>(
+    staged?.phase === 'after' && replay > 0 ? 'coordination' : 'hierarchy',
+  );
+  // The booth demo opens its decision record on the coordination replay.
+  const seenReplay = useRef(replay);
+  useEffect(() => {
+    if (replay === seenReplay.current) return;
+    seenReplay.current = replay;
+    if (staged) setActiveTab('coordination');
+  }, [replay]); // eslint-disable-line react-hooks/exhaustive-deps
   const tabs = [
     { id: 'hierarchy' as const, label: t('관제 구조') },
     { id: 'coordination' as const, label: t('에이전트 조율') },
