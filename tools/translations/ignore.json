@@ -1,1 +1,24 @@
-["Korean (한국어)", "만 엔"]
+[
+  "Korean (한국어)",
+  "만 엔",
+  "oee|가동률|설비종합효율|종합 효율|효율|availability|efficiency|稼働率|設備総合効率|効率",
+  "건강|설비 상태|고장|위험한 설비|health|equipment status|failure|machine|設備状態|健全|故障|設備",
+  "급한|급해|우선|먼저 할|지금 뭐|가장 중요|urgent|priority|first|most important|急ぎ|優先|まず|最も重要",
+  "도움|뭘 물어|무엇을 물어|사용법|help|what can you|何を聞|使い方|ヘルプ",
+  "불량 유형|유형|파레토|종류|defect type|types of defect|pareto|不良の種類|種類|パレート|内訳",
+  "불량|defect|reject|不良",
+  "수율|배치|yield|batch|歩留|バッチ",
+  "승인|결재|approval|approve|pending|承認",
+  "시나리오|시연|부스|scenario|booth|シナリオ|実演|ブース",
+  "안전|비상 정지|비상정지|화재|충돌|safety|emergency|e-stop|fire|collision|安全|非常停止|火災|衝突",
+  "에이전트|agent|エージェント",
+  "오늘 처리|처리한|해결한|해결된|오늘 한 일|resolved|handled|done today|today|解決|対応済|今日",
+  "온도|temperature|温度",
+  "요금|비용|전기료|cost|bill|price|料金|コスト|電気代",
+  "이상|문제|알람|경보|사고|incident|issue|alarm|alert|problem|異常|アラーム|警報|問題",
+  "작업 오더|워크오더|작업지시|정비|보전|work order|maintenance|repair|作業指示|保全|整備|修理",
+  "전력|에너지|전기|kw|energy|power|electric|電力|エネルギー|電気",
+  "진동|vibration|振動",
+  "피크|계약 전력|계약|peak|contract|demand|ピーク|契約",
+  "요약|현황|상태|전체|공장 어때|summar|status|overview|how is the plant|状況|概要|全体|まとめ|工場はどう"
+]

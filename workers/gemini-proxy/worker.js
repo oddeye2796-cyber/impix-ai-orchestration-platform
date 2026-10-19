@@ -54,14 +54,18 @@ export default {
       return json({ error: 'Invalid JSON body' }, 400, cors);
     }
 
-    const { contents, systemInstruction, responseMimeType, model = DEFAULT_MODEL } = payload ?? {};
+    const { contents, systemInstruction, responseMimeType, temperature, model = DEFAULT_MODEL } = payload ?? {};
     if (!Array.isArray(contents) || contents.length === 0) {
       return json({ error: 'contents[] is required' }, 400, cors);
     }
 
     const body = { contents };
     if (systemInstruction) body.systemInstruction = { parts: [{ text: systemInstruction }] };
-    if (responseMimeType) body.generationConfig = { responseMimeType };
+    const generationConfig = {};
+    if (responseMimeType) generationConfig.responseMimeType = responseMimeType;
+    // Low temperature keeps grounded answers repeatable; clamp to the API's range.
+    if (typeof temperature === 'number') generationConfig.temperature = Math.min(2, Math.max(0, temperature));
+    if (Object.keys(generationConfig).length) body.generationConfig = generationConfig;
 
     const upstream = await fetch(
       `${GEMINI}/${encodeURIComponent(model)}:generateContent?key=${env.GEMINI_API_KEY}`,

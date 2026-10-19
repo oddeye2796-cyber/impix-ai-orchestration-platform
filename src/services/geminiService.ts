@@ -7,7 +7,9 @@ import type { SensorData } from '../types';
 import { getLocale, t } from '../i18n';
 import type { Locale } from '../i18n';
 import { AiResult, getApiKey, getProxyUrl, isDemoMode } from './aiConfig';
-import { demoChatResponse, demoRecommendations } from './demoResponses';
+import { demoRecommendations } from './demoResponses';
+import { answerFromFacts, demoAnswer, type ChatAnswer } from './chatAnswers';
+import { buildPlantFacts, type PlantFacts } from './plantFacts';
 
 const MODEL = 'gemini-3-flash-preview';
 
@@ -46,7 +48,7 @@ async function getClient() {
  */
 async function callProxy(
   proxyUrl: string,
-  body: { contents: unknown; systemInstruction?: string; responseMimeType?: string },
+  body: { contents: unknown; systemInstruction?: string; responseMimeType?: string; temperature?: number },
 ): Promise<string> {
   const response = await fetch(proxyUrl, {
     method: 'POST',
@@ -135,44 +137,72 @@ identifiers. Return the JSON data only.`;
   }
 }
 
+/**
+ * Rules for the live model. The fact sheet goes in with every question, and
+ * the model may only use figures from it: the old prompt asked for "plausible
+ * real-time plant data", which is why the same question got a different
+ * number every time.
+ */
+function groundedInstruction(facts: PlantFacts): string {
+  return `You are the Supervisor AI of the IMPIX AI orchestration platform, talking to people
+who run a packaging plant (line workers, managers and engineers).
+
+The JSON below is the plant fact sheet: every figure the platform's screens show right now.
+Rules:
+1. Use only figures that appear in the fact sheet. Never estimate, extrapolate or invent a
+   number, a piece of equipment, a line, a person or an event that is not in it.
+2. Quote numbers exactly as they appear (same rounding and units).
+3. If the sheet does not hold what was asked, say plainly that the data is not available on the
+   platform, and suggest what you can answer instead. Do not guess.
+4. Keep answers short: two to four sentences, or a short list.
+5. Status words in the sheet are Korean (정상 = normal, 주의 = warning, 위험 = danger), and names
+   may be Korean; translate them into the reply language.
+6. Always reply in ${responseLanguage()}, regardless of the language the question was asked in.
+
+Thresholds the screens use: defect rate above 3% is a warning and above 5% an alarm; vibration
+above 4.1 mm/s is a warning and above 4.6 mm/s an alarm; equipment health below 70 is a warning
+and below 50 is danger; OEE target ${facts.kpi.oeeTarget}%; batch yield target 95%.
+
+Fact sheet:
+${JSON.stringify(facts)}`;
+}
+
+/** Low temperature: the same question about the same sheet should get the same answer. */
+const CHAT_TEMPERATURE = 0.2;
+
 export async function generateChatResponse(
   prompt: string,
   history: { role: 'user' | 'model'; parts: { text: string }[] }[],
-  sensorData: SensorData[] = [],
-): Promise<AiResult<string>> {
+): Promise<AiResult<ChatAnswer>> {
+  const facts = buildPlantFacts();
   if (isDemoMode()) {
-    return { status: 'ok', data: demoChatResponse(prompt, sensorData), source: 'demo' };
+    return { status: 'ok', data: demoAnswer(prompt, facts), source: 'demo' };
   }
 
   const proxyUrl = getProxyUrl();
+  // The screens the answer draws on, from the same routing the demo answers use.
+  const sources = answerFromFacts(prompt, facts)?.sources ?? [];
 
   try {
     const contents = [...history, { role: 'user', parts: [{ text: prompt }] }];
-    const systemInstruction = `You are the Supervisor AI of the IMPIX AI orchestration platform.
-Answer the operator's questions with the expertise of factory automation, quality
-management, equipment maintenance and energy optimisation.
-
-Always reply in ${responseLanguage()}, regardless of the language the question was
-asked in. Use technical vocabulary where it is warranted, but stay approachable and
-explain the terms you introduce.
-When asked to analyse data, provide insight based on plausible real-time plant data.`;
+    const systemInstruction = groundedInstruction(facts);
 
     let text: string;
     if (proxyUrl) {
-      text = await callProxy(proxyUrl, { contents, systemInstruction });
+      text = await callProxy(proxyUrl, { contents, systemInstruction, temperature: CHAT_TEMPERATURE });
     } else {
       const ai = await getClient();
       const response = await ai.models.generateContent({
         model: MODEL,
         contents,
-        config: { systemInstruction },
+        config: { systemInstruction, temperature: CHAT_TEMPERATURE },
       });
       const raw = response.text?.trim();
       if (!raw) throw new Error('Empty response');
       text = raw;
     }
 
-    return { status: 'ok', data: text, source: 'live' };
+    return { status: 'ok', data: { text, sources }, source: 'live' };
   } catch (error) {
     console.error('Gemini API Error:', error);
     return { status: 'error', message: describeError(error) };

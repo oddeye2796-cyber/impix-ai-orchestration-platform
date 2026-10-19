@@ -32,6 +32,7 @@ import type { Excursion, PlantState } from '../services/telemetry';
 import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
 import { EXPO, IS_EXPO } from '../config/edition';
 import ErrorBoundary from './ErrorBoundary';
+import { ApprovalGate } from './AccessGate';
 
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
@@ -119,7 +120,7 @@ export interface Incident {
   decisionIndex?: number;
 }
 
-const AGENT_STYLE: Record<AgentKey, { name: string; hex: string; icon: React.ReactNode }> = {
+export const AGENT_STYLE: Record<AgentKey, { name: string; hex: string; icon: React.ReactNode }> = {
   quality: { name: '품질 AI', hex: '#10b981', icon: <ShieldCheck size={12} /> },
   pm: { name: '예지보전 AI', hex: '#8b5cf6', icon: <Wrench size={12} /> },
   safety: { name: '안전 AI', hex: '#ef4444', icon: <ShieldAlert size={12} /> },
@@ -237,6 +238,14 @@ export function useIncidents(plant: PlantState, decisions: AgentDecision[]): Inc
     setLastKind(kind);
   }, [kind]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  return incidentSnapshot(plant, decisions, excursionStart);
+}
+
+/**
+ * The incident list for a plant state, without the hook's bookkeeping. The
+ * chat assistant reads this too, so it talks about exactly what the map shows.
+ */
+export function incidentSnapshot(plant: PlantState, decisions: AgentDecision[], startTimes?: Map<string, string>): Incident[] {
   const incidents: Incident[] = [];
 
   if (plant.excursion) {
@@ -246,7 +255,7 @@ export function useIncidents(plant: PlantState, decisions: AgentDecision[]): Inc
       ...EXCURSION_COPY[plant.excursion.kind],
       id: `live-${plant.excursion.kind}`,
       stage,
-      time: excursionStart.get(plant.excursion.kind) ?? clock(),
+      time: startTimes?.get(plant.excursion.kind) ?? clock(),
     });
   }
 
@@ -621,14 +630,14 @@ export function WorkerView({
                 )}
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   {incident.decisionIndex !== undefined && (
-                    <>
+                    <ApprovalGate agent={incident.agent}>
                       <button onClick={() => onApprove(incident.decisionIndex!)} className="flex items-center gap-1 rounded-md bg-accent px-3 py-1.5 text-[11px] font-bold text-white hover:bg-accent-hover">
                         <CheckCircle2 size={12} />{t('승인')}
                       </button>
                       <button onClick={() => onReject(incident.decisionIndex!)} className="flex items-center gap-1 rounded-md border border-border bg-surface px-3 py-1.5 text-[11px] font-bold hover:border-danger/40 hover:bg-danger/10">
                         <X size={12} />{t('반려')}
                       </button>
-                    </>
+                    </ApprovalGate>
                   )}
                   <button onClick={onEvidence} className="ml-auto flex items-center gap-1 text-[10px] font-bold text-text-secondary hover:text-accent">
                     {t('근거 보기')} <ArrowRight size={10} />
@@ -718,8 +727,10 @@ export function ManagerView({
                     {sentence(i, false)}
                   </p>
                   <div className="mt-2 flex items-center gap-2">
-                    <button onClick={() => onApprove(i.decisionIndex!)} className="flex items-center gap-1 rounded-md bg-accent px-3 py-1.5 text-[11px] font-bold text-white hover:bg-accent-hover"><CheckCircle2 size={12} />{t('승인')}</button>
-                    <button onClick={() => onReject(i.decisionIndex!)} className="flex items-center gap-1 rounded-md border border-border bg-surface px-3 py-1.5 text-[11px] font-bold hover:bg-danger/10"><X size={12} />{t('반려')}</button>
+                    <ApprovalGate agent={i.agent}>
+                      <button onClick={() => onApprove(i.decisionIndex!)} className="flex items-center gap-1 rounded-md bg-accent px-3 py-1.5 text-[11px] font-bold text-white hover:bg-accent-hover"><CheckCircle2 size={12} />{t('승인')}</button>
+                      <button onClick={() => onReject(i.decisionIndex!)} className="flex items-center gap-1 rounded-md border border-border bg-surface px-3 py-1.5 text-[11px] font-bold hover:bg-danger/10"><X size={12} />{t('반려')}</button>
+                    </ApprovalGate>
                     <button onClick={onEvidence} className="ml-auto flex items-center gap-1 text-[10px] font-bold text-text-secondary hover:text-accent">{t('근거 보기')} <ArrowRight size={10} /></button>
                   </div>
                 </div>

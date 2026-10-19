@@ -4,7 +4,7 @@
  */
 
 import type { SensorData } from '../types';
-import { matchesKeyword, t } from '../i18n';
+import { t } from '../i18n';
 
 /**
  * Simulated AI output for when no Gemini key is configured.
@@ -100,47 +100,4 @@ export function demoRecommendations(sensorData: SensorData[]): DemoDecision[] {
   });
 
   return decisions;
-}
-
-/**
- * Keyword-routed answers for the Supervisor chat. `matchesKeyword` checks every
- * locale's spelling, so the operator can ask in Japanese, English or Korean
- * whichever language the interface is currently showing.
- */
-export function demoChatResponse(prompt: string, sensorData: SensorData[]): string {
-  const s = summarize(sensorData);
-
-  if (matchesKeyword(prompt, '불량률')) {
-    return t(
-      '현재 평균 불량률은 {defect}%입니다. 수축 온도 {temp}°C 구간에서 미세한 변동이 있으나 관리 한계 안에 있습니다. 온도를 최적값으로 낮추면 추가 개선 여지가 있습니다.',
-      { defect: round(s.defectRate, 2), temp: round(s.temperature) },
-    );
-  }
-  if (matchesKeyword(prompt, '가동률') || prompt.toUpperCase().includes('OEE')) {
-    return t(
-      '종합 설비 효율(OEE)은 84.2%로 목표치 85%에 근접해 있습니다. 성능 손실의 대부분은 포장1라인의 짧은 정지에서 발생하고 있으며, 예지보전 에이전트가 원인을 추적 중입니다.',
-    );
-  }
-  if (matchesKeyword(prompt, '안전')) {
-    return t(
-      '전 구역 안전 센서는 정상입니다. 가스 농도, 화재 감지, AMR 근접 인터락 모두 임계치 이내이며 최근 1시간 내 경보 이력은 없습니다.',
-    );
-  }
-  if (matchesKeyword(prompt, '에너지') || matchesKeyword(prompt, '전력')) {
-    return t(
-      '현재 라인 전류는 {current}A이고 누적 전력은 계약 한도의 여유 구간에 있습니다. 정오 피크 진입 전 ESS 방전과 비핵심 부하 분산을 예약해 두는 것을 권장합니다.',
-      { current: round(s.current, 1) },
-    );
-  }
-  if (matchesKeyword(prompt, '진동') || matchesKeyword(prompt, '설비')) {
-    return t(
-      '{equipment}의 3축 진동값은 {vib}mm/s입니다. 임계치 대비 여유가 있으나 추세를 계속 관측하고 있으며, 4.2mm/s를 넘으면 보전 워크오더가 자동 생성됩니다.',
-      { equipment: t(s.equipment), vib: round(s.vibration, 2) },
-    );
-  }
-
-  return t(
-    '질문을 분석했습니다. 현재 공장은 불량률 {defect}%, 진동 {vib}mm/s, 온도 {temp}°C로 안정 구간에서 운전 중입니다. 품질·보전·에너지·안전 에이전트 중 어느 관점으로 더 자세히 살펴볼까요?',
-    { defect: round(s.defectRate, 2), vib: round(s.vibration, 2), temp: round(s.temperature) },
-  );
 }

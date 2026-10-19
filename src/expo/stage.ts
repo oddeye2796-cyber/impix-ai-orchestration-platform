@@ -64,3 +64,6 @@ export function useStage(): StageState {
     () => state,
   );
 }
+
+/** The staged case outside React, for the chat assistant's fact sheet. */
+export const getStagedCase = (): StagedCase | null => state.staged;

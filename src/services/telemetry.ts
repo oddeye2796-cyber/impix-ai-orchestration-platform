@@ -114,7 +114,7 @@ function nextState(prev: PlantState): PlantState {
   const availability = clamp(drift(prev.availability, excursion ? 91 : 96.5, 0.12, 0.7), 78, 99.5);
   const oee = (availability * performance * quality) / 10000;
 
-  const energyKw = Math.round(clamp(drift(prev.energyKw, NOMINAL.energy + push('energy', 260) + push('rush_order', 140), 0.18, 45), 900, 1850));
+  const energyKw = Math.round(clamp(drift(prev.energyKw, NOMINAL.energy + push('energy', 230) + push('rush_order', 140), 0.18, 45), 900, 1850));
 
   const reading: SensorData = {
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -225,4 +225,20 @@ export function livingSeries(key: string, length: number, base: number, spread: 
     const wave = Math.sin((tick * 0.35 + i * 0.9 + seededUnit(key, i) * 6.28) % 6.28);
     return Math.max(0, base + wave * spread * 0.5 * stress + (seededUnit(key, i + 99) - 0.5) * spread * 0.4);
   });
+}
+
+/**
+ * A chart constant as it reads at a given tick: it oscillates around `base`,
+ * more when the plant is having a bad minute. Pure, so the charts and the
+ * chat assistant compute the very same figure from the same plant state.
+ */
+export function breathe(base: number, slot: number, tick: number, defectRate: number): number {
+  // Percentages and rates should not wander outside their natural range.
+  const amplitude = base <= 1 ? base * 0.12 : base <= 100 ? base * 0.05 : base * 0.06;
+  const stress = 1 + Math.min(1, defectRate / 8);
+  const phase = seededUnit(String(slot)) * 6.28;
+  const wave = Math.sin(tick * 0.3 + phase) * 0.6 + Math.sin(tick * 0.11 + phase * 2) * 0.4;
+  const next = base + wave * amplitude * stress;
+  const decimals = base < 10 ? 2 : base < 1000 ? 1 : 0;
+  return Math.max(0, Number(next.toFixed(decimals)));
 }
