@@ -4904,6 +4904,8 @@ function AdvancedParametersModal({ item, isOpen, onClose }: { item: MenuItem, is
                 <div className="flex items-center justify-between p-2 rounded-lg bg-surface border border-border mt-6">
                   <span className="text-[10px] font-bold uppercase tracking-widest">{t('Auto Control')}</span>
                   <button 
+                    role="switch"
+                    aria-checked={Boolean(params.autoControlEnabled)}
                     onClick={() => setParams({...params, autoControlEnabled: !params.autoControlEnabled})}
                     className={cn(
                       "w-8 h-4 rounded-full transition-colors relative",
@@ -4987,7 +4989,9 @@ function AdvancedParametersModal({ item, isOpen, onClose }: { item: MenuItem, is
                   <span className="text-xs font-bold">{t('Collision Avoidance')}</span>
                 </div>
                 <button 
-                  onClick={() => setParams({...params, collisionAvoidance: !params.collisionAvoidance})}
+                  role="switch"
+                    aria-checked={Boolean(params.collisionAvoidance)}
+                    onClick={() => setParams({...params, collisionAvoidance: !params.collisionAvoidance})}
                   className={cn(
                     "w-10 h-5 rounded-full transition-colors relative",
                     params.collisionAvoidance ? "bg-accent" : "bg-border"
@@ -5072,7 +5076,9 @@ function AdvancedParametersModal({ item, isOpen, onClose }: { item: MenuItem, is
                 <span className="text-xs font-bold">{t('Auto-Schedule Optimization')}</span>
               </div>
               <button 
-                onClick={() => setParams({...params, autoSchedule: !params.autoSchedule})}
+                role="switch"
+                    aria-checked={Boolean(params.autoSchedule)}
+                    onClick={() => setParams({...params, autoSchedule: !params.autoSchedule})}
                 className={cn(
                   "w-10 h-5 rounded-full transition-colors relative",
                   params.autoSchedule ? "bg-accent" : "bg-border"
