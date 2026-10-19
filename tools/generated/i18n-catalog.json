@@ -28,6 +28,111 @@
     ]
   },
   {
+    "key": "{doc} 핵심 내용 요약해줘",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{doc}의 핵심은 세 가지입니다. 1) 이상 징후는 감지 즉시 담당 AI가 1차 조치하고 기록합니다. 2) 설정값을 바꾸는 조치는 반드시 사람이 승인합니다. 3) 모든 조치는 근거 데이터와 함께 감사 로그에 남깁니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{equipment}: AI 제안 승인 대기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{n} Active Entity Types",
+    "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{n}일",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} ({size}KB)을 읽었습니다. 설비 이력·품질 기준과 대조해 보니 특이사항 2건이 있습니다: 측정 주기가 표준(5초)보다 긴 구간이 있고, 온도 상한 기준이 최신 매뉴얼과 1°C 다릅니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 계정을 {status} 상태로 바꿨습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 문서를 학습 자료에 추가했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 스키마를 가져왔습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 타입을 삭제했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name} 파일을 내려받았습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{name}: {state}",
+    "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{version} 배포 완료: 정확도 +0.4%p, 지연 -12ms",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{version} 배포를 완료했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "{version} 카나리 배포 시작 (트래픽 10%)",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "+ Add Condition",
     "lang": "en",
     "files": [
@@ -147,13 +252,6 @@
     ]
   },
   {
-    "key": "30 Days",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "30 Minutes",
     "lang": "en",
     "files": [
@@ -177,13 +275,6 @@
   {
     "key": "3축 진동",
     "lang": "ko",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "45 Active Entity Types",
-    "lang": "en",
     "files": [
       "src/App.tsx"
     ]
@@ -595,6 +686,14 @@
     ]
   },
   {
+    "key": "AMR 2대 충전 대기로 자재 공급 지연",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "AMR 이송 경로 최적화",
     "lang": "ko",
     "files": [
@@ -833,6 +932,13 @@
     ]
   },
   {
+    "key": "B라인 케이스패커-02 감속기 진동이 3일째 상승 중이며, 이 추세라면 72시간 안에 정지 위험이 62%입니다. 오늘 야간 정지 시간에 베어링 점검을 권장합니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "B라인 핀홀 결함 재학습 데이터 수집",
     "lang": "ko",
     "files": [
@@ -1037,13 +1143,6 @@
   },
   {
     "key": "Deploy New Version",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
-    "key": "Deployed: 2024-03-10",
     "lang": "en",
     "files": [
       "src/App.tsx"
@@ -2436,13 +2535,6 @@
     ]
   },
   {
-    "key": "Slack",
-    "lang": "en",
-    "files": [
-      "src/App.tsx"
-    ]
-  },
-  {
     "key": "SMS",
     "lang": "en",
     "files": [
@@ -2709,6 +2801,13 @@
     ]
   },
   {
+    "key": "Type: String | Required: No",
+    "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "Type: String | Required: Yes",
     "lang": "en",
     "files": [
@@ -2934,6 +3033,13 @@
     ]
   },
   {
+    "key": "검증 규칙을 저장했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "결함 객체 검출",
     "lang": "ko",
     "files": [
@@ -3070,6 +3176,13 @@
     ]
   },
   {
+    "key": "꺼짐",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "대기",
     "lang": "ko",
     "files": [
@@ -3078,6 +3191,34 @@
   },
   {
     "key": "대응 중",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대화 내보내기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대화 설정",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대화 초기화",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "대화를 초기화했습니다",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3096,6 +3237,13 @@
     "files": [
       "src/App.tsx",
       "src/constants.ts"
+    ]
+  },
+  {
+    "key": "듣는 중…",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
     ]
   },
   {
@@ -3149,6 +3297,13 @@
   },
   {
     "key": "메인 모터 베어링 잔여수명 예측",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "모두 읽음",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3239,6 +3394,27 @@
     ]
   },
   {
+    "key": "배포 중…",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "배포일: {date}",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "변경 사항을 저장했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "변색",
     "lang": "ko",
     "files": [
@@ -3268,6 +3444,13 @@
   },
   {
     "key": "병목 조율",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "보고서를 내려받았습니다",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3340,6 +3523,35 @@
   },
   {
     "key": "비지도 이상 탐지",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "비핵심 부하 분산",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "사용자 {name}을(를) 추가했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "삭제",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "새 엔티티 타입을 만들었습니다",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3450,6 +3662,14 @@
     "lang": "ko",
     "files": [
       "src/App.tsx"
+    ]
+  },
+  {
+    "key": "세척실 바닥 누수로 미끄럼 위험",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
     ]
   },
   {
@@ -3665,6 +3885,13 @@
     ]
   },
   {
+    "key": "야간 조 실측값 기준으로 0.5°C 낮춰 적용",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "없음",
     "lang": "ko",
     "files": [
@@ -3772,6 +3999,27 @@
     ]
   },
   {
+    "key": "원래 크기로",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "위험",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "음성 입력",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "의견 수집",
     "lang": "ko",
     "files": [
@@ -3793,6 +4041,13 @@
     ]
   },
   {
+    "key": "일치하는 화면이 없어요",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "임계치",
     "lang": "ko",
     "files": [
@@ -3808,6 +4063,13 @@
   },
   {
     "key": "자재 투입 배차 명령 하달",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "작업 오더 {id}를 발행했습니다",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3871,6 +4133,13 @@
   },
   {
     "key": "전체 에이전트",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "정기 점검 중이라 이번 회차는 보류",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4033,6 +4302,13 @@
     ]
   },
   {
+    "key": "첨부 파일: {name}",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "초 전",
     "lang": "ko",
     "files": [
@@ -4082,6 +4358,13 @@
     ]
   },
   {
+    "key": "충돌 3건을 해결하고 병합했습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "컨베이어-04",
     "lang": "ko",
     "files": [
@@ -4095,6 +4378,42 @@
       "src/App.tsx",
       "src/config/pharmaSite.ts",
       "src/config/siteProfile.ts"
+    ]
+  },
+  {
+    "key": "케이스패커-02 감속기 토크 이상",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "켜짐",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "크게 보기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "클릭하면 다음 상태로 넘어갑니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "클릭해서 켜기/끄기",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
     ]
   },
   {
@@ -4119,6 +4438,13 @@
     ]
   },
   {
+    "key": "테스트 완료: 엔티티 1,262개 중 {n}건이 규칙에 걸렸습니다",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "통합 대시보드의 AI 오케스트레이션 패널로 이동",
     "lang": "ko",
     "files": [
@@ -4130,6 +4456,24 @@
     "lang": "ko",
     "files": [
       "src/App.tsx"
+    ]
+  },
+  {
+    "key": "파일 첨부",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "포장1라인",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/config/pharmaSite.ts",
+      "src/config/siteProfile.ts",
+      "src/services/demoResponses.ts",
+      "src/services/telemetry.ts"
     ]
   },
   {
@@ -4211,7 +4555,21 @@
     ]
   },
   {
+    "key": "피크 요금 시간대(13~17시)를 피해 세척·건조 공정을 06~09시로 옮기면 하루 전력비를 약 8% 줄일 수 있습니다. 포장 라인은 현재 일정 그대로 유지하는 것이 좋습니다.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "피크 전력 긴급 부하 제약",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "필수 여부 전환",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4540,13 +4898,6 @@
     ]
   },
   {
-    "key": "AMR 2대 충전 대기로 자재 공급 지연",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx"
-    ]
-  },
-  {
     "key": "ESS 120kW 방전, 공조 부하 이전",
     "lang": "ko",
     "files": [
@@ -4743,13 +5094,6 @@
     ]
   },
   {
-    "key": "비핵심 부하 분산",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx"
-    ]
-  },
-  {
     "key": "비핵심 설비 대기 모드 전환 확인",
     "lang": "ko",
     "files": [
@@ -4772,13 +5116,6 @@
   },
   {
     "key": "설비·IT 엔지니어",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx"
-    ]
-  },
-  {
-    "key": "세척실 바닥 누수로 미끄럼 위험",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5016,13 +5353,6 @@
     ]
   },
   {
-    "key": "케이스패커-02 감속기 토크 이상",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx"
-    ]
-  },
-  {
     "key": "품질 AI",
     "lang": "ko",
     "files": [
@@ -5208,16 +5538,6 @@
     "lang": "ko",
     "files": [
       "src/config/pharmaSite.ts"
-    ]
-  },
-  {
-    "key": "포장1라인",
-    "lang": "ko",
-    "files": [
-      "src/config/pharmaSite.ts",
-      "src/config/siteProfile.ts",
-      "src/services/demoResponses.ts",
-      "src/services/telemetry.ts"
     ]
   },
   {

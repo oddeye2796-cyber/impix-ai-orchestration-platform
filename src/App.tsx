@@ -144,6 +144,7 @@ import LanguageSwitcher from './i18n/LanguageSwitcher';
 import AiSettingsModal from './components/AiSettingsModal';
 import ThemeSwitcher from './theme/ThemeSwitcher';
 import { useToast } from './components/Toast';
+import { downloadCsv, downloadFile, downloadJson, fileStamp, simplePdf } from './utils/demoFiles';
 
 // Split out of the initial download: markdown is only needed for the
 // orchestration methodology tab.
@@ -194,6 +195,25 @@ const INITIAL_DECISIONS: AgentDecision[] = [
   }
 ];
 
+const hoursAgo = (h: number) => new Date(Date.now() - h * 3_600_000).toISOString();
+
+/**
+ * At the booth the self-running demo files the live proposals itself, so the
+ * day starts with proposals people already approved: the recommendation list
+ * and the tracker are never empty.
+ */
+const EXPO_DECISIONS: AgentDecision[] = [
+  { ...INITIAL_DECISIONS[1], status: 'approved', timestamp: hoursAgo(3.5) },
+  { ...INITIAL_DECISIONS[0], status: 'approved', timestamp: hoursAgo(5) },
+];
+
+/** Earlier approvals and overrides, so the audit trail has a history before anyone acts. */
+const MOCK_OVERRIDE_LOGS: OverrideLog[] = [
+  { id: 'log-3', timestamp: hoursAgo(3.5), operator: 'Lee Eng', equipment: '케이스패커-02', parameter: 'replace_bearing', original_value: '교체 권장', new_value: '교체 권장', reason: 'Approved as recommended', type: 'ai_adjustment' },
+  { id: 'log-2', timestamp: hoursAgo(5), operator: 'Kim Tech', equipment: '수축포장기-01', parameter: 'adjust_temperature', original_value: 173, new_value: 172.5, reason: '야간 조 실측값 기준으로 0.5°C 낮춰 적용', type: 'manual_override' },
+  { id: 'log-1', timestamp: hoursAgo(7), operator: 'Park Maint', equipment: '포장1라인', parameter: 'load_balance', original_value: '비핵심 부하 분산', new_value: 'REJECTED', reason: '정기 점검 중이라 이번 회차는 보류', type: 'manual_override' },
+];
+
 /** Operator identity stamped on approvals and audit entries. A public booth shows no real account. */
 const CURRENT_OPERATOR = IS_EXPO ? 'demo@impix' : 'oddeye2796@gmail.com';
 
@@ -202,6 +222,13 @@ const newId = () => Math.random().toString(36).slice(2, 11);
 
 /** Menu id of the integrated dashboard, and the anchor of its orchestration panel. */
 const DASHBOARD_MENU_ID = 0;
+
+/** The day's earlier alerts in the bell menu; each opens the screen it is about. */
+const EARLIER_NOTIFICATIONS: { id: string; title: string; time: string; tone: 'danger' | 'warning' | 'info'; menuId: number }[] = [
+  { id: 'n1', title: 'AMR 2대 충전 대기로 자재 공급 지연', time: '10:10', tone: 'warning', menuId: 20 },
+  { id: 'n2', title: '세척실 바닥 누수로 미끄럼 위험', time: '09:30', tone: 'danger', menuId: 0 },
+  { id: 'n3', title: '케이스패커-02 감속기 토크 이상', time: '06:20', tone: 'info', menuId: 9 },
+];
 const ORCHESTRATION_ANCHOR = 'orchestration-panel';
 
 export default function App() {
@@ -215,8 +242,8 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(!IS_EXPO);
   const plant = useTelemetry();
   const sensorData = plant.history;
-  const [decisions, setDecisions] = useState<AgentDecision[]>(IS_EXPO ? [] : INITIAL_DECISIONS);
-  const [overrideLogs, setOverrideLogs] = useState<OverrideLog[]>([]);
+  const [decisions, setDecisions] = useState<AgentDecision[]>(IS_EXPO ? EXPO_DECISIONS : INITIAL_DECISIONS);
+  const [overrideLogs, setOverrideLogs] = useState<OverrideLog[]>(MOCK_OVERRIDE_LOGS);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { role: 'assistant', content: '안녕하세요! IMPIX AI Supervisor입니다. 무엇을 도와드릴까요?', timestamp: new Date().toLocaleTimeString() }
   ]);
@@ -227,6 +254,30 @@ export default function App() {
   const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const [viewerRole, setViewerRole] = useViewerRole();
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  // Matches a screen by its name, group or description, in whichever language is showing.
+  const searchResults = (() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return MENU_ITEMS.filter(item =>
+      [item.name, item.category, item.description, item.agent ?? ''].some(text => t(text).toLowerCase().includes(q) || text.toLowerCase().includes(q)),
+    ).slice(0, 8);
+  })();
+  const [readNotifs, setReadNotifs] = useState<Set<string>>(() => new Set());
+  // Proposals waiting on a person come first, then the day's earlier alerts.
+  const notifications = [
+    ...decisions
+      .filter(d => d.status === 'pending')
+      .map(d => ({
+        id: `d-${d.timestamp}-${d.action}`,
+        title: t('{equipment}: AI 제안 승인 대기', { equipment: t(d.target_equipment) }),
+        time: new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        tone: 'warning' as const,
+        menuId: DASHBOARD_MENU_ID,
+      })),
+    ...EARLIER_NOTIFICATIONS.map(n => ({ ...n, title: t(n.title) })),
+  ];
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   /** Switch view, optionally scrolling to an anchor once the new view has rendered. */
@@ -481,16 +532,84 @@ export default function App() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={16} />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.nativeEvent.isComposing && searchResults[0]) {
+                    navigateTo(searchResults[0].id);
+                    setSearchQuery('');
+                  }
+                  if (e.key === 'Escape') setSearchQuery('');
+                }}
                 placeholder={t('지표, 에이전트, 로그 검색...')}
+                aria-label={t('지표, 에이전트, 로그 검색...')}
                 className="bg-surface border border-border rounded-full py-1.5 pl-10 pr-4 text-xs w-64 focus:outline-none focus:border-accent transition-colors"
               />
+              {searchQuery.trim() && (
+                <div className="absolute left-0 top-10 z-50 w-80 rounded-2xl border border-border bg-surface p-2 shadow-2xl" data-testid="search-results">
+                  {searchResults.length === 0 ? (
+                    <div className="px-3 py-4 text-center text-[11px] text-text-secondary">{t('일치하는 화면이 없어요')}</div>
+                  ) : searchResults.map(item => (
+                    <button
+                      key={item.id}
+                      onClick={() => { navigateTo(item.id); setSearchQuery(''); }}
+                      className="flex w-full flex-col rounded-xl px-3 py-2 text-left hover:bg-surface-hover"
+                    >
+                      <span className="text-xs font-bold">{t(item.name)}</span>
+                      <span className="text-[10px] text-text-secondary">{t(item.category)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <ThemeSwitcher />
             <LanguageSwitcher />
-            <button className="p-2 rounded-lg hover:bg-surface-hover relative" aria-label={t('알림')}>
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-bg" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsNotifOpen(open => !open)}
+                className="p-2 rounded-lg hover:bg-surface-hover relative"
+                aria-label={t('알림')}
+                aria-expanded={isNotifOpen}
+              >
+                <Bell size={20} />
+                {notifications.some(n => !readNotifs.has(n.id)) && (
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-bg" />
+                )}
+              </button>
+              {isNotifOpen && (
+                <div className="absolute right-0 top-11 z-50 w-80 rounded-2xl border border-border bg-surface p-2 shadow-2xl" data-testid="notifications">
+                  <div className="flex items-center justify-between px-2 py-1.5">
+                    <span className="text-xs font-bold">{t('알림')}</span>
+                    <button
+                      onClick={() => setReadNotifs(new Set(notifications.map(n => n.id)))}
+                      className="text-[10px] font-bold text-accent hover:underline"
+                    >{t('모두 읽음')}</button>
+                  </div>
+                  <div className="max-h-80 space-y-1 overflow-y-auto custom-scrollbar">
+                    {notifications.map(n => (
+                      <button
+                        key={n.id}
+                        onClick={() => {
+                          setReadNotifs(prev => new Set(prev).add(n.id));
+                          setIsNotifOpen(false);
+                          navigateTo(n.menuId);
+                        }}
+                        className={cn(
+                          "flex w-full items-start gap-2 rounded-xl p-2 text-left hover:bg-surface-hover",
+                          !readNotifs.has(n.id) && "bg-accent/5",
+                        )}
+                      >
+                        <span className={cn("mt-1 h-2 w-2 shrink-0 rounded-full", n.tone === 'danger' ? "bg-danger" : n.tone === 'warning' ? "bg-warning" : "bg-accent")} />
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[11px] font-bold leading-snug">{n.title}</span>
+                          <span className="block text-[10px] text-text-secondary">{n.time}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <button
               onClick={() => setIsAiSettingsOpen(true)}
               className="p-2 rounded-lg hover:bg-surface-hover cursor-pointer"
@@ -783,7 +902,31 @@ function RULPredictionView() {
   );
 }
 
+const MOCK_WORK_ORDERS = [
+  { id: 'WO-2024-001', asset: '수축포장기-01', type: 'Preventive', priority: 'Medium', status: 'In Progress', user: 'Kim Tech' },
+  { id: 'WO-2024-002', asset: '로봇팔-02', type: 'Corrective', priority: 'High', status: 'Pending', user: 'Lee Eng' },
+  { id: 'WO-2024-003', asset: '컨베이어-04', type: 'Inspection', priority: 'Low', status: 'Completed', user: 'Park Maint' },
+  { id: 'WO-2024-004', asset: '모터-08', type: 'Corrective', priority: 'Urgent', status: 'Pending', user: 'Choi Tech' },
+];
+
+/** What a new order is raised for, in turn, so repeated clicks add different work. */
+const NEW_ORDER_POOL = [
+  { asset: '케이스패커-02', type: 'Corrective', priority: 'High', user: 'Kim Tech' },
+  { asset: '컨베이어-04', type: 'Preventive', priority: 'Medium', user: 'Park Maint' },
+  { asset: '모터-08', type: 'Inspection', priority: 'Low', user: 'Lee Eng' },
+];
+
+const NEXT_STATUS: Record<string, string> = { Pending: 'In Progress', 'In Progress': 'Completed', Completed: 'Pending' };
+
 function WorkOrderView() {
+  const [orders, setOrders] = useState(MOCK_WORK_ORDERS);
+  const { showToast } = useToast();
+  const addOrder = () => {
+    const pick = NEW_ORDER_POOL[orders.length % NEW_ORDER_POOL.length];
+    const id = `WO-2024-${String(orders.length + 1).padStart(3, '0')}`;
+    setOrders(prev => [{ id, ...pick, status: 'Pending' }, ...prev]);
+    showToast(t('작업 오더 {id}를 발행했습니다', { id }));
+  };
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -791,7 +934,7 @@ function WorkOrderView() {
           <h2 className="text-2xl font-bold">{t('Maintenance Work Orders')}</h2>
           <p className="text-sm text-text-secondary">{t('Manage and track maintenance tasks across the facility')}</p>
         </div>
-        <button className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
+        <button onClick={addOrder} className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
           <Wrench size={14} /> {t('New Order')}
         </button>
       </div>
@@ -809,15 +952,15 @@ function WorkOrderView() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {[
-              { id: 'WO-2024-001', asset: t('수축포장기-01'), type: 'Preventive', priority: 'Medium', status: 'In Progress', user: 'Kim Tech' },
-              { id: 'WO-2024-002', asset: t('로봇팔-02'), type: 'Corrective', priority: 'High', status: 'Pending', user: 'Lee Eng' },
-              { id: 'WO-2024-003', asset: t('컨베이어-04'), type: 'Inspection', priority: 'Low', status: 'Completed', user: 'Park Maint' },
-              { id: 'WO-2024-004', asset: t('모터-08'), type: 'Corrective', priority: 'Urgent', status: 'Pending', user: 'Choi Tech' },
-            ].map((order, i) => (
-              <tr key={i} className="hover:bg-surface-hover transition-colors">
+            {orders.map((order, i) => (
+              <tr
+                key={order.id}
+                onClick={() => setOrders(prev => prev.map((o, j) => j === i ? { ...o, status: NEXT_STATUS[o.status] } : o))}
+                title={t('클릭하면 다음 상태로 넘어갑니다')}
+                className="hover:bg-surface-hover transition-colors cursor-pointer"
+              >
                 <td className="px-4 py-4 text-xs font-mono text-accent">{order.id}</td>
-                <td className="px-4 py-4 text-xs font-medium">{order.asset}</td>
+                <td className="px-4 py-4 text-xs font-medium">{t(order.asset)}</td>
                 <td className="px-4 py-4 text-xs text-text-secondary">{order.type}</td>
                 <td className="px-4 py-4">
                   <span className={cn(
@@ -1115,16 +1258,16 @@ function OverrideLogView({ logs }: { logs: OverrideLog[] }) {
                       {new Date(log.timestamp).toLocaleString()}
                     </td>
                     <td className="px-4 py-4 text-xs font-medium">{log.operator}</td>
-                    <td className="px-4 py-4 text-xs">{log.equipment}</td>
+                    <td className="px-4 py-4 text-xs">{t(log.equipment)}</td>
                     <td className="px-4 py-4 text-xs font-mono text-accent">{log.parameter}</td>
                     <td className="px-4 py-4 text-xs">
                       <div className="flex items-center gap-2">
-                        <span className="text-text-secondary line-through">{log.original_value}</span>
+                        <span className="text-text-secondary line-through">{tValue(log.original_value)}</span>
                         <ChevronRight size={12} className="text-text-secondary" />
                         <span className={cn(
                           "font-bold",
                           log.new_value === 'REJECTED' ? "text-danger" : "text-accent"
-                        )}>{log.new_value}</span>
+                        )}>{tValue(log.new_value)}</span>
                       </div>
                     </td>
                     <td className="px-4 py-4">
@@ -1135,8 +1278,8 @@ function OverrideLogView({ logs }: { logs: OverrideLog[] }) {
                         {log.type.replace('_', ' ')}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-xs text-text-secondary max-w-xs truncate" title={log.reason}>
-                      {log.reason}
+                    <td className="px-4 py-4 text-xs text-text-secondary max-w-xs truncate" title={t(log.reason)}>
+                      {t(log.reason)}
                     </td>
                   </tr>
                 ))
@@ -2733,7 +2876,7 @@ function SupervisorCenterView({ onOpenOrchestration }: { onOpenOrchestration: ()
   const [evidencePacks, setEvidencePacks] = useState<EvidencePack[]>([]);
   const [coordinationEvents, setCoordinationEvents] = useState<CoordinationEvent[]>(MOCK_COORDINATION_EVENTS.slice(0, 2));
 
-  const [playbooks] = useState<Playbook[]>(MOCK_PLAYBOOKS);
+  const [playbooks, setPlaybooks] = useState<Playbook[]>(MOCK_PLAYBOOKS);
 
   const activeGoal: Goal = MOCK_GOALS[0];
 
@@ -3004,16 +3147,22 @@ function SupervisorCenterView({ onOpenOrchestration }: { onOpenOrchestration: ()
             </h3>
             <div className="space-y-3">
               {playbooks.map(pb => (
-                <div key={pb.id} className="p-3 rounded-lg bg-surface-hover border border-border hover:border-accent/50 transition-colors cursor-pointer group">
+                <button
+                  key={pb.id}
+                  onClick={() => setPlaybooks(prev => prev.map(p => p.id === pb.id ? { ...p, status: p.status === 'Active' ? 'Inactive' : 'Active' } : p))}
+                  aria-pressed={pb.status === 'Active'}
+                  title={t('클릭해서 켜기/끄기')}
+                  className="block w-full text-left p-3 rounded-lg bg-surface-hover border border-border hover:border-accent/50 transition-colors cursor-pointer group"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold group-hover:text-accent">{t(pb.name)}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-bold uppercase">{pb.status}</span>
+                    <span className={cn("text-[10px] px-1.5 py-0.5 rounded font-bold uppercase", pb.status === 'Active' ? "bg-emerald-500/10 text-emerald-500" : "bg-border/40 text-text-secondary")}>{pb.status}</span>
                   </div>
                   <div className="text-[10px] text-text-secondary flex items-center gap-1">
                     <Zap size={10} />
                     {t('Trigger:')} {t(pb.triggerEvent)}
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -3378,6 +3527,7 @@ function VisionInspectionViewer() {
                 <motion.div 
                   key={item.id}
                   whileHover={{ scale: 1.05, translateY: -2 }}
+                  onClick={() => { if (status !== 'Inspecting') { setCurrentResult(item.result); setStatus('Complete'); } }}
                   className={cn(
                     "shrink-0 w-24 h-24 rounded-lg border flex flex-col items-center justify-center gap-1 transition-all cursor-pointer relative overflow-hidden",
                     item.result === 'OK' ? "bg-emerald-500/5 border-emerald-500/20" : "bg-red-500/5 border-red-500/20"
@@ -3405,11 +3555,125 @@ function VisionInspectionViewer() {
   );
 }
 
+/* Mock records for the management console, so every list in it can grow, shrink and export. */
+const MOCK_USERS = [
+  { name: 'Admin User', email: 'admin@factory.ai', role: 'System Admin', status: 'Online', last: 'Just now' },
+  { name: 'John Doe', email: 'john.d@factory.ai', role: 'Operator', status: 'Online', last: '12m ago' },
+  { name: 'Sarah Chen', email: 's.chen@factory.ai', role: 'Quality Lead', status: 'Offline', last: '2h ago' },
+  { name: 'Mike Ross', email: 'm.ross@factory.ai', role: 'Maintenance', status: 'Online', last: '45m ago' },
+];
+
+const NEW_USER_POOL = [
+  { name: 'Yuki Tanaka', email: 'y.tanaka@factory.ai', role: 'Operator' },
+  { name: 'Ken Sato', email: 'k.sato@factory.ai', role: 'Maintenance' },
+  { name: 'Emma Wilson', email: 'e.wilson@factory.ai', role: 'Quality Lead' },
+  { name: 'Min-jun Park', email: 'mj.park@factory.ai', role: 'Operator' },
+];
+
+const MOCK_AUDIT = [
+  { time: '2024-03-18 09:42:12', user: 'admin_01', action: 'Modified Threshold: Vibration Limit', severity: 'info', target: 'ID: 12 (Motor A)', category: 'Config' },
+  { time: '2024-03-18 09:38:05', user: 'system', action: 'Auto-rollback: Model v2.4.1 -> v2.4.0', severity: 'warn', target: 'Model Registry', category: 'System' },
+  { time: '2024-03-18 09:15:22', user: 'john_doe', action: 'Failed Login Attempt', severity: 'error', target: 'Auth Service', category: 'Security' },
+  { time: '2024-03-18 08:55:10', user: 'admin_01', action: 'User Created: sarah_c', severity: 'success', target: 'User Directory', category: 'Security' },
+  { time: '2024-03-18 08:30:45', user: 'system', action: 'Scheduled Backup Completed', severity: 'success', target: 'Database', category: 'System' },
+  { time: '2024-03-18 08:12:33', user: 'mike_r', action: 'Emergency Stop Triggered', severity: 'error', target: 'Line 01', category: 'Security' },
+];
+
+const MOCK_HEALTH = [
+  { service: 'API Gateway', status: 'Healthy', latency_ms: 12, uptime: '99.99%' },
+  { service: 'Main Database', status: 'Healthy', latency_ms: 5, uptime: '99.98%' },
+  { service: 'ML Inference', status: 'Warning', latency_ms: 450, uptime: '98.5%' },
+  { service: 'Kafka Stream', status: 'Healthy', latency_ms: 2, uptime: '100%' },
+  { service: 'Redis Cache', status: 'Healthy', latency_ms: 1, uptime: '99.99%' },
+  { service: 'Auth Service', status: 'Healthy', latency_ms: 18, uptime: '99.95%' },
+];
+
+const MOCK_ENTITIES = [
+  { name: 'Manufacturing Line', parent: 'Asset', props: 12, instances: 4, icon: Factory },
+  { name: 'Electric Motor', parent: 'Equipment', props: 8, instances: 124, icon: Cpu },
+  { name: 'Quality Sensor', parent: 'IoT Device', props: 6, instances: 56, icon: Zap },
+  { name: 'Raw Material', parent: 'Inventory', props: 5, instances: 12, icon: Box },
+];
+
+const MOCK_RULES = [
+  { name: 'Mandatory Telemetry', desc: 'All active motors must report vibration data every 5s.', status: 'Active', icon: Code2 },
+  { name: 'Parent-Child Constraint', desc: 'Sensors cannot exist without a parent equipment assignment.', status: 'Active', icon: Link },
+  { name: 'Data Type Integrity', desc: 'Temperature values must be within -40 to 150 range.', status: 'Active', icon: FileCode },
+];
+
+const EXTRA_CONDITIONS = [
+  'entity.properties.temperature > 120',
+  'entity.status == \'running\'',
+  'entity.parent.line == \'Line_01\'',
+];
+
+const ONTOLOGY_RELATIONS = [
+  { source: 'Line_01', relation: 'composed_of', target: 'Motor_A12' },
+  { source: 'Motor_A12', relation: 'monitored_by', target: 'Vibration_Sensor_4' },
+  { source: 'Vibration_Sensor_4', relation: 'reports_to', target: 'Edge_Gateway_2' },
+  { source: 'Motor_A12', relation: 'connected_to', target: 'PLC_04' },
+];
+
+const ONTOLOGY_JSONLD = {
+  '@context': { '@vocab': 'https://impix.ai/ontology#', rdfs: 'http://www.w3.org/2000/01/rdf-schema#' },
+  '@graph': [
+    { '@id': 'Asset', '@type': 'rdfs:Class' },
+    { '@id': 'Equipment', '@type': 'rdfs:Class', 'rdfs:subClassOf': 'Asset' },
+    { '@id': 'ElectricMotor', '@type': 'rdfs:Class', 'rdfs:subClassOf': 'Equipment' },
+    ...ONTOLOGY_RELATIONS.map(r => ({ '@id': r.source, [r.relation]: { '@id': r.target } })),
+  ],
+};
+
+/** The relation graph in the format a button on the export screen promises. */
+function exportOntology(ext: string) {
+  const name = `ontology-graph-${fileStamp()}${ext}`;
+  const nodes = [...new Set(ONTOLOGY_RELATIONS.flatMap(r => [r.source, r.target]))];
+  switch (ext) {
+    case '.json':
+      return downloadJson(name, ONTOLOGY_JSONLD);
+    case '.rdf':
+      return downloadFile(name, `<?xml version="1.0"?>\n<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:i="https://impix.ai/ontology#">\n${ONTOLOGY_RELATIONS.map(r => `  <rdf:Description rdf:about="i:${r.source}"><i:${r.relation} rdf:resource="i:${r.target}"/></rdf:Description>`).join('\n')}\n</rdf:RDF>\n`, 'application/rdf+xml');
+    case '.graphml':
+      return downloadFile(name, `<?xml version="1.0"?>\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns"><graph edgedefault="directed">\n${nodes.map(n => `  <node id="${n}"/>`).join('\n')}\n${ONTOLOGY_RELATIONS.map((r, i) => `  <edge id="e${i}" source="${r.source}" target="${r.target}"/>`).join('\n')}\n</graph></graphml>\n`, 'application/xml');
+    case '.csv':
+      return downloadCsv(name, nodes.map(a => Object.fromEntries([['node', a], ...nodes.map(b => [b, ONTOLOGY_RELATIONS.some(r => r.source === a && r.target === b) ? 1 : 0])])));
+    case '.svg': {
+      const pos = (i: number) => ({ x: 90 + (i % 3) * 200, y: 70 + Math.floor(i / 3) * 140 });
+      const at = (n: string) => pos(nodes.indexOf(n));
+      return downloadFile(name, `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" font-family="sans-serif" font-size="12">\n${ONTOLOGY_RELATIONS.map(r => `<line x1="${at(r.source).x}" y1="${at(r.source).y}" x2="${at(r.target).x}" y2="${at(r.target).y}" stroke="#10b981"/>`).join('\n')}\n${nodes.map((n, i) => `<g><rect x="${pos(i).x - 70}" y="${pos(i).y - 18}" width="140" height="36" rx="8" fill="#1e293b" stroke="#10b981"/><text x="${pos(i).x}" y="${pos(i).y + 4}" fill="#fff" text-anchor="middle">${n}</text></g>`).join('\n')}\n</svg>\n`, 'image/svg+xml');
+    }
+    default:
+      return downloadFile(name, simplePdf([
+        'IMPIX Ontology Specification',
+        `Generated ${new Date().toISOString()}`,
+        '',
+        ...MOCK_ENTITIES.map(e => `Entity: ${e.name} (parent ${e.parent}, ${e.props} properties)`),
+        '',
+        ...ONTOLOGY_RELATIONS.map(r => `Relation: ${r.source} --${r.relation}--> ${r.target}`),
+      ]));
+  }
+}
+
 function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, isOpen: boolean, onClose: () => void }) {
   const live = useLiveValue();
   const chart = chartPalette();
   const [subView, setSubView] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const { showToast } = useToast();
+  const [users, setUsers] = useState(MOCK_USERS);
+  const [auditFilter, setAuditFilter] = useState('All Events');
+  const [selectedRole, setSelectedRole] = useState('System Admin');
+  const [entities, setEntities] = useState(MOCK_ENTITIES);
+  const [draftProps, setDraftProps] = useState([
+    { key: 'serial_number', type: 'string' },
+    { key: 'installation_date', type: 'timestamp' },
+    { key: 'operating_status', type: 'enum' },
+  ]);
+  const [entityProps, setEntityProps] = useState([1, 2, 3, 4].map(i => ({ key: `property_key_${i}`, required: true })));
+  const [conflicts, setConflicts] = useState<Record<number, 'local' | 'remote'>>({});
+  const [ruleConditions, setRuleConditions] = useState<string[]>([]);
+  const [rules, setRules] = useState(MOCK_RULES);
+  const importRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -3457,7 +3721,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   className="w-full bg-bg border border-border rounded-lg py-2 pl-10 pr-4 text-xs focus:border-accent outline-none"
                 />
               </div>
-              <button className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold hover:opacity-90 transition-opacity">
+              <button
+                onClick={() => {
+                  const next = NEW_USER_POOL[users.length % NEW_USER_POOL.length];
+                  setUsers(prev => [{ ...next, status: 'Online', last: 'Just now' }, ...prev]);
+                  showToast(t('사용자 {name}을(를) 추가했습니다', { name: next.name }));
+                }}
+                className="px-4 py-2 bg-accent text-bg rounded-lg text-xs font-bold hover:opacity-90 transition-opacity"
+              >
                 {t('Add User')}
               </button>
             </div>
@@ -3473,12 +3744,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {[
-                    { name: 'Admin User', email: 'admin@factory.ai', role: 'System Admin', status: 'Online', last: 'Just now' },
-                    { name: 'John Doe', email: 'john.d@factory.ai', role: 'Operator', status: 'Online', last: '12m ago' },
-                    { name: 'Sarah Chen', email: 's.chen@factory.ai', role: 'Quality Lead', status: 'Offline', last: '2h ago' },
-                    { name: 'Mike Ross', email: 'm.ross@factory.ai', role: 'Maintenance', status: 'Online', last: '45m ago' },
-                  ].map((user, i) => (
+                  {users.map((user, i) => (
                     <tr key={i} className="hover:bg-bg/30 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -3504,7 +3770,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                       </td>
                       <td className="px-4 py-3 text-text-secondary">{user.last}</td>
                       <td className="px-4 py-3 text-right">
-                        <button className="text-accent hover:underline font-bold">{t('Manage')}</button>
+                        <button
+                          onClick={() => {
+                            const status = user.status === 'Online' ? 'Offline' : 'Online';
+                            setUsers(prev => prev.map((u, j) => j === i ? { ...u, status } : u));
+                            showToast(t('{name} 계정을 {status} 상태로 바꿨습니다', { name: user.name, status: t(status) }), 'info');
+                          }}
+                          className="text-accent hover:underline font-bold"
+                        >{t('Manage')}</button>
                       </td>
                     </tr>
                   ))}
@@ -3518,7 +3791,11 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {['System Admin', 'Operator', 'Auditor', 'Viewer'].map(role => (
-                <div key={role} className="p-4 rounded-xl bg-surface border border-border hover:border-accent/30 transition-colors cursor-pointer group">
+                <div
+                  key={role}
+                  onClick={() => setSelectedRole(role)}
+                  className={cn("p-4 rounded-xl bg-surface border hover:border-accent/30 transition-colors cursor-pointer group", selectedRole === role ? "border-accent ring-1 ring-accent" : "border-border")}
+                >
                   <div className="flex items-center justify-between mb-3">
                     <Shield className="text-accent" size={20} />
                     <div className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -3544,10 +3821,9 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 ].map((row, i) => (
                   <div key={i} className="grid grid-cols-5 gap-4 py-2 border-b border-border/50 text-[11px] items-center">
                     <div className="font-bold text-text-primary">{row.module}</div>
-                    <div className="text-emerald-500 font-bold">{row.admin}</div>
-                    <div className="text-text-secondary">{row.operator}</div>
-                    <div className="text-text-secondary">{row.auditor}</div>
-                    <div className="text-text-secondary">{row.viewer}</div>
+                    {([['System Admin', row.admin], ['Operator', row.operator], ['Auditor', row.auditor], ['Viewer', row.viewer]] as const).map(([role, value]) => (
+                      <div key={role} className={cn(role === selectedRole ? "text-emerald-500 font-bold" : "text-text-secondary")}>{value}</div>
+                    ))}
                   </div>
                 ))}
               </div>
@@ -3560,9 +3836,9 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
             <div className="flex items-center justify-between mb-2">
               <div className="flex gap-2">
                 {['All Events', 'Security', 'Config', 'System'].map(f => (
-                  <button key={f} className={cn(
+                  <button key={f} onClick={() => setAuditFilter(f)} aria-pressed={auditFilter === f} className={cn(
                     "px-3 py-1 rounded-full text-[10px] font-bold border transition-colors",
-                    f === 'All Events' ? "bg-accent text-bg border-accent" : "bg-surface border-border text-text-secondary hover:border-accent/50"
+                    f === auditFilter ? "bg-accent text-bg border-accent" : "bg-surface border-border text-text-secondary hover:border-accent/50"
                   )}>
                     {f}
                   </button>
@@ -3571,14 +3847,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
               <div className="text-[10px] text-text-secondary font-mono">{t('Total: 1,284 entries')}</div>
             </div>
             <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-              {[
-                { time: '2024-03-18 09:42:12', user: 'admin_01', action: 'Modified Threshold: Vibration Limit', severity: 'info', target: 'ID: 12 (Motor A)' },
-                { time: '2024-03-18 09:38:05', user: 'system', action: 'Auto-rollback: Model v2.4.1 -> v2.4.0', severity: 'warn', target: 'Model Registry' },
-                { time: '2024-03-18 09:15:22', user: 'john_doe', action: 'Failed Login Attempt', severity: 'error', target: 'Auth Service' },
-                { time: '2024-03-18 08:55:10', user: 'admin_01', action: 'User Created: sarah_c', severity: 'success', target: 'User Directory' },
-                { time: '2024-03-18 08:30:45', user: 'system', action: 'Scheduled Backup Completed', severity: 'success', target: 'Database' },
-                { time: '2024-03-18 08:12:33', user: 'mike_r', action: 'Emergency Stop Triggered', severity: 'error', target: 'Line 01' },
-              ].map((log, i) => (
+              {MOCK_AUDIT.filter(log => auditFilter === 'All Events' || log.category === auditFilter).map((log, i) => (
                 <div key={i} className="p-3 rounded-xl bg-surface border border-border flex items-start gap-4 hover:border-accent/30 transition-colors">
                   <div className={cn(
                     "p-2 rounded-lg shrink-0",
@@ -3714,22 +3983,25 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{t('Properties')}</label>
-                    <button className="text-accent text-[10px] font-bold flex items-center gap-1 hover:underline">
+                    <button
+                      onClick={() => setDraftProps(prev => [...prev, { key: `property_${prev.length + 1}`, type: 'string' }])}
+                      className="text-accent text-[10px] font-bold flex items-center gap-1 hover:underline"
+                    >
                       <Plus size={12} /> {t('Add Property')}
                     </button>
                   </div>
                   <div className="space-y-2">
-                    {[
-                      { key: 'serial_number', type: 'string' },
-                      { key: 'installation_date', type: 'timestamp' },
-                      { key: 'operating_status', type: 'enum' },
-                    ].map((prop, i) => (
+                    {draftProps.map((prop, i) => (
                       <div key={i} className="flex gap-2">
                         <input type="text" value={prop.key} readOnly className="flex-1 bg-bg border border-border rounded-lg p-2 text-xs font-mono" />
                         <select className="bg-bg border border-border rounded-lg p-2 text-[10px] font-bold uppercase">
                           <option>{prop.type}</option>
                         </select>
-                        <button className="p-2 text-text-secondary hover:text-red-500"><Trash2 size={14} /></button>
+                        <button
+                          onClick={() => setDraftProps(prev => prev.filter((_, j) => j !== i))}
+                          className="p-2 text-text-secondary hover:text-red-500"
+                          aria-label={t('삭제')}
+                        ><Trash2 size={14} /></button>
                       </div>
                     ))}
                   </div>
@@ -3737,7 +4009,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
               </div>
               <div className="flex justify-end gap-3 pt-6 border-t border-border">
                 <button onClick={() => setSubView(null)} className="px-6 py-2 rounded-xl border border-border text-xs font-bold hover:bg-surface-hover transition-colors">{t('Cancel')}</button>
-                <button className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity">{t('Create Entity Type')}</button>
+                <button
+                  onClick={() => {
+                    setEntities(prev => [...prev, { name: `Custom Entity ${prev.length - MOCK_ENTITIES.length + 1}`, parent: 'Asset', props: draftProps.length, instances: 0, icon: Box }]);
+                    showToast(t('새 엔티티 타입을 만들었습니다'));
+                    setSubView(null);
+                  }}
+                  className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity"
+                >{t('Create Entity Type')}</button>
               </div>
             </div>
           );
@@ -3750,7 +4029,21 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 <Upload size={48} className="text-text-secondary mb-4" />
                 <h4 className="text-sm font-bold mb-2">{t('Drag & Drop Schema File')}</h4>
                 <p className="text-xs text-text-secondary mb-6">{t('Supports .json, .yaml, .ttl (Turtle) formats')}</p>
-                <button className="px-6 py-2 bg-accent text-bg rounded-xl text-xs font-bold">{t('Browse Files')}</button>
+                <input
+                  ref={importRef}
+                  type="file"
+                  accept=".json,.yaml,.yml,.ttl"
+                  className="hidden"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setEntities(prev => [...prev, { name: file.name.replace(/\.[^.]+$/, ''), parent: 'Asset', props: 6, instances: 0, icon: Box }]);
+                    showToast(t('{name} 스키마를 가져왔습니다', { name: file.name }));
+                    e.target.value = '';
+                    setSubView(null);
+                  }}
+                />
+                <button onClick={() => importRef.current?.click()} className="px-6 py-2 bg-accent text-bg rounded-xl text-xs font-bold">{t('Browse Files')}</button>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl bg-surface border border-border flex items-center gap-4">
@@ -3759,7 +4052,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                     <div className="text-xs font-bold">{t('JSON-LD Template')}</div>
                     <div className="text-[10px] text-text-secondary">{t('Standard manufacturing ontology')}</div>
                   </div>
-                  <button className="ml-auto p-2 hover:bg-bg rounded-lg"><Download size={16} /></button>
+                  <button onClick={() => downloadJson('ontology-template.jsonld', ONTOLOGY_JSONLD)} className="ml-auto p-2 hover:bg-bg rounded-lg" aria-label={t('JSON-LD Template')}><Download size={16} /></button>
                 </div>
                 <div className="p-4 rounded-2xl bg-surface border border-border flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500"><FileSpreadsheet size={20} /></div>
@@ -3767,7 +4060,11 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                     <div className="text-xs font-bold">{t('Excel Mapping')}</div>
                     <div className="text-[10px] text-text-secondary">{t('Bulk entity property import')}</div>
                   </div>
-                  <button className="ml-auto p-2 hover:bg-bg rounded-lg"><Download size={16} /></button>
+                  <button
+                    onClick={() => downloadCsv('entity-mapping.csv', entities.map(e => ({ entity: e.name, parent: e.parent, properties: e.props, instances: e.instances })))}
+                    className="ml-auto p-2 hover:bg-bg rounded-lg"
+                    aria-label={t('Excel Mapping')}
+                  ><Download size={16} /></button>
                 </div>
               </div>
               <div className="flex justify-start">
@@ -3791,8 +4088,22 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   <p className="text-xs text-text-secondary">ID: ENT-{selectedItem.name.toUpperCase().replace(' ', '_')}</p>
                 </div>
                 <div className="ml-auto flex gap-2">
-                  <button className="px-4 py-2 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-bold uppercase tracking-widest">{t('Delete Type')}</button>
-                  <button className="px-4 py-2 rounded-xl bg-accent text-bg text-[10px] font-bold uppercase tracking-widest">{t('Save Changes')}</button>
+                  <button
+                    onClick={() => {
+                      setEntities(prev => prev.filter(e => e.name !== selectedItem.name));
+                      showToast(t('{name} 타입을 삭제했습니다', { name: selectedItem.name }), 'info');
+                      setSubView(null);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-bold uppercase tracking-widest"
+                  >{t('Delete Type')}</button>
+                  <button
+                    onClick={() => {
+                      setEntities(prev => prev.map(e => e.name === selectedItem.name ? { ...e, props: entityProps.length } : e));
+                      showToast(t('변경 사항을 저장했습니다'));
+                      setSubView(null);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-accent text-bg text-[10px] font-bold uppercase tracking-widest"
+                  >{t('Save Changes')}</button>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-6">
@@ -3800,17 +4111,24 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   <div className="dashboard-card">
                     <h5 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4">{t('Property Definitions')}</h5>
                     <div className="space-y-3">
-                      {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-bg border border-border group">
-                          <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-[10px] font-bold text-text-secondary">{i}</div>
+                      {entityProps.map((prop, idx) => (
+                        <div key={idx} className="flex items-center gap-4 p-3 rounded-xl bg-bg border border-border group">
+                          <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-[10px] font-bold text-text-secondary">{idx + 1}</div>
                           <div className="flex-1">
-                            <input type="text" defaultValue={`property_key_${i}`} className="bg-transparent border-none p-0 text-xs font-bold focus:ring-0 w-full" />
-                            <div className="text-[10px] text-text-secondary">{t('Type: String | Required: Yes')}</div>
+                            <input type="text" defaultValue={prop.key} className="bg-transparent border-none p-0 text-xs font-bold focus:ring-0 w-full" />
+                            <div className="text-[10px] text-text-secondary">{prop.required ? t('Type: String | Required: Yes') : t('Type: String | Required: No')}</div>
                           </div>
-                          <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-surface rounded-lg transition-all"><Settings2 size={14} /></button>
+                          <button
+                            onClick={() => setEntityProps(prev => prev.map((p, j) => j === idx ? { ...p, required: !p.required } : p))}
+                            title={t('필수 여부 전환')}
+                            aria-label={t('필수 여부 전환')}
+                            className="p-2 hover:bg-surface rounded-lg transition-all text-text-secondary hover:text-accent"
+                          ><Settings2 size={14} /></button>
                         </div>
                       ))}
-                      <button className="w-full py-3 rounded-xl border border-dashed border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
+                      <button
+                        onClick={() => setEntityProps(prev => [...prev, { key: `property_key_${prev.length + 1}`, required: false }])}
+                        className="w-full py-3 rounded-xl border border-dashed border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
                         {t('+ Add New Property')}
                       </button>
                     </div>
@@ -3878,15 +4196,10 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   {t('Import Schema')}
                 </button>
               </div>
-              <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">{t('45 Active Entity Types')}</div>
+              <div className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">{t('{n} Active Entity Types', { n: 41 + entities.length })}</div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { name: 'Manufacturing Line', parent: 'Asset', props: 12, instances: 4, icon: Factory },
-                { name: 'Electric Motor', parent: 'Equipment', props: 8, instances: 124, icon: Cpu },
-                { name: 'Quality Sensor', parent: 'IoT Device', props: 6, instances: 56, icon: Zap },
-                { name: 'Raw Material', parent: 'Inventory', props: 5, instances: 12, icon: Box },
-              ].map((entity, i) => (
+              {entities.map((entity, i) => (
                 <div key={i} className="p-4 rounded-2xl bg-surface border border-border hover:border-accent/30 transition-all group">
                   <div className="flex items-start justify-between mb-4">
                     <div className="p-3 rounded-xl bg-bg border border-border group-hover:border-accent/20 transition-colors">
@@ -3938,10 +4251,19 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   <div key={i} className="overflow-hidden rounded-2xl border border-border bg-surface">
                     <div className="p-3 bg-bg/50 border-b border-border flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{t('Conflict #')}{i}{t(': Relation Mismatch')}</span>
-                      <div className="flex gap-2">
-                        <button className="px-3 py-1 rounded-lg bg-emerald-500 text-bg text-[10px] font-bold">{t('Keep Local')}</button>
-                        <button className="px-3 py-1 rounded-lg bg-blue-500 text-bg text-[10px] font-bold">{t('Keep Remote')}</button>
-                      </div>
+                      {conflicts[i] ? (
+                        <button
+                          onClick={() => setConflicts(prev => { const next = { ...prev }; delete next[i]; return next; })}
+                          className="flex items-center gap-1 px-3 py-1 rounded-lg bg-surface-hover text-[10px] font-bold text-accent"
+                        >
+                          <Check size={12} />{conflicts[i] === 'local' ? t('Keep Local') : t('Keep Remote')}
+                        </button>
+                      ) : (
+                        <div className="flex gap-2">
+                          <button onClick={() => setConflicts(prev => ({ ...prev, [i]: 'local' }))} className="px-3 py-1 rounded-lg bg-emerald-500 text-bg text-[10px] font-bold">{t('Keep Local')}</button>
+                          <button onClick={() => setConflicts(prev => ({ ...prev, [i]: 'remote' }))} className="px-3 py-1 rounded-lg bg-blue-500 text-bg text-[10px] font-bold">{t('Keep Remote')}</button>
+                        </div>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 divide-x divide-border">
                       <div className="p-4 space-y-2">
@@ -3960,7 +4282,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 <button onClick={() => setSubView(null)} className="text-xs font-bold text-text-secondary flex items-center gap-2 hover:text-text-primary">
                   <ChevronLeft size={16} /> {t('Back to Relations')}
                 </button>
-                <button className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold">{t('Resolve All & Merge')}</button>
+                <button
+                  onClick={() => {
+                    setConflicts({ 1: conflicts[1] ?? 'local', 2: conflicts[2] ?? 'local', 3: conflicts[3] ?? 'local' });
+                    showToast(t('충돌 3건을 해결하고 병합했습니다'));
+                    setSubView(null);
+                  }}
+                  className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold"
+                >{t('Resolve All & Merge')}</button>
               </div>
             </div>
           );
@@ -3978,7 +4307,14 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   { name: 'Image (SVG)', ext: '.svg', icon: Share2, desc: 'High-res vector graphic' },
                   { name: 'Documentation', ext: '.pdf', icon: FileText, desc: 'Ontology spec report' },
                 ].map((format, i) => (
-                  <button key={i} className="p-4 rounded-2xl bg-surface border border-border hover:border-accent transition-all text-left group">
+                  <button
+                    key={i}
+                    onClick={() => {
+                      exportOntology(format.ext);
+                      showToast(t('{name} 파일을 내려받았습니다', { name: format.name }));
+                    }}
+                    className="p-4 rounded-2xl bg-surface border border-border hover:border-accent transition-all text-left group"
+                  >
                     <div className="p-3 rounded-xl bg-bg border border-border group-hover:border-accent/20 transition-colors mb-4 w-fit">
                       <format.icon size={20} className="text-accent" />
                     </div>
@@ -4097,12 +4433,22 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                         <div className="px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-[10px] font-bold uppercase">AND</div>
                         <div className="flex-1 p-3 rounded-xl bg-bg border border-border text-xs font-mono">entity.properties.vibration == null</div>
                       </div>
+                      {ruleConditions.map((cond, i) => (
+                        <div key={i} className="flex items-center gap-4">
+                          <div className="px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-[10px] font-bold uppercase">AND</div>
+                          <div className="flex-1 p-3 rounded-xl bg-bg border border-border text-xs font-mono">{cond}</div>
+                          <button onClick={() => setRuleConditions(prev => prev.filter((_, j) => j !== i))} className="p-2 text-text-secondary hover:text-red-500" aria-label={t('삭제')}><Trash2 size={14} /></button>
+                        </div>
+                      ))}
                       <div className="flex items-center gap-4">
                         <div className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-500 text-[10px] font-bold uppercase">THEN</div>
                         <div className="flex-1 p-3 rounded-xl bg-bg border border-border text-xs font-mono">trigger_alert('Missing Telemetry')</div>
                       </div>
                     </div>
-                    <button className="mt-6 w-full py-3 rounded-xl border border-dashed border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
+                    <button
+                      onClick={() => setRuleConditions(prev => [...prev, EXTRA_CONDITIONS[prev.length % EXTRA_CONDITIONS.length]])}
+                      className="mt-6 w-full py-3 rounded-xl border border-dashed border-border text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:border-accent/50 hover:text-accent transition-all"
+                    >
                       {t('+ Add Condition')}
                     </button>
                   </div>
@@ -4113,8 +4459,19 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                   <ChevronLeft size={16} /> {t('Back to Schema')}
                 </button>
                 <div className="flex gap-3">
-                  <button className="px-6 py-2 rounded-xl border border-border text-xs font-bold">{t('Test Rule')}</button>
-                  <button className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold">{t('Save Rule')}</button>
+                  <button
+                    onClick={() => showToast(t('테스트 완료: 엔티티 1,262개 중 {n}건이 규칙에 걸렸습니다', { n: 2 + ruleConditions.length }), 'info')}
+                    className="px-6 py-2 rounded-xl border border-border text-xs font-bold"
+                  >{t('Test Rule')}</button>
+                  <button
+                    onClick={() => {
+                      setRules(prev => [...prev, { name: `Custom Rule ${prev.length - MOCK_RULES.length + 1}`, desc: `IF entity.type == 'Electric Motor' AND entity.properties.vibration == null${ruleConditions.map(c => ` AND ${c}`).join('')} THEN trigger_alert`, status: 'Active', icon: Code2 }]);
+                      setRuleConditions([]);
+                      showToast(t('검증 규칙을 저장했습니다'));
+                      setSubView(null);
+                    }}
+                    className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold"
+                  >{t('Save Rule')}</button>
                 </div>
               </div>
             </div>
@@ -4151,11 +4508,7 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                 </button>
               </div>
               <div className="space-y-3">
-                {[
-                  { name: 'Mandatory Telemetry', desc: 'All active motors must report vibration data every 5s.', status: 'Active', icon: Code2 },
-                  { name: 'Parent-Child Constraint', desc: 'Sensors cannot exist without a parent equipment assignment.', status: 'Active', icon: Link },
-                  { name: 'Data Type Integrity', desc: 'Temperature values must be within -40 to 150 range.', status: 'Active', icon: FileCode },
-                ].map((rule, i) => (
+                {rules.map((rule, i) => (
                   <div key={i} className="p-4 rounded-xl bg-bg border border-border flex items-start gap-4">
                     <div className="p-2 rounded-lg bg-surface border border-border text-accent">
                       <rule.icon size={18} />
@@ -4163,9 +4516,15 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <h5 className="text-sm font-bold">{rule.name}</h5>
-                        <div className="w-8 h-4 bg-accent rounded-full relative">
-                          <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-bg rounded-full" />
-                        </div>
+                        <button
+                          role="switch"
+                          aria-checked={rule.status === 'Active'}
+                          aria-label={rule.name}
+                          onClick={() => setRules(prev => prev.map((r, j) => j === i ? { ...r, status: r.status === 'Active' ? 'Paused' : 'Active' } : r))}
+                          className={cn("w-8 h-4 rounded-full relative transition-colors", rule.status === 'Active' ? "bg-accent" : "bg-border")}
+                        >
+                          <span className={cn("absolute top-0.5 w-3 h-3 bg-bg rounded-full transition-all", rule.status === 'Active' ? "right-0.5" : "left-0.5")} />
+                        </button>
                       </div>
                       <p className="text-[11px] text-text-secondary leading-relaxed">{rule.desc}</p>
                     </div>
@@ -4226,7 +4585,19 @@ function ManagementSubModal({ type, isOpen, onClose }: { type: string | null, is
           >
             {t('Close')}
           </button>
-          <button className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity">
+          <button
+            onClick={() => {
+              const rows: Record<string, string | number>[] =
+                type === 'user-directory' ? users.map(u => ({ name: u.name, email: u.email, role: u.role, status: u.status, last_login: u.last })) :
+                type === 'audit-log' ? MOCK_AUDIT.map(({ category, ...log }) => ({ ...log, category })) :
+                type === 'ontology-entities' ? entities.map(e => ({ entity: e.name, parent: e.parent, properties: e.props, instances: e.instances })) :
+                type === 'ontology-schema' ? rules.map(r => ({ rule: r.name, description: r.desc, status: r.status })) :
+                MOCK_HEALTH;
+              downloadCsv(`${type}-${fileStamp()}.csv`, rows);
+              showToast(t('보고서를 내려받았습니다'));
+            }}
+            className="px-6 py-2 rounded-xl bg-accent text-bg text-xs font-bold hover:opacity-90 transition-opacity"
+          >
             {t('Export Report')}
           </button>
         </div>
@@ -5188,9 +5559,21 @@ function ChatbotViewer() {
     }
   }, [messages, isTyping]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const [docs, setDocs] = useState([
+    '2024 품질 관리 표준 매뉴얼',
+    'B라인 설비 유지보수 가이드',
+    '안전 수칙 및 비상 대응 절차',
+    'OEE 산출 공식 및 기준',
+  ]);
+  const [showMenu, setShowMenu] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [listening, setListening] = useState(false);
+  const attachRef = useRef<HTMLInputElement>(null);
+  const docRef = useRef<HTMLInputElement>(null);
+  const { showToast } = useToast();
 
+  /** Post a user message and answer it the way the supervisor would. */
+  const ask = (input: string, answer?: string) => {
     const userMsg: ChatMessage = {
       role: 'user',
       content: input,
@@ -5198,18 +5581,23 @@ function ChatbotViewer() {
     };
 
     setMessages(prev => [...prev, userMsg]);
-    setInput('');
     setIsTyping(true);
 
     // Simulate AI Response
     safeTimeout(() => {
       let response = '';
-      if (matchesKeyword(input, '불량률')) {
+      if (answer) {
+        response = answer;
+      } else if (matchesKeyword(input, '불량률')) {
         response = t('현재 전체 라인의 평균 불량률은 3.2%입니다. B라인의 도금 공정에서 미세한 변동이 감지되었으나, 허용 범위 내에 있습니다.');
       } else if (matchesKeyword(input, '가동률') || input.toUpperCase().includes('OEE')) {
         response = t('오늘의 종합 설비 효율(OEE)은 87.5%로 목표치(85%)를 상회하고 있습니다. 특히 조립 라인의 성능 지표가 전일 대비 4% 향상되었습니다.');
       } else if (matchesKeyword(input, '안전')) {
         response = t('현재 모든 안전 센서가 정상 작동 중입니다. 구역 C에서 작업자 1명이 보호구 미착용으로 경고 조치되었으며, 현재는 시정 완료되었습니다.');
+      } else if (matchesKeyword(input, '에너지')) {
+        response = t('피크 요금 시간대(13~17시)를 피해 세척·건조 공정을 06~09시로 옮기면 하루 전력비를 약 8% 줄일 수 있습니다. 포장 라인은 현재 일정 그대로 유지하는 것이 좋습니다.');
+      } else if (matchesKeyword(input, '위험')) {
+        response = t('B라인 케이스패커-02 감속기 진동이 3일째 상승 중이며, 이 추세라면 72시간 안에 정지 위험이 62%입니다. 오늘 야간 정지 시간에 베어링 점검을 권장합니다.');
       } else {
         response = t('요청하신 내용을 분석 중입니다. Supervisor 에이전트가 관련 데이터를 취합하여 최적의 답변을 준비하고 있습니다.');
       }
@@ -5224,6 +5612,22 @@ function ChatbotViewer() {
     }, 1500);
   };
 
+  const handleSend = () => {
+    if (!input.trim()) return;
+    ask(input);
+    setInput('');
+  };
+
+  /** Voice input stand-in: listens briefly, then fills in a question. */
+  const listen = () => {
+    if (listening) return;
+    setListening(true);
+    safeTimeout(() => {
+      setListening(false);
+      setInput(suggestedQueries[Math.floor(Math.random() * suggestedQueries.length)]);
+    }, 1600);
+  };
+
   const suggestedQueries = [
     t('현재 전체 불량률 요약해줘'),
     t('B라인 가동 중단 위험 분석'),
@@ -5232,7 +5636,10 @@ function ChatbotViewer() {
   ];
 
   return (
-    <div className="flex flex-col h-[750px] bg-surface border border-border rounded-2xl overflow-hidden shadow-2xl">
+    <div className={cn(
+      "flex flex-col bg-surface border border-border rounded-2xl overflow-hidden shadow-2xl",
+      expanded ? "fixed inset-4 z-[60]" : "h-[750px]",
+    )}>
       {/* Chat Header */}
       <div className="px-6 py-4 border-b border-border bg-surface-hover/30 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -5248,11 +5655,32 @@ function ChatbotViewer() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
-            <Settings size={18} />
-          </button>
-          <button className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
-            <Maximize2 size={18} />
+          <div className="relative">
+            <button onClick={() => setShowMenu(v => !v)} aria-label={t('대화 설정')} title={t('대화 설정')} className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
+              <Settings size={18} />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 top-10 z-20 w-44 rounded-xl border border-border bg-surface p-1 shadow-xl">
+                <button
+                  onClick={() => {
+                    setMessages(prev => prev.slice(0, 1));
+                    setShowMenu(false);
+                    showToast(t('대화를 초기화했습니다'), 'info');
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-surface-hover"
+                >{t('대화 초기화')}</button>
+                <button
+                  onClick={() => {
+                    downloadFile(`supervisor-chat-${fileStamp()}.txt`, messages.map(m => `[${m.timestamp}] ${m.role === 'user' ? 'USER' : 'AI'}: ${m.content}`).join('\n\n'));
+                    setShowMenu(false);
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-surface-hover"
+                >{t('대화 내보내기')}</button>
+              </div>
+            )}
+          </div>
+          <button onClick={() => setExpanded(v => !v)} aria-label={expanded ? t('원래 크기로') : t('크게 보기')} title={expanded ? t('원래 크기로') : t('크게 보기')} className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
+            {expanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
           </button>
         </div>
       </div>
@@ -5339,10 +5767,26 @@ function ChatbotViewer() {
                 className="w-full bg-surface border border-border rounded-2xl px-4 py-4 pr-32 text-sm focus:outline-none focus:border-accent/50 transition-colors resize-none h-24 custom-scrollbar"
               />
               <div className="absolute right-3 bottom-3 flex items-center gap-2">
-                <button className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
+                <input
+                  ref={attachRef}
+                  type="file"
+                  className="hidden"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    ask(t('첨부 파일: {name}', { name: file.name }), t('{name} ({size}KB)을 읽었습니다. 설비 이력·품질 기준과 대조해 보니 특이사항 2건이 있습니다: 측정 주기가 표준(5초)보다 긴 구간이 있고, 온도 상한 기준이 최신 매뉴얼과 1°C 다릅니다.', { name: file.name, size: Math.max(1, Math.round(file.size / 1024)) }));
+                    e.target.value = '';
+                  }}
+                />
+                <button onClick={() => attachRef.current?.click()} aria-label={t('파일 첨부')} title={t('파일 첨부')} className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
                   <Paperclip size={18} />
                 </button>
-                <button className="p-2 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors">
+                <button
+                  onClick={listen}
+                  aria-label={t('음성 입력')}
+                  title={listening ? t('듣는 중…') : t('음성 입력')}
+                  className={cn("p-2 rounded-lg transition-colors", listening ? "bg-danger/15 text-danger animate-pulse" : "hover:bg-surface-hover text-text-secondary")}
+                >
                   <Mic size={18} />
                 </button>
                 <button 
@@ -5383,27 +5827,54 @@ function ChatbotViewer() {
           <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
             <h4 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-4">{t('Reference Docs')}</h4>
             <div className="space-y-2">
-              {[
-                t('2024 품질 관리 표준 매뉴얼'),
-                t('B라인 설비 유지보수 가이드'),
-                t('안전 수칙 및 비상 대응 절차'),
-                t('OEE 산출 공식 및 기준')
-              ].map((doc, i) => (
-                <button key={i} className="w-full text-left p-2 rounded-lg hover:bg-surface-hover transition-colors group">
+              {docs.map((doc, i) => (
+                <button
+                  key={i}
+                  onClick={() => ask(t('{doc} 핵심 내용 요약해줘', { doc: t(doc) }), t('{doc}의 핵심은 세 가지입니다. 1) 이상 징후는 감지 즉시 담당 AI가 1차 조치하고 기록합니다. 2) 설정값을 바꾸는 조치는 반드시 사람이 승인합니다. 3) 모든 조치는 근거 데이터와 함께 감사 로그에 남깁니다.', { doc: t(doc) }))}
+                  className="w-full text-left p-2 rounded-lg hover:bg-surface-hover transition-colors group"
+                >
                   <div className="flex items-center gap-2 text-[11px] text-text-secondary group-hover:text-text-primary">
                     <FileText size={12} />
-                    <span className="truncate">{doc}</span>
+                    <span className="truncate">{t(doc)}</span>
                   </div>
                 </button>
               ))}
             </div>
-            <button className="w-full mt-4 py-2 rounded-lg border border-dashed border-border text-[10px] text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
+            <input
+              ref={docRef}
+              type="file"
+              accept=".pdf,.doc,.docx,.txt,.md,.xlsx"
+              className="hidden"
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setDocs(prev => [...prev, file.name]);
+                showToast(t('{name} 문서를 학습 자료에 추가했습니다', { name: file.name }));
+                e.target.value = '';
+              }}
+            />
+            <button onClick={() => docRef.current?.click()} className="w-full mt-4 py-2 rounded-lg border border-dashed border-border text-[10px] text-text-secondary hover:border-accent/50 hover:text-accent transition-all">
               {t('+ 문서 추가하기')}
             </button>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+/** A small on/off switch for settings panels. */
+function MiniSwitch({ on, label, onChange }: { on: boolean; label: string; onChange: () => void }) {
+  return (
+    <button
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={onChange}
+      className={cn("w-8 h-4 rounded-full relative transition-colors", on ? "bg-accent" : "bg-border")}
+    >
+      <span className={cn("absolute top-0.5 w-3 h-3 bg-bg rounded-full transition-all", on ? "right-0.5" : "left-0.5")} />
+    </button>
   );
 }
 
@@ -5414,6 +5885,20 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
   const [isExecuting, setIsExecuting] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [activeManagementSubDetail, setActiveManagementSubDetail] = useState<string | null>(null);
+  const { showToast } = useToast();
+  const [modelVersion, setModelVersion] = useState({ major: 2, minor: 4, patch: 0, deployed: '2024-03-10' });
+  const [deploying, setDeploying] = useState(false);
+  const [prefs, setPrefs] = useState({ autoRollback: true, abTesting: false, email: true, sms: false, push: true, slack: false });
+  const [severity, setSeverity] = useState('Crit');
+  const [samplingMs, setSamplingMs] = useState(500);
+  const [retentionDays, setRetentionDays] = useState(30);
+  const togglePref = (key: keyof typeof prefs, label: string) => {
+    setPrefs(prev => {
+      const on = !prev[key];
+      showToast(t('{name}: {state}', { name: t(label), state: on ? t('켜짐') : t('꺼짐') }), 'info');
+      return { ...prev, [key]: on };
+    });
+  };
 
   useEffect(() => {
     // Generate initial logs
@@ -6275,12 +6760,29 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   <div className="p-3 rounded-xl bg-surface-hover border border-border">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[11px] font-bold">{t('Production Model')}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">v2.4.0</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">v{modelVersion.major}.{modelVersion.minor}.{modelVersion.patch}</span>
                     </div>
-                    <div className="text-[10px] text-text-secondary">{t('Deployed: 2024-03-10')}</div>
+                    <div className="text-[10px] text-text-secondary">{t('배포일: {date}', { date: modelVersion.deployed })}</div>
                   </div>
-                  <button className="w-full py-2.5 rounded-xl bg-accent text-bg text-[11px] font-bold hover:opacity-90 transition-opacity">
-                    {t('Deploy New Version')}
+                  <button
+                    disabled={deploying}
+                    onClick={() => {
+                      setDeploying(true);
+                      const next = { ...modelVersion, minor: modelVersion.minor, patch: modelVersion.patch + 1 };
+                      const version = `v${next.major}.${next.minor}.${next.patch}`;
+                      setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('{version} 카나리 배포 시작 (트래픽 10%)', { version }), type: 'info' as const }, ...prev].slice(0, 10));
+                      setTimeout(() => {
+                        const d = new Date();
+                        setModelVersion({ ...next, deployed: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` });
+                        setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('{version} 배포 완료: 정확도 +0.4%p, 지연 -12ms', { version }), type: 'success' as const }, ...prev].slice(0, 10));
+                        showToast(t('{version} 배포를 완료했습니다', { version }));
+                        setDeploying(false);
+                      }, 1800);
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-accent text-bg text-[11px] font-bold hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
+                  >
+                    {deploying && <Loader2 size={12} className="animate-spin" />}
+                    {deploying ? t('배포 중…') : t('Deploy New Version')}
                   </button>
                 </div>
               </div>
@@ -6289,15 +6791,11 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="text-text-secondary">{t('Auto-rollback')}</span>
-                    <div className="w-8 h-4 bg-accent rounded-full relative">
-                      <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-bg rounded-full" />
-                    </div>
+                    <MiniSwitch on={prefs.autoRollback} label={t('Auto-rollback')} onChange={() => togglePref('autoRollback', 'Auto-rollback')} />
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="text-text-secondary">{t('A/B Testing')}</span>
-                    <div className="w-8 h-4 bg-border rounded-full relative">
-                      <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-bg rounded-full" />
-                    </div>
+                    <MiniSwitch on={prefs.abTesting} label={t('A/B Testing')} onChange={() => togglePref('abTesting', 'A/B Testing')} />
                   </div>
                 </div>
               </div>
@@ -6350,20 +6848,16 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
                   <div>
                     <div className="flex justify-between text-[10px] mb-2">
                       <span className="text-text-secondary">{t('Sampling Interval')}</span>
-                      <span className="text-accent">500ms</span>
+                      <span className="text-accent">{samplingMs}ms</span>
                     </div>
-                    <div className="h-1 bg-border rounded-full overflow-hidden">
-                      <div className="h-full bg-accent w-1/2" />
-                    </div>
+                    <input type="range" min={100} max={1000} step={100} value={samplingMs} onChange={e => setSamplingMs(Number(e.target.value))} aria-label={t('Sampling Interval')} className="w-full accent-[var(--color-accent)]" />
                   </div>
                   <div>
                     <div className="flex justify-between text-[10px] mb-2">
                       <span className="text-text-secondary">{t('Log Retention')}</span>
-                      <span className="text-accent">{t('30 Days')}</span>
+                      <span className="text-accent">{t('{n}일', { n: retentionDays })}</span>
                     </div>
-                    <div className="h-1 bg-border rounded-full overflow-hidden">
-                      <div className="h-full bg-accent w-3/4" />
-                    </div>
+                    <input type="range" min={7} max={90} step={1} value={retentionDays} onChange={e => setRetentionDays(Number(e.target.value))} aria-label={t('Log Retention')} className="w-full accent-[var(--color-accent)]" />
                   </div>
                 </div>
               </div>
@@ -6383,34 +6877,37 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
               <div>
                 <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest block mb-3">{t('Notification Channels')}</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="p-3 rounded-xl bg-surface-hover border border-accent/30 flex flex-col items-center gap-2">
-                    <Mail size={16} className="text-accent" />
-                    <span className="text-[10px] font-bold">{t('Email')}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-hover border border-border flex flex-col items-center gap-2 opacity-50">
-                    <MessageSquare size={16} />
-                    <span className="text-[10px] font-bold">{t('SMS')}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-hover border border-accent/30 flex flex-col items-center gap-2">
-                    <Bell size={16} className="text-accent" />
-                    <span className="text-[10px] font-bold">{t('Push')}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-surface-hover border border-border flex flex-col items-center gap-2 opacity-50">
-                    <Slack size={16} />
-                    <span className="text-[10px] font-bold">{t('Slack')}</span>
-                  </div>
+                  {([
+                    ['email', 'Email', Mail],
+                    ['sms', 'SMS', MessageSquare],
+                    ['push', 'Push', Bell],
+                    ['slack', 'Slack', Slack],
+                  ] as const).map(([key, label, Icon]) => (
+                    <button
+                      key={key}
+                      aria-pressed={prefs[key]}
+                      onClick={() => togglePref(key, label)}
+                      className={cn(
+                        "p-3 rounded-xl bg-surface-hover border flex flex-col items-center gap-2 transition-all",
+                        prefs[key] ? "border-accent/30" : "border-border opacity-50 hover:opacity-80",
+                      )}
+                    >
+                      <Icon size={16} className={prefs[key] ? "text-accent" : undefined} />
+                      <span className="text-[10px] font-bold">{t(label)}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
               <div className="pt-6 border-t border-border">
                 <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest block mb-3">{t('Alert Severity')}</label>
                 <div className="flex gap-1">
                   {['Low', 'Med', 'High', 'Crit'].map(s => (
-                    <div key={s} className={cn(
-                      "flex-1 py-1 rounded text-[9px] font-bold text-center border",
-                      s === 'Crit' ? "bg-red-500/20 border-red-500/50 text-red-500" : "bg-surface-hover border-border text-text-secondary"
+                    <button key={s} onClick={() => setSeverity(s)} aria-pressed={severity === s} className={cn(
+                      "flex-1 py-1 rounded text-[9px] font-bold text-center border transition-colors",
+                      s === severity ? "bg-red-500/20 border-red-500/50 text-red-500" : "bg-surface-hover border-border text-text-secondary hover:border-red-500/30"
                     )}>
                       {s}
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -6426,6 +6923,7 @@ function ModuleDetailView({ item, sensorData }: { item: MenuItem; sensorData: Se
             <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest block mb-3">{t('Supervisor Controls')}</label>
             <div className="space-y-2">
               <button 
+                onClick={() => setShowAdvanced(true)}
                 className="w-full py-3 px-4 rounded-xl bg-surface-hover border border-border text-text-primary text-xs font-bold hover:border-accent/50 transition-all flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">

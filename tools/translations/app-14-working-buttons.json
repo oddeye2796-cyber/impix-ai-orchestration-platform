@@ -1,0 +1,186 @@
+{
+ "{doc} 핵심 내용 요약해줘": [
+  "{doc}の要点をまとめて",
+  "Summarize the key points of {doc}"
+ ],
+ "{doc}의 핵심은 세 가지입니다. 1) 이상 징후는 감지 즉시 담당 AI가 1차 조치하고 기록합니다. 2) 설정값을 바꾸는 조치는 반드시 사람이 승인합니다. 3) 모든 조치는 근거 데이터와 함께 감사 로그에 남깁니다.": [
+  "{doc}の要点は3つです。1) 異常の兆候は検知と同時に担当AIが一次対応し、記録します。2) 設定値を変える措置は必ず人が承認します。3) すべての措置は根拠データとともに監査ログに残します。",
+  "{doc} comes down to three points. 1) The responsible AI acts on an anomaly as soon as it is detected and records it. 2) Any change to a set-point must be approved by a person. 3) Every action goes into the audit log with the data behind it."
+ ],
+ "{equipment}: AI 제안 승인 대기": [
+  "{equipment}: AI提案が承認待ち",
+  "{equipment}: AI proposal awaiting approval"
+ ],
+ "{n}일": [
+  "{n}日",
+  "{n} days"
+ ],
+ "{name} ({size}KB)을 읽었습니다. 설비 이력·품질 기준과 대조해 보니 특이사항 2건이 있습니다: 측정 주기가 표준(5초)보다 긴 구간이 있고, 온도 상한 기준이 최신 매뉴얼과 1°C 다릅니다.": [
+  "{name}（{size}KB）を読み込みました。設備履歴・品質基準と照合したところ、注意点が2件あります。測定周期が標準（5秒）より長い区間があり、温度上限の基準が最新マニュアルと1°C異なります。",
+  "I read {name} ({size} KB). Checked against the equipment history and quality standards, two things stand out: some stretches are sampled less often than the 5 s standard, and the upper temperature limit differs from the latest manual by 1 °C."
+ ],
+ "{name} 계정을 {status} 상태로 바꿨습니다": [
+  "{name}のアカウントを{status}にしました",
+  "Set {name}'s account to {status}"
+ ],
+ "{name} 문서를 학습 자료에 추가했습니다": [
+  "{name}を参照資料に追加しました",
+  "Added {name} to the reference documents"
+ ],
+ "{name} 스키마를 가져왔습니다": [
+  "{name}のスキーマを取り込みました",
+  "Imported the {name} schema"
+ ],
+ "{name} 타입을 삭제했습니다": [
+  "{name}タイプを削除しました",
+  "Deleted the {name} type"
+ ],
+ "{name} 파일을 내려받았습니다": [
+  "{name}ファイルをダウンロードしました",
+  "Downloaded the {name} file"
+ ],
+ "{version} 배포 완료: 정확도 +0.4%p, 지연 -12ms": [
+  "{version}のデプロイ完了: 精度 +0.4pt、遅延 -12ms",
+  "{version} deployed: accuracy +0.4 pt, latency -12 ms"
+ ],
+ "{version} 배포를 완료했습니다": [
+  "{version}のデプロイが完了しました",
+  "{version} is deployed"
+ ],
+ "{version} 카나리 배포 시작 (트래픽 10%)": [
+  "{version}のカナリアデプロイ開始（トラフィック10%）",
+  "Canary deploy of {version} started (10% of traffic)"
+ ],
+ "B라인 케이스패커-02 감속기 진동이 3일째 상승 중이며, 이 추세라면 72시간 안에 정지 위험이 62%입니다. 오늘 야간 정지 시간에 베어링 점검을 권장합니다.": [
+  "Bラインのケースパッカー-02減速機の振動が3日連続で上昇しており、このままでは72時間以内に停止するリスクが62%です。本日の夜間停止中にベアリング点検をお勧めします。",
+  "Vibration on the Line B case packer-02 gearbox has risen for three days; at this rate there is a 62% risk of a stoppage within 72 hours. I recommend a bearing check in tonight's planned stop."
+ ],
+ "검증 규칙을 저장했습니다": [
+  "検証ルールを保存しました",
+  "Validation rule saved"
+ ],
+ "꺼짐": [
+  "オフ",
+  "off"
+ ],
+ "켜짐": [
+  "オン",
+  "on"
+ ],
+ "대화 내보내기": [
+  "会話をエクスポート",
+  "Export conversation"
+ ],
+ "대화 설정": [
+  "会話の設定",
+  "Chat settings"
+ ],
+ "대화 초기화": [
+  "会話をリセット",
+  "Reset conversation"
+ ],
+ "대화를 초기화했습니다": [
+  "会話をリセットしました",
+  "Conversation reset"
+ ],
+ "듣는 중…": [
+  "聞き取り中…",
+  "Listening…"
+ ],
+ "모두 읽음": [
+  "すべて既読",
+  "Mark all read"
+ ],
+ "배포 중…": [
+  "デプロイ中…",
+  "Deploying…"
+ ],
+ "배포일: {date}": [
+  "デプロイ日: {date}",
+  "Deployed: {date}"
+ ],
+ "변경 사항을 저장했습니다": [
+  "変更を保存しました",
+  "Changes saved"
+ ],
+ "보고서를 내려받았습니다": [
+  "レポートをダウンロードしました",
+  "Report downloaded"
+ ],
+ "사용자 {name}을(를) 추가했습니다": [
+  "ユーザー {name} を追加しました",
+  "Added user {name}"
+ ],
+ "삭제": [
+  "削除",
+  "Delete"
+ ],
+ "새 엔티티 타입을 만들었습니다": [
+  "新しいエンティティタイプを作成しました",
+  "New entity type created"
+ ],
+ "야간 조 실측값 기준으로 0.5°C 낮춰 적용": [
+  "夜勤の実測値に基づき0.5°C下げて適用",
+  "Applied 0.5 °C lower, based on the night shift's measurements"
+ ],
+ "정기 점검 중이라 이번 회차는 보류": [
+  "定期点検中のため今回は保留",
+  "On hold this time: scheduled inspection in progress"
+ ],
+ "원래 크기로": [
+  "元のサイズに戻す",
+  "Restore size"
+ ],
+ "크게 보기": [
+  "拡大表示",
+  "Expand"
+ ],
+ "위험": [
+  "リスク",
+  "risk"
+ ],
+ "음성 입력": [
+  "音声入力",
+  "Voice input"
+ ],
+ "작업 오더 {id}를 발행했습니다": [
+  "作業オーダー {id} を発行しました",
+  "Work order {id} issued"
+ ],
+ "첨부 파일: {name}": [
+  "添付ファイル: {name}",
+  "Attachment: {name}"
+ ],
+ "충돌 3건을 해결하고 병합했습니다": [
+  "競合3件を解決してマージしました",
+  "Resolved 3 conflicts and merged"
+ ],
+ "클릭하면 다음 상태로 넘어갑니다": [
+  "クリックで次のステータスへ進みます",
+  "Click to move to the next status"
+ ],
+ "테스트 완료: 엔티티 1,262개 중 {n}건이 규칙에 걸렸습니다": [
+  "テスト完了: エンティティ1,262件中{n}件がルールに該当しました",
+  "Test done: {n} of 1,262 entities match the rule"
+ ],
+ "파일 첨부": [
+  "ファイルを添付",
+  "Attach file"
+ ],
+ "피크 요금 시간대(13~17시)를 피해 세척·건조 공정을 06~09시로 옮기면 하루 전력비를 약 8% 줄일 수 있습니다. 포장 라인은 현재 일정 그대로 유지하는 것이 좋습니다.": [
+  "ピーク料金の時間帯（13〜17時）を避けて洗浄・乾燥工程を6〜9時に移すと、1日の電力コストを約8%削減できます。包装ラインは現在のスケジュールのままが最適です。",
+  "Moving washing and drying to 06:00–09:00, out of the 13:00–17:00 peak tariff, cuts the day's power bill by about 8%. The packaging lines are best left on their current schedule."
+ ],
+ "필수 여부 전환": [
+  "必須/任意を切り替え",
+  "Toggle required"
+ ],
+ "일치하는 화면이 없어요": [
+  "一致する画面はありません",
+  "No matching screen"
+ ],
+ "클릭해서 켜기/끄기": [
+  "クリックでオン/オフ",
+  "Click to turn on/off"
+ ]
+}
