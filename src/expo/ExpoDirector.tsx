@@ -19,14 +19,16 @@ import { caseValue, formatHours, trimClearedExcursions, useMoney, type ViewerRol
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 /*
- * The booth's self-running demo. Each loop plays one event that really happens
- * on packaging lines and shows the platform resolving it on its own: a sensor
- * reading turns into a detection, the supervisor AI calls in the agents that
- * matter, they work out the cause together, the fix inside the AI's authority
- * is carried out and checked, and only a change beyond that authority waits on
- * a person. The panel beside the screens narrates who did what, second by
- * second, while the screens themselves switch to the worker, manager and
- * engineer views.
+ * The booth's self-running demo. Each loop plays one plant-wide event that
+ * really happens in packaging plants (a rush order, a sudden wave of defects,
+ * a late material delivery, a power peak) and shows the platform resolving it
+ * on its own: a signal turns into a detection, the supervisor AI calls in the
+ * agents that matter, they work it out together, whatever is inside the AI's
+ * authority is carried out and checked, and only a change beyond that
+ * authority waits on a person. The panel beside the screens narrates who did
+ * what, second by second, while the screens themselves switch to the worker,
+ * manager and engineer views. Any case can be picked from the panel; the loop
+ * carries on from there.
  *
  * A visitor touching the screen takes over: the director stops switching views
  * and approving on their behalf, and picks the loop up again once the screen
@@ -48,9 +50,10 @@ const PHASES: { id: Phase; label: string; role: ViewerRole; sec: number | null }
 const EXCURSION_TICKS = 14;
 const TICK_SEC = 2;
 
-type Who = 'sensor' | 'supervisor' | 'quality' | 'pm' | 'production' | 'logistics' | 'energy' | 'safety' | 'human';
+type Who = 'sensor' | 'erp' | 'supervisor' | 'quality' | 'pm' | 'production' | 'logistics' | 'energy' | 'safety' | 'human';
 const WHO: Record<Who, { name: string; color: string }> = {
   sensor: { name: '센서', color: '#64748b' },
+  erp: { name: '주문·구매 시스템', color: '#94a3b8' },
   supervisor: { name: '슈퍼바이저 AI', color: '#8b5cf6' },
   quality: { name: '품질 AI', color: '#10b981' },
   pm: { name: '설비 AI', color: '#f59e0b' },
@@ -68,6 +71,8 @@ interface Step { at: number; who: Who; text: string; kind?: StepKind }
 
 interface Scenario {
   kind: Excursion['kind'];
+  /** Name on the case picker. */
+  short: string;
   title: string;
   /** Why this happens in real plants, in a sentence. */
   context: string;
@@ -76,65 +81,103 @@ interface Scenario {
   autonomous: boolean;
   humanStep?: string;
   /** How the same event usually goes without the platform. */
+  /** The number that matters most for this case; an empty value shows the downtime prevented. */
+  outcome: { label: string; value: string };
   without: string;
   decision: Omit<AgentDecision, 'timestamp' | 'status'>;
 }
 
 const SCENARIOS: Scenario[] = [
   {
-    kind: 'temperature',
-    title: '포장기 실링 온도 이상',
-    context: '필름 롤을 새로 바꾼 뒤 실링 온도가 흔들리면서 포장 불량이 늘어나는, 포장 라인에서 흔히 생기는 일이에요.',
+    kind: 'rush_order',
+    short: '긴급 오더',
+    title: '긴급 오더 3만 개, 내일까지',
+    context: '큰 거래처에서 내일까지 제품을 더 달라는 긴급 주문이 들어왔어요. 생산 일정, 자재, 정비, 품질, 인력이 한꺼번에 얽히는 공장 전체의 문제예요.',
     steps: [
-      { at: 0, who: 'sensor', text: '포장기-01 실링부 온도가 176°C에서 181°C로 오르기 시작' },
-      { at: 1, who: 'quality', text: '실링 불량 징후 감지. 이대로면 불량률이 2.1%에서 7.3%로 오를 것으로 예측하고 슈퍼바이저에 보고' },
-      { at: 3, who: 'supervisor', text: '품질·설비·생산 AI를 불러 원인 분석 시작' },
-      { at: 4, who: 'pm', text: '히터와 제어기는 정상. 10분 전 필름 롤 교체 기록을 찾아냄: 새 롤의 두께 차이가 원인' },
-      { at: 5, who: 'production', text: '라인 속도를 5% 줄여도 오늘 납기에는 영향이 없음을 확인' },
-      { at: 6, who: 'supervisor', text: 'AI 권한 범위 안의 조치라 바로 실행: 실링 온도 2°C 낮춤, 라인 속도 5% 줄임', kind: 'auto' },
-      { at: 9, who: 'quality', text: '조치 후 불량률이 7.3%에서 2.4%로 돌아온 것을 확인', kind: 'verify' },
-      { at: 12, who: 'supervisor', text: '재발을 막으려면 기본 온도를 173°C로 바꿔야 함. 기본 설정 변경은 AI 권한 밖이라 현장 책임자에게 승인 요청', kind: 'ask' },
+      { at: 0, who: 'erp', text: '거래처에서 긴급 오더 접수: 제품 3만 개, 내일 18시까지' },
+      { at: 1, who: 'production', text: '지금 계획대로면 1만 8천 개가 모자람. 슈퍼바이저에 보고' },
+      { at: 3, who: 'supervisor', text: '생산·물류·설비·품질 AI를 불러 대응 방안 검토 시작' },
+      { at: 4, who: 'production', text: '라인 3·4의 작업 순서를 바꾸고 야간 1개 조를 더하면 내일 15시 완료 가능' },
+      { at: 5, who: 'logistics', text: '자재 재고 충분. 모자란 필름 2롤은 내일 오전 입고분을 앞당겨 받도록 조율' },
+      { at: 5, who: 'pm', text: '라인 4의 내일 10시 정기 정비는 모레로 미뤄도 위험 없음' },
+      { at: 6, who: 'quality', text: '처음 만드는 1천 개는 검사 표본을 2배로 늘려 품질 확인' },
+      { at: 7, who: 'supervisor', text: 'AI 권한 범위 안의 조치라 바로 실행: 라인 3·4 순서 재배치, 자재 선출고, 정비 일정 이동', kind: 'auto' },
+      { at: 10, who: 'production', text: '바뀐 계획으로 내일 15시 완료 예상. 다른 주문의 납기도 모두 지킴', kind: 'verify' },
+      { at: 12, who: 'supervisor', text: '야간 잔업 편성과 고객에게 보낼 납기 회신은 생산 관리자에게 승인 요청', kind: 'ask' },
     ],
     autonomous: false,
-    humanStep: '현장 책임자가 근거를 확인하고 승인. 기본 온도 173°C 적용',
-    without: '보통은 불량품이 쌓인 뒤에야 발견하고, 원인을 찾아 조정하기까지 2~3시간이 걸려요.',
+    humanStep: '생산 관리자가 승인. 야간 조 편성, 고객에게 내일 15시 납품 확정 회신',
+    outcome: { label: '긴급 오더 납기', value: '내일 15시 완료 (3시간 여유)' },
+    without: '보통은 생산 관리자가 일정을 다시 짜고 부서마다 전화를 돌리느라 반나절이 걸려요.',
     decision: {
-      agent: 'Quality Agent',
-      action: 'adjust_temperature',
-      target_equipment: '수축포장기-01',
-      recommended_value: 173.0,
+      agent: 'Production Agent',
+      action: 'approve_overtime',
+      target_equipment: '포장 3·4라인',
+      recommended_value: '야간 1개 조 추가',
       level: 2,
-      reasoning: '불량률이 7.3%로 상승함에 따라 최적 온도 173°C로 조정을 권장합니다. 과거 데이터 분석 결과 이 온도에서 불량률이 2.1%로 감소했습니다.',
+      reasoning: '긴급 오더 3만 개를 내일 18시까지 맞추려면 라인 3·4의 순서 재배치와 야간 1개 조 추가가 필요합니다. 다른 주문의 납기에는 영향이 없습니다.',
     },
   },
   {
-    kind: 'vibration',
-    title: '포장기 모터 베어링 마모',
-    context: '모터 베어링이 닳으면 진동이 서서히 커지다가 어느 순간 멈춰 버려요. 갑작스러운 정지는 라인 전체를 세워요.',
+    kind: 'mass_defect',
+    short: '대량 불량',
+    title: '두 라인에서 불량이 한꺼번에 급증',
+    context: '갑자기 여러 라인에서 같은 불량이 쏟아지면, 원인을 찾는 동안에도 불량품이 계속 만들어지고 출하될 수 있어요.',
     steps: [
-      { at: 0, who: 'sensor', text: '포장기-01 메인 모터 진동이 3.4에서 4.2mm/s로 상승 (기준 3.5 초과)' },
-      { at: 1, who: 'pm', text: '진동 패턴이 베어링 마모와 일치. 72시간 안에 고장 날 확률 85%로 예측' },
-      { at: 3, who: 'supervisor', text: '설비·생산·물류 AI를 불러 대응 계획 수립' },
-      { at: 4, who: 'production', text: '내일 06시 계획 정지 때 정비하면 생산 손실이 없음을 확인' },
-      { at: 5, who: 'logistics', text: '교체용 베어링 재고 2개 확인, 정비 시간에 맞춰 출고 예약' },
-      { at: 6, who: 'supervisor', text: 'AI 권한 범위 안의 조치라 바로 실행: 모터 부하 10% 낮춰 운전, 보전 작업 오더 초안 작성', kind: 'auto' },
-      { at: 9, who: 'pm', text: '감속 후 진동이 3.6mm/s로 안정. 예상 고장 시점이 계획 정지 이후로 늦춰짐', kind: 'verify' },
-      { at: 12, who: 'supervisor', text: '정비 일정 확정과 인력 배정은 보전 책임자에게 승인 요청', kind: 'ask' },
+      { at: 0, who: 'sensor', text: '포장 1·2라인 비전 검사 불량률이 0.8%에서 6.8%로 급등' },
+      { at: 1, who: 'quality', text: '두 라인에서 같은 인쇄 번짐 불량. 설비보다 자재 문제로 보고 슈퍼바이저에 보고' },
+      { at: 3, who: 'supervisor', text: '품질·물류·설비·생산 AI를 불러 원인과 영향 범위 추적 시작' },
+      { at: 4, who: 'logistics', text: '두 라인 모두 오늘 09시에 투입된 같은 필름 로트를 쓰고 있음을 확인' },
+      { at: 5, who: 'pm', text: '두 라인의 인쇄기와 히터는 정상. 설비 원인이 아님' },
+      { at: 6, who: 'supervisor', text: 'AI 권한 범위 안의 조치라 바로 실행: 해당 로트 사용 중지·격리, 다른 로트로 교체, 09시 이후 생산품 출하 보류', kind: 'auto' },
+      { at: 8, who: 'production', text: '로트 교체 20분을 반영해 오늘 생산 계획 재조정. 납기 영향 없음' },
+      { at: 10, who: 'quality', text: '교체 후 불량률이 0.8%로 회복. 보류 제품 4,800개는 전수 재검사 대상으로 분류', kind: 'verify' },
+      { at: 12, who: 'supervisor', text: '이미 출하된 2개 팔레트의 회수와 공급사 클레임은 품질 책임자에게 승인 요청', kind: 'ask' },
     ],
     autonomous: false,
-    humanStep: '보전 책임자가 승인. 작업 오더 확정, 정비 기사 배정',
-    without: '보통은 설비가 고장으로 멈춘 뒤에야 알게 되고, 부품을 구하는 동안 라인이 4~8시간 서요.',
+    humanStep: '품질 책임자가 승인. 회수 지시, 공급사에 클레임 접수',
+    outcome: { label: '고객에게 간 불량품', value: '0개 (보류·회수)' },
+    without: '보통은 고객 클레임이 들어온 뒤에야 알게 되고, 어느 로트가 문제인지 찾는 데 하루가 걸려요.',
     decision: {
-      agent: 'PM Agent',
-      action: 'inspect_bearing',
-      target_equipment: '수축포장기-01',
-      recommended_value: '교체 권장',
+      agent: 'Quality Agent',
+      action: 'recall_shipped',
+      target_equipment: '포장 1·2라인',
+      recommended_value: '2개 팔레트 회수',
+      level: 3,
+      reasoning: '불량은 오늘 09시에 투입된 필름 로트에서 시작됐습니다. 그 뒤 출하된 2개 팔레트가 같은 로트를 사용해 회수가 필요합니다.',
+    },
+  },
+  {
+    kind: 'supply_delay',
+    short: '자재 입고 지연',
+    title: '포장 필름 입고 6시간 지연',
+    context: '공급사 사정으로 원자재가 늦게 들어오면, 미리 손쓰지 않는 한 자재가 떨어지는 순간 라인이 멈춰요.',
+    steps: [
+      { at: 0, who: 'erp', text: '공급사가 포장 필름 입고가 14시에서 20시로 늦어진다고 통보' },
+      { at: 1, who: 'logistics', text: '지금 재고로는 16시에 라인 1·2가 자재 부족으로 멈출 것으로 예측' },
+      { at: 3, who: 'supervisor', text: '물류·생산·품질 AI를 불러 대응 검토 시작' },
+      { at: 4, who: 'production', text: '필름 재고가 있는 다른 품목을 먼저 생산하도록 순서를 바꾸면 라인이 멈추지 않음' },
+      { at: 5, who: 'quality', text: '품목이 바뀔 때 첫 제품 검사 조건을 자동으로 바꿔 둠' },
+      { at: 6, who: 'supervisor', text: 'AI 권한 범위 안의 조치라 바로 실행: 생산 순서 변경, 창고 대체 자재 선출고, AMR 운반 순서 재배치', kind: 'auto' },
+      { at: 9, who: 'logistics', text: '20시 입고 전까지 자재가 끊기지 않고 생산이 이어짐을 확인', kind: 'verify' },
+      { at: 12, who: 'supervisor', text: '같은 지연이 이번 달 두 번째. 대체 공급사 긴급 발주(단가 4% 높음)는 구매 담당자에게 승인 요청', kind: 'ask' },
+    ],
+    autonomous: false,
+    humanStep: '구매 담당자가 승인. 대체 공급사에 발주',
+    outcome: { label: '막은 라인 정지', value: '' },
+    without: '보통은 자재가 떨어져 라인이 멈춘 뒤에야 일정을 바꾸고, 그동안 라인이 몇 시간씩 서요.',
+    decision: {
+      agent: 'Logistics Agent',
+      action: 'switch_supplier',
+      target_equipment: '원자재 창고',
+      recommended_value: '대체 공급사 긴급 발주',
       level: 2,
-      reasoning: '진동 수치가 4.2mm/s로 임계치(3.5)를 초과했습니다. 72시간 내 베어링 파손 위험이 85%로 예측됩니다.',
+      reasoning: '같은 공급사의 입고 지연이 이번 달 두 번째입니다. 다음 주 생산분 일부는 대체 공급사로 나눠 발주하는 것이 안전합니다.',
     },
   },
   {
     kind: 'energy',
+    short: '피크 전력',
     title: '여름 오후 피크 전력 초과 위험',
     context: '더운 오후에 공조와 설비가 한꺼번에 돌면 계약 전력을 넘기 쉬워요. 한 번만 넘어도 1년 내내 기본요금이 올라요.',
     steps: [
@@ -148,6 +191,7 @@ const SCENARIOS: Scenario[] = [
       { at: 12, who: 'supervisor', text: '사람 손을 거치지 않고 해결. 관리자에게 결과만 보고하고 기록', kind: 'done' },
     ],
     autonomous: true,
+    outcome: { label: '계약 전력 초과', value: '0회' },
     without: '보통은 전력 경보가 울린 뒤 담당자가 뛰어가 설비를 끄지만, 이미 넘은 뒤인 경우가 많아요.',
     decision: {
       agent: 'Energy Agent',
@@ -246,6 +290,8 @@ export function ExpoDirector({
   };
 
   const startLoop = (next: number) => {
+    // A case picked mid-event lets the running one settle first.
+    if (plant.excursion) startExcursion(plant.excursion.kind, 1);
     // A demo that loops all day keeps only the last few cases, so "today" stays believable.
     trimClearedExcursions(2);
     setDecisions(prev => prev.slice(0, 3));
@@ -281,12 +327,15 @@ export function ExpoDirector({
     if (phase === 'approval' && proposal && proposal.status !== 'pending') setPhase('results');
   }, [phase, proposal?.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const restart = () => {
+  /** Play one case now, from its start. */
+  const pick = (i: number) => {
     setAutoplay(true);
     setTouched(false);
-    startLoop(0);
+    startLoop(i);
     setRole('worker');
   };
+
+  const restart = () => pick(0);
 
   /** Readings since the event started; every step is shown once the event is over. */
   const elapsed = phase === 'intro' ? -1 : phase === 'live' && plant.excursion ? EXCURSION_TICKS - plant.excursion.remaining : EXCURSION_TICKS;
@@ -314,6 +363,19 @@ export function ExpoDirector({
       {/* What the visitor is watching */}
       <div className="border-b border-border p-4">
         <div className="text-[10px] font-black tracking-wider text-accent">{t('사례 {n} / {total}', { n: scenarioIndex + 1, total: SCENARIOS.length })}</div>
+        <div className="mb-2 flex flex-wrap gap-1" role="group" aria-label={t('사례 고르기')}>
+          {SCENARIOS.map((c, i) => (
+            <button
+              key={c.kind}
+              onClick={() => pick(i)}
+              aria-pressed={i === scenarioIndex}
+              className={cn(
+                'rounded-lg border px-2 py-1 text-[11px] font-bold transition-colors',
+                i === scenarioIndex ? 'border-accent bg-accent text-white' : 'border-border text-text-secondary hover:border-accent/50 hover:text-text-primary',
+              )}
+            >{i + 1}. {t(c.short)}</button>
+          ))}
+        </div>
         <h2 className="mt-0.5 text-lg font-black leading-snug">{t(scenario.title)}</h2>
         <p className="mt-1 text-xs leading-relaxed text-text-secondary">{t(scenario.context)}</p>
         <ol className="mt-3 flex items-start">
@@ -362,9 +424,7 @@ export function ExpoDirector({
             <div className="grid grid-cols-2 gap-2">
               <Fact icon={<Clock size={12} />} label={t('감지부터 첫 조치까지')} value={t('{sec}초', { sec: firstAction * TICK_SEC })} />
               <Fact icon={<UserCheck size={12} />} label={t('사람이 한 일')} value={scenario.autonomous ? t('없음 (결과 보고만)') : t('승인 1번')} />
-              {value.hours > 0 && scenario.kind !== 'energy'
-                ? <Fact icon={<ShieldCheck size={12} />} label={t('막은 라인 정지')} value={formatHours(value.hours)} />
-                : <Fact icon={<ShieldCheck size={12} />} label={t('계약 전력 초과')} value={t('0회')} />}
+              <Fact icon={<ShieldCheck size={12} />} label={t(scenario.outcome.label)} value={scenario.outcome.value ? t(scenario.outcome.value) : formatHours(value.hours)} />
               <Fact icon={<Coins size={12} />} label={t('아낀 비용 (추정)')} value={money(value.krw)} />
             </div>
             <p className="mt-2 text-[11px] leading-relaxed text-text-secondary">{t('플랫폼이 없었다면: {text}', { text: t(scenario.without) })}</p>

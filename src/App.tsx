@@ -157,7 +157,7 @@ import { AppliedTuningCard, ScreenGuide, TuningModal, menuSummary, useModuleTuni
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
 import { useLiveValue } from './hooks/useLiveValue';
-import { livingSeries, type PlantState } from './services/telemetry';
+import { livingSeries, type Excursion, type PlantState } from './services/telemetry';
 import { chartPalette, useTheme } from './theme';
 
 /** Placeholder shown while a lazily loaded chunk arrives. */
@@ -2221,7 +2221,8 @@ const AGENT_HIERARCHY: {
   role: string;
   decisionAgent: string;
   menuId: number | null;
-  excursion?: 'temperature' | 'vibration' | 'energy';
+  /** Plant events that stall this agent until they clear. */
+  excursions?: Excursion['kind'][];
   color: string;
   hex: string;
   icon: React.ReactNode;
@@ -2231,7 +2232,7 @@ const AGENT_HIERARCHY: {
 }[] = [
   {
     key: 'quality', coordId: 'qual', name: 'AI 품질 에이전트', role: '비전 기반 결함 100% 전수 검출',
-    decisionAgent: 'Quality Agent', menuId: 1, excursion: 'temperature',
+    decisionAgent: 'Quality Agent', menuId: 1, excursions: ['temperature', 'mass_defect'],
     color: 'text-emerald-500', hex: '#10b981', icon: <ShieldCheck size={16} />,
     models: [{ name: 'Anomalib', task: '비지도 이상 탐지' }, { name: 'YOLOv8', task: '결함 객체 검출' }],
     tasks: ['포장1라인 실링 비전 전수검사', 'B라인 핀홀 결함 재학습 데이터 수집', '불량 유형별 원인 추적 리포트 생성', 'YOLOv8 결함 검출 임계값 보정'],
@@ -2239,7 +2240,7 @@ const AGENT_HIERARCHY: {
   },
   {
     key: 'pm', coordId: 'pm', name: 'AI 설비예지보전 에이전트', role: '진동·온도·토크 시계열 분석',
-    decisionAgent: 'PM Agent', menuId: 6, excursion: 'vibration',
+    decisionAgent: 'PM Agent', menuId: 6, excursions: ['vibration'],
     color: 'text-purple-500', hex: '#8b5cf6', icon: <Wrench size={16} />,
     models: [{ name: 'LSTM', task: '시계열 이상 예측' }, { name: 'RUL Regressor', task: '잔여수명·돌발 셧다운 예측' }],
     tasks: ['수축포장기-01 진동 스펙트럼 분석', '메인 모터 베어링 잔여수명 예측', '정비 작업지시서 자동 발행', '감속기 토크 이상 패턴 학습'],
@@ -2255,7 +2256,7 @@ const AGENT_HIERARCHY: {
   },
   {
     key: 'production', coordId: 'prod', name: 'AI 생산 최적화 에이전트', role: '택트타임·설비종합효율 실시간 추적',
-    decisionAgent: 'Production Agent', menuId: 11,
+    decisionAgent: 'Production Agent', menuId: 11, excursions: ['rush_order'],
     color: 'text-blue-500', hex: '#3b82f6', icon: <TrendingUp size={16} />,
     models: [{ name: 'XGBoost', task: 'OEE 손실 요인 분석' }, { name: 'Bottleneck Detector', task: '병목 구간 식별' }],
     tasks: ['포장1라인 택트타임 추적', 'OEE 손실 요인 분해 분석', '긴급 오더 생산 일정 재조정', '라인 밸런싱 시뮬레이션'],
@@ -2263,7 +2264,7 @@ const AGENT_HIERARCHY: {
   },
   {
     key: 'energy', coordId: 'energy', name: 'AI 에너지 에이전트', role: '피크 부하·태양광 통합 분석',
-    decisionAgent: 'Energy Agent', menuId: 16, excursion: 'energy',
+    decisionAgent: 'Energy Agent', menuId: 16, excursions: ['energy'],
     color: 'text-orange-500', hex: '#f97316', icon: <Zap size={16} />,
     models: [{ name: 'Prophet', task: '피크 부하 예측' }, { name: 'GRU', task: '태양광 발전량 예측' }],
     tasks: ['15분 단위 피크 부하 예측', '태양광 발전량 예측 반영', 'ESS 충·방전 스케줄 최적화', '공조 설비 부하 이전 계획'],
@@ -2271,7 +2272,7 @@ const AGENT_HIERARCHY: {
   },
   {
     key: 'logistics', coordId: 'logistics', name: 'AI 물류 에이전트', role: 'AMR 최적 경로·회피 시뮬레이션',
-    decisionAgent: 'Logistics Agent', menuId: null,
+    decisionAgent: 'Logistics Agent', menuId: null, excursions: ['supply_delay'],
     color: 'text-yellow-500', hex: '#eab308', icon: <Truck size={16} />,
     models: [{ name: 'RL Path Planner', task: 'AMR 최적 경로 탐색' }, { name: 'RTD / ACS', task: '배차·이송 명령 하달' }],
     tasks: ['AMR 이송 경로 최적화', '완제품 출하 버퍼 슬롯 배정', '자재 투입 배차 명령 하달', 'AMR 충전 스케줄 조정'],
@@ -2355,7 +2356,7 @@ function deriveAgentWork(plant: PlantState, decisions: AgentDecision[]) {
     const phase = t0 % cycle;
     resolvedToday[agent.key] = 18 + i * 3 + round;
 
-    const byExcursion = agent.excursion !== undefined && plant.excursion?.kind === agent.excursion;
+    const byExcursion = plant.excursion !== null && (agent.excursions ?? []).includes(plant.excursion.kind);
     const byRotation = !plant.excursion && agent.key === rotatingStall && stallPhase < STALL_TICKS;
     if (byExcursion || byRotation) {
       stalled.add(agent.key);

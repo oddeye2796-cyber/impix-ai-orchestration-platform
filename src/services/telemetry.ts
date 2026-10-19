@@ -35,7 +35,11 @@ export interface PlantState {
 }
 
 export interface Excursion {
-  kind: 'temperature' | 'vibration' | 'energy';
+  /**
+   * Sensor-level faults, plus the plant-wide events the expo director stages
+   * (a rush order, a sudden wave of defects, a late material delivery).
+   */
+  kind: 'temperature' | 'vibration' | 'energy' | 'rush_order' | 'mass_defect' | 'supply_delay';
   /** Ticks remaining before the plant settles back down. */
   remaining: number;
 }
@@ -99,17 +103,17 @@ function nextState(prev: PlantState): PlantState {
   const tempPenalty = Math.abs(temperature - NOMINAL.temperature) * 0.42;
   const vibPenalty = Math.max(0, vibration - 3.8) * 1.9;
   const defectRate = clamp(
-    drift(prev.defectRate, 1.1 + tempPenalty + vibPenalty, 0.25, 0.35),
+    drift(prev.defectRate, 1.1 + tempPenalty + vibPenalty + push('mass_defect', 5.5), 0.25, 0.35),
     0.4,
     9.5,
   );
 
   const quality = clamp(100 - defectRate * 1.6, 86, 99.8);
-  const performance = clamp(drift(prev.performance, 94 - Math.max(0, vibration - 3.6) * 6, 0.15, 0.9), 72, 99);
+  const performance = clamp(drift(prev.performance, 94 - Math.max(0, vibration - 3.6) * 6 - push('supply_delay', 9), 0.15, 0.9), 72, 99);
   const availability = clamp(drift(prev.availability, excursion ? 91 : 96.5, 0.12, 0.7), 78, 99.5);
   const oee = (availability * performance * quality) / 10000;
 
-  const energyKw = Math.round(clamp(drift(prev.energyKw, NOMINAL.energy + push('energy', 260), 0.18, 45), 900, 1850));
+  const energyKw = Math.round(clamp(drift(prev.energyKw, NOMINAL.energy + push('energy', 260) + push('rush_order', 140), 0.18, 45), 900, 1850));
 
   const reading: SensorData = {
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),

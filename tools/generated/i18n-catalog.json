@@ -2761,7 +2761,6 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
-      "src/expo/ExpoDirector.tsx",
       "src/services/demoResponses.ts"
     ]
   },
@@ -3163,8 +3162,7 @@
     "key": "불량률이 7.3%로 상승함에 따라 최적 온도 173°C로 조정을 권장합니다. 과거 데이터 분석 결과 이 온도에서 불량률이 2.1%로 감소했습니다.",
     "lang": "ko",
     "files": [
-      "src/App.tsx",
-      "src/expo/ExpoDirector.tsx"
+      "src/App.tsx"
     ]
   },
   {
@@ -3374,7 +3372,6 @@
       "src/App.tsx",
       "src/config/pharmaSite.ts",
       "src/config/siteProfile.ts",
-      "src/expo/ExpoDirector.tsx",
       "src/services/demoResponses.ts",
       "src/services/telemetry.ts"
     ]
@@ -3938,8 +3935,7 @@
     "key": "진동 수치가 4.2mm/s로 임계치(3.5)를 초과했습니다. 72시간 내 베어링 파손 위험이 85%로 예측됩니다.",
     "lang": "ko",
     "files": [
-      "src/App.tsx",
-      "src/expo/ExpoDirector.tsx"
+      "src/App.tsx"
     ]
   },
   {
@@ -4807,6 +4803,13 @@
     ]
   },
   {
+    "key": "공급사 로트 불량",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "공장 배치도",
     "lang": "ko",
     "files": [
@@ -4856,6 +4859,27 @@
     ]
   },
   {
+    "key": "긴급 오더 3만 개 접수 (내일 18시 납기)",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 대응 계획",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "긴급 입고분 수입 검사 일정 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "내가 할 일",
     "lang": "ko",
     "files": [
@@ -4877,7 +4901,28 @@
     ]
   },
   {
+    "key": "대체 공급사에 필름 긴급 발주",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "라인 3 품목 전환 준비",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "라인 3·4 작업 순서 재배치, 자재 선출고",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4899,6 +4944,13 @@
   },
   {
     "key": "모터 소음·발열 육안 점검",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "문제 필름 로트 사용 중지·격리, 의심 제품 출하 보류",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -4942,6 +4994,13 @@
   },
   {
     "key": "보는 사람",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "보류 팔레트 표시 확인",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5071,7 +5130,21 @@
     ]
   },
   {
+    "key": "야간 잔업 편성 후 고객에게 납기 확정 회신",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "야간 정지 시간에 감속기 점검 완료",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "야간 조 인원 확정",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5128,7 +5201,21 @@
     ]
   },
   {
+    "key": "원자재 입고 지연",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "이 구역에는 오늘 사건이 없어요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "이미 출하된 2개 팔레트 회수, 공급사에 클레임 제기",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5150,6 +5237,13 @@
   },
   {
     "key": "장력 자동 보정, 정지 없이 생산 유지",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "재고 있는 품목부터 생산 순서 변경",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5220,7 +5314,28 @@
     ]
   },
   {
+    "key": "창고 대체 자재 위치 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "충전 순서 재배치, 공급 간격 단축",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "포장 1·2라인 인쇄 불량 급증 (불량률 6.8%)",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "포장 필름 입고 6시간 지연 통보",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5279,6 +5394,13 @@
   },
   {
     "key": "현재 설비종합효율",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "회수 대상 거래처 연락",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -9316,6 +9438,13 @@
     ]
   },
   {
+    "key": "0개 (보류·회수)",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "0회",
     "lang": "ko",
     "files": [
@@ -9330,7 +9459,21 @@
     ]
   },
   {
-    "key": "AI 권한 범위 안의 조치라 바로 실행: 모터 부하 10% 낮춰 운전, 보전 작업 오더 초안 작성",
+    "key": "20시 입고 전까지 자재가 끊기지 않고 생산이 이어짐을 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "2개 팔레트 회수",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "AI 권한 범위 안의 조치라 바로 실행: 라인 3·4 순서 재배치, 자재 선출고, 정비 일정 이동",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9344,7 +9487,14 @@
     ]
   },
   {
-    "key": "AI 권한 범위 안의 조치라 바로 실행: 실링 온도 2°C 낮춤, 라인 속도 5% 줄임",
+    "key": "AI 권한 범위 안의 조치라 바로 실행: 생산 순서 변경, 창고 대체 자재 선출고, AMR 운반 순서 재배치",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "AI 권한 범위 안의 조치라 바로 실행: 해당 로트 사용 중지·격리, 다른 로트로 교체, 09시 이후 생산품 출하 보류",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9379,14 +9529,35 @@
     ]
   },
   {
-    "key": "감속 후 진동이 3.6mm/s로 안정. 예상 고장 시점이 계획 정지 이후로 늦춰짐",
+    "key": "감지부터 첫 조치까지",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "감지부터 첫 조치까지",
+    "key": "갑자기 여러 라인에서 같은 불량이 쏟아지면, 원인을 찾는 동안에도 불량품이 계속 만들어지고 출하될 수 있어요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "같은 공급사의 입고 지연이 이번 달 두 번째입니다. 다음 주 생산분 일부는 대체 공급사로 나눠 발주하는 것이 안전합니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "같은 지연이 이번 달 두 번째. 대체 공급사 긴급 발주(단가 4% 높음)는 구매 담당자에게 승인 요청",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "거래처에서 긴급 오더 접수: 제품 3만 개, 내일 18시까지",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9407,7 +9578,28 @@
     ]
   },
   {
+    "key": "고객에게 간 불량품",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "곧 이 사건이 공장에서 일어납니다. 왼쪽 공장 지도와 이 패널을 함께 봐 주세요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "공급사 사정으로 원자재가 늦게 들어오면, 미리 손쓰지 않는 한 자재가 떨어지는 순간 라인이 멈춰요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "공급사가 포장 필름 입고가 14시에서 20시로 늦어진다고 통보",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9421,14 +9613,49 @@
     ]
   },
   {
-    "key": "교체용 베어링 재고 2개 확인, 정비 시간에 맞춰 출고 예약",
+    "key": "교체 후 불량률이 0.8%로 회복. 보류 제품 4,800개는 전수 재검사 대상으로 분류",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "내일 06시 계획 정지 때 정비하면 생산 손실이 없음을 확인",
+    "key": "구매 담당자가 승인. 대체 공급사에 발주",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 3만 개, 내일까지",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 3만 개를 내일 18시까지 맞추려면 라인 3·4의 순서 재배치와 야간 1개 조 추가가 필요합니다. 다른 주문의 납기에는 영향이 없습니다.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "긴급 오더 납기",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "내일 15시 완료 (3시간 여유)",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9449,6 +9676,20 @@
     ]
   },
   {
+    "key": "대량 불량",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "대체 공급사 긴급 발주",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "더운 오후에 공조와 설비가 한꺼번에 돌면 계약 전력을 넘기 쉬워요. 한 번만 넘어도 1년 내내 기본요금이 올라요.",
     "lang": "ko",
     "files": [
@@ -9456,7 +9697,49 @@
     ]
   },
   {
-    "key": "라인 속도를 5% 줄여도 오늘 납기에는 영향이 없음을 확인",
+    "key": "두 라인 모두 오늘 09시에 투입된 같은 필름 로트를 쓰고 있음을 확인",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인에서 같은 인쇄 번짐 불량. 설비보다 자재 문제로 보고 슈퍼바이저에 보고",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인에서 불량이 한꺼번에 급증",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "두 라인의 인쇄기와 히터는 정상. 설비 원인이 아님",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "라인 3·4의 작업 순서를 바꾸고 야간 1개 조를 더하면 내일 15시 완료 가능",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "라인 4의 내일 10시 정기 정비는 모레로 미뤄도 위험 없음",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "로트 교체 20분을 반영해 오늘 생산 계획 재조정. 납기 영향 없음",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9477,28 +9760,35 @@
     ]
   },
   {
-    "key": "모터 베어링이 닳으면 진동이 서서히 커지다가 어느 순간 멈춰 버려요. 갑작스러운 정지는 라인 전체를 세워요.",
+    "key": "물류·생산·품질 AI를 불러 대응 검토 시작",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "보전 책임자가 승인. 작업 오더 확정, 정비 기사 배정",
+    "key": "바뀐 계획으로 내일 15시 완료 예상. 다른 주문의 납기도 모두 지킴",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "보통은 불량품이 쌓인 뒤에야 발견하고, 원인을 찾아 조정하기까지 2~3시간이 걸려요.",
+    "key": "보통은 고객 클레임이 들어온 뒤에야 알게 되고, 어느 로트가 문제인지 찾는 데 하루가 걸려요.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "보통은 설비가 고장으로 멈춘 뒤에야 알게 되고, 부품을 구하는 동안 라인이 4~8시간 서요.",
+    "key": "보통은 생산 관리자가 일정을 다시 짜고 부서마다 전화를 돌리느라 반나절이 걸려요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "보통은 자재가 떨어져 라인이 멈춘 뒤에야 일정을 바꾸고, 그동안 라인이 몇 시간씩 서요.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9506,6 +9796,13 @@
   },
   {
     "key": "보통은 전력 경보가 울린 뒤 담당자가 뛰어가 설비를 끄지만, 이미 넘은 뒤인 경우가 많아요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "불량은 오늘 09시에 투입된 필름 로트에서 시작됐습니다. 그 뒤 출하된 2개 팔레트가 같은 로트를 사용해 회수가 필요합니다.",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9561,6 +9858,20 @@
     ]
   },
   {
+    "key": "사례 고르기",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "생산 관리자가 승인. 야간 조 편성, 고객에게 내일 15시 납품 확정 회신",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "생산 설비는 그대로 두기로. 공조·컴프레서는 20분 늦춰도 품질 영향이 없음을 확인",
     "lang": "ko",
     "files": [
@@ -9568,14 +9879,14 @@
     ]
   },
   {
-    "key": "설비 AI",
+    "key": "생산·물류·설비·품질 AI를 불러 대응 방안 검토 시작",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "설비·생산·물류 AI를 불러 대응 계획 수립",
+    "key": "설비 AI",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9610,14 +9921,21 @@
     ]
   },
   {
-    "key": "실링 불량 징후 감지. 이대로면 불량률이 2.1%에서 7.3%로 오를 것으로 예측하고 슈퍼바이저에 보고",
+    "key": "아낀 비용 (추정)",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "아낀 비용 (추정)",
+    "key": "야간 1개 조 추가",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "야간 잔업 편성과 고객에게 보낼 납기 회신은 생산 관리자에게 승인 요청",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9666,6 +9984,20 @@
     ]
   },
   {
+    "key": "원자재 창고",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "이미 출하된 2개 팔레트의 회수와 공급사 클레임은 품질 책임자에게 승인 요청",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "자동 데모 일시정지",
     "lang": "ko",
     "files": [
@@ -9708,7 +10040,14 @@
     ]
   },
   {
-    "key": "재발을 막으려면 기본 온도를 173°C로 바꿔야 함. 기본 설정 변경은 AI 권한 밖이라 현장 책임자에게 승인 요청",
+    "key": "자재 입고 지연",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "자재 재고 충분. 모자란 필름 2롤은 내일 오전 입고분을 앞당겨 받도록 조율",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9722,14 +10061,21 @@
     ]
   },
   {
-    "key": "정비 일정 확정과 인력 배정은 보전 책임자에게 승인 요청",
+    "key": "주문·구매 시스템",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "조치 후 불량률이 7.3%에서 2.4%로 돌아온 것을 확인",
+    "key": "지금 계획대로면 1만 8천 개가 모자람. 슈퍼바이저에 보고",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "지금 재고로는 16시에 라인 1·2가 자재 부족으로 멈출 것으로 예측",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9743,7 +10089,7 @@
     ]
   },
   {
-    "key": "진동 패턴이 베어링 마모와 일치. 72시간 안에 고장 날 확률 85%로 예측",
+    "key": "처음 만드는 1천 개는 검사 표본을 2배로 늘려 품질 확인",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9757,6 +10103,13 @@
     ]
   },
   {
+    "key": "큰 거래처에서 내일까지 제품을 더 달라는 긴급 주문이 들어왔어요. 생산 일정, 자재, 정비, 품질, 인력이 한꺼번에 얽히는 공장 전체의 문제예요.",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "판단 기록",
     "lang": "ko",
     "files": [
@@ -9764,35 +10117,49 @@
     ]
   },
   {
-    "key": "포장기 모터 베어링 마모",
+    "key": "포장 1·2라인",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "포장기 실링 온도 이상",
+    "key": "포장 1·2라인 비전 검사 불량률이 0.8%에서 6.8%로 급등",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "포장기-01 메인 모터 진동이 3.4에서 4.2mm/s로 상승 (기준 3.5 초과)",
+    "key": "포장 3·4라인",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "포장기-01 실링부 온도가 176°C에서 181°C로 오르기 시작",
+    "key": "포장 필름 입고 6시간 지연",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
     ]
   },
   {
-    "key": "품질·설비·생산 AI를 불러 원인 분석 시작",
+    "key": "품목이 바뀔 때 첫 제품 검사 조건을 자동으로 바꿔 둠",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "품질 책임자가 승인. 회수 지시, 공급사에 클레임 접수",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "품질·물류·설비·생산 AI를 불러 원인과 영향 범위 추적 시작",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9813,7 +10180,14 @@
     ]
   },
   {
-    "key": "필름 롤을 새로 바꾼 뒤 실링 온도가 흔들리면서 포장 불량이 늘어나는, 포장 라인에서 흔히 생기는 일이에요.",
+    "key": "피크 전력",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "필름 재고가 있는 다른 품목을 먼저 생산하도록 순서를 바꾸면 라인이 멈추지 않음",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9821,13 +10195,6 @@
   },
   {
     "key": "해결 완료",
-    "lang": "ko",
-    "files": [
-      "src/expo/ExpoDirector.tsx"
-    ]
-  },
-  {
-    "key": "현장 책임자가 근거를 확인하고 승인. 기본 온도 173°C 적용",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -9856,13 +10223,6 @@
   },
   {
     "key": "효과 확인",
-    "lang": "ko",
-    "files": [
-      "src/expo/ExpoDirector.tsx"
-    ]
-  },
-  {
-    "key": "히터와 제어기는 정상. 10분 전 필름 롤 교체 기록을 찾아냄: 새 롤의 두께 차이가 원인",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"

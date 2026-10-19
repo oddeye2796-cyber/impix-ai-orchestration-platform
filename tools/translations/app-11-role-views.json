@@ -84,7 +84,7 @@
  "제안 내용 확인 후 승인": ["提案内容を確認して承認", "Review the proposal and approve"],
  "조치 제안": ["措置提案", "Proposed"],
  "중앙 관제실": ["中央管制室", "Central control room"],
- "지금 내가 할 일 {n}건": ["今やること {n}件", "{n} things for you to do now"],
+ "지금 내가 할 일 {n}건": ["今やること {n}件", "To do now: {n}"],
  "지금 할 일이 없어요": ["今やることはありません", "Nothing for you to do right now"],
  "진동 상승 추세": ["振動の上昇傾向", "vibration trending up"],
  "최근 {n}개 측정값": ["直近{n}件の測定値", "last {n} readings"],

@@ -1710,5 +1710,309 @@
   "부하를 이 아래로 유지하려고 해요. 너무 낮게 잡으면 배터리가 일찍 바닥나 정작 큰 피크를 못 막아요.": [
     "負荷をこれ以下に保とうとします。低くしすぎると蓄電池が早く尽き、肝心の大きなピークを抑えられません。",
     "Tries to keep load below this. Set it too low and the battery runs out early, leaving the big peak uncovered."
+  ],
+  "공급사 로트 불량": [
+    "サプライヤーのロット不良",
+    "Supplier lot defect"
+  ],
+  "긴급 오더 3만 개 접수 (내일 18시 납기)": [
+    "緊急オーダー3万個を受注（明日18時納期）",
+    "Rush order for 30,000 units (due 18:00 tomorrow)"
+  ],
+  "긴급 오더 대응 계획": [
+    "緊急オーダー対応計画",
+    "rush-order plan"
+  ],
+  "긴급 입고분 수입 검사 일정 확인": [
+    "緊急入荷分の受入検査日程を確認",
+    "Schedule incoming inspection for the rush delivery"
+  ],
+  "대체 공급사에 필름 긴급 발주": [
+    "代替サプライヤーにフィルムを緊急発注",
+    "Rush-order film from the alternate supplier"
+  ],
+  "라인 3 품목 전환 준비": [
+    "ライン3の品目切替を準備",
+    "Prepare line 3 for the product changeover"
+  ],
+  "라인 3·4 작업 순서 재배치, 자재 선출고": [
+    "ライン3・4の作業順を組み替え、資材を先出し",
+    "Resequence lines 3 and 4, release materials early"
+  ],
+  "문제 필름 로트 사용 중지·격리, 의심 제품 출하 보류": [
+    "問題のフィルムロットを使用停止・隔離し、疑わしい製品の出荷を保留",
+    "Stop and quarantine the bad film lot, hold suspect products"
+  ],
+  "보류 팔레트 표시 확인": [
+    "保留パレットの表示を確認",
+    "Check the held pallets are tagged"
+  ],
+  "야간 잔업 편성 후 고객에게 납기 확정 회신": [
+    "夜間残業を編成し、顧客に納期確定を回答",
+    "Schedule a night shift and confirm the delivery date to the customer"
+  ],
+  "야간 조 인원 확정": [
+    "夜間班の人員を確定",
+    "Confirm night-shift staff"
+  ],
+  "원자재 입고 지연": [
+    "原材料の入荷遅延",
+    "late material delivery"
+  ],
+  "이미 출하된 2개 팔레트 회수, 공급사에 클레임 제기": [
+    "出荷済みの2パレットを回収し、サプライヤーにクレームを提起",
+    "Recall the 2 pallets already shipped and file a supplier claim"
+  ],
+  "재고 있는 품목부터 생산 순서 변경": [
+    "在庫のある品目から生産順を変更",
+    "Resequence production to items with materials in stock"
+  ],
+  "창고 대체 자재 위치 확인": [
+    "倉庫の代替資材の位置を確認",
+    "Locate substitute materials in the warehouse"
+  ],
+  "포장 1·2라인 인쇄 불량 급증 (불량률 6.8%)": [
+    "包装ライン1・2で印刷不良が急増（不良率6.8%）",
+    "Print defects surge on packing lines 1 and 2 (6.8%)"
+  ],
+  "포장 필름 입고 6시간 지연 통보": [
+    "包装フィルムの入荷が6時間遅れると通知",
+    "Packing film delivery delayed by 6 hours"
+  ],
+  "회수 대상 거래처 연락": [
+    "回収対象の取引先に連絡",
+    "Contact the customers affected by the recall"
+  ],
+  "0개 (보류·회수)": [
+    "0個（保留・回収）",
+    "0 (held or recalled)"
+  ],
+  "20시 입고 전까지 자재가 끊기지 않고 생산이 이어짐을 확인": [
+    "20時の入荷まで資材が途切れず生産が続くことを確認",
+    "Confirms production runs without a material gap until the 20:00 delivery"
+  ],
+  "2개 팔레트 회수": [
+    "2パレット回収",
+    "Recall 2 pallets"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 라인 3·4 순서 재배치, 자재 선출고, 정비 일정 이동": [
+    "AIの権限内の対応なので即実行: ライン3・4の順序組み替え、資材の先出し、整備日程の移動",
+    "Within the AI's authority, so done at once: lines 3 and 4 resequenced, materials released early, maintenance moved"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 생산 순서 변경, 창고 대체 자재 선출고, AMR 운반 순서 재배치": [
+    "AIの権限内の対応なので即実行: 生産順の変更、倉庫の代替資材の先出し、AMR搬送順の組み替え",
+    "Within the AI's authority, so done at once: production resequenced, substitute materials released, AMR runs reordered"
+  ],
+  "AI 권한 범위 안의 조치라 바로 실행: 해당 로트 사용 중지·격리, 다른 로트로 교체, 09시 이후 생산품 출하 보류": [
+    "AIの権限内の対応なので即実行: 該当ロットを使用停止・隔離、別ロットに交換、9時以降の生産品を出荷保留",
+    "Within the AI's authority, so done at once: lot stopped and quarantined, swapped for another, everything made since 09:00 held"
+  ],
+  "갑자기 여러 라인에서 같은 불량이 쏟아지면, 원인을 찾는 동안에도 불량품이 계속 만들어지고 출하될 수 있어요.": [
+    "突然複数のラインで同じ不良が多発すると、原因を探している間にも不良品が作られ、出荷されてしまうことがあります。",
+    "When the same defect suddenly floods several lines, bad products keep being made and shipped while people look for the cause."
+  ],
+  "같은 공급사의 입고 지연이 이번 달 두 번째입니다. 다음 주 생산분 일부는 대체 공급사로 나눠 발주하는 것이 안전합니다.": [
+    "同じサプライヤーの入荷遅延は今月2回目です。来週の生産分の一部は代替サプライヤーに分けて発注するのが安全です。",
+    "This is the supplier's second late delivery this month. Splitting part of next week's order to an alternate supplier is safer."
+  ],
+  "같은 지연이 이번 달 두 번째. 대체 공급사 긴급 발주(단가 4% 높음)는 구매 담당자에게 승인 요청": [
+    "同じ遅延は今月2回目。代替サプライヤーへの緊急発注（単価4%高）は購買担当者に承認を依頼",
+    "Second delay this month. Asks purchasing to approve a rush order from an alternate supplier (4% dearer)"
+  ],
+  "거래처에서 긴급 오더 접수: 제품 3만 개, 내일 18시까지": [
+    "取引先から緊急オーダーを受注: 製品3万個、明日18時まで",
+    "Rush order from a customer: 30,000 units by 18:00 tomorrow"
+  ],
+  "고객에게 간 불량품": [
+    "顧客に届いた不良品",
+    "Defects reaching customers"
+  ],
+  "공급사 사정으로 원자재가 늦게 들어오면, 미리 손쓰지 않는 한 자재가 떨어지는 순간 라인이 멈춰요.": [
+    "サプライヤーの都合で原材料の入荷が遅れると、先に手を打たない限り資材が尽きた瞬間にラインが止まります。",
+    "When a supplier delivers late, the line stops the moment materials run out unless someone acts first."
+  ],
+  "공급사가 포장 필름 입고가 14시에서 20시로 늦어진다고 통보": [
+    "サプライヤーから包装フィルムの入荷が14時から20時に遅れると通知",
+    "Supplier says the packing film arrives at 20:00 instead of 14:00"
+  ],
+  "교체 후 불량률이 0.8%로 회복. 보류 제품 4,800개는 전수 재검사 대상으로 분류": [
+    "交換後、不良率が0.8%に回復。保留品4,800個は全数再検査の対象に分類",
+    "After the swap the defect rate is back to 0.8%. The 4,800 held units are queued for full re-inspection"
+  ],
+  "구매 담당자가 승인. 대체 공급사에 발주": [
+    "購買担当者が承認。代替サプライヤーに発注",
+    "Purchasing approves. Order placed with the alternate supplier"
+  ],
+  "긴급 오더": [
+    "緊急オーダー",
+    "Rush order"
+  ],
+  "긴급 오더 3만 개, 내일까지": [
+    "緊急オーダー3万個、明日まで",
+    "30,000-unit rush order, due tomorrow"
+  ],
+  "긴급 오더 3만 개를 내일 18시까지 맞추려면 라인 3·4의 순서 재배치와 야간 1개 조 추가가 필요합니다. 다른 주문의 납기에는 영향이 없습니다.": [
+    "緊急オーダー3万個を明日18時までに間に合わせるには、ライン3・4の順序組み替えと夜間1班の追加が必要です。他の注文の納期には影響しません。",
+    "Meeting the 30,000-unit rush order by 18:00 tomorrow needs lines 3 and 4 resequenced and one extra night shift. Other orders' deadlines are unaffected."
+  ],
+  "긴급 오더 납기": [
+    "緊急オーダーの納期",
+    "Rush order delivery"
+  ],
+  "내일 15시 완료 (3시간 여유)": [
+    "明日15時完了（3時間の余裕）",
+    "Done 15:00 tomorrow (3 h to spare)"
+  ],
+  "대량 불량": [
+    "大量不良",
+    "Defect surge"
+  ],
+  "대체 공급사 긴급 발주": [
+    "代替サプライヤーへ緊急発注",
+    "Rush order from alternate supplier"
+  ],
+  "두 라인 모두 오늘 09시에 투입된 같은 필름 로트를 쓰고 있음을 확인": [
+    "両ラインとも今日9時に投入された同じフィルムロットを使っていることを確認",
+    "Finds both lines using the same film lot, loaded at 09:00 today"
+  ],
+  "두 라인에서 같은 인쇄 번짐 불량. 설비보다 자재 문제로 보고 슈퍼바이저에 보고": [
+    "2つのラインで同じ印刷にじみ不良。設備より資材の問題と見てスーパーバイザーに報告",
+    "Same smeared-print defect on two lines. Suspects materials rather than machines and reports to the supervisor"
+  ],
+  "두 라인에서 불량이 한꺼번에 급증": [
+    "2つのラインで不良が一斉に急増",
+    "Defects surge on two lines at once"
+  ],
+  "두 라인의 인쇄기와 히터는 정상. 설비 원인이 아님": [
+    "両ラインの印刷機とヒーターは正常。設備が原因ではない",
+    "Printers and heaters on both lines are fine. Not a machine fault"
+  ],
+  "라인 3·4의 작업 순서를 바꾸고 야간 1개 조를 더하면 내일 15시 완료 가능": [
+    "ライン3・4の作業順を変え、夜間1班を加えれば明日15時に完了可能",
+    "Resequencing lines 3 and 4 and adding one night shift finishes by 15:00 tomorrow"
+  ],
+  "라인 4의 내일 10시 정기 정비는 모레로 미뤄도 위험 없음": [
+    "ライン4の明日10時の定期整備は明後日に延ばしても問題なし",
+    "Line 4's routine maintenance at 10:00 tomorrow can safely move to the day after"
+  ],
+  "로트 교체 20분을 반영해 오늘 생산 계획 재조정. 납기 영향 없음": [
+    "ロット交換の20分を反映して今日の生産計画を再調整。納期への影響なし",
+    "Replans today's production around the 20-minute lot swap. No impact on deliveries"
+  ],
+  "물류·생산·품질 AI를 불러 대응 검토 시작": [
+    "物流・生産・品質AIを招集し、対応の検討を開始",
+    "Calls in the logistics, production and quality AIs to plan a response"
+  ],
+  "바뀐 계획으로 내일 15시 완료 예상. 다른 주문의 납기도 모두 지킴": [
+    "変更後の計画で明日15時に完了見込み。他の注文の納期もすべて守る",
+    "The new plan finishes at 15:00 tomorrow, and every other order still ships on time"
+  ],
+  "보통은 고객 클레임이 들어온 뒤에야 알게 되고, 어느 로트가 문제인지 찾는 데 하루가 걸려요.": [
+    "通常は顧客からのクレームで初めて気づき、どのロットが問題かを突き止めるのに1日かかります。",
+    "Usually it is noticed only when customers complain, and finding the bad lot takes a day."
+  ],
+  "보통은 생산 관리자가 일정을 다시 짜고 부서마다 전화를 돌리느라 반나절이 걸려요.": [
+    "通常は生産管理者が日程を組み直し、部署ごとに電話をかけるのに半日かかります。",
+    "Usually the production manager spends half a day replanning and phoning every department."
+  ],
+  "보통은 자재가 떨어져 라인이 멈춘 뒤에야 일정을 바꾸고, 그동안 라인이 몇 시간씩 서요.": [
+    "通常は資材が尽きてラインが止まってから日程を変え、その間ラインが数時間止まります。",
+    "Usually the schedule changes only after materials run out and the line stops, and it stands for hours."
+  ],
+  "불량은 오늘 09시에 투입된 필름 로트에서 시작됐습니다. 그 뒤 출하된 2개 팔레트가 같은 로트를 사용해 회수가 필요합니다.": [
+    "不良は今日9時に投入されたフィルムロットから始まりました。その後出荷された2パレットが同じロットを使っているため、回収が必要です。",
+    "The defects started with the film lot loaded at 09:00 today. Two pallets shipped since then used the same lot and need recalling."
+  ],
+  "사례 고르기": [
+    "事例を選ぶ",
+    "Pick a case"
+  ],
+  "생산 관리자가 승인. 야간 조 편성, 고객에게 내일 15시 납품 확정 회신": [
+    "生産管理者が承認。夜間班を編成し、顧客に明日15時納品を確定回答",
+    "Production manager approves. Night shift set, customer told delivery is confirmed for 15:00 tomorrow"
+  ],
+  "생산·물류·설비·품질 AI를 불러 대응 방안 검토 시작": [
+    "生産・物流・設備・品質AIを招集し、対応策の検討を開始",
+    "Calls in the production, logistics, maintenance and quality AIs to plan a response"
+  ],
+  "야간 1개 조 추가": [
+    "夜間1班を追加",
+    "Add one night shift"
+  ],
+  "야간 잔업 편성과 고객에게 보낼 납기 회신은 생산 관리자에게 승인 요청": [
+    "夜間残業の編成と顧客への納期回答は生産管理者に承認を依頼",
+    "Asks the production manager to approve the night shift and the delivery reply to the customer"
+  ],
+  "원자재 창고": [
+    "原材料倉庫",
+    "Materials warehouse"
+  ],
+  "이미 출하된 2개 팔레트의 회수와 공급사 클레임은 품질 책임자에게 승인 요청": [
+    "出荷済み2パレットの回収とサプライヤーへのクレームは品質責任者に承認を依頼",
+    "Asks the quality lead to approve recalling the 2 shipped pallets and the supplier claim"
+  ],
+  "자재 입고 지연": [
+    "資材の入荷遅延",
+    "Late materials"
+  ],
+  "자재 재고 충분. 모자란 필름 2롤은 내일 오전 입고분을 앞당겨 받도록 조율": [
+    "資材在庫は十分。不足するフィルム2ロールは明日午前の入荷分を前倒しで受け取るよう調整",
+    "Materials are in stock. Arranges for the 2 missing film rolls to arrive early tomorrow morning"
+  ],
+  "주문·구매 시스템": [
+    "受発注システム",
+    "Order system"
+  ],
+  "지금 계획대로면 1만 8천 개가 모자람. 슈퍼바이저에 보고": [
+    "今の計画のままでは1万8千個不足。スーパーバイザーに報告",
+    "The current plan falls 18,000 units short. Reports to the supervisor"
+  ],
+  "지금 재고로는 16시에 라인 1·2가 자재 부족으로 멈출 것으로 예측": [
+    "今の在庫では16時にライン1・2が資材不足で止まると予測",
+    "Predicts lines 1 and 2 will stop for lack of film at 16:00"
+  ],
+  "처음 만드는 1천 개는 검사 표본을 2배로 늘려 품질 확인": [
+    "最初に作る1千個は検査サンプルを2倍にして品質を確認",
+    "Doubles inspection sampling on the first 1,000 units"
+  ],
+  "큰 거래처에서 내일까지 제품을 더 달라는 긴급 주문이 들어왔어요. 생산 일정, 자재, 정비, 품질, 인력이 한꺼번에 얽히는 공장 전체의 문제예요.": [
+    "大口の取引先から、明日までに製品を追加してほしいという緊急注文が入りました。生産日程、資材、整備、品質、人員が一度に絡む工場全体の問題です。",
+    "A major customer needs more product by tomorrow. Schedules, materials, maintenance, quality and staffing all get tangled at once: a whole-plant problem."
+  ],
+  "포장 1·2라인": [
+    "包装ライン1・2",
+    "Packing lines 1–2"
+  ],
+  "포장 1·2라인 비전 검사 불량률이 0.8%에서 6.8%로 급등": [
+    "包装ライン1・2の画像検査不良率が0.8%から6.8%に急上昇",
+    "Vision-inspection defect rate on packing lines 1 and 2 jumps from 0.8% to 6.8%"
+  ],
+  "포장 3·4라인": [
+    "包装ライン3・4",
+    "Packing lines 3–4"
+  ],
+  "포장 필름 입고 6시간 지연": [
+    "包装フィルムの入荷が6時間遅延",
+    "Packing film delivery 6 hours late"
+  ],
+  "품목이 바뀔 때 첫 제품 검사 조건을 자동으로 바꿔 둠": [
+    "品目切替時の初品検査条件を自動で切り替えておく",
+    "Sets the first-article inspection for each product change automatically"
+  ],
+  "품질 책임자가 승인. 회수 지시, 공급사에 클레임 접수": [
+    "品質責任者が承認。回収を指示し、サプライヤーにクレームを提出",
+    "Quality lead approves. Recall ordered, supplier claim filed"
+  ],
+  "품질·물류·설비·생산 AI를 불러 원인과 영향 범위 추적 시작": [
+    "品質・物流・設備・生産AIを招集し、原因と影響範囲の追跡を開始",
+    "Calls in the quality, logistics, maintenance and production AIs to trace the cause and the impact"
+  ],
+  "피크 전력": [
+    "ピーク電力",
+    "Power peak"
+  ],
+  "필름 재고가 있는 다른 품목을 먼저 생산하도록 순서를 바꾸면 라인이 멈추지 않음": [
+    "フィルム在庫がある別の品目を先に生産するよう順序を変えれば、ラインは止まらない",
+    "Running items whose film is in stock first keeps the line going"
   ]
 }
