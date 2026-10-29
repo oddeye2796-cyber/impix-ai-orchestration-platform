@@ -4,6 +4,7 @@
  */
 
 import type { SensorData } from '../types';
+import { formatTime } from '../i18n';
 
 /**
  * A single simulated plant that every view reads from.
@@ -117,7 +118,7 @@ function nextState(prev: PlantState): PlantState {
   const energyKw = Math.round(clamp(drift(prev.energyKw, NOMINAL.energy + push('energy', 230) + push('rush_order', 140), 0.18, 45), 900, 1850));
 
   const reading: SensorData = {
-    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    timestamp: formatTime(new Date(), { hour: '2-digit', minute: '2-digit' }),
     line: '포장1라인',
     equipment: '수축포장기-01',
     vibration,

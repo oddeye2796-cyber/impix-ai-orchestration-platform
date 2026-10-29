@@ -72,6 +72,18 @@ export const getLocale = (): Locale => currentLocale;
 export const getLocaleTag = (locale: Locale = currentLocale): string =>
   LOCALES.find(l => l.code === locale)?.tag ?? 'ja-JP';
 
+/**
+ * Clock time in the active language (午後 1:57:56 / 오후 1:57:56 / 1:57:56 PM),
+ * never the browser's own locale: a Korean laptop at the Tokyo booth would
+ * otherwise print 오후 on Japanese screens.
+ */
+export const formatTime = (date: Date, options: Intl.DateTimeFormatOptions = {}): string =>
+  date.toLocaleTimeString(getLocaleTag(), { hour12: true, ...options });
+
+/** Date and time in the active language. */
+export const formatDateTime = (date: Date): string =>
+  date.toLocaleString(getLocaleTag(), { hour12: true });
+
 export const getMissingKeys = (): string[] => [...missingKeys];
 
 /**

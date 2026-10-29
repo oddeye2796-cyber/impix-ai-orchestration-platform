@@ -47,7 +47,7 @@ const KEYWORDS: Record<string, string> = {
   defectType: '불량 유형|유형|파레토|종류|defect type|types of defect|pareto|不良の種類|種類|パレート|内訳',
   defect: '불량|defect|reject|不良',
   oee: 'oee|가동률|설비종합효율|종합 효율|효율|availability|efficiency|稼働率|設備総合効率|効率',
-  yield: '수율|배치|yield|batch|歩留|バッチ',
+  yield: '수율|배치|yield|batch|歩留|収率|バッチ',
   peak: '피크|계약 전력|계약|peak|contract|demand|ピーク|契約',
   cost: '요금|비용|전기료|cost|bill|price|料金|コスト|電気代',
   energy: '전력|에너지|전기|kw|energy|power|electric|電力|エネルギー|電気',

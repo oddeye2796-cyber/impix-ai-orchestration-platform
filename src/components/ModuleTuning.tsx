@@ -12,7 +12,7 @@ import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Too
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { t, useI18n } from '../i18n';
+import { formatTime, t, useI18n } from '../i18n';
 import { chartPalette } from '../theme';
 import { EXPO, IS_EXPO } from '../config/edition';
 import { MENU_GUIDES } from '../config/menuGuides';
@@ -41,7 +41,7 @@ export function useModuleTuning(menuId: number) {
   const [history, setHistory] = useState<AppliedTuning[]>(() => appliedHistory.get(menuId) ?? []);
 
   const apply = (after: TuningValues) => {
-    const entry: AppliedTuning = { time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), before: values, after };
+    const entry: AppliedTuning = { time: formatTime(new Date(), { hour: '2-digit', minute: '2-digit', hour12: false }), before: values, after };
     const nextHistory = [entry, ...history].slice(0, 5);
     appliedValues.set(menuId, after);
     appliedHistory.set(menuId, nextHistory);

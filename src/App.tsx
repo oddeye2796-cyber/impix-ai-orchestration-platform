@@ -146,7 +146,7 @@ import { generateRecommendations } from './services/geminiService';
 import { ApprovalGate } from './components/AccessGate';
 import { accessActions, AREAS, canApprove, currentUser, initAccess, LEVEL_LABEL, LEVELS, levelFor, ROLES, roleOf, useAccess, type Level, type RoleKey } from './services/access';
 import { AnswerSources, SuggestedQuestions, useSuggestedQuestions, useSupervisorChat } from './components/SupervisorChat';
-import { t, tValue, matchesKeyword, useI18n } from './i18n';
+import { t, tValue, matchesKeyword, useI18n, formatTime, formatDateTime } from './i18n';
 import LanguageSwitcher from './i18n/LanguageSwitcher';
 import AiSettingsModal from './components/AiSettingsModal';
 import ThemeSwitcher from './theme/ThemeSwitcher';
@@ -301,7 +301,7 @@ export default function App() {
       .map(d => ({
         id: `d-${d.timestamp}-${d.action}`,
         title: t('{equipment}: AI 제안 승인 대기', { equipment: t(d.target_equipment) }),
-        time: new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: formatTime(new Date(d.timestamp), { hour: '2-digit', minute: '2-digit' }),
         tone: 'warning' as const,
         menuId: DASHBOARD_MENU_ID,
       })),
@@ -1141,7 +1141,7 @@ function RecommendationEngineView({ decisions, onApprove, onReject, onLog, onRef
                       {decision.agent}
                     </span>
                     <span className="text-[10px] text-text-secondary font-mono">
-                      {new Date(decision.timestamp).toLocaleString()}
+                      {formatDateTime(new Date(decision.timestamp))}
                     </span>
                     {decision.status !== 'pending' && (
                       <span className={cn(
@@ -1336,7 +1336,7 @@ function OverrideLogView({ logs }: { logs: OverrideLog[] }) {
                 logs.map((log) => (
                   <tr key={log.id} className="hover:bg-surface-hover transition-colors">
                     <td className="px-4 py-4 text-[10px] font-mono whitespace-nowrap">
-                      {new Date(log.timestamp).toLocaleString()}
+                      {formatDateTime(new Date(log.timestamp))}
                     </td>
                     <td className="px-4 py-4 text-xs font-medium">{log.operator}</td>
                     <td className="px-4 py-4 text-xs">{t(log.equipment)}</td>
@@ -1767,7 +1767,7 @@ function DashboardView({
               )}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-bold text-accent uppercase tracking-wider">{decision.agent}</span>
-                  <span className="text-[10px] text-text-secondary font-mono">{new Date(decision.timestamp).toLocaleTimeString()}</span>
+                  <span className="text-[10px] text-text-secondary font-mono">{formatTime(new Date(decision.timestamp))}</span>
                 </div>
                 <h4 className="text-sm font-bold mb-1">{decision.action.replace(/_/g, ' ')}</h4>
                 <p className="text-xs text-text-secondary leading-relaxed mb-3">
@@ -1985,7 +1985,7 @@ function CoordinationVisualizer() {
         setStep(0);
         return;
       }
-      setEvents(prev => [...prev, { ...scenario.timeline[step], id: newId(), timestamp: new Date().toLocaleTimeString() } as CoordinationEvent]);
+      setEvents(prev => [...prev, { ...scenario.timeline[step], id: newId(), timestamp: formatTime(new Date()) } as CoordinationEvent]);
       setStep(s => s + 1);
     }, done ? 7000 : step === 0 ? 1200 : 3200);
     return () => clearTimeout(timer);
@@ -3255,7 +3255,7 @@ function SupervisorCenterView({ onOpenOrchestration }: { onOpenOrchestration: ()
                         <span className="text-[10px] font-bold text-text-secondary uppercase">{t(event.toAgent)}</span>
                       </div>
                       <span className="text-[10px] font-mono text-text-secondary">
-                        {new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        {formatTime(new Date(event.timestamp), { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                       </span>
                     </div>
 
@@ -3321,7 +3321,7 @@ function SupervisorCenterView({ onOpenOrchestration }: { onOpenOrchestration: ()
                   <div key={pack.id} className="p-3 rounded-lg border border-border space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono font-bold text-accent">{pack.id}</span>
-                      <span className="text-[10px] text-text-secondary">{new Date(pack.timestamp).toLocaleTimeString()}</span>
+                      <span className="text-[10px] text-text-secondary">{formatTime(new Date(pack.timestamp))}</span>
                     </div>
                     <p className="text-[10px] leading-relaxed line-clamp-2">{t(pack.reasoning)}</p>
                     <div className="flex items-center gap-2 pt-2 border-t border-border">
@@ -3355,7 +3355,7 @@ function VisionInspectionViewer() {
   const [history, setHistory] = useState<{id: number, time: string, result: 'OK' | 'NG'}[]>(
     Array.from({ length: 8 }, (_, i) => ({
       id: 100 - i,
-      time: new Date(Date.now() - i * 60000).toLocaleTimeString(),
+      time: formatTime(new Date(Date.now() - i * 60000)),
       result: Math.random() > 0.05 ? 'OK' : 'NG'
     }))
   );
@@ -3374,7 +3374,7 @@ function VisionInspectionViewer() {
       
       const newEntry = {
         id: history[0].id + 1,
-        time: new Date().toLocaleTimeString(),
+        time: formatTime(new Date()),
         result: (isOk ? 'OK' : 'NG') as 'OK' | 'NG'
       };
       
@@ -3789,7 +3789,7 @@ function SyncBar({ syncedAt, canEdit, onReset }: { syncedAt: Date; canEdit: bool
     <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-2.5 text-[11px]">
       <span className="flex items-center gap-2 text-emerald-500 font-bold">
         <RefreshCw size={12} />
-        {t('동기화됨 · {time}', { time: syncedAt.toLocaleTimeString() })}
+        {t('동기화됨 · {time}', { time: formatTime(syncedAt) })}
         <span className="font-normal text-text-secondary">{t('변경 사항은 메뉴, 승인 버튼, 역할 차트에 바로 반영돼요.')}</span>
       </span>
       <span className="flex items-center gap-2">
@@ -4844,7 +4844,7 @@ function FireMonitoringViewer() {
     setIsAlert(true);
     setConfidence({ fire: 88, smoke: 92, person: 0 });
     setLogs(prev => [
-      { time: new Date().toLocaleTimeString(), msg: 'CRITICAL: Fire detected in Zone B-4!', type: 'crit' },
+      { time: formatTime(new Date()), msg: 'CRITICAL: Fire detected in Zone B-4!', type: 'crit' },
       ...prev
     ]);
   };
@@ -4852,7 +4852,7 @@ function FireMonitoringViewer() {
   const resetAlert = () => {
     setIsAlert(false);
     setLogs(prev => [
-      { time: new Date().toLocaleTimeString(), msg: 'Alert cleared. System returning to normal.', type: 'info' },
+      { time: formatTime(new Date()), msg: 'Alert cleared. System returning to normal.', type: 'info' },
       ...prev
     ]);
   };
@@ -5054,7 +5054,7 @@ function AMRCollisionViewer() {
     setIsEStop(true);
     setAmrs(prev => prev.map(amr => ({ ...amr, speed: 0, status: 'Stopped' })));
     setLogs(prev => [
-      { time: new Date().toLocaleTimeString(), msg: 'EMERGENCY STOP ACTIVATED: All AMRs halted.', type: 'crit' },
+      { time: formatTime(new Date()), msg: 'EMERGENCY STOP ACTIVATED: All AMRs halted.', type: 'crit' },
       ...prev
     ]);
   };
@@ -5063,7 +5063,7 @@ function AMRCollisionViewer() {
     setIsEStop(false);
     setAmrs(prev => prev.map(amr => ({ ...amr, status: amr.id === 'AMR-03' ? 'Idle' : 'Moving' })));
     setLogs(prev => [
-      { time: new Date().toLocaleTimeString(), msg: 'System resumed. Re-calculating paths via ACS.', type: 'info' },
+      { time: formatTime(new Date()), msg: 'System resumed. Re-calculating paths via ACS.', type: 'info' },
       ...prev
     ]);
   };
@@ -5555,9 +5555,9 @@ function ModuleDetailView({ item, sensorData, onNavigate }: { item: MenuItem; se
   useEffect(() => {
     // Generate initial logs
     const initialLogs = [
-      { time: new Date().toLocaleTimeString(), msg: `Module ${t(item.name)} initialized.`, type: 'info' as const },
-      { time: new Date().toLocaleTimeString(), msg: `Connecting to ${item.agent || 'System'} orchestration layer...`, type: 'info' as const },
-      { time: new Date().toLocaleTimeString(), msg: `Handshake successful. Listening for Kafka stream.`, type: 'success' as const },
+      { time: formatTime(new Date()), msg: `Module ${t(item.name)} initialized.`, type: 'info' as const },
+      { time: formatTime(new Date()), msg: `Connecting to ${item.agent || 'System'} orchestration layer...`, type: 'info' as const },
+      { time: formatTime(new Date()), msg: `Handshake successful. Listening for Kafka stream.`, type: 'success' as const },
     ];
     setLogs(initialLogs);
 
@@ -5572,7 +5572,7 @@ function ModuleDetailView({ item, sensorData, onNavigate }: { item: MenuItem; se
         "Optimizing local cache for faster retrieval."
       ];
       const newLog = {
-        time: new Date().toLocaleTimeString(),
+        time: formatTime(new Date()),
         msg: msgs[Math.floor(Math.random() * msgs.length)],
         type: types[Math.floor(Math.random() * types.length)]
       };
@@ -6408,11 +6408,11 @@ function ModuleDetailView({ item, sensorData, onNavigate }: { item: MenuItem; se
                       setDeploying(true);
                       const next = { ...modelVersion, minor: modelVersion.minor, patch: modelVersion.patch + 1 };
                       const version = `v${next.major}.${next.minor}.${next.patch}`;
-                      setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('{version} 카나리 배포 시작 (트래픽 10%)', { version }), type: 'info' as const }, ...prev].slice(0, 10));
+                      setLogs(prev => [{ time: formatTime(new Date()), msg: t('{version} 카나리 배포 시작 (트래픽 10%)', { version }), type: 'info' as const }, ...prev].slice(0, 10));
                       setTimeout(() => {
                         const d = new Date();
                         setModelVersion({ ...next, deployed: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` });
-                        setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('{version} 배포 완료: 정확도 +0.4%p, 지연 -12ms', { version }), type: 'success' as const }, ...prev].slice(0, 10));
+                        setLogs(prev => [{ time: formatTime(new Date()), msg: t('{version} 배포 완료: 정확도 +0.4%p, 지연 -12ms', { version }), type: 'success' as const }, ...prev].slice(0, 10));
                         showToast(t('{version} 배포를 완료했습니다', { version }));
                         setDeploying(false);
                       }, 1800);
@@ -6790,7 +6790,7 @@ function ModuleDetailView({ item, sensorData, onNavigate }: { item: MenuItem; se
                   onOpen={() => setShowAdvanced(true)}
                   onRevert={() => {
                     moduleTuning.revert();
-                    setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('설정 변경을 되돌렸어요.'), type: 'warn' as const }, ...prev].slice(0, 10));
+                    setLogs(prev => [{ time: formatTime(new Date()), msg: t('설정 변경을 되돌렸어요.'), type: 'warn' as const }, ...prev].slice(0, 10));
                     showToast(t('설정 변경을 되돌렸어요.'), 'info');
                   }}
                 />
@@ -6948,7 +6948,7 @@ function ModuleDetailView({ item, sensorData, onNavigate }: { item: MenuItem; se
               .filter(p => entry.before[p.key] !== after[p.key])
               .map(p => `${t(p.label)} ${entry.before[p.key]} → ${after[p.key]}${p.unit ? ` ${t(p.unit)}` : ''}`)
               .join(', ');
-            setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: t('설정 적용: {changes}', { changes: moved }), type: 'success' as const }, ...prev].slice(0, 10));
+            setLogs(prev => [{ time: formatTime(new Date()), msg: t('설정 적용: {changes}', { changes: moved }), type: 'success' as const }, ...prev].slice(0, 10));
             showToast(t('설정을 적용했어요. 전/후 결과를 화면에 남겨 뒀어요.'));
             setShowAdvanced(false);
           }}
