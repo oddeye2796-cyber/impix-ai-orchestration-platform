@@ -26,7 +26,7 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { getLocaleTag, t, useI18n } from '../i18n';
+import { formatTime, getLocaleTag, t, useI18n } from '../i18n';
 import type { AgentDecision } from '../types';
 import type { Excursion, PlantState } from '../services/telemetry';
 import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
@@ -214,7 +214,7 @@ export function trimClearedExcursions(n: number) {
 }
 
 /** 24-hour clock in the interface language, not the booth machine's. */
-const timeOf = (date: Date) => date.toLocaleTimeString(getLocaleTag(), { hour: '2-digit', minute: '2-digit', hour12: false });
+const timeOf = (date: Date) => formatTime(date, { hour: '2-digit', minute: '2-digit', hour12: false });
 const clock = () => timeOf(new Date());
 
 /**

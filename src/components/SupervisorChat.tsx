@@ -6,7 +6,7 @@
 import React, { useSyncExternalStore } from 'react';
 import { FileSearch } from 'lucide-react';
 
-import { t } from '../i18n';
+import { formatTime, t } from '../i18n';
 import type { ChatMessage } from '../types';
 import { MENU_ITEMS } from '../constants';
 import { generateChatResponse } from '../services/geminiService';
@@ -21,7 +21,7 @@ import { useStage } from '../expo/stage';
 const greeting = (): ChatMessage => ({
   role: 'assistant',
   content: '안녕하세요! IMPIX AI Supervisor입니다. 화면에 나온 공장 데이터로 답해 드려요.',
-  timestamp: new Date().toLocaleTimeString(),
+  timestamp: formatTime(new Date()),
 });
 
 interface ChatState { messages: ChatMessage[]; loading: boolean }
@@ -33,7 +33,7 @@ const set = (next: Partial<ChatState>) => {
   listeners.forEach(fn => fn());
 };
 const push = (message: ChatMessage) => set({ messages: [...state.messages, message] });
-const now = () => new Date().toLocaleTimeString();
+const now = () => formatTime(new Date());
 
 /** Ask the Supervisor; the answer comes from the plant fact sheet. */
 async function ask(prompt: string) {
