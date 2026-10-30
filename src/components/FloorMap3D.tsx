@@ -253,8 +253,8 @@ export default function FloorMap3D({ floor, zoneState, selected, onSelect, rende
     return { cx: (minX + maxX) / 2, cz: (minZ + maxZ) / 2, size: Math.max(maxX - minX, maxZ - minZ), width: maxX - minX, depth: maxZ - minZ };
   }, [floor]);
 
-  // Look down on the whole hall from a little south-east of its middle.
-  const target: [number, number, number] = [bounds.cx, 0, bounds.cz + 1];
+  // Look down on the whole hall from a little south-east of its middle, aimed high enough to keep the AI team above it in frame.
+  const target: [number, number, number] = [bounds.cx, 4, bounds.cz - bounds.depth * 0.12];
   // The fixed views aim a little past the middle, leaving room above the hall for the AI team.
   const fixedTarget: [number, number, number] = [bounds.cx, 3, bounds.cz - bounds.depth * 0.2];
 
@@ -266,7 +266,7 @@ export default function FloorMap3D({ floor, zoneState, selected, onSelect, rende
       dpr={[1, 2]}
       orthographic={view !== 'free'}
       camera={view === 'free'
-        ? { position: [target[0] + 4, bounds.size * 0.95, target[2] + bounds.size * 0.62], fov: 38, near: 0.5, far: 600 }
+        ? { position: [target[0] + 4, bounds.size * 1.0, target[2] + bounds.size * 0.85], fov: 38, near: 0.5, far: 600 }
         : { position: [target[0], 100, target[2] + 100], zoom: 10, near: 0.1, far: 1000 }}
       onPointerMissed={() => { document.body.style.cursor = ''; }}
     >

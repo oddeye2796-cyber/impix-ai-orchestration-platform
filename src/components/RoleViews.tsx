@@ -508,7 +508,7 @@ function teamModel(incidents: Incident[]): TeamModel {
 }
 
 /** The AI team over the 3D map, placed on the floor plan's rooms. */
-function floorOrchestration(model: TeamModel, fixed = false): FloorOrchestrationState | null {
+function floorOrchestration(model: TeamModel): FloorOrchestrationState | null {
   const floor = ACTIVE_SITE.floor;
   if (!floor) return null;
   const roomOf = (zoneId: string) => floor.rooms.find(r => r.zoneId === zoneId);
@@ -518,11 +518,8 @@ function floorOrchestration(model: TeamModel, fixed = false): FloorOrchestration
   };
   const xs = floor.rooms.flatMap(r => [r.x, r.x + r.w]);
   const zs = floor.rooms.flatMap(r => [r.z, r.z + r.d]);
-  // The supervisor floats at the edge of the control room, or mid-hall without one.
-  const control = roomOf('control');
-  // In the fixed-angle views it hangs high over the far side of the hall instead, the hub every link fans out from.
-  const center: [number, number] = fixed ? [(Math.min(...xs) + Math.max(...xs)) / 2, Math.min(...zs) + 2]
-    : control ? [control.x + control.w, control.z + control.d / 2] : [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...zs) + Math.max(...zs)) / 2];
+  // The supervisor hangs high over the far side of the hall, the hub every link fans out from.
+  const center: [number, number] = [(Math.min(...xs) + Math.max(...xs)) / 2, Math.min(...zs) + 2];
 
   // Each AI floats over its home zone; AIs sharing a zone stand side by side.
   const keys = Object.keys(ACTIVE_SITE.agentZone) as AgentKey[];
@@ -545,7 +542,7 @@ function floorOrchestration(model: TeamModel, fixed = false): FloorOrchestration
     center,
     incident: top && target && stage !== undefined ? { lead: top.agent, team, target, stage } : null,
     label: { supervisor: t('슈퍼바이저 AI'), status: model.supervisorStatus, agentStatus: model.agentStatus as Record<string, string> },
-    emphasis: fixed,
+    emphasis: true,
   };
 }
 
@@ -633,7 +630,7 @@ export function WorkerView({
   const [can3D] = useState(() => Boolean(ACTIVE_SITE.floor) && hasWebGL());
   const [mapMode, setMapMode] = useState<'3d' | '2d'>('3d');
   const [showTeam, setShowTeam] = useState(true);
-  const [projection, setProjection] = useState<QuarterProjection>('quarter');
+  const [projection, setProjection] = useState<QuarterProjection>('iso');
   const model = teamModel(incidents);
   const use3D = can3D && mapMode === '3d';
   const zoneInfo = (id: string) => zoneStatus(id, incidents);
@@ -702,16 +699,16 @@ export function WorkerView({
                     selected={zone}
                     onSelect={toggleZone}
                     view={use3D ? 'free' : projection}
-                    // The fixed views leave the floor to the AI team; the strip above says what happened.
-                    callouts={use3D || !showTeam}
-                    renderBadge={zoneId => use3D || !showTeam
+                    // With the AI team on, the floor is left to it; the strip above says what happened.
+                    callouts={!showTeam}
+                    renderBadge={zoneId => !showTeam
                       ? <ZoneBadge3D zoneId={zoneId} info={zoneInfo(zoneId)} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />
                       : <ZoneTag zoneId={zoneId} state={zoneInfo(zoneId).state} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />}
-                    orchestration={showTeam ? floorOrchestration(model, !use3D) : null}
+                    orchestration={showTeam ? floorOrchestration(model) : null}
                   />
                 </Suspense>
               </ErrorBoundary>
-              {showTeam && !use3D && <TeamStrip team={quarterTeam(model)} />}
+              {showTeam && <TeamStrip team={quarterTeam(model)} />}
               {!use3D && <ProjectionSwitch value={projection} onChange={setProjection} />}
               <div className="pointer-events-none absolute bottom-2 left-2 text-[9px] text-text-secondary">
                 <span className="rounded bg-surface/80 px-1.5 py-0.5">{use3D ? t('드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동') : t('휠: 확대 · 드래그: 이동')}</span>
