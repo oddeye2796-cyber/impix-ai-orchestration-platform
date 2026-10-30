@@ -156,11 +156,13 @@ import { downloadCsv, downloadFile, downloadJson, fileStamp, simplePdf } from '.
 // Split out of the initial download: markdown is only needed for the
 // orchestration methodology tab.
 const MarkdownView = lazy(() => import('./components/MarkdownView'));
+const CoordinationStage3D = lazy(() => import('./components/CoordinationStage3D'));
 import DemoModeBadge from './components/DemoModeBadge';
+import ErrorBoundary from './components/ErrorBoundary';
 import { IS_EXPO } from './config/edition';
 import { ExpoBanner, ExpoDirector } from './expo/ExpoDirector';
 import { useStage, type StagedCase } from './expo/stage';
-import { ManagerView, RoleSwitcher, WorkerView, useIncidents, useViewerRole, type ViewerRole } from './components/RoleViews';
+import { ManagerView, RoleSwitcher, WorkerView, hasWebGL, useIncidents, useViewerRole, type ViewerRole } from './components/RoleViews';
 import { AppliedTuningCard, ScreenGuide, TuningModal, menuSummary, useModuleTuning } from './components/ModuleTuning';
 import { useSafeTimeout } from './hooks/useSafeTimeout';
 import { useTelemetry } from './hooks/useTelemetry';
@@ -1882,6 +1884,7 @@ function CoordinationVisualizer() {
     setEvents([]);
     setStep(0);
   }, [staged?.kind, replay]);
+  const [view, setView] = useState<'3d' | '2d'>(() => (hasWebGL() ? '3d' : '2d'));
   const scenarios = stagedScenario ? [stagedScenario] : [
     {
       title: t('[통합] 6대 에이전트 전사 최적화 조율'),
@@ -1948,7 +1951,7 @@ function CoordinationVisualizer() {
         { fromAgent: 'safety', toAgent: 'supervisor', type: 'proposal', content: t('A-3 구역에서 메탄 가스 15ppm 감지. 환기 설비 풀 가동 및 국소 소화 제어가 시급합니다.') },
         { fromAgent: 'pm', toAgent: 'supervisor', type: 'info', content: t('진단 결과 밸브 No.12 개스킷 미세 노후화 확인됨. 임시 압력 저하 상태로 운전 시 누출량 80% 저감 가능합니다.') },
         { fromAgent: 'prod', toAgent: 'supervisor', type: 'critique', content: t('생산 정지 시 납기 지연 발생. 밸브 No.12의 메인 라인을 우회로로 전환 요청합니다.') },
-        { fromAgent: 'supervisor', toAgent: 'all', type: 'agreement', content: t('중재 결과: 즉시 우회관로 전환 실행 및 해당 밸브 메인 차단. 환기팬 100% 가동 상태를 유지하며 설비 유지보수팀 현장 급파 지시.'), reasoning: t('안전 수칙 범위 내 가스 희석 및 확산 방지는 필수. 우회 관로 조치가 가능하므로 생산 중단 없이 가스 누출 부위를 무해하게 격리함.') }
+        { fromAgent: 'supervisor', toAgent: 'all', type: 'agreement', content: t('중재 결과: 즉시 우회관로 전환 실행 및 해당 밸브 메인 차단. 환기팬 100% 가동 상태를 유지하며 설비 유지보수팀 현장 급파 지시.'), reasoning: t('안전 수칙 범위 내 가스 희석 및 확산 방지는 필수. 우회 관로 조치가 가능하므로 생산 중단 없이 가스 누출 부위를 무해하게 격리함.'), approval: '안전 관리자' }
       ]
     },
     {
@@ -1973,6 +1976,18 @@ function CoordinationVisualizer() {
   const participants = scenario.agents.filter(id => id !== 'supervisor');
   const lastEvent = events[events.length - 1];
   const agreed = lastEvent?.type === 'agreement';
+  // Who signs off the part of the agreement beyond the AI's authority, if anyone.
+  const approver = (scenario.timeline[scenario.timeline.length - 1] as { approval?: string }).approval;
+
+  // After the agreement the agents carry it out for a few seconds, then the
+  // case is closed, or handed to a person when it needs their approval.
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    if (!agreed) { setSettled(false); return; }
+    const timer = setTimeout(() => setSettled(true), 3000);
+    return () => clearTimeout(timer);
+  }, [agreed, activeScenario]);
+  const phase: 'collect' | 'executing' | 'done' = !agreed ? 'collect' : settled ? 'done' : 'executing';
 
   // Runs on its own: each agent speaks in turn, the supervisor closes with a
   // decision, and after a pause the next agenda item starts.
@@ -2006,7 +2021,59 @@ function CoordinationVisualizer() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        {/* Stage: supervisor in the middle, the six agents around it */}
+        <div className="space-y-3">
+        <CoordinationStepper phase={phase} started={events.length > 0} approver={approver} />
+        {view === '3d' ? (
+          <div className="relative h-[460px] overflow-hidden rounded-2xl border border-border" data-testid="coordination-3d">
+            <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-[11px] text-text-secondary">{t('3D 관제실을 그릴 수 없어 2D로 봐 주세요')}</div>}>
+              <Suspense fallback={<div className="flex h-full items-center justify-center text-[11px] text-text-secondary">{t('3D 관제실 불러오는 중…')}</div>}>
+                <CoordinationStage3D
+                  agents={Object.keys(COORD_SLOTS).map((id, i) => {
+                    const agent = coordAgent(id);
+                    const joined = participants.includes(id);
+                    const speaking = phase === 'collect' && lastEvent?.fromAgent === id;
+                    const stance = joined ? stanceOf(id) : null;
+                    const stanceStyle = stance && stance !== 'waiting' && stance !== 'agreement' ? COORD_TYPE_STYLE[stance] : null;
+                    const status = !joined ? t('미참여')
+                      : phase === 'executing' ? t('실행 중')
+                      : phase === 'done' ? t('완료')
+                      : speaking ? `${t('발언 중')} · ${t(stanceStyle!.label)}`
+                      : stanceStyle ? t(stanceStyle.label) : t('대기');
+                    return {
+                      id, code: `AGENT-0${i + 1}`, name: t(agent.name), hex: agent.hex, joined, speaking, status,
+                      statusHex: !joined ? null : phase !== 'collect' ? COORD_TYPE_STYLE.agreement.hex : stanceStyle?.hex ?? null,
+                    };
+                  })}
+                  packet={lastEvent && phase !== 'done' ? { key: lastEvent.id, from: lastEvent.fromAgent, hex: COORD_TYPE_STYLE[lastEvent.type].hex, outward: agreed } : null}
+                  phase={phase}
+                  supervisor={{
+                    label: t('AI 슈퍼바이저'),
+                    status: phase === 'collect' ? `${t('의견 수집')} ${new Set(events.map(e => e.fromAgent)).size}/${participants.length}`
+                      : phase === 'executing' ? t('합의 · 실행 중') : approver ? t('승인 대기') : t('완료'),
+                    progress: step / scenario.timeline.length,
+                  }}
+                  human={{
+                    state: phase === 'done' ? (approver ? 'waiting' : 'skipped') : 'idle',
+                    label: approver ? `${t('조치 승인')} (${t(approver)})` : t('조치 승인 (사람)'),
+                    status: phase !== 'done' ? t('대기') : approver ? t('승인 대기 · 결정 필요') : t('불필요 · AI 권한 내'),
+                  }}
+                />
+              </Suspense>
+            </ErrorBoundary>
+            <ExecutionSpans
+              rows={[
+                { id: 'supervisor', name: t('AI 슈퍼바이저'), hex: COORD_TYPE_STYLE.agreement.hex },
+                ...participants.map(id => ({ id, name: t(coordAgent(id).name), hex: coordAgent(id).hex })),
+              ]}
+              events={events}
+              slots={scenario.timeline.length + 1}
+              phase={phase}
+            />
+            <div className="pointer-events-none absolute bottom-2 left-2 text-[9px] text-text-secondary">
+              <span className="rounded bg-surface/80 px-1.5 py-0.5">{t('드래그: 회전 · 휠: 확대')}</span>
+            </div>
+          </div>
+        ) : (
         <div className="overflow-x-auto rounded-2xl border border-border bg-bg/40 custom-scrollbar">
           <div
             className="relative h-[460px] min-w-[620px]"
@@ -2122,6 +2189,21 @@ function CoordinationVisualizer() {
               );
             })}
           </div>
+        </div>
+        )}
+        <div className="flex justify-end">
+          <div className="flex gap-1 rounded-lg border border-border bg-surface p-0.5 text-[10px] font-bold">
+            {(['3d', '2d'] as const).map(mode => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={view === mode}
+                onClick={() => setView(mode)}
+                className={cn("rounded px-2 py-0.5", view === mode ? "bg-accent text-white" : "text-text-secondary hover:text-text-primary")}
+              >{mode === '3d' ? t('3D 관제실') : t('2D 조율도')}</button>
+            ))}
+          </div>
+        </div>
         </div>
 
         {/* Live transcript: what is on the table and who said what */}
@@ -2262,6 +2344,85 @@ function CoordinationVisualizer() {
             <div className="flex h-full items-center justify-center text-[10px] text-text-secondary opacity-60">{t('Waiting for agent proposals...')}</div>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Where the coordination stands, as a delivery-tracker strip: the request, the
+ * agents' positions, the agreement, carrying it out, and either done or
+ * waiting on a person.
+ */
+function CoordinationStepper({ phase, started, approver }: { phase: 'collect' | 'executing' | 'done'; started: boolean; approver?: string }) {
+  const stages = ['요청', '의견 수집', '합의', '실행', approver ? '사람 승인' : '완료'];
+  // The stage in progress; everything before it is done.
+  const current = !started ? 0 : phase === 'collect' ? 1 : phase === 'executing' ? 3 : approver ? 4 : stages.length;
+  return (
+    <ol className="flex items-start rounded-xl border border-border bg-surface-hover/40 px-3 py-2" aria-label={t('조율 단계')}>
+      {stages.map((label, i) => {
+        const done = i < current;
+        const active = i === current;
+        const waiting = active && i === 4;
+        return (
+          <li key={label} className="relative flex flex-1 flex-col items-center gap-1 text-center">
+            {i > 0 && <span className={cn("absolute right-1/2 top-[9px] h-0.5 w-full -translate-x-[10px]", done || active ? "bg-accent" : "bg-border")} />}
+            <span className={cn(
+              "relative z-10 flex h-5 w-5 items-center justify-center rounded-full border-2 text-[9px] font-black",
+              done ? "border-accent bg-accent text-white" : waiting ? "border-warning bg-warning/20 text-warning" : active ? "border-accent bg-surface text-accent" : "border-border bg-surface text-text-secondary",
+            )}>
+              {done ? <CheckCircle2 size={11} /> : active ? <span className={cn("h-2 w-2 rounded-full", waiting ? "bg-warning" : "animate-pulse bg-accent")} /> : i + 1}
+            </span>
+            <span className={cn("text-[10px] font-bold", done || active ? "text-text-primary" : "text-text-secondary")}>{t(label)}</span>
+            <span className={cn("text-[9px]", waiting ? "font-bold text-warning" : done ? "text-accent" : "text-text-secondary")}>
+              {done ? t('완료') : waiting ? t('승인 대기') : active ? t('진행 중') : t('대기')}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/**
+ * When each participant was busy in the coordination, as bars on one time
+ * axis: from its first word to its last, and through the execution once the
+ * agreement is in.
+ */
+function ExecutionSpans({ rows, events, slots, phase }: {
+  rows: { id: string; name: string; hex: string }[];
+  events: CoordinationEvent[];
+  slots: number;
+  phase: 'collect' | 'executing' | 'done';
+}) {
+  return (
+    <div className="pointer-events-none absolute right-2 top-2 w-[240px] rounded-lg border border-border bg-surface/85 p-2 backdrop-blur-sm max-sm:hidden">
+      <div className="mb-1.5 flex items-baseline justify-between">
+        <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">{t('실행 구간')}</span>
+        <span className="font-mono text-[8px] text-text-secondary">{events.length}/{slots - 1}</span>
+      </div>
+      <div className="space-y-1">
+        {rows.map(row => {
+          const spoke = events.map((e, i) => (e.fromAgent === row.id ? i : -1)).filter(i => i >= 0);
+          const isSupervisor = row.id === 'supervisor';
+          const first = isSupervisor ? 0 : spoke[0];
+          let last = isSupervisor ? events.length - 1 : spoke[spoke.length - 1];
+          if (phase !== 'collect' && first !== undefined) last = slots - 1;
+          const running = phase === 'executing' || (phase === 'collect' && events[events.length - 1]?.fromAgent === row.id);
+          return (
+            <div key={row.id} className="flex items-center gap-1.5">
+              <span className="w-[104px] truncate text-[9px] font-bold text-text-primary">{row.name}</span>
+              <span className="relative h-1.5 flex-1 rounded-full bg-border/60">
+                {first !== undefined && last !== undefined && last >= first && (
+                  <span
+                    className={cn("absolute inset-y-0 rounded-full transition-all duration-700", running && "animate-pulse")}
+                    style={{ left: `${(first / slots) * 100}%`, width: `${((last - first + 1) / slots) * 100}%`, backgroundColor: row.hex }}
+                  />
+                )}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

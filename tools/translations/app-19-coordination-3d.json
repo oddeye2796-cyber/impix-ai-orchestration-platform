@@ -1,0 +1,166 @@
+{
+  "2D 조율도": [
+    "2D調整図",
+    "2D map"
+  ],
+  "3D 관제실": [
+    "3D管制室",
+    "3D control room"
+  ],
+  "3D 관제실 불러오는 중…": [
+    "3D管制室を読み込み中…",
+    "Loading the 3D control room…"
+  ],
+  "3D 관제실을 그릴 수 없어 2D로 봐 주세요": [
+    "3D管制室を表示できないため、2Dでご覧ください",
+    "The 3D control room can't be drawn here. Please use the 2D map."
+  ],
+  "드래그: 회전 · 휠: 확대": [
+    "ドラッグ:回転 · ホイール:拡大",
+    "Drag: rotate · Wheel: zoom"
+  ],
+  "불필요 · AI 권한 내": [
+    "不要 · AI権限内",
+    "Not needed · within AI authority"
+  ],
+  "사람 승인": [
+    "人の承認",
+    "Human approval"
+  ],
+  "승인 대기 · 결정 필요": [
+    "承認待ち · 判断が必要",
+    "Awaiting approval · decision needed"
+  ],
+  "실행": [
+    "実行",
+    "Execute"
+  ],
+  "실행 구간": [
+    "実行区間",
+    "Execution span"
+  ],
+  "실행 중": [
+    "実行中",
+    "Executing"
+  ],
+  "요청": [
+    "要請",
+    "Request"
+  ],
+  "조율 단계": [
+    "調整段階",
+    "Coordination stages"
+  ],
+  "조치 승인": [
+    "措置承認",
+    "Action approval"
+  ],
+  "조치 승인 (사람)": [
+    "措置承認(人)",
+    "Action approval (human)"
+  ],
+  "합의 · 실행 중": [
+    "合意 · 実行中",
+    "Agreed · executing"
+  ],
+  "구매 담당자": [
+    "購買担当者",
+    "Purchasing officer"
+  ],
+  "생산 관리자": [
+    "生産管理者",
+    "Production manager"
+  ],
+  "품질 책임자": [
+    "品質責任者",
+    "Quality lead"
+  ],
+  "AI 조율": [
+    "AI調整",
+    "AI team"
+  ],
+  "AI 팀 소집 · 함께 분석 중": [
+    "AIチーム招集 · 共同分析中",
+    "AI team called in · analysing together"
+  ],
+  "공장 전체 감시 중": [
+    "工場全体を監視中",
+    "Watching the whole plant"
+  ],
+  "사람 승인 대기": [
+    "人の承認待ち",
+    "Waiting for human approval"
+  ],
+  "소집됨 · 분석": [
+    "招集 · 分析",
+    "Called in · analysing"
+  ],
+  "원인 분석": [
+    "原因分析",
+    "Analysing cause"
+  ],
+  "이상 감지 · 보고": [
+    "異常検知 · 報告",
+    "Detected · reporting"
+  ],
+  "이상 보고 접수": [
+    "異常報告を受付",
+    "Report received"
+  ],
+  "조치 실행": [
+    "措置実行",
+    "Acting"
+  ],
+  "조치 실행 중": [
+    "措置実行中",
+    "Carrying out actions"
+  ],
+  "조치 지원": [
+    "措置支援",
+    "Supporting"
+  ],
+  "공장 배치도 쿼터뷰": [
+    "工場レイアウト クォータービュー",
+    "Factory floor map, quarter view"
+  ],
+  "{who}가 {zone}에 조치를 실행해요": [
+    "{who}が{zone}で措置を実行しています",
+    "{who} are acting on {zone}"
+  ],
+  "{zone} 조치는 사람의 승인을 기다리고 있어요": [
+    "{zone}の措置は人の承認を待っています",
+    "The action for {zone} is waiting for a person's approval"
+  ],
+  "{zone}에서 이상 감지. {lead}가 슈퍼바이저 AI에 보고해요": [
+    "{zone}で異常を検知。{lead}がスーパーバイザーAIに報告します",
+    "Something's wrong in {zone}. {lead} is reporting to the supervisor AI"
+  ],
+  "2D 시점": [
+    "2D視点",
+    "2D view angle"
+  ],
+  "모든 AI가 각자 맡은 구역을 지켜보는 중이에요": [
+    "すべてのAIが担当エリアを見守っています",
+    "Every AI is watching its own area"
+  ],
+  "슈퍼바이저 AI가 {lead}와 원인을 분석해요": [
+    "スーパーバイザーAIが{lead}と原因を分析しています",
+    "The supervisor AI is working out the cause with {lead}"
+  ],
+  "슈퍼바이저 AI가 {team}를 불러 함께 원인을 분석해요": [
+    "スーパーバイザーAIが{team}を招集し、一緒に原因を分析しています",
+    "The supervisor AI called in {team} to work out the cause together"
+  ],
+  "아이소메트릭": [
+    "アイソメトリック",
+    "Isometric"
+  ],
+  "쿼터뷰": [
+    "クォータービュー",
+    "Quarter view"
+  ],
+  "휠: 확대 · 드래그: 이동": [
+    "ホイール:拡大 · ドラッグ:移動",
+    "Wheel: zoom · Drag: move"
+  ]
+}

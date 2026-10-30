@@ -32,6 +32,8 @@ import type { Excursion, PlantState } from '../services/telemetry';
 import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
 import { EXPO, IS_EXPO } from '../config/edition';
 import ErrorBoundary from './ErrorBoundary';
+import type { FloorOrchestrationState } from './FloorOrchestration';
+import FloorQuarterView, { TeamStrip, type QuarterProjection, type QuarterTeam } from './FloorQuarterView';
 import { ApprovalGate } from './AccessGate';
 
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
@@ -358,7 +360,7 @@ function StageTracker({ stage }: { stage: Incident['stage'] }) {
 const FloorMap3D = lazy(() => import('./FloorMap3D'));
 
 /** Whether this browser can draw the 3D map at all; without WebGL the 2D map is used. */
-function hasWebGL(): boolean {
+export function hasWebGL(): boolean {
   try {
     const canvas = document.createElement('canvas');
     return Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'));
@@ -466,6 +468,145 @@ function ZoneBadge3D({ zoneId, info, selected, onClick }: { zoneId: string; info
   );
 }
 
+/* ------------------------------------------------------ AI team over the map */
+
+/** The AIs the supervisor calls in, besides the lead, for each kind of plant event. */
+const EXCURSION_TEAM: Record<Excursion['kind'], AgentKey[]> = {
+  temperature: ['pm', 'production'],
+  vibration: ['production', 'quality'],
+  energy: ['production', 'safety'],
+  rush_order: ['logistics', 'pm', 'quality'],
+  mass_defect: ['logistics', 'pm', 'production'],
+  supply_delay: ['production', 'quality'],
+};
+
+const SUPERVISOR_STATUS = ['이상 보고 접수', 'AI 팀 소집 · 함께 분석 중', '조치 실행 중', '사람 승인 대기'];
+const LEAD_STATUS = ['이상 감지 · 보고', '원인 분석', '조치 실행', '승인 요청'];
+const TEAM_STATUS = ['', '소집됨 · 분석', '조치 지원', ''];
+
+/** Where the AI team stands on the incidents on the map: the live plant event first, else the newest proposal waiting on a person. */
+export interface TeamModel {
+  top: Incident | undefined;
+  stage: 0 | 1 | 2 | 3 | undefined;
+  team: AgentKey[];
+  agentStatus: Partial<Record<AgentKey, string>>;
+  supervisorStatus: string;
+}
+
+function teamModel(incidents: Incident[]): TeamModel {
+  const top = incidents.find(i => i.stage < 3) ?? incidents.find(i => i.stage === 3);
+  const stage = top?.stage as 0 | 1 | 2 | 3 | undefined;
+  const kind = top?.id.startsWith('live-') ? (top.id.slice(5) as Excursion['kind']) : null;
+  // The team is called in once the supervisor has the report.
+  const team = top && kind && stage !== undefined && stage >= 1 ? EXCURSION_TEAM[kind].filter(k => k !== top.agent) : [];
+  const agentStatus: Partial<Record<AgentKey, string>> = {};
+  if (top && stage !== undefined) {
+    agentStatus[top.agent] = t(LEAD_STATUS[stage]);
+    team.forEach(k => { if (TEAM_STATUS[stage]) agentStatus[k] = t(TEAM_STATUS[stage]); });
+  }
+  return { top, stage, team, agentStatus, supervisorStatus: stage === undefined ? t('공장 전체 감시 중') : t(SUPERVISOR_STATUS[stage]) };
+}
+
+/** The AI team over the 3D map, placed on the floor plan's rooms. */
+function floorOrchestration(model: TeamModel): FloorOrchestrationState | null {
+  const floor = ACTIVE_SITE.floor;
+  if (!floor) return null;
+  const roomOf = (zoneId: string) => floor.rooms.find(r => r.zoneId === zoneId);
+  const middle = (zoneId: string): [number, number] | null => {
+    const room = roomOf(zoneId);
+    return room ? [room.x + room.w / 2, room.z + room.d / 2] : null;
+  };
+  const xs = floor.rooms.flatMap(r => [r.x, r.x + r.w]);
+  const zs = floor.rooms.flatMap(r => [r.z, r.z + r.d]);
+  // The supervisor hangs high over the far side of the hall, the hub every link fans out from.
+  const center: [number, number] = [(Math.min(...xs) + Math.max(...xs)) / 2, Math.min(...zs) + 2];
+
+  // Each AI floats over its home zone; AIs sharing a zone stand side by side.
+  const keys = Object.keys(ACTIVE_SITE.agentZone) as AgentKey[];
+  const agents = keys.flatMap(key => {
+    const zoneId = ACTIVE_SITE.agentZone[key];
+    const room = roomOf(zoneId);
+    if (!room) return [];
+    // Over the far end of the zone, clear of the incident cards on the near side.
+    const at: [number, number] = [room.x + room.w / 2, room.z + Math.min(2, room.d / 2)];
+    const mates = keys.filter(k => ACTIVE_SITE.agentZone[k] === zoneId);
+    const index = mates.indexOf(key);
+    const shift = (index - (mates.length - 1) / 2) * 3;
+    return [{ key, name: t(AGENT_STYLE[key].name), hex: AGENT_STYLE[key].hex, at: [at[0] + shift, at[1]] as [number, number], lift: index * 1.6 }];
+  });
+
+  const { top, stage, team } = model;
+  const target = top && middle(top.zoneId);
+  return {
+    agents,
+    center,
+    incident: top && target && stage !== undefined ? { lead: top.agent, team, target, stage } : null,
+    label: { supervisor: t('슈퍼바이저 AI'), status: model.supervisorStatus, agentStatus: model.agentStatus as Record<string, string> },
+    emphasis: true,
+  };
+}
+
+/** The AI team on the quarter-view map, with one sentence on what it is doing. */
+function quarterTeam(model: TeamModel): QuarterTeam {
+  const { top, stage, team } = model;
+  const name = (k: AgentKey) => t(AGENT_STYLE[k].name);
+  const zone = top ? t(ACTIVE_SITE.zones.find(z => z.id === top.zoneId)?.name ?? top.zoneId) : '';
+  const teamNames = team.map(name).join(' · ');
+  const narration = !top || stage === undefined ? t('모든 AI가 각자 맡은 구역을 지켜보는 중이에요')
+    : stage === 0 ? t('{zone}에서 이상 감지. {lead}가 슈퍼바이저 AI에 보고해요', { zone, lead: name(top.agent) })
+    : stage === 1 ? (teamNames ? t('슈퍼바이저 AI가 {team}를 불러 함께 원인을 분석해요', { team: teamNames }) : t('슈퍼바이저 AI가 {lead}와 원인을 분석해요', { lead: name(top.agent) }))
+    : stage === 2 ? t('{who}가 {zone}에 조치를 실행해요', { who: [name(top.agent), ...team.map(name)].join(' · '), zone })
+    : t('{zone} 조치는 사람의 승인을 기다리고 있어요', { zone });
+  return {
+    lead: top?.agent,
+    team,
+    stage,
+    targetZone: top?.zoneId,
+    agentStatus: model.agentStatus as Record<string, string>,
+    supervisorStatus: model.supervisorStatus,
+    narration,
+  };
+}
+
+/** The 2D map's angle: quarter view or isometric. */
+function ProjectionSwitch({ value, onChange }: { value: QuarterProjection; onChange: (v: QuarterProjection) => void }) {
+  return (
+    <div className="absolute bottom-2 right-2 z-10 flex rounded-md border border-border bg-surface/90 p-0.5 text-[10px] font-bold" role="group" aria-label={t('2D 시점')}>
+      {(['quarter', 'iso'] as const).map(v => (
+        <button
+          key={v}
+          type="button"
+          data-testid={`projection-${v}`}
+          aria-pressed={value === v}
+          onClick={() => onChange(v)}
+          className={cn("rounded px-2 py-0.5", value === v ? "bg-accent text-white" : "text-text-secondary hover:text-text-primary")}
+        >{v === 'quarter' ? t('쿼터뷰') : t('아이소메트릭')}</button>
+      ))}
+    </div>
+  );
+}
+
+/** A zone's small name tag on the fixed-angle map, coloured by its state. */
+function ZoneTag({ zoneId, state, selected, onClick }: { zoneId: string; state: ZoneInfo['state']; selected: boolean; onClick: () => void }) {
+  const zone = ACTIVE_SITE.zones.find(z => z.id === zoneId);
+  return (
+    <button
+      type="button"
+      data-testid={`zone-${zoneId}`}
+      onClick={onClick}
+      aria-pressed={selected}
+      className={cn(
+        "flex select-none items-center gap-1 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-[10px] font-black shadow backdrop-blur",
+        state === 'alert' ? "border-danger bg-danger text-white" : state === 'waiting' ? "border-warning bg-warning text-white" : "border-border bg-surface/80 text-text-secondary",
+        selected && "ring-2 ring-accent",
+      )}
+    >
+      {state !== 'ok' && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />}
+      {t(zone?.name ?? zoneId)}
+    </button>
+  );
+}
+
 /* ------------------------------------------------------------ worker view */
 
 /**
@@ -488,6 +629,9 @@ export function WorkerView({
   const toggleZone = (id: string) => setZone(current => (current === id ? null : id));
   const [can3D] = useState(() => Boolean(ACTIVE_SITE.floor) && hasWebGL());
   const [mapMode, setMapMode] = useState<'3d' | '2d'>('3d');
+  const [showTeam, setShowTeam] = useState(true);
+  const [projection, setProjection] = useState<QuarterProjection>('iso');
+  const model = teamModel(incidents);
   const use3D = can3D && mapMode === '3d';
   const zoneInfo = (id: string) => zoneStatus(id, incidents);
   const open = incidents.filter(i => i.stage < 4);
@@ -523,6 +667,12 @@ export function WorkerView({
               {zone && (
                 <button onClick={() => setZone(null)} className="text-[10px] font-bold text-accent hover:underline">{t('전체 보기')}</button>
               )}
+              <button
+                type="button"
+                aria-pressed={showTeam}
+                onClick={() => setShowTeam(v => !v)}
+                className={cn("rounded-md border px-2 py-0.5 text-[10px] font-bold", showTeam ? "border-accent/50 bg-accent/15 text-accent" : "border-border text-text-secondary hover:text-text-primary")}
+              >{t('AI 조율')}</button>
               {can3D && (
                 <div className="flex rounded-md border border-border p-0.5 text-[10px] font-bold" role="group" aria-label={t('배치도 보기 방식')}>
                   {(['3d', '2d'] as const).map(mode => (
@@ -539,8 +689,8 @@ export function WorkerView({
               )}
             </div>
           </div>
-          {use3D ? (
-            <div className="relative h-[460px] overflow-hidden rounded-xl border border-border" data-testid="floor-3d">
+          {can3D ? (
+            <div className="relative h-[460px] overflow-hidden rounded-xl border border-border" data-testid={use3D ? 'floor-3d' : 'floor-quarter'}>
               <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-[11px] text-text-secondary">{t('3D 배치도를 그릴 수 없어 2D로 봐 주세요')}</div>}>
                 <Suspense fallback={<div className="flex h-full items-center justify-center text-[11px] text-text-secondary">{t('3D 배치도 불러오는 중…')}</div>}>
                   <FloorMap3D
@@ -548,46 +698,37 @@ export function WorkerView({
                     zoneState={Object.fromEntries(ACTIVE_SITE.zones.map(z => [z.id, zoneInfo(z.id).state]))}
                     selected={zone}
                     onSelect={toggleZone}
-                    renderBadge={zoneId => <ZoneBadge3D zoneId={zoneId} info={zoneInfo(zoneId)} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />}
+                    view={use3D ? 'free' : projection}
+                    // With the AI team on, the floor is left to it; the strip above says what happened.
+                    callouts={!showTeam}
+                    renderBadge={zoneId => !showTeam
+                      ? <ZoneBadge3D zoneId={zoneId} info={zoneInfo(zoneId)} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />
+                      : <ZoneTag zoneId={zoneId} state={zoneInfo(zoneId).state} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />}
+                    orchestration={showTeam ? floorOrchestration(model) : null}
                   />
                 </Suspense>
               </ErrorBoundary>
+              {showTeam && <TeamStrip team={quarterTeam(model)} />}
+              {!use3D && <ProjectionSwitch value={projection} onChange={setProjection} />}
               <div className="pointer-events-none absolute bottom-2 left-2 text-[9px] text-text-secondary">
-                <span className="rounded bg-surface/80 px-1.5 py-0.5">{t('드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동')}</span>
+                <span className="rounded bg-surface/80 px-1.5 py-0.5">{use3D ? t('드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동') : t('휠: 확대 · 드래그: 이동')}</span>
               </div>
             </div>
           ) : (
-          <div className="relative h-[460px] overflow-hidden rounded-xl border border-border bg-bg/50"
-            style={{ backgroundImage: 'radial-gradient(color-mix(in srgb, var(--color-text-secondary) 20%, transparent) 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
-            {ACTIVE_SITE.zones.map(z => {
-              const { state, top, watchers } = zoneInfo(z.id);
-              const flat = z.h < 20;
-              return (
-                <button
-                  key={z.id}
-                  type="button"
-                  data-testid={`zone-${z.id}`}
-                  onClick={() => toggleZone(z.id)}
-                  aria-pressed={zone === z.id}
-                  className={cn(
-                    "absolute flex rounded-lg border-2 p-2 text-left transition-all",
-                    flat ? "flex-row items-center gap-3" : "flex-col justify-between gap-1.5",
-                    state === 'alert' ? "border-danger bg-danger/10 shadow-[0_0_24px_rgba(239,68,68,0.35)]" :
-                    state === 'waiting' ? "border-warning bg-warning/10" : "border-border bg-surface/70 hover:border-accent/50",
-                    zone === z.id && "ring-2 ring-accent ring-offset-2 ring-offset-bg",
-                  )}
-                  style={{ left: `${z.x}%`, top: `${z.y}%`, width: `${z.w}%`, height: `${z.h}%` }}
-                >
-                  <div className={cn(flat && "shrink-0")}>
-                    <div className="text-[11px] font-black leading-tight">{t(z.name)}</div>
-                    <div className="text-[9px] text-text-secondary">{t(z.equipment)}</div>
-                  </div>
-                  <ZoneAis watchers={watchers} top={top} className={cn(flat && "flex-1")} />
-                  <ZoneStatus state={state} top={top} />
-                </button>
-              );
-            })}
-          </div>
+            <div className="relative h-[460px] overflow-hidden rounded-xl border border-border bg-bg/50" data-testid="floor-quarter">
+              <ProjectionSwitch value={projection} onChange={setProjection} />
+              <FloorQuarterView
+                view={projection}
+                zones={ACTIVE_SITE.zones.map(z => {
+                  const { state, top } = zoneInfo(z.id);
+                  return { id: z.id, name: z.name, x: z.x, y: z.y, w: z.w, h: z.h, state, title: top ? t(top.title) : undefined };
+                })}
+                agents={(Object.keys(ACTIVE_SITE.agentZone) as AgentKey[]).map(k => ({ key: k, name: t(AGENT_STYLE[k].name), hex: AGENT_STYLE[k].hex, icon: AGENT_STYLE[k].icon, zoneId: ACTIVE_SITE.agentZone[k] }))}
+                selected={zone}
+                onSelect={toggleZone}
+                team={showTeam ? quarterTeam(model) : null}
+              />
+            </div>
           )}
           <div className="mt-2 flex flex-wrap gap-3 text-[10px] font-bold text-text-secondary">
             <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-danger" />{t('이상 발생')}</span>

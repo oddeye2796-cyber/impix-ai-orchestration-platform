@@ -238,6 +238,13 @@
     ]
   },
   {
+    "key": "2D 조율도",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "2건",
     "lang": "ko",
     "files": [
@@ -261,6 +268,27 @@
   {
     "key": "3 Conflicts Detected",
     "lang": "en",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "3D 관제실",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "3D 관제실 불러오는 중…",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "3D 관제실을 그릴 수 없어 2D로 봐 주세요",
+    "lang": "ko",
     "files": [
       "src/App.tsx"
     ]
@@ -3019,6 +3047,13 @@
     ]
   },
   {
+    "key": "드래그: 회전 · 휠: 확대",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "듣는 중…",
     "lang": "ko",
     "files": [
@@ -3444,6 +3479,13 @@
     ]
   },
   {
+    "key": "불필요 · AI 권한 내",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "비상 정지 (건)",
     "lang": "ko",
     "files": [
@@ -3495,6 +3537,13 @@
   },
   {
     "key": "빨간 점선이 계약 전력 1,600kW예요. 이 선을 넘는 시간대(빨간 점)에 초과 요금이 붙어요.",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "사람 승인",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -3743,8 +3792,16 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
+      "src/components/FloorQuarterView.tsx",
       "src/components/RoleViews.tsx",
       "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "승인 대기 · 결정 필요",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
     ]
   },
   {
@@ -3760,6 +3817,7 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
+      "src/components/RoleViews.tsx",
       "src/expo/ExpoDirector.tsx"
     ]
   },
@@ -3878,6 +3936,27 @@
     ]
   },
   {
+    "key": "실행",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "실행 구간",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "실행 중",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "안전",
     "lang": "ko",
     "files": [
@@ -3890,6 +3969,14 @@
     "lang": "ko",
     "files": [
       "src/App.tsx"
+    ]
+  },
+  {
+    "key": "안전 관리자",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx",
+      "src/config/menuGuides.ts"
     ]
   },
   {
@@ -4087,6 +4174,13 @@
   },
   {
     "key": "요일별 계획 대비 실적",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "요청",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4346,6 +4440,27 @@
   },
   {
     "key": "제안",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "조율 단계",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "조치 승인",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
+    "key": "조치 승인 (사람)",
     "lang": "ko",
     "files": [
       "src/App.tsx"
@@ -4863,6 +4978,13 @@
     ]
   },
   {
+    "key": "합의 · 실행 중",
+    "lang": "ko",
+    "files": [
+      "src/App.tsx"
+    ]
+  },
+  {
     "key": "합의 도출",
     "lang": "ko",
     "files": [
@@ -5088,6 +5210,58 @@
     ]
   },
   {
+    "key": "감지",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "공장 배치도 쿼터뷰",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx"
+    ]
+  },
+  {
+    "key": "분석",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "슈퍼바이저 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "조치 제안",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "해결",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "{time}에 적용한 설정 변경",
     "lang": "ko",
     "files": [
@@ -5291,6 +5465,34 @@
     ]
   },
   {
+    "key": "{who}가 {zone}에 조치를 실행해요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "{zone} 조치는 사람의 승인을 기다리고 있어요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "{zone}에서 이상 감지. {lead}가 슈퍼바이저 AI에 보고해요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "2D 시점",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "3D 배치도 불러오는 중…",
     "lang": "ko",
     "files": [
@@ -5319,6 +5521,13 @@
     ]
   },
   {
+    "key": "AI 조율",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "AI 조치",
     "lang": "ko",
     "files": [
@@ -5327,6 +5536,13 @@
   },
   {
     "key": "AI 조치 제안",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AI 팀 소집 · 함께 분석 중",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5354,14 +5570,6 @@
     ]
   },
   {
-    "key": "감지",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
-    ]
-  },
-  {
     "key": "결재가 필요한 AI 제안",
     "lang": "ko",
     "files": [
@@ -5384,6 +5592,13 @@
   },
   {
     "key": "공장 배치도",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "공장 전체 감시 중",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5509,6 +5724,13 @@
     ]
   },
   {
+    "key": "모든 AI가 각자 맡은 구역을 지켜보는 중이에요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "모터 베어링 소음·발열 점검",
     "lang": "ko",
     "files": [
@@ -5580,14 +5802,6 @@
     ]
   },
   {
-    "key": "분석",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
-    ]
-  },
-  {
     "key": "불량률 상승 조짐",
     "lang": "ko",
     "files": [
@@ -5609,6 +5823,13 @@
     ]
   },
   {
+    "key": "사람 승인 대기",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "생산 AI",
     "lang": "ko",
     "files": [
@@ -5618,6 +5839,13 @@
   },
   {
     "key": "설비·IT 엔지니어",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "소집됨 · 분석",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5639,6 +5867,20 @@
   },
   {
     "key": "슈퍼바이저 → 에이전트 → ML/DL 근거",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "슈퍼바이저 AI가 {lead}와 원인을 분석해요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "슈퍼바이저 AI가 {team}를 불러 함께 원인을 분석해요",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5690,6 +5932,13 @@
   },
   {
     "key": "실링부 열판 상태 육안 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "아이소메트릭",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5776,6 +6025,13 @@
     ]
   },
   {
+    "key": "원인 분석",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "원자재 입고 지연",
     "lang": "ko",
     "files": [
@@ -5797,7 +6053,21 @@
     ]
   },
   {
+    "key": "이상 감지 · 보고",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "이상 발생",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "이상 보고 접수",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5863,11 +6133,24 @@
     ]
   },
   {
-    "key": "조치 제안",
+    "key": "조치 실행",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "조치 실행 중",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "조치 지원",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
     ]
   },
   {
@@ -5900,6 +6183,13 @@
   },
   {
     "key": "충전 순서 재배치, 공급 간격 단축",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "쿼터뷰",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5942,14 +6232,6 @@
     ]
   },
   {
-    "key": "해결",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
-    ]
-  },
-  {
     "key": "해결 {n}건 기준",
     "lang": "ko",
     "files": [
@@ -5979,6 +6261,13 @@
   },
   {
     "key": "회수 대상 거래처 연락",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "휠: 확대 · 드래그: 이동",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -6626,13 +6915,6 @@
   },
   {
     "key": "실링 온도를 바꿔 보세요. 173°C 근처에서 예상 불량률이 가장 낮아져요.",
-    "lang": "ko",
-    "files": [
-      "src/config/menuGuides.ts"
-    ]
-  },
-  {
-    "key": "안전 관리자",
     "lang": "ko",
     "files": [
       "src/config/menuGuides.ts"
@@ -10346,6 +10628,13 @@
     ]
   },
   {
+    "key": "구매 담당자",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "구매 담당자가 승인. 대체 공급사에 발주",
     "lang": "ko",
     "files": [
@@ -10682,6 +10971,13 @@
     ]
   },
   {
+    "key": "생산 관리자",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "생산 관리자가 승인. 야간 조 편성, 고객에게 내일 15시 납품 확정 회신",
     "lang": "ko",
     "files": [
@@ -10767,13 +11063,6 @@
   },
   {
     "key": "수정안: 속도는 그대로 두고 야간 1개 조를 더하면 내일 15시 완료, 납기 여유 3시간입니다.",
-    "lang": "ko",
-    "files": [
-      "src/expo/ExpoDirector.tsx"
-    ]
-  },
-  {
-    "key": "슈퍼바이저 AI",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
@@ -11110,6 +11399,13 @@
   },
   {
     "key": "품목이 바뀔 때 첫 제품 검사 조건을 자동으로 바꿔 둠",
+    "lang": "ko",
+    "files": [
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "품질 책임자",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"
