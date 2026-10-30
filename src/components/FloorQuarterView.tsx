@@ -290,28 +290,33 @@ export default function FloorQuarterView({ view = 'quarter', zones, agents, supe
         )}
       </svg>
 
-      {/* What the team is doing, as a delivery-tracker strip and one sentence */}
-      {team && (
-        <div className="pointer-events-none absolute left-2 right-2 top-2 rounded-lg border border-border bg-surface/90 px-3 py-2 shadow backdrop-blur-sm">
-          <div className="flex items-center gap-1">
-            {STAGES.map((label, i) => {
-              const current = stage === undefined ? -1 : stage;
-              const done = stage !== undefined && i < current;
-              const now = i === current;
-              return (
-                <React.Fragment key={label}>
-                  {i > 0 && <span className={cn("h-0.5 flex-1 rounded", done || now ? "bg-accent" : "bg-border")} />}
-                  <span className={cn(
-                    "whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-black",
-                    now ? (i === 3 ? "bg-warning text-white" : i === 0 ? "bg-danger text-white" : "bg-accent text-white") : done ? "bg-accent/15 text-accent" : "bg-surface-hover text-text-secondary",
-                  )}>{t(label)}</span>
-                </React.Fragment>
-              );
-            })}
-          </div>
-          <div className="mt-1 text-[11px] font-bold text-text-primary">{team.narration}</div>
-        </div>
-      )}
+      {team && <TeamStrip team={team} />}
+    </div>
+  );
+}
+
+/** What the AI team is doing, as a delivery-tracker strip and one sentence, laid over a map. */
+export function TeamStrip({ team }: { team: QuarterTeam }) {
+  const stage = team.stage;
+  return (
+    <div className="pointer-events-none absolute left-2 right-2 top-2 rounded-lg border border-border bg-surface/90 px-3 py-2 shadow backdrop-blur-sm">
+      <div className="flex items-center gap-1">
+        {STAGES.map((label, i) => {
+          const current = stage === undefined ? -1 : stage;
+          const done = stage !== undefined && i < current;
+          const now = i === current;
+          return (
+            <React.Fragment key={label}>
+              {i > 0 && <span className={cn("h-0.5 flex-1 rounded", done || now ? "bg-accent" : "bg-border")} />}
+              <span className={cn(
+                "whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-black",
+                now ? (i === 3 ? "bg-warning text-white" : i === 0 ? "bg-danger text-white" : "bg-accent text-white") : done ? "bg-accent/15 text-accent" : "bg-surface-hover text-text-secondary",
+              )}>{t(label)}</span>
+            </React.Fragment>
+          );
+        })}
+      </div>
+      <div className="mt-1 text-[11px] font-bold text-text-primary">{team.narration}</div>
     </div>
   );
 }

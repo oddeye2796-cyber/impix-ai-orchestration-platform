@@ -44,6 +44,8 @@ export interface FloorOrchestrationState {
     stage: 0 | 1 | 2 | 3;
   } | null;
   label: { supervisor: string; status: string; agentStatus: Record<string, string> };
+  /** Bigger and taller, for the fixed-angle views where the team is the point of the map. */
+  emphasis?: boolean;
 }
 
 const SUP_Y = 5.5;
@@ -71,12 +73,15 @@ function Link({ curve, hex, active, reverse = false }: { curve: QuadraticBezierC
       ref={ref as never}
       points={points}
       color={hex}
-      lineWidth={active ? 3 : 1}
+      lineWidth={active ? 5 : 1.5}
+      // Drawn over the equipment, so a machine never hides the coordination.
+      depthTest={false}
+      renderOrder={10}
       dashed
       dashSize={active ? 0.8 : 0.3}
       gapSize={active ? 0.5 : 0.5}
       transparent
-      opacity={active ? 0.95 : 0.22}
+      opacity={active ? 1 : 0.3}
     />
   );
 }
@@ -90,9 +95,9 @@ function Packet({ curve, hex, offset = 0 }: { curve: QuadraticBezierCurve3; hex:
     ref.current.position.copy(curve.getPoint(u));
   });
   return (
-    <mesh ref={ref}>
-      <sphereGeometry args={[0.32, 16, 16]} />
-      <meshBasicMaterial color={hex} />
+    <mesh ref={ref} renderOrder={12}>
+      <sphereGeometry args={[0.5, 16, 16]} />
+      <meshBasicMaterial color={hex} depthTest={false} />
     </mesh>
   );
 }
@@ -107,13 +112,13 @@ function Orb({ position, hex, radius, lit, dim }: { position: Vector3; hex: stri
   });
   return (
     <group position={position}>
-      <mesh>
+      <mesh renderOrder={11}>
         <sphereGeometry args={[radius, 32, 32]} />
-        <meshStandardMaterial ref={mat} color={hex} emissive={hex} emissiveIntensity={0.5} roughness={0.25} transparent opacity={dim ? 0.55 : 1} />
+        <meshStandardMaterial ref={mat} color={hex} emissive={hex} emissiveIntensity={0.5} roughness={0.25} transparent opacity={dim ? 0.55 : 1} depthTest={false} />
       </mesh>
       <mesh ref={halo}>
         <sphereGeometry args={[radius * 1.7, 24, 24]} />
-        <meshBasicMaterial color={hex} transparent opacity={lit ? 0.22 : 0.08} blending={AdditiveBlending} depthWrite={false} />
+        <meshBasicMaterial color={hex} transparent opacity={lit ? 0.3 : 0.08} blending={AdditiveBlending} depthWrite={false} depthTest={false} />
       </mesh>
       {/* A thin stem down to the floor, so it reads as standing over its zone. */}
       <mesh position={[0, -position.y / 2, 0]}>
@@ -125,7 +130,7 @@ function Orb({ position, hex, radius, lit, dim }: { position: Vector3; hex: stri
 }
 
 /** Orbit rings spinning around the supervisor. */
-function Rings({ position, hex, fast }: { position: Vector3; hex: string; fast: boolean }) {
+function Rings({ position, hex, fast, scale = 1 }: { position: Vector3; hex: string; fast: boolean; scale?: number }) {
   const group = useRef<Group>(null);
   useFrame((_, delta) => {
     group.current?.children.forEach((ring, i) => {
@@ -134,7 +139,7 @@ function Rings({ position, hex, fast }: { position: Vector3; hex: string; fast: 
     });
   });
   return (
-    <group ref={group} position={position}>
+    <group ref={group} position={position} scale={scale}>
       {[1.7, 2, 2.3].map(r => (
         <mesh key={r}>
           <torusGeometry args={[r, 0.04, 8, 96]} />
@@ -175,9 +180,12 @@ function Tag({ title, status, hex, strong }: { title: string; status?: string; h
 }
 
 export default function FloorOrchestration({ state }: { state: FloorOrchestrationState }) {
-  const { agents, center, incident, label } = state;
-  const sup = useMemo(() => new Vector3(center[0], SUP_Y, center[1]), [center[0], center[1]]); // eslint-disable-line react-hooks/exhaustive-deps
-  const homes = useMemo(() => agents.map(a => new Vector3(a.at[0], AGENT_Y + (a.lift ?? 0), a.at[1])), [agents]);
+  const { agents, center, incident, label, emphasis } = state;
+  // Taller in the fixed views; the orbs grow less, so neighbours don't run together.
+  const k = emphasis ? 1.6 : 1;
+  const r = emphasis ? 1.25 : 1;
+  const sup = useMemo(() => new Vector3(center[0], SUP_Y * k, center[1]), [center[0], center[1], k]); // eslint-disable-line react-hooks/exhaustive-deps
+  const homes = useMemo(() => agents.map(a => new Vector3(a.at[0], (AGENT_Y + (a.lift ?? 0)) * k, a.at[1])), [agents, k]);
   const toSup = useMemo(() => homes.map(h => arc(h, sup, 1.5)), [homes, sup]);
   const target = incident ? new Vector3(incident.target[0], 0.4, incident.target[1]) : null;
   const targetKey = incident ? `${incident.target[0]}:${incident.target[1]}` : '';
@@ -191,9 +199,9 @@ export default function FloorOrchestration({ state }: { state: FloorOrchestratio
 
   return (
     <group>
-      <Orb position={sup} hex={supHex} radius={1.1} lit={stage !== null} />
-      <Rings position={sup} hex={supHex} fast={stage !== null && stage < 3} />
-      <Html position={[sup.x, sup.y + 2.9, sup.z]} center zIndexRange={[45, 0]}>
+      <Orb position={sup} hex={supHex} radius={1.4 * r} lit={stage !== null} />
+      <Rings position={sup} hex={supHex} scale={r} fast={stage !== null && stage < 3} />
+      <Html position={[sup.x, sup.y + 2.9 * k, sup.z]} center zIndexRange={[45, 0]}>
         <Tag title={label.supervisor} status={label.status} hex={supHex} strong={stage !== null} />
       </Html>
 
@@ -217,9 +225,9 @@ export default function FloorOrchestration({ state }: { state: FloorOrchestratio
                 <Packet curve={toTarget[i]} hex={GREEN} offset={i * 0.4} />
               </>
             )}
-            <Orb position={homes[i]} hex={agent.hex} radius={0.7} lit={reporting || called || acting} dim={incident !== null && !on} />
+            <Orb position={homes[i]} hex={agent.hex} radius={0.9 * r} lit={reporting || called || acting} dim={incident !== null && !on} />
             {on && label.agentStatus[agent.key] && (
-              <Html position={[homes[i].x, homes[i].y + 1.6, homes[i].z]} center zIndexRange={[44, 0]}>
+              <Html position={[homes[i].x, homes[i].y + 1.6 * k, homes[i].z]} center zIndexRange={[44, 0]}>
                 <Tag title={agent.name} status={label.agentStatus[agent.key]} hex={agent.hex} strong={reporting || called || acting} />
               </Html>
             )}

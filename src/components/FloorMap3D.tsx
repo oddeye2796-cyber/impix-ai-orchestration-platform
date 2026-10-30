@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useMemo, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Html, OrbitControls } from '@react-three/drei';
-import type { Mesh, MeshStandardMaterial } from 'three';
+import { Vector3, type Mesh, type MeshStandardMaterial } from 'three';
 
 import type { FloorEquipment, FloorPath, FloorPlan, FloorRoom } from '../config/siteProfile';
 import { useTheme } from '../theme';
@@ -24,6 +24,32 @@ interface Props {
   renderBadge: (zoneId: string) => React.ReactNode;
   /** The AI team over the floor, moving with the incident on the map; null hides it. */
   orchestration?: FloorOrchestrationState | null;
+  /**
+   * 'free' is the perspective view you can turn. 'quarter' and 'iso' fix an
+   * orthographic camera at a quarter-view or isometric angle, so the rendered
+   * equipment reads like a flat plan and the AI team over it stands out.
+   */
+  view?: 'free' | 'quarter' | 'iso';
+  /** Open incident zones into cards on stems; off keeps every zone a small tag at its anchor. */
+  callouts?: boolean;
+}
+
+/** Points the orthographic camera at the hall from a fixed angle, sized to fit the canvas. */
+function OrthoRig({ view, target, width, depth }: { view: 'quarter' | 'iso'; target: [number, number, number]; width: number; depth: number }) {
+  const { camera, size } = useThree();
+  useLayoutEffect(() => {
+    // Isometric: the true 35° look down a diagonal. Quarter view: from the front, about 33° down.
+    const dir = view === 'iso' ? new Vector3(1, 0.82, 1).normalize() : new Vector3(0, 0.65, 1).normalize();
+    camera.position.set(target[0], target[1], target[2]).addScaledVector(dir, 150);
+    camera.up.set(0, 1, 0);
+    camera.lookAt(target[0], target[1], target[2]);
+    // Room for the AI team floating over the hall, above its far wall.
+    const spanX = view === 'iso' ? (width + depth) * 0.74 : width * 1.04;
+    const spanY = view === 'iso' ? (width + depth) * 0.42 + 14 : depth * 0.64 + 16;
+    camera.zoom = Math.min(size.width / spanX, size.height / spanY);
+    camera.updateProjectionMatrix();
+  }, [view, size.width, size.height]); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
 }
 
 /** Three.js takes literal colours, so the theme tokens are mirrored here. */
@@ -45,8 +71,8 @@ const WALL_T = 0.15;
 type Palette = typeof PALETTE.dark;
 
 /** Rooms are drawn as a floor tile with low cut-away walls, so the lines inside stay visible. */
-function Room({ room, state, selected, palette, onSelect }: {
-  room: FloorRoom; state: ZoneState | undefined; selected: boolean; palette: Palette; onSelect: (id: string) => void;
+function Room({ room, state, selected, palette, onSelect, fixed }: {
+  room: FloorRoom; state: ZoneState | undefined; selected: boolean; palette: Palette; onSelect: (id: string) => void; fixed: boolean;
 }) {
   const floorMat = useRef<MeshStandardMaterial>(null);
   const tint = state === 'alert' ? STATE_HEX.alert : state === 'waiting' ? STATE_HEX.waiting : selected ? STATE_HEX.selected : null;
@@ -86,7 +112,8 @@ function Room({ room, state, selected, palette, onSelect }: {
         </mesh>
       ))}
       {!room.zoneId && (
-        <Html position={[cx, 0.2, cz]} center distanceFactor={45} zIndexRange={[10, 0]} style={{ pointerEvents: 'none' }}>
+        // An orthographic camera scales distanceFactor by its zoom, which blows the label up over the whole map.
+        <Html position={[cx, 0.2, cz]} center distanceFactor={fixed ? undefined : 45} zIndexRange={[10, 0]} style={{ pointerEvents: 'none' }}>
           <span className="whitespace-nowrap text-[11px] font-bold" style={{ color: palette.label, opacity: 0.8 }}>{t(room.label)}</span>
         </Html>
       )}
@@ -215,7 +242,7 @@ function Path({ path, state, palette }: { path: FloorPath; state: ZoneState | un
  * Zones in trouble light up red (or amber while a proposal waits for
  * approval), and each zone's AIs float above it.
  */
-export default function FloorMap3D({ floor, zoneState, selected, onSelect, renderBadge, orchestration }: Props) {
+export default function FloorMap3D({ floor, zoneState, selected, onSelect, renderBadge, orchestration, view = 'free', callouts: showCallouts = true }: Props) {
   const { theme } = useTheme();
   const palette = PALETTE[theme];
 
@@ -223,17 +250,24 @@ export default function FloorMap3D({ floor, zoneState, selected, onSelect, rende
     const xs = floor.rooms.flatMap(r => [r.x, r.x + r.w]);
     const zs = floor.rooms.flatMap(r => [r.z, r.z + r.d]);
     const minX = Math.min(...xs), maxX = Math.max(...xs), minZ = Math.min(...zs), maxZ = Math.max(...zs);
-    return { cx: (minX + maxX) / 2, cz: (minZ + maxZ) / 2, size: Math.max(maxX - minX, maxZ - minZ) };
+    return { cx: (minX + maxX) / 2, cz: (minZ + maxZ) / 2, size: Math.max(maxX - minX, maxZ - minZ), width: maxX - minX, depth: maxZ - minZ };
   }, [floor]);
 
   // Look down on the whole hall from a little south-east of its middle.
   const target: [number, number, number] = [bounds.cx, 0, bounds.cz + 1];
+  // The fixed views aim a little past the middle, leaving room above the hall for the AI team.
+  const fixedTarget: [number, number, number] = [bounds.cx, 3, bounds.cz - bounds.depth * 0.2];
 
   return (
     <Canvas
+      // A perspective and an orthographic camera can't be swapped in place.
+      key={view === 'free' ? 'perspective' : 'ortho'}
       shadows
       dpr={[1, 2]}
-      camera={{ position: [target[0] + 4, bounds.size * 0.95, target[2] + bounds.size * 0.62], fov: 38, near: 0.5, far: 600 }}
+      orthographic={view !== 'free'}
+      camera={view === 'free'
+        ? { position: [target[0] + 4, bounds.size * 0.95, target[2] + bounds.size * 0.62], fov: 38, near: 0.5, far: 600 }
+        : { position: [target[0], 100, target[2] + 100], zoom: 10, near: 0.1, far: 1000 }}
       onPointerMissed={() => { document.body.style.cursor = ''; }}
     >
       <color attach="background" args={[palette.ground]} />
@@ -248,7 +282,7 @@ export default function FloorMap3D({ floor, zoneState, selected, onSelect, rende
 
       {floor.rooms.map(room => (
         <Room key={room.id} room={room} state={room.zoneId ? zoneState[room.zoneId] : undefined}
-          selected={selected !== null && room.zoneId === selected} palette={palette} onSelect={onSelect} />
+          selected={selected !== null && room.zoneId === selected} palette={palette} onSelect={onSelect} fixed={view !== 'free'} />
       ))}
       {floor.equipment.map((item, i) => (
         <Equipment key={i} item={item} state={item.zoneId ? zoneState[item.zoneId] : undefined} palette={palette} />
@@ -258,7 +292,7 @@ export default function FloorMap3D({ floor, zoneState, selected, onSelect, rende
       ))}
 
       {Object.entries(floor.anchors).map(([zoneId, anchor]) => {
-        const callout = zoneState[zoneId] !== 'ok' ? floor.callouts[zoneId] : undefined;
+        const callout = showCallouts && zoneState[zoneId] !== 'ok' ? floor.callouts[zoneId] : undefined;
         const [x, z] = callout ?? anchor;
         return (
           <Html key={zoneId} position={[x, WALL_H + 0.5, z]} center={!callout} zIndexRange={[callout ? 40 : 20, 0]}>
@@ -276,12 +310,15 @@ export default function FloorMap3D({ floor, zoneState, selected, onSelect, rende
 
       {orchestration && <FloorOrchestration state={orchestration} />}
 
+      {view !== 'free' && <OrthoRig view={view} target={fixedTarget} width={bounds.width} depth={bounds.depth} />}
       <OrbitControls
-        target={target}
+        key={view}
+        target={view === 'free' ? target : fixedTarget}
+        enableRotate={view === 'free'}
         enableDamping
         maxPolarAngle={Math.PI * 0.42}
-        minDistance={12}
-        maxDistance={bounds.size * 1.6}
+        minDistance={view === 'free' ? 12 : 0}
+        maxDistance={view === 'free' ? bounds.size * 1.6 : Infinity}
       />
     </Canvas>
   );

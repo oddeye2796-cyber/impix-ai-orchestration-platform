@@ -620,6 +620,7 @@ export const en: Catalog = {
   "현장 작업자·반장": "Operators & shift leads",
   "현재 설비종합효율": "Current OEE",
   "회수 대상 거래처 연락": "Contact the customers affected by the recall",
+  "휠: 확대 · 드래그: 이동": "Wheel: zoom · Drag: move",
   // ── src/components/SupervisorChat.tsx ─────────────────────────
   "가장 급한 일은?": "What's most urgent?",
   "근거": "Source",

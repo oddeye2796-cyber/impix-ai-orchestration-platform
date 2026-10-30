@@ -33,7 +33,7 @@ import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
 import { EXPO, IS_EXPO } from '../config/edition';
 import ErrorBoundary from './ErrorBoundary';
 import type { FloorOrchestrationState } from './FloorOrchestration';
-import FloorQuarterView, { type QuarterProjection, type QuarterTeam } from './FloorQuarterView';
+import FloorQuarterView, { TeamStrip, type QuarterProjection, type QuarterTeam } from './FloorQuarterView';
 import { ApprovalGate } from './AccessGate';
 
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
@@ -508,7 +508,7 @@ function teamModel(incidents: Incident[]): TeamModel {
 }
 
 /** The AI team over the 3D map, placed on the floor plan's rooms. */
-function floorOrchestration(model: TeamModel): FloorOrchestrationState | null {
+function floorOrchestration(model: TeamModel, fixed = false): FloorOrchestrationState | null {
   const floor = ACTIVE_SITE.floor;
   if (!floor) return null;
   const roomOf = (zoneId: string) => floor.rooms.find(r => r.zoneId === zoneId);
@@ -520,7 +520,9 @@ function floorOrchestration(model: TeamModel): FloorOrchestrationState | null {
   const zs = floor.rooms.flatMap(r => [r.z, r.z + r.d]);
   // The supervisor floats at the edge of the control room, or mid-hall without one.
   const control = roomOf('control');
-  const center: [number, number] = control ? [control.x + control.w, control.z + control.d / 2] : [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...zs) + Math.max(...zs)) / 2];
+  // In the fixed-angle views it hangs high over the far side of the hall instead, the hub every link fans out from.
+  const center: [number, number] = fixed ? [(Math.min(...xs) + Math.max(...xs)) / 2, Math.min(...zs) + 2]
+    : control ? [control.x + control.w, control.z + control.d / 2] : [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...zs) + Math.max(...zs)) / 2];
 
   // Each AI floats over its home zone; AIs sharing a zone stand side by side.
   const keys = Object.keys(ACTIVE_SITE.agentZone) as AgentKey[];
@@ -543,6 +545,7 @@ function floorOrchestration(model: TeamModel): FloorOrchestrationState | null {
     center,
     incident: top && target && stage !== undefined ? { lead: top.agent, team, target, stage } : null,
     label: { supervisor: t('슈퍼바이저 AI'), status: model.supervisorStatus, agentStatus: model.agentStatus as Record<string, string> },
+    emphasis: fixed,
   };
 }
 
@@ -566,6 +569,45 @@ function quarterTeam(model: TeamModel): QuarterTeam {
     supervisorStatus: model.supervisorStatus,
     narration,
   };
+}
+
+/** The 2D map's angle: quarter view or isometric. */
+function ProjectionSwitch({ value, onChange }: { value: QuarterProjection; onChange: (v: QuarterProjection) => void }) {
+  return (
+    <div className="absolute bottom-2 right-2 z-10 flex rounded-md border border-border bg-surface/90 p-0.5 text-[10px] font-bold" role="group" aria-label={t('2D 시점')}>
+      {(['quarter', 'iso'] as const).map(v => (
+        <button
+          key={v}
+          type="button"
+          data-testid={`projection-${v}`}
+          aria-pressed={value === v}
+          onClick={() => onChange(v)}
+          className={cn("rounded px-2 py-0.5", value === v ? "bg-accent text-white" : "text-text-secondary hover:text-text-primary")}
+        >{v === 'quarter' ? t('쿼터뷰') : t('아이소메트릭')}</button>
+      ))}
+    </div>
+  );
+}
+
+/** A zone's small name tag on the fixed-angle map, coloured by its state. */
+function ZoneTag({ zoneId, state, selected, onClick }: { zoneId: string; state: ZoneInfo['state']; selected: boolean; onClick: () => void }) {
+  const zone = ACTIVE_SITE.zones.find(z => z.id === zoneId);
+  return (
+    <button
+      type="button"
+      data-testid={`zone-${zoneId}`}
+      onClick={onClick}
+      aria-pressed={selected}
+      className={cn(
+        "flex select-none items-center gap-1 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-[10px] font-black shadow backdrop-blur",
+        state === 'alert' ? "border-danger bg-danger text-white" : state === 'waiting' ? "border-warning bg-warning text-white" : "border-border bg-surface/80 text-text-secondary",
+        selected && "ring-2 ring-accent",
+      )}
+    >
+      {state !== 'ok' && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />}
+      {t(zone?.name ?? zoneId)}
+    </button>
+  );
 }
 
 /* ------------------------------------------------------------ worker view */
@@ -592,6 +634,7 @@ export function WorkerView({
   const [mapMode, setMapMode] = useState<'3d' | '2d'>('3d');
   const [showTeam, setShowTeam] = useState(true);
   const [projection, setProjection] = useState<QuarterProjection>('quarter');
+  const model = teamModel(incidents);
   const use3D = can3D && mapMode === '3d';
   const zoneInfo = (id: string) => zoneStatus(id, incidents);
   const open = incidents.filter(i => i.stage < 4);
@@ -649,8 +692,8 @@ export function WorkerView({
               )}
             </div>
           </div>
-          {use3D ? (
-            <div className="relative h-[460px] overflow-hidden rounded-xl border border-border" data-testid="floor-3d">
+          {can3D ? (
+            <div className="relative h-[460px] overflow-hidden rounded-xl border border-border" data-testid={use3D ? 'floor-3d' : 'floor-quarter'}>
               <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-[11px] text-text-secondary">{t('3D 배치도를 그릴 수 없어 2D로 봐 주세요')}</div>}>
                 <Suspense fallback={<div className="flex h-full items-center justify-center text-[11px] text-text-secondary">{t('3D 배치도 불러오는 중…')}</div>}>
                   <FloorMap3D
@@ -658,29 +701,25 @@ export function WorkerView({
                     zoneState={Object.fromEntries(ACTIVE_SITE.zones.map(z => [z.id, zoneInfo(z.id).state]))}
                     selected={zone}
                     onSelect={toggleZone}
-                    renderBadge={zoneId => <ZoneBadge3D zoneId={zoneId} info={zoneInfo(zoneId)} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />}
-                    orchestration={showTeam ? floorOrchestration(teamModel(incidents)) : null}
+                    view={use3D ? 'free' : projection}
+                    // The fixed views leave the floor to the AI team; the strip above says what happened.
+                    callouts={use3D || !showTeam}
+                    renderBadge={zoneId => use3D || !showTeam
+                      ? <ZoneBadge3D zoneId={zoneId} info={zoneInfo(zoneId)} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />
+                      : <ZoneTag zoneId={zoneId} state={zoneInfo(zoneId).state} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />}
+                    orchestration={showTeam ? floorOrchestration(model, !use3D) : null}
                   />
                 </Suspense>
               </ErrorBoundary>
+              {showTeam && !use3D && <TeamStrip team={quarterTeam(model)} />}
+              {!use3D && <ProjectionSwitch value={projection} onChange={setProjection} />}
               <div className="pointer-events-none absolute bottom-2 left-2 text-[9px] text-text-secondary">
-                <span className="rounded bg-surface/80 px-1.5 py-0.5">{t('드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동')}</span>
+                <span className="rounded bg-surface/80 px-1.5 py-0.5">{use3D ? t('드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동') : t('휠: 확대 · 드래그: 이동')}</span>
               </div>
             </div>
           ) : (
             <div className="relative h-[460px] overflow-hidden rounded-xl border border-border bg-bg/50" data-testid="floor-quarter">
-              <div className="absolute bottom-2 right-2 z-10 flex rounded-md border border-border bg-surface/90 p-0.5 text-[10px] font-bold" role="group" aria-label={t('2D 시점')}>
-                {(['quarter', 'iso'] as const).map(v => (
-                  <button
-                    key={v}
-                    type="button"
-                    data-testid={`projection-${v}`}
-                    aria-pressed={projection === v}
-                    onClick={() => setProjection(v)}
-                    className={cn("rounded px-2 py-0.5", projection === v ? "bg-accent text-white" : "text-text-secondary hover:text-text-primary")}
-                  >{v === 'quarter' ? t('쿼터뷰') : t('아이소메트릭')}</button>
-                ))}
-              </div>
+              <ProjectionSwitch value={projection} onChange={setProjection} />
               <FloorQuarterView
                 view={projection}
                 zones={ACTIVE_SITE.zones.map(z => {
@@ -690,7 +729,7 @@ export function WorkerView({
                 agents={(Object.keys(ACTIVE_SITE.agentZone) as AgentKey[]).map(k => ({ key: k, name: t(AGENT_STYLE[k].name), hex: AGENT_STYLE[k].hex, icon: AGENT_STYLE[k].icon, zoneId: ACTIVE_SITE.agentZone[k] }))}
                 selected={zone}
                 onSelect={toggleZone}
-                team={showTeam ? quarterTeam(teamModel(incidents)) : null}
+                team={showTeam ? quarterTeam(model) : null}
               />
             </div>
           )}

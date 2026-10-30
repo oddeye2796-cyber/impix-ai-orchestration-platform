@@ -6267,6 +6267,13 @@
     ]
   },
   {
+    "key": "휠: 확대 · 드래그: 이동",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "가장 급한 일은?",
     "lang": "ko",
     "files": [
