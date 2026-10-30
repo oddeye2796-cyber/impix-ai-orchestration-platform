@@ -118,5 +118,45 @@
   "조치 지원": [
     "措置支援",
     "Supporting"
+  ],
+  "공장 배치도 쿼터뷰": [
+    "工場レイアウト クォータービュー",
+    "Factory floor map, quarter view"
+  ],
+  "{who}가 {zone}에 조치를 실행해요": [
+    "{who}が{zone}で措置を実行しています",
+    "{who} are acting on {zone}"
+  ],
+  "{zone} 조치는 사람의 승인을 기다리고 있어요": [
+    "{zone}の措置は人の承認を待っています",
+    "The action for {zone} is waiting for a person's approval"
+  ],
+  "{zone}에서 이상 감지. {lead}가 슈퍼바이저 AI에 보고해요": [
+    "{zone}で異常を検知。{lead}がスーパーバイザーAIに報告します",
+    "Something's wrong in {zone}. {lead} is reporting to the supervisor AI"
+  ],
+  "2D 시점": [
+    "2D視点",
+    "2D view angle"
+  ],
+  "모든 AI가 각자 맡은 구역을 지켜보는 중이에요": [
+    "すべてのAIが担当エリアを見守っています",
+    "Every AI is watching its own area"
+  ],
+  "슈퍼바이저 AI가 {lead}와 원인을 분석해요": [
+    "スーパーバイザーAIが{lead}と原因を分析しています",
+    "The supervisor AI is working out the cause with {lead}"
+  ],
+  "슈퍼바이저 AI가 {team}를 불러 함께 원인을 분석해요": [
+    "スーパーバイザーAIが{team}を招集し、一緒に原因を分析しています",
+    "The supervisor AI called in {team} to work out the cause together"
+  ],
+  "아이소메트릭": [
+    "アイソメトリック",
+    "Isometric"
+  ],
+  "쿼터뷰": [
+    "クォータービュー",
+    "Quarter view"
   ]
 }

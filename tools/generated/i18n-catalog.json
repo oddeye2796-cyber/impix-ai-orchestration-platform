@@ -3792,6 +3792,7 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
+      "src/components/FloorQuarterView.tsx",
       "src/components/RoleViews.tsx",
       "src/expo/ExpoDirector.tsx"
     ]
@@ -5209,6 +5210,58 @@
     ]
   },
   {
+    "key": "감지",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "공장 배치도 쿼터뷰",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx"
+    ]
+  },
+  {
+    "key": "분석",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "슈퍼바이저 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "조치 제안",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "해결",
+    "lang": "ko",
+    "files": [
+      "src/components/FloorQuarterView.tsx",
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
     "key": "{time}에 적용한 설정 변경",
     "lang": "ko",
     "files": [
@@ -5412,6 +5465,34 @@
     ]
   },
   {
+    "key": "{who}가 {zone}에 조치를 실행해요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "{zone} 조치는 사람의 승인을 기다리고 있어요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "{zone}에서 이상 감지. {lead}가 슈퍼바이저 AI에 보고해요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "2D 시점",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "3D 배치도 불러오는 중…",
     "lang": "ko",
     "files": [
@@ -5486,14 +5567,6 @@
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
-    ]
-  },
-  {
-    "key": "감지",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -5651,6 +5724,13 @@
     ]
   },
   {
+    "key": "모든 AI가 각자 맡은 구역을 지켜보는 중이에요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "모터 베어링 소음·발열 점검",
     "lang": "ko",
     "files": [
@@ -5719,14 +5799,6 @@
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
-    ]
-  },
-  {
-    "key": "분석",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -5801,11 +5873,17 @@
     ]
   },
   {
-    "key": "슈퍼바이저 AI",
+    "key": "슈퍼바이저 AI가 {lead}와 원인을 분석해요",
     "lang": "ko",
     "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "슈퍼바이저 AI가 {team}를 불러 함께 원인을 분석해요",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
     ]
   },
   {
@@ -5854,6 +5932,13 @@
   },
   {
     "key": "실링부 열판 상태 육안 확인",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "아이소메트릭",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -6062,14 +6147,6 @@
     ]
   },
   {
-    "key": "조치 제안",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
-    ]
-  },
-  {
     "key": "조치 지원",
     "lang": "ko",
     "files": [
@@ -6112,6 +6189,13 @@
     ]
   },
   {
+    "key": "쿼터뷰",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "포장 1·2라인 인쇄 불량 급증 (불량률 6.8%)",
     "lang": "ko",
     "files": [
@@ -6145,14 +6229,6 @@
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
-    ]
-  },
-  {
-    "key": "해결",
-    "lang": "ko",
-    "files": [
-      "src/components/RoleViews.tsx",
-      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
