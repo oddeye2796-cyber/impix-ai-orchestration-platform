@@ -32,6 +32,7 @@ import type { Excursion, PlantState } from '../services/telemetry';
 import { ACTIVE_SITE, type AgentKey } from '../config/siteProfile';
 import { EXPO, IS_EXPO } from '../config/edition';
 import ErrorBoundary from './ErrorBoundary';
+import type { FloorOrchestrationState } from './FloorOrchestration';
 import { ApprovalGate } from './AccessGate';
 
 const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
@@ -466,6 +467,79 @@ function ZoneBadge3D({ zoneId, info, selected, onClick }: { zoneId: string; info
   );
 }
 
+/* ------------------------------------------------------ AI team over the map */
+
+/** The AIs the supervisor calls in, besides the lead, for each kind of plant event. */
+const EXCURSION_TEAM: Record<Excursion['kind'], AgentKey[]> = {
+  temperature: ['pm', 'production'],
+  vibration: ['production', 'quality'],
+  energy: ['production', 'safety'],
+  rush_order: ['logistics', 'pm', 'quality'],
+  mass_defect: ['logistics', 'pm', 'production'],
+  supply_delay: ['production', 'quality'],
+};
+
+const SUPERVISOR_STATUS = ['이상 보고 접수', 'AI 팀 소집 · 함께 분석 중', '조치 실행 중', '사람 승인 대기'];
+const LEAD_STATUS = ['이상 감지 · 보고', '원인 분석', '조치 실행', '승인 요청'];
+const TEAM_STATUS = ['', '소집됨 · 분석', '조치 지원', ''];
+
+/**
+ * What the AI team over the 3D map shows for the incidents on it: the live
+ * plant event first, else the newest proposal waiting on a person.
+ */
+function floorOrchestration(incidents: Incident[]): FloorOrchestrationState | null {
+  const floor = ACTIVE_SITE.floor;
+  if (!floor) return null;
+  const roomOf = (zoneId: string) => floor.rooms.find(r => r.zoneId === zoneId);
+  const middle = (zoneId: string): [number, number] | null => {
+    const room = roomOf(zoneId);
+    return room ? [room.x + room.w / 2, room.z + room.d / 2] : null;
+  };
+  const xs = floor.rooms.flatMap(r => [r.x, r.x + r.w]);
+  const zs = floor.rooms.flatMap(r => [r.z, r.z + r.d]);
+  // The supervisor floats at the edge of the control room, or mid-hall without one.
+  const control = roomOf('control');
+  const center: [number, number] = control ? [control.x + control.w, control.z + control.d / 2] : [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...zs) + Math.max(...zs)) / 2];
+
+  // Each AI floats over its home zone; AIs sharing a zone stand side by side.
+  const keys = Object.keys(ACTIVE_SITE.agentZone) as AgentKey[];
+  const agents = keys.flatMap(key => {
+    const zoneId = ACTIVE_SITE.agentZone[key];
+    const room = roomOf(zoneId);
+    if (!room) return [];
+    // Over the far end of the zone, clear of the incident cards on the near side.
+    const at: [number, number] = [room.x + room.w / 2, room.z + Math.min(2, room.d / 2)];
+    const mates = keys.filter(k => ACTIVE_SITE.agentZone[k] === zoneId);
+    const index = mates.indexOf(key);
+    const shift = (index - (mates.length - 1) / 2) * 3;
+    return [{ key, name: t(AGENT_STYLE[key].name), hex: AGENT_STYLE[key].hex, at: [at[0] + shift, at[1]] as [number, number], lift: index * 1.6 }];
+  });
+
+  const top = incidents.find(i => i.stage < 3) ?? incidents.find(i => i.stage === 3);
+  const target = top && middle(top.zoneId);
+  const stage = top?.stage as 0 | 1 | 2 | 3 | undefined;
+  const kind = top?.id.startsWith('live-') ? (top.id.slice(5) as Excursion['kind']) : null;
+  // The team is called in once the supervisor has the report.
+  const team = top && kind && stage !== undefined && stage >= 1 ? EXCURSION_TEAM[kind].filter(k => k !== top.agent) : [];
+
+  const agentStatus: Record<string, string> = {};
+  if (top && stage !== undefined) {
+    agentStatus[top.agent] = t(LEAD_STATUS[stage]);
+    team.forEach(k => { if (TEAM_STATUS[stage]) agentStatus[k] = t(TEAM_STATUS[stage]); });
+  }
+
+  return {
+    agents,
+    center,
+    incident: top && target && stage !== undefined ? { lead: top.agent, team, target, stage } : null,
+    label: {
+      supervisor: t('슈퍼바이저 AI'),
+      status: stage === undefined ? t('공장 전체 감시 중') : t(SUPERVISOR_STATUS[stage]),
+      agentStatus,
+    },
+  };
+}
+
 /* ------------------------------------------------------------ worker view */
 
 /**
@@ -488,6 +562,7 @@ export function WorkerView({
   const toggleZone = (id: string) => setZone(current => (current === id ? null : id));
   const [can3D] = useState(() => Boolean(ACTIVE_SITE.floor) && hasWebGL());
   const [mapMode, setMapMode] = useState<'3d' | '2d'>('3d');
+  const [showTeam, setShowTeam] = useState(true);
   const use3D = can3D && mapMode === '3d';
   const zoneInfo = (id: string) => zoneStatus(id, incidents);
   const open = incidents.filter(i => i.stage < 4);
@@ -523,6 +598,14 @@ export function WorkerView({
               {zone && (
                 <button onClick={() => setZone(null)} className="text-[10px] font-bold text-accent hover:underline">{t('전체 보기')}</button>
               )}
+              {use3D && (
+                <button
+                  type="button"
+                  aria-pressed={showTeam}
+                  onClick={() => setShowTeam(v => !v)}
+                  className={cn("rounded-md border px-2 py-0.5 text-[10px] font-bold", showTeam ? "border-accent/50 bg-accent/15 text-accent" : "border-border text-text-secondary hover:text-text-primary")}
+                >{t('AI 조율')}</button>
+              )}
               {can3D && (
                 <div className="flex rounded-md border border-border p-0.5 text-[10px] font-bold" role="group" aria-label={t('배치도 보기 방식')}>
                   {(['3d', '2d'] as const).map(mode => (
@@ -549,6 +632,7 @@ export function WorkerView({
                     selected={zone}
                     onSelect={toggleZone}
                     renderBadge={zoneId => <ZoneBadge3D zoneId={zoneId} info={zoneInfo(zoneId)} selected={zone === zoneId} onClick={() => toggleZone(zoneId)} />}
+                    orchestration={showTeam ? floorOrchestration(incidents) : null}
                   />
                 </Suspense>
               </ErrorBoundary>

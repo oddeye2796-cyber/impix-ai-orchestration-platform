@@ -3816,6 +3816,7 @@
     "lang": "ko",
     "files": [
       "src/App.tsx",
+      "src/components/RoleViews.tsx",
       "src/expo/ExpoDirector.tsx"
     ]
   },
@@ -5439,6 +5440,13 @@
     ]
   },
   {
+    "key": "AI 조율",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "AI 조치",
     "lang": "ko",
     "files": [
@@ -5447,6 +5455,13 @@
   },
   {
     "key": "AI 조치 제안",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "AI 팀 소집 · 함께 분석 중",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5504,6 +5519,13 @@
   },
   {
     "key": "공장 배치도",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "공장 전체 감시 중",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5729,6 +5751,13 @@
     ]
   },
   {
+    "key": "사람 승인 대기",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "생산 AI",
     "lang": "ko",
     "files": [
@@ -5738,6 +5767,13 @@
   },
   {
     "key": "설비·IT 엔지니어",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "소집됨 · 분석",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5762,6 +5798,14 @@
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "슈퍼바이저 AI",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx",
+      "src/expo/ExpoDirector.tsx"
     ]
   },
   {
@@ -5896,6 +5940,13 @@
     ]
   },
   {
+    "key": "원인 분석",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "원자재 입고 지연",
     "lang": "ko",
     "files": [
@@ -5917,7 +5968,21 @@
     ]
   },
   {
+    "key": "이상 감지 · 보고",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "이상 발생",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "이상 보고 접수",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx"
@@ -5983,11 +6048,32 @@
     ]
   },
   {
+    "key": "조치 실행",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
+    "key": "조치 실행 중",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
+    ]
+  },
+  {
     "key": "조치 제안",
     "lang": "ko",
     "files": [
       "src/components/RoleViews.tsx",
       "src/expo/ExpoDirector.tsx"
+    ]
+  },
+  {
+    "key": "조치 지원",
+    "lang": "ko",
+    "files": [
+      "src/components/RoleViews.tsx"
     ]
   },
   {
@@ -10894,13 +10980,6 @@
   },
   {
     "key": "수정안: 속도는 그대로 두고 야간 1개 조를 더하면 내일 15시 완료, 납기 여유 3시간입니다.",
-    "lang": "ko",
-    "files": [
-      "src/expo/ExpoDirector.tsx"
-    ]
-  },
-  {
-    "key": "슈퍼바이저 AI",
     "lang": "ko",
     "files": [
       "src/expo/ExpoDirector.tsx"

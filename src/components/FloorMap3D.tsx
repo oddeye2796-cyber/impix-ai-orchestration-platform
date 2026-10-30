@@ -11,6 +11,7 @@ import type { Mesh, MeshStandardMaterial } from 'three';
 import type { FloorEquipment, FloorPath, FloorPlan, FloorRoom } from '../config/siteProfile';
 import { useTheme } from '../theme';
 import { t } from '../i18n';
+import FloorOrchestration, { type FloorOrchestrationState } from './FloorOrchestration';
 
 export type ZoneState = 'alert' | 'waiting' | 'ok';
 
@@ -21,6 +22,8 @@ interface Props {
   onSelect: (zoneId: string) => void;
   /** The zone's label, AI icons and speech bubble, drawn over the 3D scene. */
   renderBadge: (zoneId: string) => React.ReactNode;
+  /** The AI team over the floor, moving with the incident on the map; null hides it. */
+  orchestration?: FloorOrchestrationState | null;
 }
 
 /** Three.js takes literal colours, so the theme tokens are mirrored here. */
@@ -212,7 +215,7 @@ function Path({ path, state, palette }: { path: FloorPath; state: ZoneState | un
  * Zones in trouble light up red (or amber while a proposal waits for
  * approval), and each zone's AIs float above it.
  */
-export default function FloorMap3D({ floor, zoneState, selected, onSelect, renderBadge }: Props) {
+export default function FloorMap3D({ floor, zoneState, selected, onSelect, renderBadge, orchestration }: Props) {
   const { theme } = useTheme();
   const palette = PALETTE[theme];
 
@@ -270,6 +273,8 @@ export default function FloorMap3D({ floor, zoneState, selected, onSelect, rende
           </Html>
         );
       })}
+
+      {orchestration && <FloorOrchestration state={orchestration} />}
 
       <OrbitControls
         target={target}
