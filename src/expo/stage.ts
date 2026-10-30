@@ -21,7 +21,9 @@ export interface StageCoordination {
   title: string;
   description: string;
   /** Coordination ids: prod, qual, pm, energy, safety, logistics, supervisor. */
-  timeline: { fromAgent: string; toAgent: 'supervisor' | 'all'; type: 'proposal' | 'critique' | 'info' | 'agreement'; content: string; reasoning?: string }[];
+  timeline: { fromAgent: string; toAgent: 'supervisor' | 'all'; type: 'proposal' | 'critique' | 'info' | 'agreement'; content: string; reasoning?: string;
+    /** On the agreement: who has to sign off the part beyond the AI's authority. */
+    approval?: string }[];
 }
 
 export interface StagedCase {

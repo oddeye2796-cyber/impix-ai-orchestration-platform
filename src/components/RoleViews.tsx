@@ -358,7 +358,7 @@ function StageTracker({ stage }: { stage: Incident['stage'] }) {
 const FloorMap3D = lazy(() => import('./FloorMap3D'));
 
 /** Whether this browser can draw the 3D map at all; without WebGL the 2D map is used. */
-function hasWebGL(): boolean {
+export function hasWebGL(): boolean {
   try {
     const canvas = document.createElement('canvas');
     return Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'));
